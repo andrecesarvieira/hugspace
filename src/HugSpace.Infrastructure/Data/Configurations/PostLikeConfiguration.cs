@@ -4,7 +4,7 @@ using HugSpace.Domain.Entities;
 
 namespace HugSpace.Infrastructure.Data.Configurations;
 
-public class LikeConfiguration : IEntityTypeConfiguration<PostLike>
+public class PostLikeConfiguration : IEntityTypeConfiguration<PostLike>
 {
     public void Configure(EntityTypeBuilder<PostLike> builder)
     {

@@ -23,7 +23,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <WarningsNotAsErrors />
-    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment -->
+    <NoWarn>$(NoWarn);CS1591;CA1861;MSB3277</NoWarn> <!-- Missing XML comment; Constant array arguments; Assembly version conflicts -->
     
     <!-- Code Analysis -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>

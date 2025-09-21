@@ -40,6 +40,6 @@ public class FollowConfiguration : IEntityTypeConfiguration<Follow>
             .OnDelete(DeleteBehavior.Restrict);
 
         // Constraint: não pode seguir a si mesmo
-        builder.HasCheckConstraint("CK_Follow_NotSelf", "\"FollowerId\" != \"FollowingId\"");
+        builder.ToTable(t => t.HasCheckConstraint("CK_Follow_NotSelf", "\"FollowerId\" != \"FollowingId\""));
     }
 }
