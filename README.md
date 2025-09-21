@@ -28,7 +28,7 @@
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/hugspace/hugspace
+   git clone https://github.com/andrecesarvieira/hugspace
    cd hugspace
    ```
 
@@ -127,9 +127,9 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ## 💬 Comunidade
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/hugspace/hugspace/issues)
-- 💡 **Discussões**: [GitHub Discussions](https://github.com/hugspace/hugspace/discussions)
-- 📚 **Wiki**: [Documentação](https://github.com/hugspace/hugspace/wiki)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/andrecesarvieira/hugspace/issues)
+- 💡 **Discussões**: [GitHub Discussions](https://github.com/andrecesarvieira/hugspace/discussions)
+- 📚 **Wiki**: [Documentação](https://github.com/andrecesarvieira/hugspace/wiki)
 
 ---
 

@@ -35,7 +35,7 @@
     <DebugType>portable</DebugType>
     
     <!-- Repository Info -->
-    <RepositoryUrl>https://github.com/hugspace/hugspace</RepositoryUrl>
+    <RepositoryUrl>https://github.com/andrecesarvieira/hugspace</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     
