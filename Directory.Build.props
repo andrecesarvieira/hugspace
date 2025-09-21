@@ -1,0 +1,91 @@
+<Project>
+
+  <!-- Configurações globais para todos os projetos do HugSpace -->
+  
+  <PropertyGroup>
+    <!-- Versioning -->
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)' == 'Debug'">dev</VersionSuffix>
+    
+    <!-- Framework -->
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    
+    <!-- Assembly Info -->
+    <Company>HugSpace</Company>
+    <Product>HugSpace - Rede Social Amigável</Product>
+    <Copyright>© 2025 HugSpace. Open Source.</Copyright>
+    <Authors>HugSpace Contributors</Authors>
+    
+    <!-- Build Configuration -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+    <NoWarn>$(NoWarn);CS1591</NoWarn> <!-- Missing XML comment -->
+    
+    <!-- Code Analysis -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>Recommended</AnalysisMode>
+    
+    <!-- Performance -->
+    <OptimizationPreference>Speed</OptimizationPreference>
+    <DebugType>portable</DebugType>
+    
+    <!-- Repository Info -->
+    <RepositoryUrl>https://github.com/hugspace/hugspace</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    
+    <!-- Security -->
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <!-- Package References Comuns -->
+  <ItemGroup>
+    <!-- Logging -->
+    <PackageReference Include="Serilog" Version="4.0.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    
+    <!-- Development Tools -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- Configurações específicas para projetos de teste -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.UnitTests' Or '$(MSBuildProjectName)' == 'HugSpace.IntegrationTests'">
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <!-- Configurações para projetos Web (API e Blazor) -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.Api' Or '$(MSBuildProjectName)' == 'HugSpace.BlazorApp'">
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+  </PropertyGroup>
+
+  <!-- Configurações para bibliotecas de classe -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.Domain' Or '$(MSBuildProjectName)' == 'HugSpace.Application' Or '$(MSBuildProjectName)' == 'HugSpace.Infrastructure' Or '$(MSBuildProjectName)' == 'HugSpace.Shared'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+  <!-- Suprimir warnings temporários até inicializar Git -->
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' != 'true'">
+    <PublishRepositoryUrl>false</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <!-- SuppressWarnings para projetos específicos -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.BlazorApp.Client'">
+    <!-- Blazor WebAssembly specific suppressions -->
+    <NoWarn>$(NoWarn);BL0007</NoWarn> <!-- Component parameter should not be set outside of its component -->
+  </PropertyGroup>
+
+  <!-- Code Coverage -->
+  <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+    <PackageReference Include="coverlet.collector" Version="6.0.2" PrivateAssets="All" />
+    <PackageReference Include="coverlet.msbuild" Version="6.0.2" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>

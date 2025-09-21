@@ -1,0 +1,15 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "HugSpace Development",
+            "Group": "Servers",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "hugspace_db",
+            "Username": "hugspace_user",
+            "Password": "hugspace_dev_password", 
+            "SSLMode": "prefer",
+            "Favorite": true
+        }
+    }
+}
