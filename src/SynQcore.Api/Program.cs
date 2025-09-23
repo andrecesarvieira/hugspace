@@ -88,15 +88,22 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add API versioning
+// Add API versioning (Asp.Versioning 8.x)
 builder.Services.AddApiVersioning(options =>
 {
-    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.DefaultApiVersion = new Asp.Versioning.ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
-    options.ApiVersionReader = Microsoft.AspNetCore.Mvc.ApiVersioning.ApiVersionReader.Combine(
-        new Microsoft.AspNetCore.Mvc.ApiVersioning.QueryStringApiVersionReader("version"),
-        new Microsoft.AspNetCore.Mvc.ApiVersioning.HeaderApiVersionReader("X-Version")
+    options.ApiVersionReader = Asp.Versioning.ApiVersionReader.Combine(
+        new Asp.Versioning.QueryStringApiVersionReader("version"),
+        new Asp.Versioning.HeaderApiVersionReader("X-Version")
     );
+}).AddMvc();
+
+// Add API Explorer for Swagger (Asp.Versioning 8.x)
+builder.Services.AddApiVersioning().AddMvc().AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
 
 // Add Health Checks
