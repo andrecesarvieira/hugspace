@@ -1,6 +1,6 @@
 <Project>
 
-  <!-- Configurações globais para todos os projetos do EnterpriseHub -->
+  <!-- Configurações globais para todos os projetos do SynQcore -->
   
   <PropertyGroup>
     <!-- Versioning -->
@@ -14,10 +14,10 @@
     <Nullable>enable</Nullable>
     
     <!-- Assembly Info -->
-    <Company>EnterpriseHub</Company>
-    <Product>EnterpriseHub - Corporate Social Network</Product>
-    <Copyright>© 2025 EnterpriseHub. Open Source.</Copyright>
-    <Authors>EnterpriseHub Contributors</Authors>
+    <Company>SynQcore</Company>
+    <Product>SynQcore - Corporate Social Network</Product>
+    <Copyright>© 2025 SynQcore. Open Source.</Copyright>
+    <Authors>SynQcore Contributors</Authors>
     
     <!-- Build Configuration -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -35,7 +35,7 @@
     <DebugType>portable</DebugType>
     
     <!-- Repository Info -->
-    <RepositoryUrl>https://github.com/andrecesarvieira/enterprisehub</RepositoryUrl>
+    <RepositoryUrl>https://github.com/andrecesarvieira/synqcore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     
@@ -54,19 +54,19 @@
   </ItemGroup>
 
   <!-- Configurações específicas para projetos de teste -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.UnitTests' Or '$(MSBuildProjectName)' == 'EnterpriseHub.IntegrationTests'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SynQcore.UnitTests' Or '$(MSBuildProjectName)' == 'SynQcore.IntegrationTests'">
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <!-- Configurações para projetos Web (API e Blazor) -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.Api' Or '$(MSBuildProjectName)' == 'EnterpriseHub.BlazorApp'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SynQcore.Api' Or '$(MSBuildProjectName)' == 'SynQcore.BlazorApp'">
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <!-- Configurações para bibliotecas de classe -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.Domain' Or '$(MSBuildProjectName)' == 'EnterpriseHub.Application' Or '$(MSBuildProjectName)' == 'EnterpriseHub.Infrastructure' Or '$(MSBuildProjectName)' == 'EnterpriseHub.Shared'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SynQcore.Domain' Or '$(MSBuildProjectName)' == 'SynQcore.Application' Or '$(MSBuildProjectName)' == 'SynQcore.Infrastructure' Or '$(MSBuildProjectName)' == 'SynQcore.Shared'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
@@ -77,7 +77,7 @@
   </PropertyGroup>
 
   <!-- SuppressWarnings para projetos específicos -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.BlazorApp.Client'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'SynQcore.BlazorApp.Client'">
     <!-- Blazor WebAssembly specific suppressions -->
     <NoWarn>$(NoWarn);BL0007</NoWarn> <!-- Component parameter should not be set outside of its component -->
   </PropertyGroup>

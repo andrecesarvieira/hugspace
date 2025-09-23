@@ -1,8 +1,8 @@
 #!/bin/bash
-# Script para iniciar ambiente de desenvolvimento do EnterpriseHub
+# Script para iniciar ambiente de desenvolvimento do SynQcore
 # Executa: ./scripts/start-dev.sh
 
-echo "🚀 Iniciando ambiente EnterpriseHub..."
+echo "🚀 Iniciando ambiente SynQcore..."
 
 # Verifica se Docker está rodando
 if ! docker info > /dev/null 2>&1; then
@@ -33,18 +33,18 @@ echo "📊 Status dos serviços:"
 docker compose ps
 
 echo ""
-echo "✅ Ambiente EnterpriseHub iniciado com sucesso!"
+echo "✅ Ambiente SynQcore iniciado com sucesso!"
 echo ""
 echo "📋 Acesso aos serviços:"
 echo "   🐘 PostgreSQL: localhost:5432"
-echo "      Database: enterprisehub_db"
-echo "      User: enterprisehub_user"  
-echo "      Password: enterprisehub_dev_password"
+echo "      Database: synqcore_db"
+echo "      User: synqcore_user"  
+echo "      Password: synqcore_dev_password"
 echo ""
 echo "   🚀 Redis: localhost:6379"
 echo ""
 echo "   🌐 pgAdmin: http://localhost:8080"
-echo "      Email: admin@enterprisehub.dev"
+echo "      Email: admin@synqcore.dev"
 echo "      Password: admin123"
 echo ""
 echo "💡 Para parar: docker compose down"

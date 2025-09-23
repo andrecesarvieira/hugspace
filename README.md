@@ -1,13 +1,13 @@
-# 🏢 EnterpriseHub - Corporate Social Network (Open Source)
+# 🏢 SynQcore - Corporate Collaboration Platform (Open Source)
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Hybrid-green)](https://blazor.net/)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/enterprisehub)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/synqcore)
 [![Phase](https://img.shields.io/badge/Phase-1%20Complete-success)](ROADMAP.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Open Source Corporate Social Network** para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. Construída com .NET 9, Blazor e PostgreSQL.
+> **Open Source Corporate Collaboration Platform** para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. Construída com .NET 9, Blazor e PostgreSQL.
 
 ## ✨ Características
 
@@ -35,38 +35,38 @@
 
 ```bash
    # Clone do repositório
-   git clone https://github.com/andrecesarvieira/enterprisehub
-   cd enterprisehub2. **Inicie a infraestrutura**
+   git clone https://github.com/andrecesarvieira/synqcore
+   cd synqcore2. **Inicie a infraestrutura**
    ```bash
    ./scripts/start-dev.sh
    ```
 
 3. **Aplicar migrações do banco**
    ```bash
-   dotnet ef database update -p src/EnterpriseHub.Infrastructure -s src/EnterpriseHub.Api
+   dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
    ```
 
 4. **Execute a API**
    ```bash
-   dotnet run --project src/EnterpriseHub.Api
+   dotnet run --project src/SynQcore.Api
    # API disponível em: http://localhost:5005
    ```
 
 5. **Execute o Blazor App** *(Fase 2)*
    ```bash
-   dotnet run --project src/EnterpriseHub.BlazorApp/EnterpriseHub.BlazorApp
+   dotnet run --project src/SynQcore.BlazorApp/SynQcore.BlazorApp
    ```
 
 ## 🏗️ Arquitetura
 
 ```
 src/
-├── EnterpriseHub.Domain/        # Entidades e regras de negócio
-├── EnterpriseHub.Application/   # Casos de uso (CQRS + MediatR)
-├── EnterpriseHub.Infrastructure/# Implementações (EF Core, Redis)
-├── EnterpriseHub.Api/          # Web API
-├── EnterpriseHub.BlazorApp/    # Frontend Blazor Hybrid
-└── EnterpriseHub.Shared/       # DTOs compartilhados
+├── SynQcore.Domain/        # Entidades e regras de negócio
+├── SynQcore.Application/   # Casos de uso (CQRS + MediatR)
+├── SynQcore.Infrastructure/# Implementações (EF Core, Redis)
+├── SynQcore.Api/          # Web API
+├── SynQcore.BlazorApp/    # Frontend Blazor Hybrid
+└── SynQcore.Shared/       # DTOs compartilhados
 ```
 
 ## 📊 Status do Desenvolvimento
@@ -108,12 +108,12 @@ Consulte nosso [ROADMAP.md](ROADMAP.md) para acompanhar o progresso detalhado.
 ### 🏗️ **Arquitetura Implementada:**
 ```
 📁 Clean Architecture (9 Projetos):
-├── 🎯 EnterpriseHub.Domain        - Entidades + Business Rules
-├── 📋 EnterpriseHub.Application   - Use Cases (CQRS Ready)  
-├── 🔧 EnterpriseHub.Infrastructure - EF Core + Redis + External
-├── 🌐 EnterpriseHub.Api           - Web API + Controllers
-├── 💻 EnterpriseHub.BlazorApp     - Frontend Hybrid
-├── 📚 EnterpriseHub.Shared        - DTOs Compartilhados
+├── 🎯 SynQcore.Domain        - Entidades + Business Rules
+├── 📋 SynQcore.Application   - Use Cases (CQRS Ready)  
+├── 🔧 SynQcore.Infrastructure - EF Core + Redis + External
+├── 🌐 SynQcore.Api           - Web API + Controllers
+├── 💻 SynQcore.BlazorApp     - Frontend Hybrid
+├── 📚 SynQcore.Shared        - DTOs Compartilhados
 └── 🧪 Tests (Unit + Integration) - Cobertura Preparada
 ```
 
@@ -143,13 +143,13 @@ dotnet build
 dotnet test
 
 # Aplicar migrações
-dotnet ef database update -p src/EnterpriseHub.Infrastructure -s src/EnterpriseHub.Api
+dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 
 # Criar nova migration
-dotnet ef migrations add <NomeMigration> -p src/EnterpriseHub.Infrastructure -s src/EnterpriseHub.Api
+dotnet ef migrations add <NomeMigration> -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 
 # Executar API (porta 5005)
-dotnet run --project src/EnterpriseHub.Api
+dotnet run --project src/SynQcore.Api
 ```
 
 ## 🌐 Acesso Local
@@ -158,8 +158,8 @@ dotnet run --project src/EnterpriseHub.Api
 |---------|-----|--------|-------------|
 | **API** | http://localhost:5005 | ✅ Funcionando | - |
 | **Blazor App** | http://localhost:5001 | 🚧 Fase 2 | - |
-| **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@enterprisehub.dev / admin123 |
-| **PostgreSQL** | localhost:5432 | ✅ Funcionando | enterprisehub_user / enterprisehub_dev_password |
+| **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@synqcore.dev / admin123 |
+| **PostgreSQL** | localhost:5432 | ✅ Funcionando | synqcore_user / synqcore_dev_password |
 | **Redis** | localhost:6379 | ✅ Funcionando | - |
 
 ### 🗄️ **Banco de Dados Atual:**
@@ -190,12 +190,12 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ## 💬 Comunidade
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/andrecesarvieira/enterprisehub/issues)
-- 💡 **Discussões**: [GitHub Discussions](https://github.com/andrecesarvieira/enterprisehub/discussions)
-- 📚 **Wiki**: [Documentação](https://github.com/andrecesarvieira/enterprisehub/wiki)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/andrecesarvieira/synqcore/issues)
+- 💡 **Discussões**: [GitHub Discussions](https://github.com/andrecesarvieira/synqcore/discussions)
+- 📚 **Wiki**: [Documentação](https://github.com/andrecesarvieira/synqcore/wiki)
 
 ---
 
 <p align="center">
-  Feito com ❤️ pela comunidade EnterpriseHub
+  Feito com ❤️ pela comunidade SynQcore
 </p>

@@ -1,4 +1,4 @@
-# EnterpriseHub - Docker Compose para Desenvolvimento
+# SynQcore - Docker Compose para Desenvolvimento
 # Infraestrutura completa: PostgreSQL + Redis + pgAdmin
 # Otimizado para rede social corporativa com performance e compliance
 
@@ -6,12 +6,12 @@ services:
   # PostgreSQL 16 - Banco principal
   postgres:
     image: postgres:16-alpine
-    container_name: enterprisehub-postgres
+    container_name: synqcore-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: enterprisehub_db
-      POSTGRES_USER: enterprisehub_user
-      POSTGRES_PASSWORD: enterprisehub_dev_password
+      POSTGRES_DB: synqcore_db
+      POSTGRES_USER: synqcore_user
+      POSTGRES_PASSWORD: synqcore_dev_password
       # Configurações de performance para desenvolvimento
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
     ports:
@@ -22,7 +22,7 @@ services:
       # Scripts de inicialização
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
-      - enterprisehub-network
+      - synqcore-network
     # Configurações otimizadas para rede social
     command: >
       postgres
@@ -36,7 +36,7 @@ services:
       -c random_page_cost=1.1
       -c effective_io_concurrency=200
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U enterprisehub_user -d enterprisehub_db"]
+      test: ["CMD-SHELL", "pg_isready -U synqcore_user -d synqcore_db"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -44,7 +44,7 @@ services:
   # Redis 7 - Cache distribuído e sessões
   redis:
     image: redis:7-alpine
-    container_name: enterprisehub-redis
+    container_name: synqcore-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -54,7 +54,7 @@ services:
       # Configuração customizada
       - ./redis.conf:/etc/redis/redis.conf:ro
     networks:
-      - enterprisehub-network
+      - synqcore-network
     command: redis-server /etc/redis/redis.conf
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -65,10 +65,10 @@ services:
   # pgAdmin - Interface web para PostgreSQL
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: enterprisehub-pgadmin
+    container_name: synqcore-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@enterprisehub.dev
+      PGADMIN_DEFAULT_EMAIL: admin@synqcore.dev
       PGADMIN_DEFAULT_PASSWORD: admin123
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
@@ -78,7 +78,7 @@ services:
       # Configuração de servidores pré-definidos
       - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
     networks:
-      - enterprisehub-network
+      - synqcore-network
     depends_on:
       postgres:
         condition: service_healthy
@@ -86,14 +86,14 @@ services:
 # Volumes para persistência de dados
 volumes:
   postgres_data:
-    name: enterprisehub_postgres_data
+    name: synqcore_postgres_data
   redis_data:
-    name: enterprisehub_redis_data
+    name: synqcore_redis_data
   pgadmin_data:
-    name: enterprisehub_pgadmin_data
+    name: synqcore_pgadmin_data
 
 # Rede isolada para os serviços
 networks:
-  enterprisehub-network:
-    name: enterprisehub-network
+  synqcore-network:
+    name: synqcore-network
     driver: bridge

@@ -1,8 +1,8 @@
 #!/bin/bash
-# Script para limpeza completa do projeto EnterpriseHub
+# Script para limpeza completa do projeto SynQcore
 # Executa: ./scripts/clean-build.sh
 
-echo "🧹 Limpando projeto EnterpriseHub..."
+echo "🧹 Limpando projeto SynQcore..."
 
 # Limpa builds anteriores
 echo "🗑️  Removendo builds anteriores..."

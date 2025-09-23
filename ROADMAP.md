@@ -1,8 +1,8 @@
-# 🏢 EnterpriseHub - Corporate Social Network | Roadmap v3.0
+# 🏢 SynQcore - Corporate Social Network | Roadmap v3.0
 
 ## 📋 Visão Geral do Projeto
 
-**EnterpriseHub** é uma rede social corporativa **open source** desenvolvida com **.NET 9**, **Blazor** e **PostgreSQL**, projetada para conectar funcionários, facilitar colaboração e preservar conhecimento dentro das organizações.
+**SynQcore** é uma rede social corporativa **open source** desenvolvida com **.NET 9**, **Blazor** e **PostgreSQL**, projetada para conectar funcionários, facilitar colaboração e preservar conhecimento dentro das organizações.
 
 ### 🎯 Objetivos Principais
 - **Conectar funcionários** através de uma plataforma social corporativa
@@ -448,7 +448,7 @@ Este projeto é OpenSource e aceita contribuições! Consulte nossos guias:
 
 ## 📈 **Diferencial Competitivo**
 
-### **🎯 Por que EnterpriseHub?**
+### **🎯 Por que SynQcore?**
 - **Performance Superior**: PostgreSQL + Redis + .NET 9
 - **Real-Time First**: SignalR nativo para todas as interações
 - **Developer Experience**: Full-stack C# + Hot Reload
@@ -470,17 +470,17 @@ Este projeto é OpenSource e aceita contribuições! Consulte nossos guias:
 
 ```bash
 # Clone e setup
-git clone https://github.com/andrecesarvieira/enterprisehub
-cd enterprisehub
+git clone https://github.com/andrecesarvieira/synqcore
+cd synqcore
 
 # Start infrastructure
 docker-compose up -d
 
 # Run backend
-dotnet run --project src/EnterpriseHub.Api
+dotnet run --project src/SynQcore.Api
 
 # Run frontend
-dotnet run --project src/EnterpriseHub.BlazorApp
+dotnet run --project src/SynQcore.BlazorApp
 ```
 
 ---
