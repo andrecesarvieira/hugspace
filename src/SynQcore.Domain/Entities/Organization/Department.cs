@@ -1,5 +1,3 @@
-using SynQcore.Domain.Common;
-
 namespace SynQcore.Domain.Entities.Organization;
 
 public class Department : BaseEntity
@@ -19,9 +17,15 @@ public class Department : BaseEntity
     public Guid? ParentDepartmentId { get; set; } // para subdepartamentos
     public Guid? ManagerEmployeeId { get; set; } // gestor do departamento
 
-    // Propriedades de Navegação
-    // public Department? ParentDepartment { get; set; }
-    // public ICollection<Department> SubDepartments { get; set; } = [];
-    // public Employee? Manager { get; set; }
-    // public ICollection<EmployeeDepartment> Employees = []
+    // Propriedades de Navegação - Hierarquia
+    public Department? ParentDepartment { get; set; }
+    public ICollection<Department> SubDepartments { get; set; } = [];
+    public Employee? Manager { get; set; }
+    
+    // Propriedades de Navegação - Relacionamentos
+    public ICollection<EmployeeDepartment> Employees { get; set; } = [];
+    public ICollection<Team> Teams { get; set; } = [];
+    
+    // Propriedades de Navegação - Communication
+    public ICollection<Post> Posts { get; set; } = [];
 }

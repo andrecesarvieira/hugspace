@@ -1,5 +1,3 @@
-using SynQcore.Domain.Common;
-
 namespace SynQcore.Domain.Entities.Organization;
 
 public class Position : BaseEntity

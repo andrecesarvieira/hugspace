@@ -1,5 +1,3 @@
-using SynQcore.Domain.Common;
-
 namespace SynQcore.Domain.Entities.Organization;
 
 public class Employee : BaseEntity
@@ -29,7 +27,17 @@ public class Employee : BaseEntity
     public int YearsOfService =>
         DateTime.UtcNow.Year - HireDate.Year;
 
-    // Propriedades de Navegação
-    //public ICollection<EmployeeDepartment> Departments { get; set; } = [];
-    //public ICollection<Post> Posts { get; set; } = [];
+    // Propriedades de Navegação - Organization
+    public ICollection<EmployeeDepartment> Departments { get; set; } = [];
+    public ICollection<TeamMembership> TeamMemberships { get; set; } = [];
+    public ICollection<ReportingRelationship> DirectReports { get; set; } = [];
+    public ICollection<ReportingRelationship> ManagerRelationships { get; set; } = [];
+
+    // Propriedades de Navegação - Communication
+    public ICollection<Post> Posts { get; set; } = [];
+    public ICollection<Comment> Comments { get; set; } = [];
+    public ICollection<PostLike> PostLikes { get; set; } = [];
+    public ICollection<CommentLike> CommentLikes { get; set; } = [];
+    public ICollection<Notification> ReceivedNotifications { get; set; } = [];
+    public ICollection<Notification> SentNotifications { get; set; } = [];
 }

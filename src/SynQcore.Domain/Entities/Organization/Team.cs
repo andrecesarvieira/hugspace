@@ -1,5 +1,3 @@
-using SynQcore.Domain.Common;
-
 namespace SynQcore.Domain.Entities.Organization;
 
 public class Team : BaseEntity
@@ -19,12 +17,17 @@ public class Team : BaseEntity
 
     // Gestão
     public Guid? LeaderEmployeeId { get; set; }
+    public Guid? DepartmentId { get; set; }
 
-    // COnfigurações
+    // Configurações
     public bool IsActive { get; set; } = true;
     public int? MaxMembers { get; set; }
 
-    // Propriedades de Navegação
-    // public Employee? Leader { get; set; }
-    // public ICollection<TeamMembership> Members { get; set; } = [];
+    // Propriedades de Navegação - Organization
+    public Employee? Leader { get; set; }
+    public Department? Department { get; set; }
+    public ICollection<TeamMembership> Members { get; set; } = [];
+    
+    // Propriedades de Navegação - Communication
+    public ICollection<Post> Posts { get; set; } = [];
 }

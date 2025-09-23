@@ -1,4 +1,3 @@
-using SynQcore.BlazorApp.Client.Pages;
 using SynQcore.BlazorApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
