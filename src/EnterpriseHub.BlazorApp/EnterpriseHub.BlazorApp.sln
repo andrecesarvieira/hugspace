@@ -2,9 +2,9 @@
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.0.0
 MinimumVisualStudioVersion = 16.0.0.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HugSpace.BlazorApp", "HugSpace.BlazorApp\HugSpace.BlazorApp.csproj", "{062A317A-3ADF-4F9E-A91D-024B5F44894D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnterpriseHub.BlazorApp", "EnterpriseHub.BlazorApp\EnterpriseHub.BlazorApp.csproj", "{062A317A-3ADF-4F9E-A91D-024B5F44894D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HugSpace.BlazorApp.Client", "HugSpace.BlazorApp.Client\HugSpace.BlazorApp.Client.csproj", "{188A7AF6-F7D7-4866-8C49-62BB01E7DB63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnterpriseHub.BlazorApp.Client", "EnterpriseHub.BlazorApp.Client\EnterpriseHub.BlazorApp.Client.csproj", "{188A7AF6-F7D7-4866-8C49-62BB01E7DB63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

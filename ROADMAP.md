@@ -448,7 +448,7 @@ Este projeto é OpenSource e aceita contribuições! Consulte nossos guias:
 
 ## 📈 **Diferencial Competitivo**
 
-### **🎯 Por que HugSpace?**
+### **🎯 Por que EnterpriseHub?**
 - **Performance Superior**: PostgreSQL + Redis + .NET 9
 - **Real-Time First**: SignalR nativo para todas as interações
 - **Developer Experience**: Full-stack C# + Hot Reload
@@ -470,17 +470,17 @@ Este projeto é OpenSource e aceita contribuições! Consulte nossos guias:
 
 ```bash
 # Clone e setup
-git clone https://github.com/hugspace/hugspace
-cd hugspace
+git clone https://github.com/andrecesarvieira/enterprisehub
+cd enterprisehub
 
 # Start infrastructure
 docker-compose up -d
 
 # Run backend
-dotnet run --project src/HugSpace.Api
+dotnet run --project src/EnterpriseHub.Api
 
 # Run frontend
-dotnet run --project src/HugSpace.BlazorApp
+dotnet run --project src/EnterpriseHub.BlazorApp
 ```
 
 ---

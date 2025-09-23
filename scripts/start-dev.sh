@@ -1,8 +1,8 @@
 #!/bin/bash
-# Script para iniciar ambiente de desenvolvimento do HugSpace
+# Script para iniciar ambiente de desenvolvimento do EnterpriseHub
 # Executa: ./scripts/start-dev.sh
 
-echo "🚀 Iniciando ambiente HugSpace..."
+echo "🚀 Iniciando ambiente EnterpriseHub..."
 
 # Verifica se Docker está rodando
 if ! docker info > /dev/null 2>&1; then
@@ -33,18 +33,18 @@ echo "📊 Status dos serviços:"
 docker compose ps
 
 echo ""
-echo "✅ Ambiente HugSpace iniciado com sucesso!"
+echo "✅ Ambiente EnterpriseHub iniciado com sucesso!"
 echo ""
 echo "📋 Acesso aos serviços:"
 echo "   🐘 PostgreSQL: localhost:5432"
-echo "      Database: hugspace_db"
-echo "      User: hugspace_user"  
-echo "      Password: hugspace_dev_password"
+echo "      Database: enterprisehub_db"
+echo "      User: enterprisehub_user"  
+echo "      Password: enterprisehub_dev_password"
 echo ""
 echo "   🚀 Redis: localhost:6379"
 echo ""
 echo "   🌐 pgAdmin: http://localhost:8080"
-echo "      Email: admin@hugspace.dev"
+echo "      Email: admin@enterprisehub.dev"
 echo "      Password: admin123"
 echo ""
 echo "💡 Para parar: docker compose down"

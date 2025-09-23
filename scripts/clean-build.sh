@@ -1,8 +1,8 @@
 #!/bin/bash
-# Script para limpeza completa do projeto HugSpace
+# Script para limpeza completa do projeto EnterpriseHub
 # Executa: ./scripts/clean-build.sh
 
-echo "🧹 Limpando projeto HugSpace..."
+echo "🧹 Limpando projeto EnterpriseHub..."
 
 # Limpa builds anteriores
 echo "🗑️  Removendo builds anteriores..."

@@ -3,7 +3,7 @@
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Hybrid-green)](https://blazor.net/)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/hugspace)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/enterprisehub)
 [![Phase](https://img.shields.io/badge/Phase-1%20Complete-success)](ROADMAP.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -31,42 +31,42 @@
 ### Executando Localmente
 
 1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/andrecesarvieira/hugspace
-   cd hugspace
-   ```
+## 🚀 Quick Start
 
-2. **Inicie a infraestrutura**
+```bash
+   # Clone do repositório
+   git clone https://github.com/andrecesarvieira/enterprisehub
+   cd enterprisehub2. **Inicie a infraestrutura**
    ```bash
    ./scripts/start-dev.sh
    ```
 
 3. **Aplicar migrações do banco**
    ```bash
-   dotnet ef database update -p src/HugSpace.Infrastructure -s src/HugSpace.Api
+   dotnet ef database update -p src/EnterpriseHub.Infrastructure -s src/EnterpriseHub.Api
    ```
 
 4. **Execute a API**
    ```bash
-   dotnet run --project src/HugSpace.Api
+   dotnet run --project src/EnterpriseHub.Api
    # API disponível em: http://localhost:5005
    ```
 
 5. **Execute o Blazor App** *(Fase 2)*
    ```bash
-   dotnet run --project src/HugSpace.BlazorApp/HugSpace.BlazorApp
+   dotnet run --project src/EnterpriseHub.BlazorApp/EnterpriseHub.BlazorApp
    ```
 
 ## 🏗️ Arquitetura
 
 ```
 src/
-├── HugSpace.Domain/        # Entidades e regras de negócio
-├── HugSpace.Application/   # Casos de uso (CQRS + MediatR)
-├── HugSpace.Infrastructure/# Implementações (EF Core, Redis)
-├── HugSpace.Api/          # Web API
-├── HugSpace.BlazorApp/    # Frontend Blazor Hybrid
-└── HugSpace.Shared/       # DTOs compartilhados
+├── EnterpriseHub.Domain/        # Entidades e regras de negócio
+├── EnterpriseHub.Application/   # Casos de uso (CQRS + MediatR)
+├── EnterpriseHub.Infrastructure/# Implementações (EF Core, Redis)
+├── EnterpriseHub.Api/          # Web API
+├── EnterpriseHub.BlazorApp/    # Frontend Blazor Hybrid
+└── EnterpriseHub.Shared/       # DTOs compartilhados
 ```
 
 ## 📊 Status do Desenvolvimento
@@ -108,12 +108,12 @@ Consulte nosso [ROADMAP.md](ROADMAP.md) para acompanhar o progresso detalhado.
 ### 🏗️ **Arquitetura Implementada:**
 ```
 📁 Clean Architecture (9 Projetos):
-├── 🎯 HugSpace.Domain        - Entidades + Business Rules
-├── 📋 HugSpace.Application   - Use Cases (CQRS Ready)  
-├── 🔧 HugSpace.Infrastructure - EF Core + Redis + External
-├── 🌐 HugSpace.Api           - Web API + Controllers
-├── 💻 HugSpace.BlazorApp     - Frontend Hybrid
-├── 📚 HugSpace.Shared        - DTOs Compartilhados
+├── 🎯 EnterpriseHub.Domain        - Entidades + Business Rules
+├── 📋 EnterpriseHub.Application   - Use Cases (CQRS Ready)  
+├── 🔧 EnterpriseHub.Infrastructure - EF Core + Redis + External
+├── 🌐 EnterpriseHub.Api           - Web API + Controllers
+├── 💻 EnterpriseHub.BlazorApp     - Frontend Hybrid
+├── 📚 EnterpriseHub.Shared        - DTOs Compartilhados
 └── 🧪 Tests (Unit + Integration) - Cobertura Preparada
 ```
 
@@ -143,13 +143,13 @@ dotnet build
 dotnet test
 
 # Aplicar migrações
-dotnet ef database update -p src/HugSpace.Infrastructure -s src/HugSpace.Api
+dotnet ef database update -p src/EnterpriseHub.Infrastructure -s src/EnterpriseHub.Api
 
 # Criar nova migration
-dotnet ef migrations add <NomeMigration> -p src/HugSpace.Infrastructure -s src/HugSpace.Api
+dotnet ef migrations add <NomeMigration> -p src/EnterpriseHub.Infrastructure -s src/EnterpriseHub.Api
 
 # Executar API (porta 5005)
-dotnet run --project src/HugSpace.Api
+dotnet run --project src/EnterpriseHub.Api
 ```
 
 ## 🌐 Acesso Local
@@ -158,8 +158,8 @@ dotnet run --project src/HugSpace.Api
 |---------|-----|--------|-------------|
 | **API** | http://localhost:5005 | ✅ Funcionando | - |
 | **Blazor App** | http://localhost:5001 | 🚧 Fase 2 | - |
-| **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@hugspace.dev / admin123 |
-| **PostgreSQL** | localhost:5432 | ✅ Funcionando | hugspace_user / hugspace_dev_password |
+| **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@enterprisehub.dev / admin123 |
+| **PostgreSQL** | localhost:5432 | ✅ Funcionando | enterprisehub_user / enterprisehub_dev_password |
 | **Redis** | localhost:6379 | ✅ Funcionando | - |
 
 ### 🗄️ **Banco de Dados Atual:**
@@ -190,12 +190,12 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 
 ## 💬 Comunidade
 
-- 🐛 **Issues**: [GitHub Issues](https://github.com/andrecesarvieira/hugspace/issues)
-- 💡 **Discussões**: [GitHub Discussions](https://github.com/andrecesarvieira/hugspace/discussions)
-- 📚 **Wiki**: [Documentação](https://github.com/andrecesarvieira/hugspace/wiki)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/andrecesarvieira/enterprisehub/issues)
+- 💡 **Discussões**: [GitHub Discussions](https://github.com/andrecesarvieira/enterprisehub/discussions)
+- 📚 **Wiki**: [Documentação](https://github.com/andrecesarvieira/enterprisehub/wiki)
 
 ---
 
 <p align="center">
-  Feito com ❤️ pela comunidade HugSpace
+  Feito com ❤️ pela comunidade EnterpriseHub
 </p>

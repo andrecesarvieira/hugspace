@@ -1,6 +1,6 @@
 <Project>
 
-  <!-- Configurações globais para todos os projetos do HugSpace -->
+  <!-- Configurações globais para todos os projetos do EnterpriseHub -->
   
   <PropertyGroup>
     <!-- Versioning -->
@@ -14,10 +14,10 @@
     <Nullable>enable</Nullable>
     
     <!-- Assembly Info -->
-    <Company>HugSpace</Company>
-    <Product>HugSpace - Rede Social Amigável</Product>
-    <Copyright>© 2025 HugSpace. Open Source.</Copyright>
-    <Authors>HugSpace Contributors</Authors>
+    <Company>EnterpriseHub</Company>
+    <Product>EnterpriseHub - Corporate Social Network</Product>
+    <Copyright>© 2025 EnterpriseHub. Open Source.</Copyright>
+    <Authors>EnterpriseHub Contributors</Authors>
     
     <!-- Build Configuration -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
@@ -35,7 +35,7 @@
     <DebugType>portable</DebugType>
     
     <!-- Repository Info -->
-    <RepositoryUrl>https://github.com/andrecesarvieira/hugspace</RepositoryUrl>
+    <RepositoryUrl>https://github.com/andrecesarvieira/enterprisehub</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     
@@ -54,19 +54,19 @@
   </ItemGroup>
 
   <!-- Configurações específicas para projetos de teste -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.UnitTests' Or '$(MSBuildProjectName)' == 'HugSpace.IntegrationTests'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.UnitTests' Or '$(MSBuildProjectName)' == 'EnterpriseHub.IntegrationTests'">
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <!-- Configurações para projetos Web (API e Blazor) -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.Api' Or '$(MSBuildProjectName)' == 'HugSpace.BlazorApp'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.Api' Or '$(MSBuildProjectName)' == 'EnterpriseHub.BlazorApp'">
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <!-- Configurações para bibliotecas de classe -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.Domain' Or '$(MSBuildProjectName)' == 'HugSpace.Application' Or '$(MSBuildProjectName)' == 'HugSpace.Infrastructure' Or '$(MSBuildProjectName)' == 'HugSpace.Shared'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.Domain' Or '$(MSBuildProjectName)' == 'EnterpriseHub.Application' Or '$(MSBuildProjectName)' == 'EnterpriseHub.Infrastructure' Or '$(MSBuildProjectName)' == 'EnterpriseHub.Shared'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
@@ -77,7 +77,7 @@
   </PropertyGroup>
 
   <!-- SuppressWarnings para projetos específicos -->
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'HugSpace.BlazorApp.Client'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'EnterpriseHub.BlazorApp.Client'">
     <!-- Blazor WebAssembly specific suppressions -->
     <NoWarn>$(NoWarn);BL0007</NoWarn> <!-- Component parameter should not be set outside of its component -->
   </PropertyGroup>

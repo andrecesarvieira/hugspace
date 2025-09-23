@@ -68,7 +68,7 @@ services:
     container_name: enterprisehub-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@hugspace.dev
+      PGADMIN_DEFAULT_EMAIL: admin@enterprisehub.dev
       PGADMIN_DEFAULT_PASSWORD: admin123
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:

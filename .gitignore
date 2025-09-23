@@ -1,4 +1,4 @@
-# HugSpace - .gitignore
+# EnterpriseHub - .gitignore
 # Baseado no template .NET + customizações para o projeto
 
 ## Ignore Visual Studio temporary files, build results, and
@@ -398,7 +398,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# === HugSpace Specific ===
+# === EnterpriseHub Specific ===
 
 # Docker dados locais (preservar apenas a estrutura)
 docker/data/
@@ -457,7 +457,7 @@ TestResults/
 *.speedscope
 *.diagsession
 
-# HugSpace media files (para desenvolvimento)
+# EnterpriseHub media files (para desenvolvimento)
 media/uploads/
 media/temp/
 media/cache/
