@@ -13,16 +13,16 @@
 - **Garantir compliance** e segurança de dados corporativos
 - **Oferecer alternativa open source** às soluções proprietárias
 
-### 🏗️ **Arquitetura Enterprise**
-- **Framework**: .NET 9 com Clean Architecture (enterprise-ready)
+### 🏗️ **Arquitetura Corporativa**
+- **Framework**: .NET 9 com Clean Architecture (corporate-ready)
 - **Frontend**: Blazor Hybrid (Server + WebAssembly)
-- **Backend**: ASP.NET Core 9 Web API com enterprise features
+- **Backend**: ASP.NET Core 9 Web API com corporate features
 - **Banco de Dados**: PostgreSQL 16 (compliance e auditoria)
 - **Cache**: Redis 7 (performance e sessões corporativas)
 - **Tempo Real**: SignalR (colaboração em tempo real)
 - **Containers**: Docker para deployment on-premise/cloud
 - **Patterns**: CQRS, MediatR, Repository Pattern
-- **Security**: Enterprise SSO, RBAC, audit trails
+- **Security**: Corporate SSO, RBAC, audit trails
 
 ---
 
@@ -75,11 +75,11 @@
 
 ---
 
-### 🔧 **Fase 2: Enterprise API Core e Autenticação** *(EM DESENVOLVIMENTO - Próxima)*
+### 🔧 **Fase 2: Corporate API Core e Autenticação** *(EM DESENVOLVIMENTO - Próxima)*
 
-> **🎯 Objetivo:** Implementar API corporativa com autenticação enterprise (SSO ready), CQRS pattern e cache Redis otimizado para ambiente corporativo.
+> **🎯 Objetivo:** Implementar API corporativa com autenticação corporate (SSO ready), CQRS pattern e cache Redis otimizado para ambiente corporativo.
 
-#### 🚀 **2.1 Enterprise API Foundation** *(Próximo Sprint)*
+#### 🚀 **2.1 Corporate API Foundation** *(Próximo Sprint)*
 - [ ] Configurar ASP.NET Core Web API com Swagger/OpenAPI corporativo
 - [ ] Setup de middleware pipeline (CORS, audit logging, exception handling)
 - [ ] Implementar versionamento de API (v1) para backward compatibility
@@ -88,7 +88,7 @@
 - [ ] Implementar rate limiting por departamento/role
 - [ ] **Entregáveis:** API corporativa com documentação e auditoria
 
-#### 🔐 **2.2 Enterprise Authentication** *(Sprint 2)*
+#### 🔐 **2.2 Corporate Authentication** *(Sprint 2)*
 - [ ] Implementar ASP.NET Identity para funcionários
 - [ ] Configurar JWT authentication preparado para SSO
 - [ ] Criar endpoints: POST /auth/employee-login, /auth/refresh
@@ -97,23 +97,23 @@
 - [ ] Implementar employee onboarding workflow
 - [ ] **Entregáveis:** Auth corporativo + hierarquia organizacional
 
-#### 📋 **2.3 Enterprise CQRS e Compliance** *(Sprint 3)*
+#### 📋 **2.3 Corporate CQRS e Compliance** *(Sprint 3)*
 - [ ] Implementar MediatR com Commands/Queries para auditoria
 - [ ] Configurar FluentValidation com regras corporativas
-- [ ] Criar DTOs enterprise (Employee, Department, Project) 
+- [ ] Criar DTOs corporate (Employee, Department, Project) 
 - [ ] Implementar pipeline behaviors (AuditBehavior, ValidationBehavior)
 - [ ] Setup de GlobalExceptionHandler com logging seguro
 - [ ] Criar testes unitários focados em compliance (>80% coverage)
 - [ ] **Entregáveis:** CQRS auditável + validações corporativas
 
-#### ⚡ **2.4 Enterprise Cache e Performance** *(Sprint 4)*
+#### ⚡ **2.4 Corporate Cache e Performance** *(Sprint 4)*
 - [ ] Integrar Redis para cache de organigramas e permissões
 - [ ] Implementar cache de sessões employee com timeout policies
 - [ ] Configurar cache de expertise mapping e skill searches
 - [ ] Setup de background jobs para sync com HR systems
 - [ ] Otimizar queries EF Core para hierarchical data
 - [ ] Implementar paginação para large datasets (>10k employees)
-- [ ] **Entregáveis:** Performance enterprise + cache multi-tenant ready
+- [ ] **Entregáveis:** Performance corporate + cache multi-tenant ready
 
 #### 🎯 **Critérios de Aceitação Fase 2:**
 - ✅ API corporativa documentada com Swagger UI
@@ -122,7 +122,7 @@
 - ✅ CQRS com audit trails implementado
 - ✅ Cache Redis otimizado para dados corporativos
 - ✅ Testes unitários > 75% de cobertura
-- ✅ Health checks enterprise respondendo
+- ✅ Health checks corporate respondendo
 - ✅ Rate limiting por departamento/role configurado
 - ✅ Logging estruturado para compliance auditável
 
@@ -167,7 +167,7 @@
 
 ---
 
-### � **Fase 4: Enterprise Communication e Integração** *(Semanas 15-20)*
+### 📡 **Fase 4: Corporate Communication e Integração** *(Semanas 15-20)*
 
 #### ✅ **4.1 Corporate Real-Time Communication (Semana 15-16)**
 - [ ] SignalR Hubs para corporate collaboration
@@ -179,7 +179,7 @@
 - [ ] Compliance-ready message retention policies
 - [ ] Integration hooks para Teams/Slack bridge
 
-#### ✅ **4.2 Enterprise Notification System (Semana 17)**
+#### ✅ **4.2 Corporate Notification System (Semana 17)**
 - [ ] Corporate notifications via SignalR (policy updates, announcements)
 - [ ] Email integration com corporate templates
 - [ ] Escalation rules para critical communications
@@ -188,7 +188,7 @@
 - [ ] Mobile push notifications via PWA
 - [ ] Audit trail para all corporate communications
 
-#### ✅ **4.3 Enterprise Media e Document Management (Semana 18-19)**
+#### ✅ **4.3 Corporate Media e Document Management (Semana 18-19)**
 - [ ] Corporate document upload com virus scanning
 - [ ] File versioning e collaborative editing indicators
 - [ ] Corporate branding watermarks e templates
@@ -197,7 +197,7 @@
 - [ ] Screen sharing e presentation mode
 - [ ] Corporate asset library (logos, templates, policies)
 
-#### ✅ **4.4 Enterprise Search e Knowledge Discovery (Semana 20)**
+#### ✅ **4.4 Corporate Search e Knowledge Discovery (Semana 20)**
 - [ ] Full-text search across all corporate content
 - [ ] Expert finder ("Who knows about...?")
 - [ ] Skills-based search e expertise location
