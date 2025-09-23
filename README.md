@@ -1,4 +1,4 @@
-# 🏢 SynQcore - Corporate Collaboration Platform (Open Source)
+# 🚀 SynQcore - Corporate Collaboration Platform (Open Source)
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
@@ -34,9 +34,11 @@
 ## 🚀 Quick Start
 
 ```bash
-   # Clone do repositório
+      # Clone do repositório
    git clone https://github.com/andrecesarvieira/synqcore
-   cd synqcore2. **Inicie a infraestrutura**
+   cd synqcore
+
+2. **Inicie a infraestrutura**
    ```bash
    ./scripts/start-dev.sh
    ```

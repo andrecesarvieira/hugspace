@@ -1,13 +1,13 @@
 {
     "Servers": {
         "1": {
-            "Name": "EnterpriseHub Development",
+            "Name": "SynQcore Development",
             "Group": "Servers",
             "Host": "postgres",
             "Port": 5432,
-            "MaintenanceDB": "enterprisehub_db",
-            "Username": "enterprisehub_user",
-            "Password": "enterprisehub_dev_password", 
+            "MaintenanceDB": "synqcore_db",
+            "Username": "synqcore_user",
+            "Password": "synqcore_dev_password", 
             "SSLMode": "prefer",
             "Favorite": true
         }
