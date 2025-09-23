@@ -1,28 +1,25 @@
-# 🏢 EnterpriseHub - Corporate Social Network | Roadmap v3.0
+# 🚀 HugSpace - Roadmap de Desenvolvimento v2.0
 
 ## 📋 Visão Geral do Projeto
 
-**EnterpriseHub** é uma rede social corporativa **open source** desenvolvida com **.NET 9**, **Blazor** e **PostgreSQL**, projetada para conectar funcionários, facilitar colaboração e preservar conhecimento dentro das organizações.
+**HugSpace** é uma rede social moderna, amigável e segura desenvolvida com **.NET 9**, **Blazor** e **PostgreSQL** com foco na experiência do usuário, escalabilidade e código aberto (OpenSource).
 
 ### 🎯 Objetivos Principais
-- **Conectar funcionários** através de uma plataforma social corporativa
-- **Facilitar colaboração** entre departamentos e projetos
-- **Preservar conhecimento** organizacional de forma acessível
-- **Quebrar silos** de informação entre equipes
-- **Aumentar engajamento** e cultura de transparência
-- **Garantir compliance** e segurança de dados corporativos
-- **Oferecer alternativa open source** às soluções proprietárias
+- Criar uma plataforma social intuitiva e segura
+- Implementar recursos modernos de comunicação em tempo real
+- Garantir arquitetura escalável e performance otimizada
+- Facilitar contribuições da comunidade OpenSource
+- Priorizar segurança, privacidade e moderação eficaz
 
-### 🏗️ **Arquitetura Enterprise**
-- **Framework**: .NET 9 com Clean Architecture (enterprise-ready)
+### 🏗️ **Arquitetura Validada**
+- **Framework**: .NET 9 com Clean Architecture
 - **Frontend**: Blazor Hybrid (Server + WebAssembly)
-- **Backend**: ASP.NET Core 9 Web API com enterprise features
-- **Banco de Dados**: PostgreSQL 16 (compliance e auditoria)
-- **Cache**: Redis 7 (performance e sessões corporativas)
-- **Tempo Real**: SignalR (colaboração em tempo real)
-- **Containers**: Docker para deployment on-premise/cloud
+- **Backend**: ASP.NET Core 9 Web API
+- **Banco de Dados**: PostgreSQL 16 (relacionamentos sociais otimizados)
+- **Cache**: Redis 7 (sessões e feeds)
+- **Tempo Real**: SignalR (chat e notificações)
+- **Containers**: Docker para desenvolvimento e produção
 - **Patterns**: CQRS, MediatR, Repository Pattern
-- **Security**: Enterprise SSO, RBAC, audit trails
 
 ---
 
@@ -64,136 +61,135 @@
 
 ---
 
-### 🔧 **Fase 2: Enterprise API Core e Autenticação** *(EM DESENVOLVIMENTO - Próxima)*
+### 🔧 **Fase 2: API Core e Autenticação** *(EM DESENVOLVIMENTO - Próxima)*
 
-> **🎯 Objetivo:** Implementar API corporativa com autenticação enterprise (SSO ready), CQRS pattern e cache Redis otimizado para ambiente corporativo.
+> **🎯 Objetivo:** Implementar a base da API com autenticação JWT, CQRS pattern e cache Redis para suportar todas as funcionalidades sociais.
 
-#### 🚀 **2.1 Enterprise API Foundation** *(Próximo Sprint)*
-- [ ] Configurar ASP.NET Core Web API com Swagger/OpenAPI corporativo
-- [ ] Setup de middleware pipeline (CORS, audit logging, exception handling)
-- [ ] Implementar versionamento de API (v1) para backward compatibility
-- [ ] Configurar Serilog com audit trails e structured logging
-- [ ] Setup de health checks corporativos (/health, /health/ready, /health/live)
-- [ ] Implementar rate limiting por departamento/role
-- [ ] **Entregáveis:** API corporativa com documentação e auditoria
+#### 🚀 **2.1 API Foundation** *(Próximo Sprint)*
+- [ ] Configurar ASP.NET Core Web API com Swagger/OpenAPI
+- [ ] Setup de middleware pipeline (CORS, exception handling, logging)
+- [ ] Implementar versionamento de API (v1) com ApiVersioning
+- [ ] Configurar Serilog com structured logging (Console + File)
+- [ ] Setup de health checks (/health, /health/ready, /health/live)
+- [ ] Implementar rate limiting global e por endpoint
+- [ ] **Entregáveis:** API funcionando com documentação Swagger
 
-#### 🔐 **2.2 Enterprise Authentication** *(Sprint 2)*
-- [ ] Implementar ASP.NET Identity para funcionários
-- [ ] Configurar JWT authentication preparado para SSO
-- [ ] Criar endpoints: POST /auth/employee-login, /auth/refresh
-- [ ] Preparar integração para Active Directory/LDAP
-- [ ] Setup de roles corporativos (Employee, Manager, HR, Admin)
-- [ ] Implementar employee onboarding workflow
-- [ ] **Entregáveis:** Auth corporativo + hierarquia organizacional
+#### 🔐 **2.2 Sistema de Autenticação** *(Sprint 2)*
+- [ ] Implementar ASP.NET Identity integrado com EF Core
+- [ ] Configurar JWT authentication com refresh tokens
+- [ ] Criar endpoints: POST /auth/register, /auth/login, /auth/refresh
+- [ ] Implementar confirmação de email com templates
+- [ ] Setup de roles (User, Moderator, Admin) e claims
+- [ ] Adicionar two-factor authentication com TOTP
+- [ ] **Entregáveis:** Sistema de auth completo + roles funcionais
 
-#### 📋 **2.3 Enterprise CQRS e Compliance** *(Sprint 3)*
-- [ ] Implementar MediatR com Commands/Queries para auditoria
-- [ ] Configurar FluentValidation com regras corporativas
-- [ ] Criar DTOs enterprise (Employee, Department, Project) 
-- [ ] Implementar pipeline behaviors (AuditBehavior, ValidationBehavior)
-- [ ] Setup de GlobalExceptionHandler com logging seguro
-- [ ] Criar testes unitários focados em compliance (>80% coverage)
-- [ ] **Entregáveis:** CQRS auditável + validações corporativas
+#### 📋 **2.3 CQRS e Validações** *(Sprint 3)*
+- [ ] Implementar MediatR com Commands/Queries pattern
+- [ ] Configurar FluentValidation em todos os endpoints
+- [ ] Criar DTOs (Request/Response) e AutoMapper profiles
+- [ ] Implementar pipeline behaviors (ValidationBehavior, LoggingBehavior)
+- [ ] Setup de GlobalExceptionHandler customizado
+- [ ] Criar testes unitários para Commands/Queries (>80% coverage)
+- [ ] **Entregáveis:** Arquitetura CQRS sólida + validações robustas
 
-#### ⚡ **2.4 Enterprise Cache e Performance** *(Sprint 4)*
-- [ ] Integrar Redis para cache de organigramas e permissões
-- [ ] Implementar cache de sessões employee com timeout policies
-- [ ] Configurar cache de expertise mapping e skill searches
-- [ ] Setup de background jobs para sync com HR systems
-- [ ] Otimizar queries EF Core para hierarchical data
-- [ ] Implementar paginação para large datasets (>10k employees)
-- [ ] **Entregáveis:** Performance enterprise + cache multi-tenant ready
+#### ⚡ **2.4 Cache e Performance** *(Sprint 4)*
+- [ ] Integrar Redis como cache distribuído (IMemoryCache + IDistributedCache)
+- [ ] Implementar cache de sessões JWT e refresh tokens
+- [ ] Configurar cache de queries frequentes (user profiles, feeds)
+- [ ] Setup de Hangfire para background jobs (cleanup, notifications)
+- [ ] Otimizar queries EF Core com Include() e projections
+- [ ] Implementar paginação eficiente (PagedResult<T> com Skip/Take)
+- [ ] **Entregáveis:** Performance otimizada + cache strategy definida
 
 #### 🎯 **Critérios de Aceitação Fase 2:**
-- ✅ API corporativa documentada com Swagger UI
-- ✅ Employee authentication funcionando (login/refresh)
-- ✅ Validações corporativas implementadas com FluentValidation
-- ✅ CQRS com audit trails implementado
-- ✅ Cache Redis otimizado para dados corporativos
+- ✅ API documentada executando com Swagger UI
+- ✅ Authentication JWT funcionando (login/register/refresh)
+- ✅ Todas as requests validadas com FluentValidation  
+- ✅ CQRS implementado com MediatR
+- ✅ Cache Redis integrado e funcionando
 - ✅ Testes unitários > 75% de cobertura
-- ✅ Health checks enterprise respondendo
-- ✅ Rate limiting por departamento/role configurado
-- ✅ Logging estruturado para compliance auditável
+- ✅ Health checks respondendo corretamente
+- ✅ Rate limiting configurado e testado
 
 ---
 
-### 🏢 **Fase 3: Core Corporativo e Estrutura Organizacional** *(Semanas 9-14)*
+### 👥 **Fase 3: Funcionalidades Sociais Core** *(Semanas 9-14)*
 
-#### ✅ **3.1 Employee Management e Organigramas (Semana 9-10)**
-- [ ] CRUD completo de employee profiles com job titles
-- [ ] Upload de fotos corporativas com approval workflow
-- [ ] Sistema de department membership e team assignments
-- [ ] Organograma interativo com hierarchy visualization
-- [ ] Employee directory com advanced search (skills, department, location)
-- [ ] Manager-subordinate relationships e reporting lines
-- [ ] Employee suggestions baseadas em skills/projects
+#### ✅ **3.1 Gestão de Usuários (Semana 9-10)**
+- [ ] CRUD completo de perfis com validações
+- [ ] Upload e processamento de avatar (resize, crop)
+- [ ] Sistema de seguir/deixar de seguir (otimizado)
+- [ ] Configurações de privacidade granulares
+- [ ] Bloqueio e desbloqueio de usuários
+- [ ] Busca de usuários com full-text search
+- [ ] Sugestões de usuários para seguir
 
-#### ✅ **3.2 Knowledge Management System (Semana 11)**
-- [ ] CRUD de knowledge articles com categorização
-- [ ] Sistema de tags corporativas e skill tagging
-- [ ] Mentions de funcionários (@employee.name) com notificações
-- [ ] Visibilidade por departamento (public, team, department, company)
-- [ ] Approval workflow para official policies/announcements
-- [ ] Versioning de documentos e knowledge articles
-- [ ] Templates para diferentes tipos de conteúdo (FAQ, Policy, HowTo)
+#### ✅ **3.2 Sistema de Posts (Semana 11)**
+- [ ] CRUD de posts com rich text
+- [ ] Upload de múltiplas imagens/vídeos
+- [ ] Sistema de hashtags com autocomplete
+- [ ] Menções de usuários (@username) com notificações
+- [ ] Visibilidade (público, seguidores, privado)
+- [ ] Agendamento de posts
+- [ ] Rascunhos e posts temporários
 
-#### ✅ **3.3 Corporate Collaboration Features (Semana 12)**
-- [ ] Sistema de endorsements (helpful, insightful, accurate)
-- [ ] Discussion threads com corporate moderation
-- [ ] Knowledge sharing e best practices documentation
-- [ ] Employee bookmarks para quick access
-- [ ] Content flagging para compliance/HR review
-- [ ] Real-time collaboration indicators (who's viewing/editing)
+#### ✅ **3.3 Interações Sociais (Semana 12)**
+- [ ] Sistema de curtidas/reações (like, love, angry)
+- [ ] Comentários aninhados (threads)
+- [ ] Compartilhamento de posts (repost)
+- [ ] Sistema de favoritos/bookmarks
+- [ ] Relatórios de conteúdo (spam, abuso)
+- [ ] Contadores em tempo real (likes, shares)
 
-#### ✅ **3.4 Corporate Feed e Discovery (Semana 13-14)**
-- [ ] Corporate news feed com priority levels (CEO, HR, Department)
-- [ ] Skills-based content recommendation algorithm
-- [ ] Company announcements feed vs team discussions
-- [ ] Department-specific feeds com cross-department visibility
-- [ ] Cache otimizado para large organizations (10k+ employees)
-- [ ] Notification center para corporate communications
-- [ ] Advanced filters (department, project, skill, content type)
+#### ✅ **3.4 Feed Inteligente (Semana 13-14)**
+- [ ] Algoritmo de feed baseado em engajamento
+- [ ] Timeline cronológica vs. algoritmo
+- [ ] Feed de descoberta (trending posts)
+- [ ] Paginação infinite scroll otimizada
+- [ ] Cache de feeds por usuário (Redis)
+- [ ] Feed de notificações em tempo real
+- [ ] Filtros de conteúdo personalizáveis
 
 ---
 
-### � **Fase 4: Enterprise Communication e Integração** *(Semanas 15-20)*
+### 💬 **Fase 4: Comunicação e Mídia** *(Semanas 15-20)*
 
-#### ✅ **4.1 Corporate Real-Time Communication (Semana 15-16)**
-- [ ] SignalR Hubs para corporate collaboration
-- [ ] Team spaces com real-time discussion threads
-- [ ] Project channels com persistent messaging
-- [ ] Executive communication channels (read-only broadcasts)
-- [ ] Meeting integration com calendar sync
-- [ ] Corporate presence indicators (available, in meeting, busy)
-- [ ] Compliance-ready message retention policies
-- [ ] Integration hooks para Teams/Slack bridge
+#### ✅ **4.1 Chat em Tempo Real (Semana 15-16)**
+- [ ] Implementar SignalR Hubs otimizados
+- [ ] Integração SignalR com Blazor (Server + Client)
+- [ ] Mensagens privadas 1:1 com criptografia
+- [ ] Grupos de chat públicos e privados
+- [ ] Status de entrega, leitura e digitando
+- [ ] Histórico de mensagens paginado
+- [ ] Upload de mídia em conversas
+- [ ] Busca no histórico de mensagens
 
-#### ✅ **4.2 Enterprise Notification System (Semana 17)**
-- [ ] Corporate notifications via SignalR (policy updates, announcements)
-- [ ] Email integration com corporate templates
-- [ ] Escalation rules para critical communications
-- [ ] Department-specific notification policies
-- [ ] Manager approval workflows para company-wide communications
-- [ ] Mobile push notifications via PWA
-- [ ] Audit trail para all corporate communications
+#### ✅ **4.2 Sistema de Notificações (Semana 17)**
+- [ ] Notificações em tempo real via SignalR
+- [ ] Push notifications (PWA) para mobile
+- [ ] Email notifications com templates
+- [ ] SMS notifications para eventos críticos
+- [ ] Configurações granulares por tipo
+- [ ] Centro de notificações com filtros
+- [ ] Notificações de moderação para admins
 
-#### ✅ **4.3 Enterprise Media e Document Management (Semana 18-19)**
-- [ ] Corporate document upload com virus scanning
-- [ ] File versioning e collaborative editing indicators
-- [ ] Corporate branding watermarks e templates
-- [ ] Integration com SharePoint/OneDrive/Google Drive
-- [ ] Video conferencing integration (Zoom, Teams, Meet)
-- [ ] Screen sharing e presentation mode
-- [ ] Corporate asset library (logos, templates, policies)
+#### ✅ **4.3 Recursos de Mídia Avançados (Semana 18-19)**
+- [ ] Upload otimizado com progress e drag&drop
+- [ ] Processamento automático (resize, compress, watermark)
+- [ ] Suporte a vídeos curtos (stories, reels)
+- [ ] Galeria pessoal organizada por albums
+- [ ] CDN para distribuição global de mídia
+- [ ] Streaming de vídeo adaptativo
+- [ ] Reconhecimento de conteúdo (AI moderation)
 
-#### ✅ **4.4 Enterprise Search e Knowledge Discovery (Semana 20)**
-- [ ] Full-text search across all corporate content
-- [ ] Expert finder ("Who knows about...?")
-- [ ] Skills-based search e expertise location
-- [ ] Project and department-specific search scopes
-- [ ] Search analytics para knowledge gaps identification
-- [ ] Integration com external knowledge bases
-- [ ] AI-powered content recommendations baseadas em role/department
+#### ✅ **4.4 Busca e Descoberta (Semana 20)**
+- [ ] Busca global full-text (PostgreSQL + Elasticsearch)
+- [ ] Filtros avançados (data, tipo, autor)
+- [ ] Busca por hashtags e trends
+- [ ] Autocomplete inteligente
+- [ ] Histórico de buscas
+- [ ] Sugestões baseadas em comportamento
+- [ ] Analytics de busca para trends
 
 ---
 

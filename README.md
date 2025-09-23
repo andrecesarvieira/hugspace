@@ -1,4 +1,4 @@
-# 🚀 HugSpace - Rede Social Moderna e Amigável
+# 🏢 EnterpriseHub - Corporate Social Network (Open Source)
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
@@ -7,7 +7,7 @@
 [![Phase](https://img.shields.io/badge/Phase-1%20Complete-success)](ROADMAP.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> Uma rede social moderna, segura e centrada na comunidade, construída com .NET 9, Blazor e PostgreSQL.
+> **Open Source Corporate Social Network** para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. Construída com .NET 9, Blazor e PostgreSQL.
 
 ## ✨ Características
 
