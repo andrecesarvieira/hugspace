@@ -49,7 +49,12 @@ Log.Logger = new LoggerConfiguration()
             "| {SourceContext}{NewLine}{Exception}")
     .CreateLogger();
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+// JWT Service
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Use Serilog as the logging provider
 builder.Host.UseSerilog();
@@ -160,7 +165,8 @@ builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole<Guid>>(options 
 .AddEntityFrameworkStores<SynQcoreDbContext>()
 .AddDefaultTokenProviders();
 
-// JWT Configuration - ADICIONAR
+
+// JWT Configuration
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
