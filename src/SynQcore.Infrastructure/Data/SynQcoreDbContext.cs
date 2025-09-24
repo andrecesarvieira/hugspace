@@ -34,18 +34,18 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public DbSet<TeamMembership> TeamMemberships => Set<TeamMembership>();
     public DbSet<ReportingRelationship> ReportingRelationships => Set<ReportingRelationship>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(builder);
 
         // Aplicar todas as configurações
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(SynQcoreDbContext).Assembly);
+        builder.ApplyConfigurationsFromAssembly(typeof(SynQcoreDbContext).Assembly);
 
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        foreach (var entityType in builder.Model.GetEntityTypes())
         {
             if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
             {
-                modelBuilder.Entity(entityType.ClrType)
+                builder.Entity(entityType.ClrType)
                     .HasQueryFilter(GetIsDeletedRestriction(entityType.ClrType));
             }
         }

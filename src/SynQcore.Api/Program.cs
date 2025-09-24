@@ -11,18 +11,19 @@
  * built with Clean Architecture, .NET 9, and PostgreSQL.
  */
 
-using SynQcore.Infrastructure.Data;
-using SynQcore.Api.Middleware;
-using SynQcore.Common;
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Serilog;
-using Serilog.Events;
-using SynQcore.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Serilog;
+using Serilog.Events;
+using SynQcore.Infrastructure.Data;
+using SynQcore.Infrastructure.Identity;
+using SynQcore.Api.Middleware;
+using SynQcore.Api.Services.Auth;
+using SynQcore.Common;
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -231,6 +232,9 @@ builder.Services.AddProblemDetails();
 
 // Add corporate rate limiting
 builder.Services.AddCorporateRateLimit(builder.Configuration);
+
+// JWT Service
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 var app = builder.Build();
 
