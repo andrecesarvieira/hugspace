@@ -11,15 +11,13 @@
  * built with Clean Architecture, .NET 9, and PostgreSQL.
  */
 
-using SynQcore.Contracts;
 using SynQcore.Infrastructure.Data;
 using SynQcore.Api.Middleware;
+using SynQcore.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
-using AspNetCoreRateLimit;
-using System.Reflection;
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -234,7 +232,7 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
         var result = System.Text.Json.JsonSerializer.Serialize(new
         {
             status = report.Status.ToString(),
-            version = SharedConstants.ApiVersion,
+            version = SynQcoreInfo.Version,
             checks = report.Entries.Select(e => new
             {
                 name = e.Key,

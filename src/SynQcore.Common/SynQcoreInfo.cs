@@ -7,7 +7,7 @@
  * Project Information and Branding Constants
  */
 
-namespace SynQcore.Shared;
+namespace SynQcore.Common;
 
 /// <summary>
 /// SynQcore project information and author details

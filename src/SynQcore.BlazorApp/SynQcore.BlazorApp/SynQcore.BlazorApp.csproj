@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SynQcore.Shared\SynQcore.Shared.csproj" />
+    <ProjectReference Include="..\..\SynQcore.Common\SynQcore.Common.csproj" />
     <ProjectReference Include="..\..\SynQcore.Application\SynQcore.Application.csproj" />
   </ItemGroup>
 

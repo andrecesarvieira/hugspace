@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SynQcore.Shared\SynQcore.Shared.csproj" />
+    <ProjectReference Include="..\..\SynQcore.Common\SynQcore.Common.csproj" />
   </ItemGroup>
 
 </Project>

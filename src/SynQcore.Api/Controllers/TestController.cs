@@ -7,7 +7,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Asp.Versioning;
-using SynQcore.Shared;
+using SynQcore.Common;
 
 namespace SynQcore.Api.Controllers;
 
