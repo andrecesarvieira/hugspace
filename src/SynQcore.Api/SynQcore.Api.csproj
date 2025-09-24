@@ -5,6 +5,28 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Package Metadata -->
+    <AssemblyTitle>SynQcore Corporate API</AssemblyTitle>
+    <Product>SynQcore - Corporate Social Network API</Product>
+    <Description>Open Source Corporate Social Network API with Clean Architecture, built with .NET 9 and PostgreSQL</Description>
+    <Copyright>Copyright (c) 2025 André César Vieira</Copyright>
+    <Authors>André César Vieira</Authors>
+    <Company>André César Vieira</Company>
+    
+    <!-- Repository Information -->
+    <RepositoryUrl>https://github.com/andrecesarvieira/synqcore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/andrecesarvieira/synqcore</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>corporate;social-network;api;dotnet;postgresql;clean-architecture;enterprise</PackageTags>
+    
+    <!-- Version Information -->
+    <Version>2.1.0</Version>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
 </PropertyGroup>
 
   <ItemGroup>
@@ -12,12 +34,16 @@
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.1.0" />
     <PackageReference Include="AspNetCore.HealthChecks.NpgSql" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
+    <PackageReference Include="AspNetCoreRateLimit" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 

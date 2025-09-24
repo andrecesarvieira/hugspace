@@ -1,27 +1,107 @@
+/*
+ * SynQcore - Corporate Social Network API
+ * 
+ * Copyright (c) 2025 André César Vieira
+ * 
+ * Licensed under the MIT License
+ * Author: André César Vieira <andrecesarvieira@hotmail.com>
+ * GitHub: https://github.com/andrecesarvieira/synqcore
+ * 
+ * This file is part of SynQcore, an open-source corporate social network API
+ * built with Clean Architecture, .NET 9, and PostgreSQL.
+ */
+
 using SynQcore.Contracts;
 using SynQcore.Infrastructure.Data;
+using SynQcore.Api.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+using AspNetCoreRateLimit;
 using System.Reflection;
 
+// Configure Serilog for corporate logging with audit trails
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithMachineName()
+    .Enrich.WithThreadId()
+    .WriteTo.Console(
+        formatProvider: System.Globalization.CultureInfo.InvariantCulture,
+        outputTemplate: 
+        "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj} " +
+        "| CorrelationId: {CorrelationId} | UserId: {UserId} | IP: {ClientIP}{NewLine}{Exception}")
+    .WriteTo.File("logs/synqcore-corporate-.log",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30,
+        formatProvider: System.Globalization.CultureInfo.InvariantCulture,
+        outputTemplate: 
+            "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj} " +
+            "| CorrelationId: {CorrelationId} | UserId: {UserId} | IP: {ClientIP} " +
+            "| {SourceContext}{NewLine}{Exception}")
+    .CreateLogger();
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Use Serilog as the logging provider
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddControllers();
 
 // Configure Swagger/OpenAPI Corporate
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
         Title = "SynQcore Corporate API",
-        Description = "Corporate Social Network API for employee collaboration and knowledge sharing",
+        Description = @"
+    **🚀 SynQcore - Corporate Social Network API**
+    
+    Created by **André César Vieira** - Enterprise Software Architect
+    
+    ### About This API
+    Open-source corporate social network platform built with Clean Architecture,
+    .NET 9, and PostgreSQL. Designed for enterprise-grade performance and scalability.
+    
+    ### Key Features
+    - 🏢 Employee management and corporate directory
+    - 💬 Corporate posts, discussions, and collaboration
+    - 👥 Team management and reporting structures  
+    - 🔔 Real-time notification system
+    - 📊 Department and organizational analytics
+    - 🔒 JWT authentication with role-based access
+    - ⚡ Redis caching for optimal performance
+    - 📝 Complete audit trails and logging
+    - 🛡️ Corporate-grade rate limiting
+    
+    ### Technology Stack
+    - **.NET 9** - Latest Microsoft framework
+    - **PostgreSQL 16** - Enterprise database
+    - **Redis 7** - High-performance caching
+    - **Clean Architecture** - Maintainable and testable
+    - **CQRS Pattern** - Scalable command/query separation
+    - **Docker** - Containerized deployment
+    
+    ### Authentication & Security
+    All endpoints require JWT Bearer token except health checks and documentation.
+    Rate limiting varies by user role (Employee: 100/min, Manager: 300/min, HR: 500/min, Admin: 1000/min).
+    
+    ### Open Source
+    This project is open source under MIT License. 
+    ⭐ Star the repository: https://github.com/andrecesarvieira/synqcore
+            ",
         Contact = new OpenApiContact
         {
-            Name = "SynQcore Team",
-            Email = "support@synqcore.dev",
+            Name = "André César Vieira",
+            Email = "andrecesarvieira@hotmail.com",
             Url = new Uri("https://github.com/andrecesarvieira/synqcore")
         },
         License = new OpenApiLicense
@@ -31,10 +111,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // Include XML comments for API documentation
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-    
+   
     // Add JWT Bearer authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -111,6 +188,13 @@ builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!, name: "postgresql")
     .AddRedis(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379", name: "redis");
 
+// Register corporate middleware services
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Add corporate rate limiting
+builder.Services.AddCorporateRateLimit(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -127,6 +211,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Corporate middleware pipeline
+app.UseExceptionHandler(); // Global exception handler
+app.UseMiddleware<AuditLoggingMiddleware>(); // Corporate audit logging
+app.UseCorporateRateLimit(); // Corporate rate limiting
+
 app.UseCors("CorporatePolicy");
 
 // Add authentication & authorization middleware (quando implementado)
@@ -168,4 +258,16 @@ app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthC
     Predicate = _ => false
 });
 
-app.Run();
+try
+{
+    Log.Information("Starting SynQcore Corporate API");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "SynQcore Corporate API terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

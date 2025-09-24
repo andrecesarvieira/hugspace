@@ -1,13 +1,26 @@
-# 🚀 SynQcore - Corporate Collaboration Platform (Open Source)
+# 🚀 SynQcore - Corporate Social Network API
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Hybrid-green)](https://blazor.net/)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-[![Phase](https://img.shields.io/badge/Phase-1%20Complete-success)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/Phase-2.1%20Complete-success)](ROADMAP.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Author](https://img.shields.io/badge/Author-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
-> **Open Source Corporate Collaboration Platform** para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. Construída com .NET 9, Blazor e PostgreSQL.
+> **Open Source Corporate Social Network API** criada por **[André César Vieira](https://github.com/andrecesarvieira)**  
+> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  
+> Arquitetura empresarial com .NET 9, Clean Architecture e performance otimizada.
+
+## 👨‍💻 About the Creator
+
+**André César Vieira** é um desenvolvedor senior especializado em arquitetura .NET e sistemas corporativos escaláveis.  
+
+- 🌐 **GitHub**: [@andrecesarvieira](https://github.com/andrecesarvieira)  
+- 📧 **Email**: [andrecesarvieira@hotmail.com](mailto:andrecesarvieira@hotmail.com)  
+- 🏗️ **Especialidades**: Clean Architecture, .NET Enterprise, PostgreSQL, Performance Optimization  
+
+**SynQcore** representa anos de experiência em desenvolvimento corporativo, aplicando as melhores práticas da indústria em um projeto open source completo.
 
 ## ✨ Características
 
@@ -220,5 +233,18 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 ---
 
 <p align="center">
-  Feito com ❤️ pela comunidade SynQcore
+  <strong>Created with ❤️ by <a href="https://github.com/andrecesarvieira">André César Vieira</a></strong><br>
+  <em>Enterprise Software Architect | .NET Specialist | Open Source Enthusiast</em><br><br>
+  
+  <a href="https://github.com/andrecesarvieira">
+    <img src="https://img.shields.io/badge/Follow-André%20César%20Vieira-blue?style=social&logo=github" alt="Follow André César Vieira">
+  </a>
+  <a href="mailto:andrecesarvieira@hotmail.com">
+    <img src="https://img.shields.io/badge/Contact-Email-red?style=social&logo=gmail" alt="Email André">
+  </a>
+</p>
+
+<p align="center">
+  <sub>⭐ **Star this repository if SynQcore helped you build better corporate applications!**</sub><br>
+  <sub>🤝 **Contributions welcome** - Join the corporate development revolution</sub>
 </p>
