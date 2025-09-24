@@ -1,6 +1,6 @@
 using SynQcore.Infrastructure.Identity;
 
-namespace SynQcore.Api.Services.Auth;
+namespace SynQcore.Infrastructure.Services.Auth;
 
 public interface IJwtService
 {

@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SynQcore.Api.DTOs.Auth;
-using SynQcore.Api.Services.Auth;
+using SynQcore.Infrastructure.Services.Auth;
 using SynQcore.Infrastructure.Identity;
+using SynQcore.Application.DTOs.Auth;
 
 namespace SynQcore.Api.Controllers;
 

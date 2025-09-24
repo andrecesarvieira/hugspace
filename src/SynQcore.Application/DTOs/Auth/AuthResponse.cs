@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace SynQcore.Api.DTOs.Auth;
+namespace SynQcore.Application.DTOs.Auth;
 
 public class AuthResponse
 {

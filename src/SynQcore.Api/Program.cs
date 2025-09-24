@@ -20,10 +20,11 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using SynQcore.Infrastructure.Data;
-using SynQcore.Infrastructure.Identity;
 using SynQcore.Api.Middleware;
-using SynQcore.Api.Services.Auth;
+using SynQcore.Infrastructure.Services.Auth;
 using SynQcore.Common;
+using SynQcore.Infrastructure.Identity;
+
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()

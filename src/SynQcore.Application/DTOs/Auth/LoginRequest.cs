@@ -1,19 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SynQcore.Api.DTOs.Auth;
+namespace SynQcore.Application.DTOs.Auth;
 
-public class RegisterRequest
+public class LoginRequest
 {
-    [Required]
-    public string UserName { get; set; } = string.Empty;
-
     [Required]
     [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [MinLength(8)]
     public string Password { get; set; } = string.Empty;
-
-    public string? PhoneNumber { get; set; }
 }
