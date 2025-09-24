@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Hybrid-green)](https://blazor.net/)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-[![Phase](https://img.shields.io/badge/Phase-2.1%20Complete-success)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/Phase-2.2%20Complete-success)](ROADMAP.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Author](https://img.shields.io/badge/Author-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
@@ -25,12 +25,15 @@
 ## ✨ Características
 
 - 🏛️ **Clean Architecture** - 9 projetos organizados com dependências corretas
-- 📊 **Modelo Corporativo** - 12 entidades para rede social empresarial completa
+- � **JWT Authentication** - Identity + ApplicationUserEntity + Database integrado
+- �📊 **Modelo Corporativo** - 12 entidades para rede social empresarial completa
 - ⚡ **Performance** - PostgreSQL 16 + Redis 7 + .NET 9 otimizado
-- 🗄️ **Database Ready** - Schema corporativo com 13 tabelas implementadas
+- 🗄️ **Database Ready** - Schema corporativo com 13 tabelas + Identity
+- 🎯 **CQRS Ready** - Commands/Queries/Handlers estruturados
+- 📝 **Corporate API** - Swagger UI + Rate Limiting + Health Checks
 - 🌐 **Real-time Ready** - Estrutura preparada para SignalR
 - 📱 **PWA Ready** - Base Blazor Hybrid configurada
-- 🔒 **Security First** - Preparado para JWT + Identity + roles
+- 🔒 **Security First** - JWT + Identity + Corporate roles funcionais
 - 🌍 **Open Source** - MIT License + comunidade colaborativa
 - 🚀 **Docker Ready** - Ambiente completo containerizado e testado
 - 🧪 **Test Ready** - Estrutura para testes unitários e integração
