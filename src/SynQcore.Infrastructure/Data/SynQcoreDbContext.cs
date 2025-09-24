@@ -4,10 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using SynQcore.Domain.Entities.Organization;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Relationships;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using SynQcore.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace SynQcore.Infrastructure.Data;
 
-public class SynQcoreDbContext : DbContext
+public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRole<Guid>, Guid>
 {
     public SynQcoreDbContext(DbContextOptions<SynQcoreDbContext> options) : base(options)
     {
