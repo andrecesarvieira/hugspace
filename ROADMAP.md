@@ -1,4 +1,4 @@
-# 🏢 SynQcore - Corporate Social Network | Roadmap v3.0
+# 🏢 SynQcore - Rede Social Corporativa | Roteiro v3.0
 
 ## 📋 Visão Geral do Projeto
 
@@ -14,15 +14,15 @@
 - **Oferecer alternativa open source** às soluções proprietárias
 
 ### 🏗️ **Arquitetura Corporativa**
-- **Framework**: .NET 9 com Clean Architecture (corporate-ready)
-- **Frontend**: Blazor Hybrid (Server + WebAssembly)
-- **Backend**: ASP.NET Core 9 Web API com corporate features
+- **Framework**: .NET 9 com Clean Architecture (pronto para corporações)
+- **Frontend**: Blazor Híbrido (Server + WebAssembly)
+- **Backend**: ASP.NET Core 9 Web API com recursos corporativos
 - **Banco de Dados**: PostgreSQL 16 (compliance e auditoria)
 - **Cache**: Redis 7 (performance e sessões corporativas)
 - **Tempo Real**: SignalR (colaboração em tempo real)
-- **Containers**: Docker para deployment on-premise/cloud
-- **Patterns**: CQRS, MediatR, Repository Pattern
-- **Security**: Corporate SSO, RBAC, audit trails
+- **Containers**: Docker para deployment on-premise/nuvem
+- **Padrões**: CQRS, MediatR, Repository Pattern
+- **Segurança**: Corporate SSO, RBAC, trilhas de auditoria
 
 ---
 
@@ -48,15 +48,15 @@
 
 #### ✅ **1.3 Modelo de Dados Corporativo** *(COMPLETO)*
 - [x] ✅ Modelar 12 entidades corporativas organizadas em 3 domínios:
-  - [x] **Organization**: Employee, Department, Team, Position
-  - [x] **Communication**: Post, Comment, PostLike, CommentLike, Notification
-  - [x] **Relationships**: EmployeeDepartment, TeamMembership, ReportingRelationship
+  - [x] **Organização**: Employee, Department, Team, Position
+  - [x] **Comunicação**: Post, Comment, PostLike, CommentLike, Notification
+  - [x] **Relacionamentos**: EmployeeDepartment, TeamMembership, ReportingRelationship
 - [x] ✅ Configurar DbContext com todos os DbSets
 - [x] ✅ Implementar configurações EF Core organizadas por domínio
 - [x] ✅ GlobalUsings centralizado no projeto Domain
 #### ✅ **1.4 Migrações e Banco de Dados** *(COMPLETO)*
-- [x] ✅ Migration InitialCreate gerada com 12 tabelas
-- [x] ✅ Migration aplicada no PostgreSQL com sucesso
+- [x] ✅ Migração InitialCreate gerada com 12 tabelas
+- [x] ✅ Migração aplicada no PostgreSQL com sucesso
 - [x] ✅ Configurações EF Core organizadas por domínio
 - [x] ✅ Relacionamentos complexos configurados (Manager/Subordinate, Posts/Comments)
 - [x] ✅ Soft delete global implementado
@@ -75,29 +75,29 @@
 
 ---
 
-### 🔧 **Fase 2: Corporate API Core e Autenticação** *(EM DESENVOLVIMENTO - Próxima)*
+### 🔧 **Fase 2: API Corporativa Core e Autenticação** *(EM DESENVOLVIMENTO - Próxima)*
 
-> **🎯 Objetivo:** Implementar API corporativa com autenticação corporate (SSO ready), CQRS pattern e cache Redis otimizado para ambiente corporativo.
+> **🎯 Objetivo:** Implementar API corporativa com autenticação corporativa (SSO preparado), padrão CQRS e cache Redis otimizado para ambiente corporativo.
 
-#### ✅ **2.1 Corporate API Foundation** *(CONCLUÍDO - 24/09/2025)*
+#### ✅ **2.1 Fundação da API Corporativa** *(CONCLUÍDO - 24/09/2025)*
 - [x] ✅ Configurar ASP.NET Core Web API com Swagger/OpenAPI corporativo
-- [x] ✅ Setup de middleware pipeline (CORS, audit logging, exception handling)
-- [x] ✅ Implementar versionamento de API (v1) para backward compatibility
-- [x] ✅ Configurar Serilog com audit trails e structured logging
-- [x] ✅ Setup de health checks corporativos (/health, /health/ready, /health/live)
-- [x] ✅ Implementar rate limiting por departamento/role
+- [x] ✅ Setup de pipeline de middleware (CORS, log de auditoria, tratamento de exceções)
+- [x] ✅ Implementar versionamento de API (v1) para compatibilidade retroativa
+- [x] ✅ Configurar Serilog com trilhas de auditoria e logging estruturado
+- [x] ✅ Setup de verificações de saúde corporativas (/health, /health/ready, /health/live)
+- [x] ✅ Implementar rate limiting por departamento/função
 - [x] ✅ **Entregáveis:** API corporativa com documentação e auditoria
 
-#### ✅ **2.2 Corporate Authentication** *(CONCLUÍDO - 24/09/2025)*
+#### ✅ **2.2 Autenticação Corporativa** *(CONCLUÍDO - 24/09/2025)*
 - [x] ✅ Implementar ASP.NET Identity para funcionários (ApplicationUserEntity)
-- [x] ✅ Configurar JWT authentication preparado para SSO
+- [x] ✅ Configurar autenticação JWT preparada para SSO
 - [x] ✅ Criar endpoints: POST /auth/register, /auth/login, /auth/test
 - [x] ✅ Preparar integração para Active Directory/LDAP
-- [x] ✅ Setup de roles corporativos (Employee, Manager, HR, Admin)
-- [x] ✅ Database schema Identity integrado com business tables
-- [x] ✅ **Entregáveis:** Auth corporativo + JWT tokens funcionais
+- [x] ✅ Setup de funções corporativas (Employee, Manager, HR, Admin)
+- [x] ✅ Schema do banco Identity integrado com tabelas de negócio
+- [x] ✅ **Entregáveis:** Autenticação corporativa + tokens JWT funcionais
 
-#### � **2.3 Corporate CQRS e Compliance** *(EM DESENVOLVIMENTO - 24/09/2025)*
+#### 🚧 **2.3 CQRS Corporativo e Compliance** *(EM DESENVOLVIMENTO - 24/09/2025)*
 - [x] ✅ Instalar MediatR e FluentValidation packages
 - [x] ✅ Criar estrutura Commands/Queries/Handlers
 - [x] ✅ Commands: LoginCommand, RegisterCommand
@@ -107,46 +107,46 @@
 - [ ] 🔄 Configurar MediatR no Program.cs
 - [ ] 🔄 Completar LoginCommandHandler e RegisterCommandHandler
 - [ ] 🔄 Refatorar AuthController para usar MediatR
-- [ ] 🔄 Implementar pipeline behaviors (AuditBehavior, ValidationBehavior)
+- [ ] 🔄 Implementar behaviors de pipeline (AuditBehavior, ValidationBehavior)
 - [ ] 🔄 Setup de GlobalExceptionHandler com logging seguro
-- [ ] 🔄 Criar testes unitários focados em compliance (>80% coverage)
+- [ ] 🔄 Criar testes unitários focados em compliance (>80% cobertura)
 - [ ] **Entregáveis:** CQRS auditável + validações corporativas
 
-#### ⏳ **2.4 Corporate Cache e Performance** *(Próximo Sprint)*
+#### ⏳ **2.4 Cache Corporativo e Performance** *(Próximo Sprint)*
 - [ ] Integrar Redis para cache de organigramas e permissões
-- [ ] Implementar cache de sessões employee com timeout policies
-- [ ] Configurar cache de expertise mapping e skill searches
-- [ ] Setup de background jobs para sync com HR systems
-- [ ] Otimizar queries EF Core para hierarchical data
-- [ ] Implementar paginação para large datasets (>10k employees)
-- [ ] **Entregáveis:** Performance corporate + cache multi-tenant ready
+- [ ] Implementar cache de sessões de funcionários com políticas de timeout
+- [ ] Configurar cache de mapeamento de expertise e pesquisas de habilidades
+- [ ] Setup de trabalhos em segundo plano para sincronização com sistemas HR
+- [ ] Otimizar consultas EF Core para dados hierárquicos
+- [ ] Implementar paginação para grandes conjuntos de dados (>10k funcionários)
+- [ ] **Entregáveis:** Performance corporativa + cache preparado para multi-tenant
 
 #### 🎯 **Critérios de Aceitação Fase 2:**
-- ✅ **API corporativa** documentada com Swagger UI
-- ✅ **Employee authentication** funcionando (register/login)
-- ✅ **JWT tokens** gerados e validados corretamente
-- ✅ **Identity Database** integrado com schema corporativo
+- ✅ **API corporativa** documentada com interface Swagger
+- ✅ **Autenticação de funcionários** funcionando (register/login)
+- ✅ **Tokens JWT** gerados e validados corretamente
+- ✅ **Banco Identity** integrado com schema corporativo
 - ✅ **Clean Architecture** com ApplicationUserEntity unificado
-- ✅ **Rate limiting** por departamento/role configurado
+- ✅ **Rate limiting** por departamento/função configurado
 - ✅ **Logging estruturado** para compliance auditável
 - 🔄 **CQRS com MediatR** implementado
 - 🔄 **Validações corporativas** com FluentValidation
 - 🔄 **Testes unitários** > 75% de cobertura
 - ⏳ **Cache Redis** otimizado para dados corporativos
-- ⏳ **Health checks** corporate respondendo
+- ⏳ **Verificações de saúde** corporativas respondendo
 
 ---
 
 ### 🏢 **Fase 3: Core Corporativo e Estrutura Organizacional** *(Semanas 9-14)*
 
-#### ✅ **3.1 Employee Management e Organigramas (Semana 9-10)**
-- [ ] CRUD completo de employee profiles com job titles
-- [ ] Upload de fotos corporativas com approval workflow
-- [ ] Sistema de department membership e team assignments
-- [ ] Organograma interativo com hierarchy visualization
-- [ ] Employee directory com advanced search (skills, department, location)
-- [ ] Manager-subordinate relationships e reporting lines
-- [ ] Employee suggestions baseadas em skills/projects
+#### ✅ **3.1 Gerenciamento de Funcionários e Organigramas (Semana 9-10)**
+- [ ] CRUD completo de perfis de funcionários com títulos de trabalho
+- [ ] Upload de fotos corporativas com fluxo de aprovação
+- [ ] Sistema de associação a departamentos e atribuições de equipe
+- [ ] Organograma interativo com visualização de hierarquia
+- [ ] Diretório de funcionários com busca avançada (habilidades, departamento, localização)
+- [ ] Relacionamentos gerente-subordinado e linhas de reporte
+- [ ] Sugestões de funcionários baseadas em habilidades/projetos
 
 #### ✅ **3.2 Knowledge Management System (Semana 11)**
 - [ ] CRUD de knowledge articles com categorização

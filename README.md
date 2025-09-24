@@ -1,44 +1,44 @@
-# 🚀 SynQcore - Corporate Social Network API
+# 🚀 SynQcore - API de Rede Social Corporativa
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
-[![Blazor](https://img.shields.io/badge/Blazor-Hybrid-green)](https://blazor.net/)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-[![Phase](https://img.shields.io/badge/Phase-2.2%20Complete-success)](ROADMAP.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Author](https://img.shields.io/badge/Author-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
+[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
+[![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
+[![Fase](https://img.shields.io/badge/Fase-2.2%20Completa-success)](ROADMAP.md)
+[![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
+[![Autor](https://img.shields.io/badge/Autor-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
-> **Open Source Corporate Social Network API** criada por **[André César Vieira](https://github.com/andrecesarvieira)**  
+> **API de Rede Social Corporativa Open Source** criada por **[André César Vieira](https://github.com/andrecesarvieira)**  
 > Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  
 > Arquitetura empresarial com .NET 9, Clean Architecture e performance otimizada.
 
-## 👨‍💻 About the Creator
+## 👨‍💻 Sobre o Criador
 
 **André César Vieira** é um desenvolvedor senior especializado em arquitetura .NET e sistemas corporativos escaláveis.  
 
 - 🌐 **GitHub**: [@andrecesarvieira](https://github.com/andrecesarvieira)  
 - 📧 **Email**: [andrecesarvieira@hotmail.com](mailto:andrecesarvieira@hotmail.com)  
-- 🏗️ **Especialidades**: Clean Architecture, .NET Enterprise, PostgreSQL, Performance Optimization  
+- 🏗️ **Especialidades**: Clean Architecture, .NET Enterprise, PostgreSQL, Otimização de Performance  
 
 **SynQcore** representa anos de experiência em desenvolvimento corporativo, aplicando as melhores práticas da indústria em um projeto open source completo.
 
 ## ✨ Características
 
 - 🏛️ **Clean Architecture** - 9 projetos organizados com dependências corretas
-- � **JWT Authentication** - Identity + ApplicationUserEntity + Database integrado
-- �📊 **Modelo Corporativo** - 12 entidades para rede social empresarial completa
+- 🔐 **Autenticação JWT** - Identity + ApplicationUserEntity + Database integrado
+- 📊 **Modelo Corporativo** - 12 entidades para rede social empresarial completa
 - ⚡ **Performance** - PostgreSQL 16 + Redis 7 + .NET 9 otimizado
-- 🗄️ **Database Ready** - Schema corporativo com 13 tabelas + Identity
-- 🎯 **CQRS Ready** - Commands/Queries/Handlers estruturados
-- 📝 **Corporate API** - Swagger UI + Rate Limiting + Health Checks
-- 🌐 **Real-time Ready** - Estrutura preparada para SignalR
-- 📱 **PWA Ready** - Base Blazor Hybrid configurada
-- 🔒 **Security First** - JWT + Identity + Corporate roles funcionais
-- 🌍 **Open Source** - MIT License + comunidade colaborativa
-- 🚀 **Docker Ready** - Ambiente completo containerizado e testado
-- 🧪 **Test Ready** - Estrutura para testes unitários e integração
+- 🗄️ **Banco Pronto** - Schema corporativo com 13 tabelas + Identity
+- 🎯 **CQRS Preparado** - Commands/Queries/Handlers estruturados
+- 📝 **API Corporativa** - Swagger UI + Rate Limiting + Health Checks
+- 🌐 **Tempo Real Preparado** - Estrutura preparada para SignalR
+- 📱 **PWA Preparado** - Base Blazor Híbrido configurada
+- 🔒 **Segurança em Primeiro Lugar** - JWT + Identity + Corporate roles funcionais
+- 🌍 **Open Source** - Licença MIT + comunidade colaborativa
+- 🚀 **Docker Preparado** - Ambiente completo containerizado e testado
+- 🧪 **Testes Preparados** - Estrutura para testes unitários e integração
 
-## 🚀 Quick Start
+## 🚀 Início Rápido
 
 ### Pré-requisitos
 
@@ -49,7 +49,7 @@
 ### Executando Localmente
 
 1. **Clone o repositório**
-## 🚀 Quick Start
+## 🚀 Início Rápido
 
 ```bash
       # Clone do repositório
@@ -72,7 +72,7 @@
    # API disponível em: http://localhost:5005
    ```
 
-5. **Execute o Blazor App** *(Fase 2)*
+5. **Execute a Aplicação Blazor** *(Fase 2)*
    ```bash
    dotnet run --project src/SynQcore.BlazorApp/SynQcore.BlazorApp
    ```
@@ -85,7 +85,7 @@ src/
 ├── SynQcore.Application/   # Casos de uso (CQRS + MediatR)
 ├── SynQcore.Infrastructure/# Implementações (EF Core, Redis)
 ├── SynQcore.Api/          # Web API
-├── SynQcore.BlazorApp/    # Frontend Blazor Hybrid
+├── SynQcore.BlazorApp/    # Frontend Blazor Híbrido
 └── SynQcore.Shared/       # DTOs compartilhados
 ```
 
@@ -121,21 +121,21 @@ Consulte nosso [ROADMAP.md](ROADMAP.md) para acompanhar o progresso detalhado.
 | Categoria | Tecnologia | Status |
 |-----------|------------|---------|
 | **Backend** | .NET 9, ASP.NET Core, EF Core 9 | ✅ Configurado |
-| **Frontend** | Blazor Hybrid (Server + WebAssembly) | 🚧 Fase 2 |
+| **Frontend** | Blazor Híbrido (Server + WebAssembly) | 🚧 Fase 2 |
 | **Banco** | PostgreSQL 16 + Npgsql 9.0.4 | ✅ Schema Completo |
 | **Cache** | Redis 7 Alpine | ✅ Configurado |
-| **Real-time** | SignalR | 🚧 Fase 4 |
+| **Tempo Real** | SignalR | 🚧 Fase 4 |
 | **Arquitetura** | Clean Architecture + CQRS | ✅ Base + 🚧 CQRS |
 | **DevOps** | Docker Compose + GitHub | ✅ Funcionando |
 
 ### 🏗️ **Arquitetura Implementada:**
 ```
 📁 Clean Architecture (9 Projetos):
-├── 🎯 SynQcore.Domain        - Entidades + Business Rules
-├── 📋 SynQcore.Application   - Use Cases (CQRS Ready)  
-├── 🔧 SynQcore.Infrastructure - EF Core + Redis + External
+├── 🎯 SynQcore.Domain        - Entidades + Regras de Negócio
+├── 📋 SynQcore.Application   - Casos de Uso (CQRS Preparado)  
+├── 🔧 SynQcore.Infrastructure - EF Core + Redis + Externos
 ├── 🌐 SynQcore.Api           - Web API + Controllers
-├── 💻 SynQcore.BlazorApp     - Frontend Hybrid
+├── 💻 SynQcore.BlazorApp     - Frontend Híbrido
 ├── 📚 SynQcore.Shared        - DTOs Compartilhados
 └── 🧪 Tests (Unit + Integration) - Cobertura Preparada
 ```
@@ -168,8 +168,8 @@ dotnet test
 # Aplicar migrações
 dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 
-# Criar nova migration
-dotnet ef migrations add <NomeMigration> -p src/SynQcore.Infrastructure -s src/SynQcore.Api
+# Criar nova migração
+dotnet ef migrations add <NomeMigracao> -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 
 # Executar API (porta 5005)
 dotnet run --project src/SynQcore.Api
@@ -180,7 +180,7 @@ dotnet run --project src/SynQcore.Api
 | Serviço | URL | Status | Credenciais |
 |---------|-----|--------|-------------|
 | **API** | http://localhost:5005 | ✅ Funcionando | - |
-| **Blazor App** | http://localhost:5001 | 🚧 Fase 2 | - |
+| **Aplicação Blazor** | http://localhost:5001 | 🚧 Fase 2 | - |
 | **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@synqcore.dev / admin123 |
 | **PostgreSQL** | localhost:5432 | ✅ Funcionando | synqcore_user / synqcore_dev_password |
 | **Redis** | localhost:6379 | ✅ Funcionando | - |
@@ -207,8 +207,8 @@ dotnet run --project src/SynQcore.Api
    TeamMemberships      - Participação em times
    ReportingRelationships - Hierarquia organizacional (Manager/Subordinate)
 
-📋 System:
-   __EFMigrationsHistory - Histórico de migrations (EF Core)
+📋 Sistema:
+   __EFMigrationsHistory - Histórico de migrações (EF Core)
 ```
 
 ## 🤝 Contribuindo
@@ -248,6 +248,6 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 </p>
 
 <p align="center">
-  <sub>⭐ **Star this repository if SynQcore helped you build better corporate applications!**</sub><br>
-  <sub>🤝 **Contributions welcome** - Join the corporate development revolution</sub>
+  <sub>⭐ **Marque este repositório com estrela se o SynQcore ajudou você a construir aplicações corporativas melhores!**</sub><br>
+  <sub>🤝 **Contribuições são bem-vindas** - Junte-se à revolução do desenvolvimento corporativo</sub>
 </p>

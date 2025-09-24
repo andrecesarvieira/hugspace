@@ -1,132 +1,132 @@
-# Changelog - SynQcore
+# Registro de Mudanças - SynQcore
 
-All notable changes to **SynQcore** will be documented in this file.
+Todas as mudanças notáveis do **SynQcore** serão documentadas neste arquivo.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-br/1.0.0/),
+e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
-> **Created by:** [André César Vieira](https://github.com/andrecesarvieira)  
-> **License:** MIT License  
-> **Repository:** https://github.com/andrecesarvieira/synqcore
+> **Criado por:** [André César Vieira](https://github.com/andrecesarvieira)  
+> **Licença:** Licença MIT  
+> **Repositório:** https://github.com/andrecesarvieira/synqcore
 
 ---
 
-## [2.2.0] - 2025-09-24 - **Current Version**
+## [2.2.0] - 2025-09-24 - **Versão Atual**
 
-### 🚀 Added - Corporate Authentication Complete
-- **ASP.NET Core Identity** integration with ApplicationUserEntity
-- **JWT Authentication** with Bearer token support and configurable settings
-- **ApplicationUserEntity** unified authentication model in Infrastructure layer
-- **JwtService** for secure token generation and validation with CultureInfo.InvariantCulture
-- **AuthController** with Register and Login endpoints
-- **Identity Database Tables** integrated with PostgreSQL schema
-- **Clean Architecture Compliance** with proper layer separation maintained
-- **Employee-Identity Relationship** linking authentication with corporate entities
+### 🚀 Adicionado - Autenticação Corporativa Completa
+- **Integração ASP.NET Core Identity** com ApplicationUserEntity
+- **Autenticação JWT** com suporte a Bearer token e configurações personalizáveis
+- **ApplicationUserEntity** modelo de autenticação unificado na camada Infrastructure
+- **JwtService** para geração e validação segura de tokens com CultureInfo.InvariantCulture
+- **AuthController** com endpoints de Register e Login
+- **Tabelas do Banco Identity** integradas com schema PostgreSQL
+- **Conformidade Clean Architecture** com separação adequada de camadas mantida
+- **Relacionamento Employee-Identity** vinculando autenticação com entidades corporativas
 
-### 🔧 Technical Improvements - Authentication
-- **Entity Framework Identity** with Guid-based primary keys
-- **Password Security** with ASP.NET Core Identity defaults
-- **Token Configuration** with issuer, audience, and expiration settings
-- **Migration System** extended with Identity tables ("AddIdentityTables")
-- **Dependency Injection** configured for UserManager, SignInManager, and JwtService
-- **CORS Configuration** updated for authentication endpoints
-- **Build Optimization** - Zero warnings maintained throughout implementation
+### 🔧 Melhorias Técnicas - Autenticação
+- **Entity Framework Identity** com chaves primárias baseadas em Guid
+- **Segurança de Senhas** com padrões do ASP.NET Core Identity
+- **Configuração de Tokens** com issuer, audience e configurações de expiração
+- **Sistema de Migração** estendido com tabelas Identity ("AddIdentityTables")
+- **Injeção de Dependência** configurada para UserManager, SignInManager e JwtService
+- **Configuração CORS** atualizada para endpoints de autenticação
+- **Otimização de Build** - Zero avisos mantidos durante toda a implementação
 
-### 🏗️ Architecture Enhancements
-- **CQRS Foundation** with MediatR 12.4.1 package installation
-- **Command Structure** with LoginCommand and RegisterCommand implementations
-- **DTO Layer** with AuthResponse, LoginRequest, and RegisterRequest
-- **Validation Ready** with FluentValidation.AspNetCore 11.3.0 integration
-- **Handler Pattern** structure prepared for business logic separation
+### 🏗️ Melhorias de Arquitetura
+- **Base CQRS** com instalação do pacote MediatR 12.4.1
+- **Estrutura de Commands** com implementações LoginCommand e RegisterCommand
+- **Camada DTO** com AuthResponse, LoginRequest e RegisterRequest
+- **Validação Preparada** com integração FluentValidation.AspNetCore 11.3.0
+- **Padrão Handler** estrutura preparada para separação de lógica de negócios
 
-### 📝 Documentation Updates
-- **ROADMAP.md** updated with Phase 2.2 completion status
-- **README.md** badges updated to reflect "Phase 2.2 Complete"
-- **Architecture Documentation** enhanced with authentication flow details
+### 📝 Atualizações de Documentação
+- **ROADMAP.md** atualizado com status de conclusão da Fase 2.2
+- **README.md** badges atualizados para refletir "Fase 2.2 Completa"
+- **Documentação de Arquitetura** aprimorada com detalhes do fluxo de autenticação
 
 ---
 
 ## [2.1.0] - 2025-09-23
 
-### 🚀 Added - Corporate API Foundation Complete
-- **Global Exception Handler** with corporate audit trails and structured logging
-- **Audit Logging Middleware** with request/response tracking and compliance logging
-- **Serilog Configuration** with corporate-grade structured logging (Console + File)
-- **Corporate Rate Limiting** with department/role-based limits:
-  - Employee App: 100/min, 1,000/hour
-  - Manager App: 300/min, 5,000/hour  
-  - HR App: 500/min, 10,000/hour
-  - Admin App: 1,000/min, 50,000/hour
-- **Test Controller** with rate limiting validation endpoints
-- **Performance Optimizations** - All LoggerMessage delegates implemented (zero warnings)
-- **MIT License** with complete author attribution and branding strategy
-- **Project Information API** endpoint with author and technology stack details
+### 🚀 Adicionado - Fundação da API Corporativa Completa
+- **Manipulador Global de Exceções** com trilhas de auditoria corporativa e logging estruturado
+- **Middleware de Log de Auditoria** com rastreamento de request/response e logging de compliance
+- **Configuração Serilog** com logging estruturado de nível corporativo (Console + Arquivo)
+- **Rate Limiting Corporativo** com limites baseados em departamento/função:
+  - App Funcionário: 100/min, 1.000/hora
+  - App Gerente: 300/min, 5.000/hora  
+  - App RH: 500/min, 10.000/hora
+  - App Admin: 1.000/min, 50.000/hora
+- **Controller de Teste** com endpoints de validação de rate limiting
+- **Otimizações de Performance** - Todos os delegates LoggerMessage implementados (zero avisos)
+- **Licença MIT** com atribuição completa ao autor e estratégia de marca
+- **Endpoint de Informações do Projeto** com API detalhando autor e stack tecnológico
 
-### 🔧 Technical Improvements
-- **AspNetCoreRateLimit 5.0.0** integration with corporate client identification
-- **Serilog.AspNetCore 8.0.2** with enrichers for Environment, Machine, Thread
-- **High-performance logging** with LoggerMessage delegates throughout codebase
-- **Corporate middleware pipeline** with proper ordering and context enrichment
-- **Health checks** integration with rate limiting and audit logging
+### 🔧 Melhorias Técnicas
+- **Integração AspNetCoreRateLimit 5.0.0** com identificação de cliente corporativo
+- **Serilog.AspNetCore 8.0.2** com enrichers para Environment, Machine, Thread
+- **Logging de alta performance** com delegates LoggerMessage em toda a base de código
+- **Pipeline de middleware corporativo** com ordenação adequada e enriquecimento de contexto
+- **Integração de verificações de saúde** com rate limiting e log de auditoria
 
-### 📝 Documentation & Branding
-- **Complete README.md** overhaul with author prominence and project showcase
-- **LICENSE file** (MIT License) with André César Vieira copyright
-- **AUTHOR.md** with detailed creator information and project philosophy  
-- **CONTRIBUTING.md** with comprehensive contribution guidelines
-- **SynQcoreInfo class** with embedded project and author information
-- **Swagger/OpenAPI** enhanced with detailed author attribution and project description
+### 📝 Documentação & Marca
+- **Reformulação completa do README.md** com destaque ao autor e showcase do projeto
+- **Arquivo LICENSE** (Licença MIT) com copyright de André César Vieira
+- **AUTHOR.md** com informações detalhadas do criador e filosofia do projeto  
+- **CONTRIBUTING.md** com diretrizes abrangentes de contribuição
+- **Classe SynQcoreInfo** com informações incorporadas do projeto e autor
+- **Swagger/OpenAPI** aprimorado com atribuição detalhada ao autor e descrição do projeto
 
 ---
 
 ## [2.0.0] - 2025-09-22
 
-### 🚀 Added - Clean Architecture Foundation
-- **ASP.NET Core Web API** with Swagger/OpenAPI corporate documentation
-- **API Versioning** (v1) with backward compatibility
-- **CORS configuration** for corporate environments
-- **Health Checks** endpoints (/health, /health/ready, /health/live)
-- **PostgreSQL integration** with health monitoring
-- **Redis integration** with health monitoring
+### 🚀 Adicionado - Fundação Clean Architecture
+- **ASP.NET Core Web API** com documentação Swagger/OpenAPI corporativa
+- **Versionamento de API** (v1) com compatibilidade retroativa
+- **Configuração CORS** para ambientes corporativos
+- **Endpoints de Verificação de Saúde** (/health, /health/ready, /health/live)
+- **Integração PostgreSQL** com monitoramento de saúde
+- **Integração Redis** com monitoramento de saúde
 
-### 🏗️ Architecture
-- **Clean Architecture** structure with proper dependency flow
-- **9 projects** organized with separation of concerns
-- **Corporate middleware pipeline** foundation
+### 🏗️ Arquitetura
+- **Estrutura Clean Architecture** com fluxo adequado de dependências
+- **9 projetos** organizados com separação de responsabilidades
+- **Base de pipeline de middleware** corporativo
 
 ---
 
-## [1.0.0] - 2025-09-21 - **Database Foundation Complete**
+## [1.0.0] - 2025-09-21 - **Fundação do Banco de Dados Completa**
 
-### 🚀 Added - Corporate Database Model
-- **12 Corporate Entities** with complete business logic:
-  - **Employee** - Corporate user profiles and authentication
-  - **Department** - Organizational structure and hierarchies
-  - **Team** - Collaborative work groups and project teams
-  - **Position** - Job roles, titles, and corporate positions
-  - **Post** - Corporate social network content and discussions
-  - **Comment** - Threaded discussions and feedback system
-  - **PostLike** - Engagement system with reaction types
-  - **CommentLike** - Comment-level engagement tracking
-  - **Notification** - Real-time notification system
-  - **EmployeeDepartment** - Many-to-many employee-department relationships
-  - **TeamMembership** - Team participation and role management
-  - **ReportingRelationship** - Corporate hierarchy (manager/subordinate)
+### 🚀 Adicionado - Modelo de Banco Corporativo
+- **12 Entidades Corporativas** com lógica de negócios completa:
+  - **Employee** - Perfis de usuários corporativos e autenticação
+  - **Department** - Estrutura organizacional e hierarquias
+  - **Team** - Grupos de trabalho colaborativo e equipes de projeto
+  - **Position** - Funções de trabalho, títulos e posições corporativas
+  - **Post** - Conteúdo e discussões da rede social corporativa
+  - **Comment** - Sistema de discussões aninhadas e feedback
+  - **PostLike** - Sistema de engajamento com tipos de reação
+  - **CommentLike** - Rastreamento de engajamento em nível de comentário
+  - **Notification** - Sistema de notificações em tempo real
+  - **EmployeeDepartment** - Relacionamentos muitos-para-muitos funcionário-departamento
+  - **TeamMembership** - Participação em equipes e gerenciamento de funções
+  - **ReportingRelationship** - Hierarquia corporativa (gerente/subordinado)
 
-### 🗄️ Database Implementation
-- **PostgreSQL 16** schema with 13 tables implemented
-- **Entity Framework Core 9** with complete configurations
-- **Complex relationships** with proper foreign keys and constraints
-- **Migration system** fully operational
-- **Seed data** capabilities for development and testing
+### 🗄️ Implementação do Banco de Dados
+- **Schema PostgreSQL 16** com 13 tabelas implementadas
+- **Entity Framework Core 9** com configurações completas
+- **Relacionamentos complexos** com chaves estrangeiras e restrições adequadas
+- **Sistema de migração** totalmente operacional
+- **Capacidades de dados iniciais** para desenvolvimento e testes
 
-### 🐳 Infrastructure
-- **Docker Compose** environment with:
-  - PostgreSQL 16 with optimized configuration
-  - Redis 7 Alpine for caching layer
-  - pgAdmin 4 for database management
-- **Development scripts** for easy environment management
-- **Environment configurations** for Development, Staging, Production
+### 🐳 Infraestrutura
+- **Ambiente Docker Compose** com:
+  - PostgreSQL 16 com configuração otimizada
+  - Redis 7 Alpine para camada de cache
+  - pgAdmin 4 para gerenciamento do banco de dados
+- **Scripts de desenvolvimento** para gerenciamento fácil do ambiente
+- **Configurações de ambiente** para Desenvolvimento, Staging, Produção
 
 ### 🏗️ Architecture Foundation
 - **Clean Architecture** with 9 projects:
@@ -150,57 +150,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## Roadmap - Upcoming Releases
+## Roteiro - Próximas Versões
 
-### [2.3.0] - Corporate CQRS & MediatR (In Development)
-- MediatR pipeline configuration for command/query separation
-- Command handlers for authentication business logic
-- FluentValidation integration with pipeline behaviors
-- AuthController refactoring to use MediatR pattern
-- Validation and logging behaviors implementation
+### [2.3.0] - CQRS Corporativo & MediatR (Em Desenvolvimento)
+- Configuração do pipeline MediatR para separação command/query
+- Command handlers para lógica de negócios de autenticação
+- Integração FluentValidation com behaviors de pipeline
+- Refatoração do AuthController para usar padrão MediatR
+- Implementação de behaviors de validação e logging
 
-### [2.4.0] - Corporate Rate Limiting (Planned)
-- AspNetCoreRateLimit integration for API protection
-- Policy-based rate limiting by user roles and endpoints
-- Redis-backed distributed rate limiting for scalability
-- Rate limiting headers and informative responses
-- Department and role-based limit configurations
+### [2.4.0] - Rate Limiting Corporativo (Planejado)
+- Integração AspNetCoreRateLimit para proteção da API
+- Rate limiting baseado em políticas por funções de usuário e endpoints
+- Rate limiting distribuído com Redis para escalabilidade
+- Headers de rate limiting e respostas informativas
+- Configurações de limite baseadas em departamento e função
 
-### [2.5.0] - Corporate Cache & Performance (Planned)
-- Redis integration for organizational data caching
-- Employee session management with timeout policies
-- Expertise and skill search optimization
-- Background jobs for HR system synchronization
-- Performance optimization for large datasets (>10k employees)
+### [2.5.0] - Cache Corporativo & Performance (Planejado)
+- Integração Redis para cache de dados organizacionais
+- Gerenciamento de sessões de funcionários com políticas de timeout
+- Otimização de busca de expertise e habilidades
+- Trabalhos em segundo plano para sincronização com sistemas HR
+- Otimização de performance para grandes conjuntos de dados (>10k funcionários)
 
-### [3.0.0] - Corporate Social Features (Planned)
-- Corporate feed and timeline implementation
-- Employee post creation and management
-- Comment system with threading
-- Like/reaction system with corporate appropriateness
-- Employee directory and search
+### [3.0.0] - Funcionalidades Sociais Corporativas (Planejado)
+- Implementação de feed corporativo e linha do tempo
+- Criação e gerenciamento de posts de funcionários
+- Sistema de comentários com threading
+- Sistema de curtidas/reações com adequação corporativa
+- Diretório e busca de funcionários
 
 ---
 
-## Attribution
+## Atribuição
 
-**SynQcore** is created and maintained by **André César Vieira**.
+**SynQcore** é criado e mantido por **André César Vieira**.
 
 - **GitHub**: [@andrecesarvieira](https://github.com/andrecesarvieira)
 - **Email**: [andrecesarvieira@hotmail.com](mailto:andrecesarvieira@hotmail.com)
-- **License**: MIT License
-- **Repository**: https://github.com/andrecesarvieira/synqcore
+- **Licença**: Licença MIT
+- **Repositório**: https://github.com/andrecesarvieira/synqcore
 
-### Technology Stack Evolution
+### Evolução da Stack Tecnológica
 
-| Version | Backend | Database | Cache | Frontend | Architecture | Authentication |
+| Versão | Backend | Banco de Dados | Cache | Frontend | Arquitetura | Autenticação |
 |---------|---------|----------|--------|----------|--------------|----------------|
 | 1.0.0   | .NET 9  | PostgreSQL 16 | Redis 7 | - | Clean Architecture | - |
-| 2.0.0   | + ASP.NET Core | + EF Core 9 | + Health Checks | - | + API Foundation | - |
-| 2.1.0   | + Middleware Pipeline | + Audit Logging | + Rate Limiting | - | + Corporate Security | - |
+| 2.0.0   | + ASP.NET Core | + EF Core 9 | + Verificações de Saúde | - | + Fundação da API | - |
+| 2.1.0   | + Pipeline de Middleware | + Log de Auditoria | + Rate Limiting | - | + Segurança Corporativa | - |
+| 2.2.0   | + Integração Identity | + Tabelas Identity | + Serviço JWT | - | + Fundação CQRS | **JWT + Identity** |
 | 2.2.0   | + Identity Integration | + Identity Tables | + JWT Service | - | + CQRS Foundation | **JWT + Identity** |
 
 ---
 
-⭐ **Star this repository** if SynQcore helped you build better corporate applications!  
-🤝 **Contribute** to help make SynQcore the best open-source corporate social network platform!
+⭐ **Marque este repositório com estrela** se o SynQcore ajudou você a construir aplicações corporativas melhores!  
+🤝 **Contribua** para ajudar a tornar o SynQcore a melhor plataforma open-source de rede social corporativa!
