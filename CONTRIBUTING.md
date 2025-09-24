@@ -1,188 +1,188 @@
-# Contributing to SynQcore
+# Contribuindo para o SynQcore
 
-First off, thank you for considering contributing to SynQcore! 🎉
+Antes de tudo, obrigado por considerar contribuir para o SynQcore! 🎉
 
-**SynQcore** is created and maintained by **[André César Vieira](https://github.com/andrecesarvieira)**, and we welcome contributions from the community to make this corporate social network platform even better.
+**SynQcore** é criado e mantido por **[André César Vieira](https://github.com/andrecesarvieira)**, e damos boas-vindas às contribuições da comunidade para tornar esta plataforma de rede social corporativa ainda melhor.
 
-## 👨‍💻 About the Project Creator
+## 👨‍💻 Sobre o Criador do Projeto
 
-**André César Vieira** is an enterprise software architect with extensive experience in:
-- .NET ecosystem and Clean Architecture
-- PostgreSQL optimization and database design
-- Corporate application development
-- Performance engineering and scalability
+**André César Vieira** é um arquiteto de software empresarial com ampla experiência em:
+- Ecossistema .NET e Arquitetura Limpa
+- Otimização PostgreSQL e design de banco de dados
+- Desenvolvimento de aplicações corporativas
+- Engenharia de performance e escalabilidade
 
-## 🤝 How to Contribute
+## 🤝 Como Contribuir
 
-### 1. 🐛 Reporting Bugs
+### 1. 🐛 Relatando Bugs
 
-Before creating bug reports, please check the [existing issues](https://github.com/andrecesarvieira/synqcore/issues) to avoid duplicates.
+Antes de criar relatórios de bugs, verifique as [issues existentes](https://github.com/andrecesarvieira/synqcore/issues) para evitar duplicatas.
 
-When creating a bug report, include:
-- Clear description of the problem
-- Steps to reproduce the issue
-- Expected vs actual behavior
-- Environment details (OS, .NET version, etc.)
-- Any relevant logs or screenshots
+Ao criar um relatório de bug, inclua:
+- Descrição clara do problema
+- Passos para reproduzir o problema
+- Comportamento esperado vs. real
+- Detalhes do ambiente (SO, versão .NET, etc.)
+- Logs ou screenshots relevantes
 
-### 2. 💡 Suggesting Features
+### 2. 💡 Sugerindo Funcionalidades
 
-We welcome feature suggestions! Please:
-- Check existing feature requests first
-- Provide clear use case and business value
-- Consider how it fits with corporate social network goals
-- Include mockups or examples if helpful
+Damos boas-vindas a sugestões de funcionalidades! Por favor:
+- Verifique primeiro as solicitações de funcionalidades existentes
+- Forneça caso de uso claro e valor de negócio
+- Considere como se encaixa nos objetivos da rede social corporativa
+- Inclua mockups ou exemplos se úteis
 
-### 3. 🔧 Code Contributions
+### 3. 🔧 Contribuições de Código
 
-#### Getting Started
+#### Primeiros Passos
 
-1. **Fork** the repository
-2. **Clone** your fork locally
-3. **Create** a feature branch from `master`
-4. **Setup** the development environment:
+1. **Faça fork** do repositório
+2. **Clone** seu fork localmente
+3. **Crie** uma branch de funcionalidade a partir da `master`
+4. **Configure** o ambiente de desenvolvimento:
    ```bash
-   # Start infrastructure
+   # Iniciar infraestrutura
    ./scripts/start-dev.sh
    
-   # Apply migrations
+   # Aplicar migrações
    dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
    
-   # Run tests
+   # Executar testes
    dotnet test
    ```
 
-#### Development Guidelines
+#### Diretrizes de Desenvolvimento
 
-**Architecture Principles:**
-- Follow **Clean Architecture** patterns
-- Maintain **separation of concerns**
-- Use **CQRS** pattern for complex operations
-- Implement **proper error handling**
-- Write **comprehensive tests**
+**Princípios de Arquitetura:**
+- Siga padrões de **Arquitetura Limpa**
+- Mantenha **separação de responsabilidades**
+- Use padrão **CQRS** para operações complexas
+- Implemente **tratamento adequado de erros**
+- Escreva **testes abrangentes**
 
-**Code Standards:**
-- Use **C# 12** language features appropriately
-- Follow **Microsoft C# coding conventions**
-- Add **XML documentation** for public APIs
-- Maintain **consistent formatting** (EditorConfig)
-- Keep **performance** in mind (use LoggerMessage, etc.)
+**Padrões de Código:**
+- Use recursos da linguagem **C# 12** apropriadamente
+- Siga **convenções de codificação C# da Microsoft**
+- Adicione **documentação XML** para APIs públicas
+- Mantenha **formatação consistente** (EditorConfig)
+- Tenha **performance** em mente (use LoggerMessage, etc.)
 
-**Database Guidelines:**
-- Use **Entity Framework Core** migrations
-- Follow **PostgreSQL best practices**
-- Include **proper indexes** for performance
-- Write **efficient queries**
+**Diretrizes de Banco de Dados:**
+- Use migrações do **Entity Framework Core**
+- Siga **melhores práticas do PostgreSQL**
+- Inclua **índices adequados** para performance
+- Escreva **consultas eficientes**
 
-#### Pull Request Process
+#### Processo de Pull Request
 
-1. **Update** documentation if needed
-2. **Add tests** for new functionality
-3. **Ensure** all tests pass
-4. **Follow** commit message conventions:
+1. **Atualize** a documentação se necessário
+2. **Adicione testes** para novas funcionalidades
+3. **Garanta** que todos os testes passem
+4. **Siga** convenções de mensagens de commit:
    ```
-   feat: add employee department transfer endpoint
-   fix: resolve rate limiting bypass issue
-   docs: update API documentation for authentication
+   feat: adicionar endpoint de transferência de departamento do funcionário
+   fix: resolver problema de bypass do rate limiting
+   docs: atualizar documentação da API para autenticação
    ```
-5. **Create** pull request with:
-   - Clear description of changes
-   - Reference to related issues
-   - Screenshots if UI changes
-   - Performance impact notes if relevant
+5. **Crie** pull request com:
+   - Descrição clara das mudanças
+   - Referência a issues relacionadas
+   - Screenshots se houver mudanças na UI
+   - Notas de impacto na performance se relevante
 
-## 🧪 Testing Guidelines
+## 🧪 Diretrizes de Testes
 
-### Running Tests
+### Executando Testes
 ```bash
-# Run all tests
+# Executar todos os testes
 dotnet test
 
-# Run specific test project
+# Executar projeto de teste específico
 dotnet test tests/SynQcore.UnitTests
 dotnet test tests/SynQcore.IntegrationTests
 
-# With coverage
+# Com cobertura
 dotnet test --collect:"XPlat Code Coverage"
 ```
 
-### Writing Tests
-- **Unit tests** for business logic
-- **Integration tests** for API endpoints
-- **Performance tests** for critical paths
-- **Mock external dependencies** appropriately
+### Escrevendo Testes
+- **Testes unitários** para lógica de negócio
+- **Testes de integração** para endpoints de API
+- **Testes de performance** para caminhos críticos
+- **Mock de dependências externas** apropriadamente
 
-## 📝 Documentation
+## 📝 Documentação
 
-### API Documentation
-- Keep **Swagger/OpenAPI** definitions updated
-- Include **request/response examples**
-- Document **error scenarios**
-- Explain **rate limiting** and **authentication**
+### Documentação da API
+- Mantenha definições **Swagger/OpenAPI** atualizadas
+- Inclua **exemplos de request/response**
+- Documente **cenários de erro**
+- Explique **rate limiting** e **autenticação**
 
-### Code Documentation
-- **XML comments** for public APIs
-- **README updates** for new features
-- **Architecture decision records** for significant changes
+### Documentação de Código
+- **Comentários XML** para APIs públicas
+- **Atualizações de README** para novas funcionalidades
+- **Registros de decisões de arquitetura** para mudanças significativas
 
-## 🎯 Areas Looking for Contributions
+## 🎯 Áreas Procurando Contribuições
 
-### High Priority
-- **Authentication system** (JWT, roles, permissions)
-- **Real-time features** (SignalR implementation)
-- **File upload/media** handling
-- **Advanced search** capabilities
-- **Performance optimizations**
+### Alta Prioridade
+- **Sistema de autenticação** (JWT, papéis, permissões)
+- **Funcionalidades em tempo real** (implementação SignalR)
+- **Manipulação de upload/mídia** de arquivos
+- **Capacidades de busca avançada**
+- **Otimizações de performance**
 
-### Documentation & Examples
-- **Tutorial content** for common scenarios
-- **Architecture guides** and best practices
-- **Deployment guides** for different environments
-- **API usage examples** in different languages
+### Documentação e Exemplos
+- **Conteúdo de tutorial** para cenários comuns
+- **Guias de arquitetura** e melhores práticas
+- **Guias de deployment** para diferentes ambientes
+- **Exemplos de uso da API** em diferentes linguagens
 
-### Testing & Quality
-- **Increase test coverage** (target: >80%)
-- **Performance benchmarks** and monitoring
-- **Security testing** and hardening
-- **Accessibility** improvements
+### Testes e Qualidade
+- **Aumentar cobertura de testes** (meta: >80%)
+- **Benchmarks de performance** e monitoramento
+- **Testes de segurança** e hardening
+- **Melhorias de acessibilidade**
 
-## 🏆 Recognition
+## 🏆 Reconhecimento
 
-Contributors will be:
-- **Listed** in CONTRIBUTORS.md
-- **Mentioned** in release notes
-- **Recognized** in project documentation
-- **Invited** to join the core contributor team (for significant contributions)
+Contribuidores serão:
+- **Listados** no CONTRIBUTORS.md
+- **Mencionados** nas notas de release
+- **Reconhecidos** na documentação do projeto
+- **Convidados** para se juntar à equipe de contribuidores principais (para contribuições significativas)
 
-## 📞 Getting Help
+## 📞 Obtendo Ajuda
 
-- **GitHub Issues** - For bugs and feature requests
-- **GitHub Discussions** - For questions and general discussion
-- **Email André** - [andrecesarvieira@hotmail.com](mailto:andrecesarvieira@hotmail.com) for direct communication
+- **GitHub Issues** - Para bugs e solicitações de funcionalidades
+- **GitHub Discussions** - Para perguntas e discussão geral
+- **Email André** - [andrecesarvieira@hotmail.com](mailto:andrecesarvieira@hotmail.com) para comunicação direta
 
-## 📋 Code of Conduct
+## 📋 Código de Conduta
 
-### Our Commitment
-We are committed to providing a welcoming and inspiring community for everyone.
+### Nosso Compromisso
+Estamos comprometidos em fornecer uma comunidade acolhedora e inspiradora para todos.
 
-### Expected Behavior
-- **Be respectful** and inclusive
-- **Welcome newcomers** and help them get started
-- **Focus on constructive feedback**
-- **Acknowledge contributions** from others
-- **Prioritize project goals** over personal preferences
+### Comportamento Esperado
+- **Seja respeitoso** e inclusivo
+- **Dê boas-vindas aos novatos** e os ajude a começar
+- **Foque em feedback construtivo**
+- **Reconheça contribuições** de outros
+- **Priorize objetivos do projeto** sobre preferências pessoais
 
-### Unacceptable Behavior
-- Harassment, discrimination, or toxic behavior
-- Spam, self-promotion unrelated to the project
-- Publishing others' private information
-- Any conduct inappropriate in a professional setting
+### Comportamento Inaceitável
+- Assédio, discriminação ou comportamento tóxico
+- Spam, auto-promoção não relacionada ao projeto
+- Publicar informações privadas de outros
+- Qualquer conduta inadequada em um ambiente profissional
 
-## 🎉 Thank You!
+## 🎉 Obrigado!
 
-Every contribution matters, from fixing typos to implementing major features. Thank you for helping make SynQcore the best open-source corporate social network platform!
+Toda contribuição importa, desde corrigir erros de digitação até implementar funcionalidades importantes. Obrigado por ajudar a tornar o SynQcore a melhor plataforma de rede social corporativa de código aberto!
 
 ---
 
-**"Building the future of corporate collaboration, together."**  
-*- André César Vieira & the SynQcore Community*
+**"Construindo o futuro da colaboração corporativa, juntos."**  
+*- André César Vieira & a Comunidade SynQcore*

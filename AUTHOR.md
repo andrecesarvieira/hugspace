@@ -1,66 +1,66 @@
-# SynQcore - Project Information
+# SynQcore - Informações do Projeto
 
-**Created by:** André César Vieira  
+**Criado por:** André César Vieira  
 **Email:** andrecesarvieira@hotmail.com  
 **GitHub:** [@andrecesarvieira](https://github.com/andrecesarvieira)  
 
-## About SynQcore
+## Sobre o SynQcore
 
-SynQcore is an open-source corporate social network API designed and developed by André César Vieira. This project represents years of experience in enterprise software development, applying industry best practices and modern .NET technologies.
+SynQcore é uma API de rede social corporativa de código aberto projetada e desenvolvida por André César Vieira. Este projeto representa anos de experiência no desenvolvimento de software empresarial, aplicando as melhores práticas da indústria e tecnologias .NET modernas.
 
-## Project Philosophy
+## Filosofia do Projeto
 
-Built with **Clean Architecture** principles and **performance-first** mindset, SynQcore demonstrates how to create scalable, maintainable enterprise applications using:
+Construído com princípios de **Arquitetura Limpa** e mentalidade **performance-first**, o SynQcore demonstra como criar aplicações empresariais escaláveis e mantíveis usando:
 
-- **.NET 9** - Latest Microsoft technology stack
-- **PostgreSQL 16** - Robust relational database  
-- **Clean Architecture** - Separation of concerns and testability
-- **CQRS Pattern** - Command Query Responsibility Segregation
-- **Corporate Security** - JWT, Role-based access, Audit trails
-- **Performance Optimization** - Redis caching, efficient queries
-- **Developer Experience** - Comprehensive documentation, Docker setup
+- **.NET 9** - Stack de tecnologia Microsoft mais recente
+- **PostgreSQL 16** - Banco de dados relacional robusto  
+- **Arquitetura Limpa** - Separação de responsabilidades e testabilidade
+- **Padrão CQRS** - Segregação de Responsabilidade de Comando e Consulta
+- **Segurança Corporativa** - JWT, acesso baseado em funções, trilhas de auditoria
+- **Otimização de Performance** - Cache Redis, consultas eficientes
+- **Experiência do Desenvolvedor** - Documentação abrangente, configuração Docker
 
-## Author's Expertise
+## Expertise do Autor
 
-André César Vieira specializes in:
+André César Vieira é especialista em:
 
-- **Enterprise Architecture** - Designing scalable systems for large organizations
-- **.NET Ecosystem** - Deep expertise in C#, ASP.NET Core, Entity Framework
-- **Database Design** - PostgreSQL optimization and complex relational models  
-- **Performance Engineering** - Caching strategies, query optimization
-- **DevOps Practices** - Docker containerization, CI/CD pipelines
-- **Clean Code** - SOLID principles, maintainable codebases
+- **Arquitetura Empresarial** - Projetando sistemas escaláveis para grandes organizações
+- **Ecossistema .NET** - Expertise profunda em C#, ASP.NET Core, Entity Framework
+- **Design de Banco de Dados** - Otimização PostgreSQL e modelos relacionais complexos  
+- **Engenharia de Performance** - Estratégias de cache, otimização de consultas
+- **Práticas DevOps** - Containerização Docker, pipelines CI/CD
+- **Código Limpo** - Princípios SOLID, bases de código mantíveis
 
-## Project Impact
+## Impacto do Projeto
 
-SynQcore aims to:
+O SynQcore visa:
 
-1. **Democratize Corporate Technology** - Provide open-source alternative to expensive enterprise platforms
-2. **Educational Resource** - Serve as reference implementation for .NET best practices  
-3. **Community Building** - Foster collaboration in corporate software development
-4. **Innovation Driver** - Push boundaries of what's possible with .NET and PostgreSQL
+1. **Democratizar Tecnologia Corporativa** - Fornecer alternativa de código aberto para plataformas empresariais caras
+2. **Recurso Educacional** - Servir como implementação de referência para melhores práticas .NET  
+3. **Construção de Comunidade** - Fomentar colaboração no desenvolvimento de software corporativo
+4. **Motor de Inovação** - Expandir os limites do que é possível com .NET e PostgreSQL
 
-## Recognition & Contributions
+## Reconhecimento e Contribuições
 
-This project is available under the MIT License, ensuring maximum adoption while maintaining attribution to the original author. Companies and developers using SynQcore are encouraged to:
+Este projeto está disponível sob a Licença MIT, garantindo máxima adoção mantendo a atribuição ao autor original. Empresas e desenvolvedores usando SynQcore são encorajados a:
 
-- ⭐ **Star the repository** to show appreciation
-- 🐛 **Report issues** to improve the platform  
-- 🤝 **Contribute features** to expand functionality
-- 📢 **Share success stories** of SynQcore implementations
-- 📝 **Write about** your experience using the platform
+- ⭐ **Dar estrela ao repositório** para mostrar apreciação
+- 🐛 **Relatar problemas** para melhorar a plataforma  
+- 🤝 **Contribuir com funcionalidades** para expandir a funcionalidade
+- 📢 **Compartilhar histórias de sucesso** de implementações SynQcore
+- 📝 **Escrever sobre** sua experiência usando a plataforma
 
-## Contact & Collaboration
+## Contato e Colaboração
 
-André César Vieira welcomes:
+André César Vieira recebe:
 
-- **Technical discussions** about architecture decisions
-- **Collaboration opportunities** on enterprise projects
-- **Speaking engagements** about .NET and Clean Architecture
-- **Consulting inquiries** for corporate software development
-- **Open source contributions** to SynQcore and related projects
+- **Discussões técnicas** sobre decisões de arquitetura
+- **Oportunidades de colaboração** em projetos empresariais
+- **Convites para palestras** sobre .NET e Arquitetura Limpa
+- **Consultas de consultoria** para desenvolvimento de software corporativo
+- **Contribuições open source** para SynQcore e projetos relacionados
 
 ---
 
-**"Building the future of corporate collaboration, one commit at a time."**  
-*- André César Vieira, Creator of SynQcore*
+**"Construindo o futuro da colaboração corporativa, um commit por vez."**  
+*- André César Vieira, Criador do SynQcore*
