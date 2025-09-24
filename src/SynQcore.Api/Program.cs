@@ -24,6 +24,9 @@ using SynQcore.Api.Middleware;
 using SynQcore.Infrastructure.Services.Auth;
 using SynQcore.Common;
 using SynQcore.Infrastructure.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using SynQcore.Application.Commands.Auth;
+using MediatR;
 
 
 // Configure Serilog for corporate logging with audit trails
@@ -52,7 +55,6 @@ Log.Logger = new LoggerConfiguration()
 
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 // JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
@@ -240,8 +242,12 @@ builder.Services.AddProblemDetails();
 // Add corporate rate limiting
 builder.Services.AddCorporateRateLimit(builder.Configuration);
 
-// JWT Service
-builder.Services.AddScoped<IJwtService, JwtService>();
+// Add MediatR
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(LoginCommand).Assembly);
+    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+});
 
 var app = builder.Build();
 

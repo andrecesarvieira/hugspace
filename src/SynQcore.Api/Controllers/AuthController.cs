@@ -37,7 +37,8 @@ public class AuthController : ControllerBase
 
         var result = await _userManager.CreateAsync(user, request.Password);
 
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
 
         var token = _jwtService.GenerateToken(user);
         var refreshToken = _jwtService.GenerateRefreshToken();
