@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-[![Fase](https://img.shields.io/badge/Fase-2.2%20Completa-success)](ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-2.4%20Completa-success)](ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 [![Autor](https://img.shields.io/badge/Autor-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
@@ -91,29 +91,32 @@ src/
 
 ## 📊 Status do Desenvolvimento
 
-> **🎯 Fase 1 CONCLUÍDA!** *(23/09/2025)* - Modelo de dados corporativo completo implementado
+> **🎯 Fase 2.4 CONCLUÍDA!** *(25/09/2025)* - API Corporativa com Rate Limiting + CQRS + JWT completos
 
-Consulte nosso [ROADMAP.md](ROADMAP.md) para acompanhar o progresso detalhado.
+📋 **[📈 ROADMAP DETALHADO →](ROADMAP.md)** - Acompanhe todo o progresso e planejamento das 8 fases!
 
 | Fase | Status | Descrição | Timeline |
 |------|--------|-----------|----------|
 | **Fase 1** | ✅ **CONCLUÍDO** | Modelo Corporativo + Database Schema | Set/2025 |
-| **Fase 2** | 🚀 **PRÓXIMO** | API Core + JWT Auth + CQRS | Out/2025 |
-| **Fase 3** | ⏳ Planejado | Funcionalidades Sociais + Feeds | Nov/2025 |
-| **Fase 4** | ⏳ Planejado | Chat + Notificações + Mídia | Dez/2025 |
-| **Fase 5** | ⏳ Planejado | Interface Blazor + PWA | Jan/2026 |
+| **Fase 2** | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting | Set/2025 |
+| **Fase 3** | 🚀 **PRÓXIMO** | Employee Management + Funcionalidades Sociais | Out/2025 |
+| **Fase 4** | ⏳ Planejado | Chat + Notificações + Mídia | Nov/2025 |
+| **Fase 5** | ⏳ Planejado | Interface Blazor + PWA | Dez/2025 |
 
-### 🎊 Conquistas da Fase 1:
+### 🎊 Conquistas das Fases 1 + 2:
 ```
-✅ Docker Compose (PostgreSQL 16 + Redis 7 + pgAdmin)
-✅ Clean Architecture (9 projetos estruturados)
-✅ Entity Framework Core 9 (12 entidades corporativas + migration)
-✅ Database Schema (13 tabelas implementadas no PostgreSQL)
-✅ Configurações EF (Organizadas por domínio + relacionamentos complexos)
-✅ GlobalUsings (Centralizados para melhor organização)
-✅ Build limpo (0 warnings críticos)
-✅ GitHub integrado + documentação atualizada
-✅ Base sólida para rede social corporativa escalável
+✅ Fase 1 - Infraestrutura:
+   • Docker Compose (PostgreSQL 16 + Redis 7 + pgAdmin)
+   • Clean Architecture (9 projetos estruturados)
+   • Entity Framework Core 9 (12 entidades corporativas + migration)
+   • Database Schema (13 tabelas implementadas no PostgreSQL)
+
+✅ Fase 2 - API Corporativa:
+   • JWT Authentication + Identity integrado
+   • CQRS com MediatR + FluentValidation
+   • Rate Limiting corporativo por função (Employee/Manager/HR/Admin)
+   • Swagger UI + Health Checks + Audit Logging
+   • GlobalExceptionHandler + estrutura de testes
 ```
 
 ## 🛠️ Stack Tecnológica
@@ -211,9 +214,15 @@ dotnet run --project src/SynQcore.Api
    __EFMigrationsHistory - Histórico de migrações (EF Core)
 ```
 
+## 📚 Documentação Completa
+
+- 📋 **[ROADMAP.md](ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
+- 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuição
+- 📄 **[LICENSE](LICENSE)** - Licença MIT
+
 ## 🤝 Contribuindo
 
-Adoramos contribuições! Consulte nosso [CONTRIBUTING.md](CONTRIBUTING.md) para começar.
+Adoramos contribuições! Consulte nosso **[CONTRIBUTING.md](CONTRIBUTING.md)** para começar.
 
 ### Desenvolvimento
 
