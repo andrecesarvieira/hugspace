@@ -437,10 +437,14 @@ logs/
 # Cache do Redis (se local)
 dump.rdb
 
-# Backups de banco
-*.sql
+# Backups de banco (preservar scripts de inicialização)
+*backup*.sql
+*dump*.sql
 *.backup
 *.bak
+# Ignorar SQLs temporários mas preservar estruturais
+*temp*.sql
+*test*.sql
 
 # Arquivos temporários do sistema
 .DS_Store
