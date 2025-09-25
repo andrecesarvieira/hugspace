@@ -164,14 +164,15 @@
 
 ### 🏢 **Fase 3: Core Corporativo e Estrutura Organizacional** *(Semanas 9-14)*
 
-#### ✅ **3.1 Gerenciamento de Funcionários e Organigramas (Semana 9-10)**
-- [ ] CRUD completo de perfis de funcionários com títulos de trabalho
-- [ ] Upload de fotos corporativas com fluxo de aprovação
-- [ ] Sistema de associação a departamentos e atribuições de equipe
-- [ ] Organograma interativo com visualização de hierarquia
-- [ ] Diretório de funcionários com busca avançada (habilidades, departamento, localização)
-- [ ] Relacionamentos gerente-subordinado e linhas de reporte
-- [ ] Sugestões de funcionários baseadas em habilidades/projetos
+#### ✅ **3.1 Department Management System** *(CONCLUÍDO - 25/09/2025)*
+- [x] ✅ CRUD completo para Department entities (6 endpoints REST)
+- [x] ✅ Sistema hierárquico de departamentos com validações de referência circular
+- [x] ✅ Endpoints para visualização de hierarquia organizacional (/hierarchy)
+- [x] ✅ Associação de funcionários a departamentos com controle de relacionamentos
+- [x] ✅ Validações de negócio para estrutura organizacional (soft delete, dependências)
+- [x] ✅ DTOs completos (6 classes), Commands/Queries (5 classes), Handlers (5 classes)
+- [x] ✅ FluentValidation + AutoMapper + hierarchical relationships
+- [x] ✅ **Entregáveis:** Sistema de departamentos 100% completo
 
 #### ✅ **3.2 Knowledge Management System (Semana 11)**
 - [ ] CRUD de knowledge articles com categorização

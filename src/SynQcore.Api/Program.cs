@@ -152,6 +152,9 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
+
+    // Resolver conflitos de schema IDs usando nomes completos
+    options.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
 });
 
 // Add DbContext (Unified with Identity)

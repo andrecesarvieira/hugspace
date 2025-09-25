@@ -22,6 +22,6 @@ public class EmployeeProfile : Profile
                     Role = tm.Role.ToString()
                 })));
 
-        CreateMap<Department, DepartmentDto>();
+        CreateMap<Department, EmployeeDepartmentDto>();
     }
 }

@@ -13,13 +13,13 @@ public record EmployeeDto
     public bool IsActive { get; init; }
     public Guid? ManagerId { get; init; }
     public string? ManagerName { get; init; }
-    public List<DepartmentDto> Departments { get; init; } = new();
+    public List<EmployeeDepartmentDto> Departments { get; init; } = new();
     public List<TeamDto> Teams { get; init; } = new();
     public DateTime CreatedAt { get; init; }
     public DateTime? UpdatedAt { get; init; }
 }
 
-public record DepartmentDto
+public record EmployeeDepartmentDto
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = string.Empty;

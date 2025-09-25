@@ -250,18 +250,24 @@ dotnet run --project src/SynQcore.Api
 - 🗺️ **[ROADMAP.md](ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
 - 📊 **Status Atual:** Fase 2.5 completa (35% do projeto)
 
-### 🏗️ **Documentação Arquitetural**
-- 🏛️ **[ARCHITECTURE.md](ARCHITECTURE.md)** - Visão completa da arquitetura Clean Architecture
-- 🎨 **[DIAGRAMS.md](DIAGRAMS.md)** - Diagramas visuais (Mermaid) de entidades, fluxos e dependências
-- 🗺️ **[CLASS_MAP.md](CLASS_MAP.md)** - Mapa detalhado de todas as classes e responsabilidades
+### 📚 **Documentação Técnica**
+- 📂 **[docs/](docs/README.md)** - Índice completo da documentação
+- 🏛️ **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Visão completa da arquitetura Clean Architecture
+- 🎨 **[docs/DIAGRAMS.md](docs/DIAGRAMS.md)** - Diagramas visuais (Mermaid) de entidades, fluxos e dependências
+- 🗺️ **[docs/CLASS_MAP.md](docs/CLASS_MAP.md)** - Mapa detalhado de todas as classes e responsabilidades
 
-### 🤝 **Contribuição e Legal**
-- 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuição
+### 🧪 **Testes e Validação**
+- � **[docs/testing/](docs/testing/README.md)** - Índice completo de testes
+- 📋 **[docs/testing/TODOS-OS-TESTES-SWAGGER.md](docs/testing/TODOS-OS-TESTES-SWAGGER.md)** ⭐ - Guia principal
+- 🏗️ **[docs/testing/ESTRATEGIA-TESTES.md](docs/testing/ESTRATEGIA-TESTES.md)** - Estratégia estabelecida
+
+### �🤝 **Contribuição e Legal**
+- 🤝 **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Guia para contribuição
 - 📄 **[LICENSE](LICENSE)** - Licença MIT
 
 ## 🤝 Contribuindo
 
-Adoramos contribuições! Consulte nosso **[CONTRIBUTING.md](CONTRIBUTING.md)** para começar.
+Adoramos contribuições! Consulte nosso **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** para começar.
 
 ### Desenvolvimento
 

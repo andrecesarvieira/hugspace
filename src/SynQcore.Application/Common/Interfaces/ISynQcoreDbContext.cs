@@ -20,6 +20,11 @@ public interface ISynQcoreDbContext
     DbSet<CommentLike> CommentLikes { get; }
     DbSet<Notification> Notifications { get; }
 
+    // Knowledge Management entities
+    DbSet<KnowledgeCategory> KnowledgeCategories { get; }
+    DbSet<Tag> Tags { get; }
+    DbSet<PostTag> PostTags { get; }
+
     // Relationship entities
     DbSet<EmployeeDepartment> EmployeeDepartments { get; }
     DbSet<TeamMembership> TeamMemberships { get; }
