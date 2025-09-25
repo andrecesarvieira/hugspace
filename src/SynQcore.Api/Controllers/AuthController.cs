@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using SynQcore.Infrastructure.Services.Auth;
-using SynQcore.Infrastructure.Identity;
+using MediatR;
+using SynQcore.Application.Commands.Auth;
 using SynQcore.Application.DTOs.Auth;
 
 namespace SynQcore.Api.Controllers;
@@ -10,94 +9,41 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly UserManager<ApplicationUserEntity> _userManager;
-    private readonly SignInManager<ApplicationUserEntity> _signInManager;
-    private readonly IJwtService _jwtService;
+    private readonly IMediator _mediator;
 
-    public AuthController(
-        UserManager<ApplicationUserEntity> userManager,
-        SignInManager<ApplicationUserEntity> signInManager,
-        IJwtService jwtService)
+    public AuthController(IMediator mediator)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _jwtService = jwtService;
+        _mediator = mediator;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request)
     {
-        var user = new ApplicationUserEntity
-        {
-            Id = Guid.NewGuid(),
-            UserName = request.UserName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber
-        };
+        var command = new RegisterCommand(
+            request.UserName,
+            request.Email,
+            request.Password,
+            request.ConfirmPassword,
+            request.PhoneNumber);
 
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var response = await _mediator.Send(command);
 
-        if (!result.Succeeded)
-            return BadRequest(result.Errors);
+        if (!response.Success)
+            return BadRequest(new { message = response.Message });
 
-        var token = _jwtService.GenerateToken(user);
-        var refreshToken = _jwtService.GenerateRefreshToken();
-
-        return Ok(new AuthResponse
-        {
-            Token = token,
-            RefreshToken = refreshToken,
-            ExpiresAt = DateTime.UtcNow.AddHours(1),
-            User = new UserInfo
-            {
-                Id = user.Id,
-                UserName = user.UserName!,
-                Email = user.Email!
-            }
-        });
+        return Ok(response);
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
     {
+        var command = new LoginCommand(request.Email, request.Password);
+        
+        var response = await _mediator.Send(command);
 
-        // Verificar se existe email cadastrado
-        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (!response.Success)
+            return Unauthorized(new { message = response.Message });
 
-        if (user == null)
-        {
-            return Unauthorized(new
-            {
-                message = "Credenciais inválidas" // Invalid credentials
-            });
-        }
-
-        // Verificar se o password está correto
-        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-
-        if (!result.Succeeded)
-        {
-            return Unauthorized(new
-            {
-                message = "Credenciais inválidas"  // Invalid credentials
-            });
-        }
-
-        // Gerar token Jwt
-        var token = _jwtService.GenerateToken(user);
-        var refreshToken = _jwtService.GenerateRefreshToken();
-
-        return Ok(new AuthResponse
-        {
-            Token = token,
-            RefreshToken = refreshToken,
-            ExpiresAt = DateTime.UtcNow.AddHours(1),
-            User = new UserInfo
-            {
-                Id = user.Id,
-                UserName = user.UserName!,
-                Email = user.Email!
-            }
-        });
+        return Ok(response);
     }
 }

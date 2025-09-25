@@ -400,13 +400,24 @@ FodyWeavers.xsd
 
 # === SynQcore Specific ===
 
-# Docker dados locais (preservar apenas a estrutura)
+# Docker - Dados persistentes e logs
 docker/data/
 docker/logs/
+# Manter apenas a estrutura do docker-compose, não os dados dos volumes
+**/postgres_data/
+**/redis_data/
+**/pgadmin_data/
+
+# Docker - Arquivos temporários e builds
+.dockerignore.backup
+Dockerfile.backup
+docker-compose.override.yml
+docker-compose.*.yml.backup
 
 # Configurações locais de desenvolvimento
 appsettings.Local.json
 appsettings.*.Local.json
+# Manter appsettings.Docker.json pois é necessário para o container
 
 # Certificates e chaves
 *.pfx
@@ -442,12 +453,15 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
-# Ferramentas de desenvolvimento
+# Ferramentas de desenvolvimento e variáveis de ambiente
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+# Docker environment files
+.env.docker
+.env.compose
 
 # Coverage reports
 coverage/
@@ -461,3 +475,35 @@ TestResults/
 media/uploads/
 media/temp/
 media/cache/
+
+# === Desenvolvimento e Debug ===
+
+# Entity Framework Migrations temporárias
+**/Migrations/temp_*
+**/Migrations/backup_*
+
+# MediatR/CQRS - Arquivos temporários de debug
+**/*Handler.debug.cs
+**/*Command.debug.cs
+**/*Query.debug.cs
+
+# JWT e autenticação - chaves temporárias
+jwt-keys/
+auth-temp/
+
+# Rate limiting - cache local
+rate-limit-cache/
+throttle-cache/
+
+# Audit logs locais (apenas para desenvolvimento)
+audit-logs/
+security-logs/
+
+# Health checks - dados temporários
+health-check-data/
+
+# Scripts de teste temporários (manter os oficiais)
+test-temp-*.sh
+test-local-*.sh
+temp-*.sh
+*.test.local.sh
