@@ -9,6 +9,7 @@ public class Employee : BaseEntity
     // Dados Pessoais
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
+    public string? Phone { get; set; }
     public string? ProfilePhotoUrl { get; set; }
     public string? Bio { get; set; }
 
@@ -16,6 +17,10 @@ public class Employee : BaseEntity
     public string JobTitle { get; set; } = string.Empty;
     public DateTime HireDate { get; set; }
     public bool IsActive { get; set; } = true;
+    
+    // Relacionamento hierárquico
+    public Guid? ManagerId { get; set; }
+    public Employee? Manager { get; set; }
 
     // Propriedades calculadas
     public string FullName =>
@@ -28,7 +33,8 @@ public class Employee : BaseEntity
         DateTime.UtcNow.Year - HireDate.Year;
 
     // Propriedades de Navegação - Organization
-    public ICollection<EmployeeDepartment> Departments { get; set; } = [];
+    public ICollection<Employee> Subordinates { get; set; } = [];
+    public ICollection<EmployeeDepartment> EmployeeDepartments { get; set; } = [];
     public ICollection<TeamMembership> TeamMemberships { get; set; } = [];
     public ICollection<ReportingRelationship> DirectReports { get; set; } = [];
     public ICollection<ReportingRelationship> ManagerRelationships { get; set; } = [];

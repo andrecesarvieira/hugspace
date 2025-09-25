@@ -158,6 +158,10 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<SynQcoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register DbContext interface
+builder.Services.AddScoped<SynQcore.Application.Common.Interfaces.ISynQcoreDbContext>(provider => 
+    provider.GetRequiredService<SynQcoreDbContext>());
+
 // Identity Configuration
 builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole<Guid>>(options =>
 {
@@ -259,6 +263,11 @@ builder.Services.AddMediatR(cfg =>
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
+
+// Add AutoMapper manually
+builder.Services.AddAutoMapper(config => {
+    config.AddMaps(typeof(LoginCommand).Assembly);
+});
 
 var app = builder.Build();
 

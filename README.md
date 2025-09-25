@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-[![Fase](https://img.shields.io/badge/Fase-2.4%20Completa-success)](ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-2.5%20Completa-success)](ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 [![Autor](https://img.shields.io/badge/Autor-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
@@ -91,14 +91,14 @@ src/
 
 ## 📊 Status do Desenvolvimento
 
-> **🎯 Fase 2.4 CONCLUÍDA!** *(25/09/2025)* - API Corporativa com Rate Limiting + CQRS + JWT completos
+> **🎯 Fase 2.5 CONCLUÍDA!** *(25/09/2025)* - Employee Management System + CRUD + Hierarquia + Upload completos!
 
 📋 **[📈 ROADMAP DETALHADO →](ROADMAP.md)** - Acompanhe todo o progresso e planejamento das 8 fases!
 
 | Fase | Status | Descrição | Timeline |
 |------|--------|-----------|----------|
 | **Fase 1** | ✅ **CONCLUÍDO** | Modelo Corporativo + Database Schema | Set/2025 |
-| **Fase 2** | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting | Set/2025 |
+| **Fase 2** | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting + Employee Management | Set/2025 |
 | **Fase 3** | 🚀 **PRÓXIMO** | Employee Management + Funcionalidades Sociais | Out/2025 |
 | **Fase 4** | ⏳ Planejado | Chat + Notificações + Mídia | Nov/2025 |
 | **Fase 5** | ⏳ Planejado | Interface Blazor + PWA | Dez/2025 |
@@ -214,7 +214,36 @@ dotnet run --project src/SynQcore.Api
    __EFMigrationsHistory - Histórico de migrações (EF Core)
 ```
 
-## 📚 Documentação Completa
+## � API Endpoints Implementados
+
+### 🔐 **Autenticação (Fase 2.2)**
+```http
+POST /api/v1/auth/register    - Registrar novo funcionário
+POST /api/v1/auth/login      - Login e obtenção de token JWT
+GET  /api/v1/auth/test       - Testar token (requer autenticação)
+```
+
+### 👥 **Employee Management (Fase 2.5)**
+```http
+POST   /api/v1/employees           - Criar funcionário
+GET    /api/v1/employees/{id}      - Obter funcionário por ID  
+PUT    /api/v1/employees/{id}      - Atualizar funcionário
+DELETE /api/v1/employees/{id}      - Deletar funcionário (soft delete)
+GET    /api/v1/employees           - Listar funcionários (paginação + filtros)
+GET    /api/v1/employees/search    - Buscar funcionários (nome/email)
+GET    /api/v1/employees/{id}/hierarchy - Ver hierarquia organizacional
+POST   /api/v1/employees/{id}/avatar   - Upload de avatar (5MB max)
+```
+
+### 💡 **Recursos Corporativos**
+- ✅ **Rate Limiting** por função (Employee: 100/min, Manager: 200/min, HR/Admin: 500/min)
+- ✅ **Autorização baseada em roles** (HR/Admin para modificações)
+- ✅ **Soft Delete** com auditoria completa
+- ✅ **Validação corporativa** (FluentValidation + business rules)
+- ✅ **Swagger UI** completo em http://localhost:5006/swagger
+- ✅ **Health Checks** em /health, /health/ready, /health/live
+
+## �📚 Documentação Completa
 
 - 📋 **[ROADMAP.md](ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
 - 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuição

@@ -2,11 +2,11 @@ namespace SynQcore.Domain.Common;
 
 public abstract class BaseEntity
 {
-    public Guid Id { get; private set; } = Guid.NewGuid();
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
-    public bool IsDeleted { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 
     protected BaseEntity()
     {
@@ -34,7 +34,7 @@ public abstract class BaseEntity
         UpdateTimestamp();
     }
 
-    protected void UpdateTimestamp()
+    public void UpdateTimestamp()
     {
         UpdatedAt = DateTime.UtcNow;
     }

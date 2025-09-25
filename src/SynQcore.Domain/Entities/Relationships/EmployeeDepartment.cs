@@ -10,6 +10,7 @@ public class EmployeeDepartment : BaseEntity
 
     // Metadados
     public DateTime StartDate { get; set; } = DateTime.UtcNow;
+    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
     public DateTime? EndDate { get; set; }
     public bool IsActive { get; set; } = true;
     public bool IsPrimary { get; set; }

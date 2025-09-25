@@ -7,10 +7,11 @@ using SynQcore.Domain.Entities.Relationships;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using SynQcore.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using SynQcore.Application.Common.Interfaces;
 
 namespace SynQcore.Infrastructure.Data;
 
-public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRole<Guid>, Guid>
+public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, IdentityRole<Guid>, Guid>, ISynQcoreDbContext
 {
     public SynQcoreDbContext(DbContextOptions<SynQcoreDbContext> options) : base(options)
     {

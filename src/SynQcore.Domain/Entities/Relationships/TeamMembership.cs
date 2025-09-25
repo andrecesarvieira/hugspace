@@ -10,6 +10,7 @@ public class TeamMembership : BaseEntity
 
     // Metadados
     public DateTime JoinedDate { get; set; } = DateTime.UtcNow;
+    public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LeftDate { get; set; }
     public bool IsActive { get; set; } = true;
 
