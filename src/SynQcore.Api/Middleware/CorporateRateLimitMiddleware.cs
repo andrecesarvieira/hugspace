@@ -1,22 +1,24 @@
+/*
+ * SynQcore - Corporate Social Network API
+ * 
+ * Corporate Rate Limit Middleware - Determines client ID based on corporate structure
+ * 
+ * Author: André César Vieira <andrecesarvieira@hotmail.com>
+ */
+
+using Microsoft.Extensions.Logging;
 using AspNetCoreRateLimit;
-using System.Security.Claims;
 
 namespace SynQcore.Api.Middleware;
 
 /// <summary>
-/// Corporate rate limiting middleware with department and role-based limits
+/// Middleware that determines client ID based on corporate user role and structure
+/// Must be placed before AspNetCoreRateLimit middlewares in the pipeline
 /// </summary>
-public class CorporateRateLimitMiddleware
+public partial class CorporateRateLimitMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<CorporateRateLimitMiddleware> _logger;
-    
-    // LoggerMessage delegate for high-performance logging
-    private static readonly Action<ILogger, string?, string, Exception?> LogRateLimitContext =
-        LoggerMessage.Define<string?, string>(
-            LogLevel.Debug,
-            new EventId(3001, "CorporateRateLimit"),
-            "Corporate Rate Limit - ClientId: {ClientId} | Path: {Path}");
 
     public CorporateRateLimitMiddleware(RequestDelegate next, ILogger<CorporateRateLimitMiddleware> logger)
     {
@@ -26,13 +28,6 @@ public class CorporateRateLimitMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Skip rate limiting for health checks and swagger
-        if (ShouldSkipRateLimit(context))
-        {
-            await _next(context);
-            return;
-        }
-
         // Set client ID based on corporate structure
         var clientId = DetermineClientId(context);
         if (!string.IsNullOrEmpty(clientId))
@@ -47,56 +42,62 @@ public class CorporateRateLimitMiddleware
         await _next(context);
     }
 
-    private static bool ShouldSkipRateLimit(HttpContext context)
-    {
-        var path = context.Request.Path.Value?.ToLowerInvariant();
-        return path switch
-        {
-            "/health" or "/health/ready" or "/health/live" => true,
-            "/swagger" or "/swagger/index.html" => true,
-            _ when path?.StartsWith("/swagger/", StringComparison.OrdinalIgnoreCase) == true => true,
-            _ when path?.StartsWith("/_vs/", StringComparison.OrdinalIgnoreCase) == true => true,
-            _ => false
-        };
-    }
 
+
+    /// <summary>
+    /// Determines the client ID based on corporate authentication context
+    /// Maps user roles to appropriate rate limiting tiers
+    /// </summary>
     private static string DetermineClientId(HttpContext context)
     {
-        // 1. Check for existing client ID header (for service-to-service calls)
-        var existingClientId = context.Request.Headers["X-ClientId"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(existingClientId))
+        // 1. Check JWT token for role claims (when authentication is implemented)
+        var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
-            return existingClientId;
+            // TODO: Parse JWT and extract role claims when authentication is implemented
+            // For now, simulate role detection based on API patterns
+            
+            var endpoint = context.Request.Path.Value?.ToLowerInvariant() ?? "";
+            
+            // Admin endpoints
+            if (endpoint.Contains("/admin/") || endpoint.Contains("/system/"))
+                return "admin-app";
+                
+            // HR endpoints  
+            if (endpoint.Contains("/hr/") || endpoint.Contains("/employees/bulk") || endpoint.Contains("/departments/"))
+                return "hr-app";
+                
+            // Manager endpoints
+            if (endpoint.Contains("/manager/") || endpoint.Contains("/teams/") || endpoint.Contains("/reports/"))
+                return "manager-app";
         }
 
-        // 2. Determine client ID based on user claims (when authentication is implemented)
-        if (context.User?.Identity?.IsAuthenticated == true)
+        // 2. Check custom client headers for service-to-service communication
+        var clientHeader = context.Request.Headers["X-Client-Type"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(clientHeader))
         {
-            var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
-            var department = context.User.FindFirst("department")?.Value;
-            
-            return (role?.ToLowerInvariant(), department?.ToLowerInvariant()) switch
+            return clientHeader.ToLowerInvariant() switch
             {
-                ("admin", _) => "admin-app",
-                ("hr", _) or (_, "human resources") or (_, "hr") => "hr-app",
-                ("manager", _) or ("supervisor", _) => "manager-app",
-                ("employee", _) => "employee-app",
-                _ => "employee-app" // Default fallback
+                "admin" or "admin-app" => "admin-app",
+                "hr" or "hr-app" => "hr-app", 
+                "manager" or "manager-app" => "manager-app",
+                "employee" or "employee-app" => "employee-app",
+                "mobile" or "mobile-app" => "employee-app",
+                _ => "employee-app"
             };
         }
 
-        // 3. Determine based on User-Agent patterns (for different client apps)
-        var userAgent = context.Request.Headers.UserAgent.ToString().ToLowerInvariant();
-        
-        if (userAgent.Contains("synqcore-admin"))
+        // 3. Check User-Agent for mobile/desktop client identification
+        var userAgent = context.Request.Headers["User-Agent"].FirstOrDefault()?.ToLowerInvariant() ?? "";
+        if (userAgent.Contains("synqcore-admin") || userAgent.Contains("postman") || userAgent.Contains("insomnia"))
             return "admin-app";
-        
+            
         if (userAgent.Contains("synqcore-hr"))
             return "hr-app";
-        
+            
         if (userAgent.Contains("synqcore-manager"))
             return "manager-app";
-
+            
         if (userAgent.Contains("synqcore-mobile") || userAgent.Contains("synqcore-employee"))
             return "employee-app";
 
@@ -117,6 +118,13 @@ public class CorporateRateLimitMiddleware
         // 5. Default to employee-app for anonymous requests
         return "employee-app";
     }
+
+    /// <summary>
+    /// Logs rate limiting context for corporate audit trails
+    /// </summary>
+    [LoggerMessage(EventId = 2001, Level = LogLevel.Information, 
+        Message = "Rate limit context - Client: {ClientId}, Path: {Path}, IP: {RemoteIP}")]
+    private static partial void LogRateLimitContext(ILogger logger, string? clientId, string? path, string? remoteIP);
 }
 
 /// <summary>
@@ -129,22 +137,18 @@ public static class CorporateRateLimitExtensions
     /// </summary>
     public static IServiceCollection AddCorporateRateLimit(this IServiceCollection services, IConfiguration configuration)
     {
-        // Configure IP rate limiting
+        // Configure IP Rate Limiting
         services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
-        services.Configure<IpRateLimitPolicies>(configuration.GetSection("IpRateLimitPolicies"));
         
-        // Configure client rate limiting  
+        // Configure Client Rate Limiting  
         services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
-        services.Configure<ClientRateLimitPolicies>(configuration.GetSection("ClientRateLimitPolicies"));
-
+        
         // Add rate limiting services
-        services.AddMemoryCache();
-        services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-        services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-        services.AddSingleton<IClientPolicyStore, MemoryCacheClientPolicyStore>();
+        services.AddInMemoryRateLimiting();
+        
+        // Register required services
         services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-        services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-
+        
         return services;
     }
 

@@ -21,6 +21,7 @@ using Serilog;
 using Serilog.Events;
 using SynQcore.Infrastructure.Data;
 using SynQcore.Api.Middleware;
+using AspNetCoreRateLimit;
 using SynQcore.Infrastructure.Services.Auth;
 using SynQcore.Common;
 using SynQcore.Infrastructure.Identity;
@@ -241,6 +242,9 @@ builder.Services.AddHealthChecks()
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+// Add memory cache (required for rate limiting)
+builder.Services.AddMemoryCache();
+
 // Add corporate rate limiting
 builder.Services.AddCorporateRateLimit(builder.Configuration);
 
@@ -275,8 +279,11 @@ app.UseHttpsRedirection();
 
 // Corporate middleware pipeline
 app.UseExceptionHandler(); // Global exception handler
+
+// Rate limiting middleware (com bypass inteligente)
+app.UseCorporateRateLimit(); // Corporate rate limiting com bypass
+
 app.UseMiddleware<AuditLoggingMiddleware>(); // Corporate audit logging
-app.UseCorporateRateLimit(); // Corporate rate limiting
 
 app.UseCors("CorporatePolicy");
 
