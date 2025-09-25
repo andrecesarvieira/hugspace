@@ -1,8 +1,20 @@
 # 🚀 SynQcore - API de Rede Social Corporativa
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
-[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.o## 📚 Documentação Completa
+
+### 📋 **Planejamento e Progresso**
+- 🗺️ **[ROADMAP.md](ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
+- 📊 **Status Atual:** Fase 2.5 completa (35% do projeto)
+
+### 🏗️ **Documentação Arquitetural**
+- 🏛️ **[ARCHITECTURE.md](ARCHITECTURE.md)** - Visão completa da arquitetura Clean Architecture
+- 🎨 **[DIAGRAMS.md](DIAGRAMS.md)** - Diagramas visuais (Mermaid) de entidades, fluxos e dependências
+- 🗺️ **[CLASS_MAP.md](CLASS_MAP.md)** - Mapa detalhado de todas as classes e responsabilidades
+
+### 🤝 **Contribuição e Legal**
+- 🤝 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuição
+- 📄 **[LICENSE](LICENSE)** - Licença MIT[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
 [![Fase](https://img.shields.io/badge/Fase-2.5%20Completa-success)](ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
