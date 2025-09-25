@@ -7,6 +7,6 @@ public record RegisterCommand(
     string UserName,
     string Email,
     string Password,
+    string ConfirmPassword,
     string? PhoneNumber
-
 ) : IRequest<AuthResponse>;

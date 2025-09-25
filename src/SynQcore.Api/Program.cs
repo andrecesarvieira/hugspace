@@ -27,6 +27,8 @@ using SynQcore.Infrastructure.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using SynQcore.Application.Commands.Auth;
 using MediatR;
+using FluentValidation;
+using SynQcore.Application.Behaviors;
 
 
 // Configure Serilog for corporate logging with audit trails
@@ -243,11 +245,16 @@ builder.Services.AddProblemDetails();
 builder.Services.AddCorporateRateLimit(builder.Configuration);
 
 // Add MediatR
-builder.Services.AddMediatR(cfg => {
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
     cfg.RegisterServicesFromAssembly(typeof(LoginCommand).Assembly);
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 });
+
+// Add FluentValidation
+builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 
 var app = builder.Build();
 
