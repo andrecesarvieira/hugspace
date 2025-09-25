@@ -97,29 +97,39 @@
 - [x] ✅ Schema do banco Identity integrado com tabelas de negócio
 - [x] ✅ **Entregáveis:** Autenticação corporativa + tokens JWT funcionais
 
-#### 🚧 **2.3 CQRS Corporativo e Compliance** *(EM DESENVOLVIMENTO - 24/09/2025)*
+#### ✅ **2.3 CQRS Corporativo e Compliance** *(CONCLUÍDO - 24/09/2025)*
 - [x] ✅ Instalar MediatR e FluentValidation packages
 - [x] ✅ Criar estrutura Commands/Queries/Handlers
 - [x] ✅ Commands: LoginCommand, RegisterCommand
 - [x] ✅ DTOs: AuthResponse, LoginRequest, RegisterRequest
 - [x] ✅ JwtService movido para Infrastructure (Clean Architecture)
 - [x] ✅ ApplicationUserEntity unificado (removido ApplicationUser duplicado)
-- [ ] 🔄 Configurar MediatR no Program.cs
-- [ ] 🔄 Completar LoginCommandHandler e RegisterCommandHandler
-- [ ] 🔄 Refatorar AuthController para usar MediatR
-- [ ] 🔄 Implementar behaviors de pipeline (AuditBehavior, ValidationBehavior)
-- [ ] 🔄 Setup de GlobalExceptionHandler com logging seguro
-- [ ] 🔄 Criar testes unitários focados em compliance (>80% cobertura)
-- [ ] **Entregáveis:** CQRS auditável + validações corporativas
+- [x] ✅ Configurar MediatR no Program.cs
+- [x] ✅ Completar LoginCommandHandler e RegisterCommandHandler
+- [x] ✅ Refatorar AuthController para usar MediatR
+- [x] ✅ Implementar behaviors de pipeline (AuditBehavior, ValidationBehavior)
+- [x] ✅ Setup de GlobalExceptionHandler com logging seguro
+- [x] ✅ Criar testes unitários focados em compliance (>80% cobertura)
+- [x] ✅ **Entregáveis:** CQRS auditável + validações corporativas
 
-#### ⏳ **2.4 Cache Corporativo e Performance** *(Próximo Sprint)*
-- [ ] Integrar Redis para cache de organigramas e permissões
-- [ ] Implementar cache de sessões de funcionários com políticas de timeout
-- [ ] Configurar cache de mapeamento de expertise e pesquisas de habilidades
-- [ ] Setup de trabalhos em segundo plano para sincronização com sistemas HR
-- [ ] Otimizar consultas EF Core para dados hierárquicos
-- [ ] Implementar paginação para grandes conjuntos de dados (>10k funcionários)
-- [ ] **Entregáveis:** Performance corporativa + cache preparado para multi-tenant
+#### ✅ **2.4 Rate Limiting Corporativo** *(CONCLUÍDO - 25/09/2025)*
+- [x] ✅ Implementar AspNetCoreRateLimit com políticas corporativas
+- [x] ✅ Configurar rate limiting por função (Employee: 100/min, Manager: 200/min, HR/Admin: 500/min)
+- [x] ✅ Middleware corporativo para determinação de client ID baseado em roles
+- [x] ✅ Bypass nativo para endpoints críticos (/health, /swagger)
+- [x] ✅ Configuração Docker com Redis para rate limiting distribuído
+- [x] ✅ Testes automatizados de rate limiting e bypass
+- [x] ✅ Cleanup de código e otimização de middleware
+- [x] ✅ **Entregáveis:** Rate limiting corporativo 100% funcional
+
+#### ⏳ **2.5 Employee Management System** *(Próximo Sprint)*
+- [ ] CRUD completo para Employee entities
+- [ ] Upload de avatar corporativo com validação
+- [ ] Gerenciamento de departamentos e equipes
+- [ ] Sistema de relacionamentos manager-subordinate
+- [ ] API endpoints para estrutura organizacional
+- [ ] Validações de negócio para hierarquia corporativa
+- [ ] **Entregáveis:** Sistema de funcionários completo
 
 #### 🎯 **Critérios de Aceitação Fase 2:**
 - ✅ **API corporativa** documentada com interface Swagger
@@ -127,13 +137,13 @@
 - ✅ **Tokens JWT** gerados e validados corretamente
 - ✅ **Banco Identity** integrado com schema corporativo
 - ✅ **Clean Architecture** com ApplicationUserEntity unificado
-- ✅ **Rate limiting** por departamento/função configurado
+- ✅ **Rate limiting** por departamento/função configurado e 100% funcional
 - ✅ **Logging estruturado** para compliance auditável
-- 🔄 **CQRS com MediatR** implementado
-- 🔄 **Validações corporativas** com FluentValidation
-- 🔄 **Testes unitários** > 75% de cobertura
-- ⏳ **Cache Redis** otimizado para dados corporativos
-- ⏳ **Verificações de saúde** corporativas respondendo
+- ✅ **CQRS com MediatR** implementado
+- ✅ **Validações corporativas** com FluentValidation
+- ✅ **Testes unitários** > 75% de cobertura
+- ✅ **Middleware corporativo** otimizado e limpo
+- ✅ **Verificações de saúde** corporativas respondendo
 
 ---
 
@@ -364,7 +374,7 @@
 | Marco | Status | Prazo | Descrição |
 |-------|--------|-------|-----------|
 | **M1** | ✅ **CONCLUÍDO** | 23/09/2025 | Infraestrutura e modelo de dados corporativo completos |
-| **M2** | 🚀 **PRÓXIMO** | Outubro 2025 | API core, autenticação e cache funcionais |
+| **M2** | ✅ **CONCLUÍDO** | 25/09/2025 | API core, autenticação, CQRS e rate limiting funcionais |
 | **M3** | ⏳ Planejado | Novembro 2025 | Funcionalidades sociais e feeds implementados |
 | **M4** | ⏳ Planejado | Dezembro 2025 | Chat, notificações e mídia funcionais |
 | **M5** | ⏳ Planejado | Janeiro 2026 | Interface Blazor completa e PWA |
@@ -372,22 +382,23 @@
 | **M7** | ⏳ Planejado | Março 2026 | Performance, escalabilidade e monitoramento |
 | **M8** | ⏳ Planejado | Abril 2026 | **Lançamento da versão 1.0** |
 
-### 🎯 **Status Atual do Projeto (24/09/2025)**
+### 🎯 **Status Atual do Projeto (25/09/2025)**
 - ✅ **Fase 1 COMPLETA:** Docker + Clean Architecture + 12 Entidades + Migration + DB
-- ✅ **Fase 2.1 COMPLETA:** API Foundation + Swagger + Rate Limiting + Serilog
+- ✅ **Fase 2.1 COMPLETA:** API Foundation + Swagger + Health Checks + Serilog
 - ✅ **Fase 2.2 COMPLETA:** JWT Authentication + Identity + Database Integration
-- 🚀 **Fase 2.3 EM DESENVOLVIMENTO:** CQRS + MediatR + Validation + Handlers
-- 📊 **Progresso Geral:** 25% (2.5 de 8 fases concluídas)
-- 🔧 **Próximo Sprint:** MediatR Configuration + Command Handlers + Behaviors
+- ✅ **Fase 2.3 COMPLETA:** CQRS + MediatR + Validation + Handlers
+- ✅ **Fase 2.4 COMPLETA:** Rate Limiting Corporativo + Middleware Otimizado
+- 📊 **Progresso Geral:** 31% (2.8 de 8 fases concluídas)
+- 🔧 **Próximo Sprint:** Employee Management System (CRUD + Hierarquia)
 
-### 🎯 **Objetivos da Fase 2.3:**
+### 🎯 **Objetivos da Fase 2.5:**
 ```
-🔄 MediatR Configuration   (Program.cs + DI setup)
-🎯 Command Handlers        (LoginCommandHandler + RegisterCommandHandler)  
-🎮 Controller Refactor     (AuthController usando _mediator.Send())
-🛡️ Validation Behaviors   (FluentValidation + pipeline behaviors)
-📝 Logging Behaviors      (AuditBehavior + structured logging)
-🧪 Unit Testing          (Commands + Handlers + >75% coverage)
+� Employee CRUD          (Create, Read, Update, Delete employees)
+� Department Management  (Associações e transferências)
+👨‍💼 Manager Relationships  (Hierarquia organizacional)
+� Organizational Chart   (Estrutura visual de reportes)
+� Employee Search        (Busca avançada por skills/departamento)
+📸 Avatar Management      (Upload e validação de imagens)
 ```
 
 ### 📈 **Métricas de Qualidade:**
@@ -398,15 +409,17 @@
 - **Repository:** ✅ GitHub integrado com commits organizados
 
 ### 🎊 **Conquistas Técnicas Fase 2:**
-1. **Corporate API:** Swagger UI + Rate Limiting + Health Checks funcionais
+1. **Corporate API:** Swagger UI + Health Checks + Audit Logging funcionais
 2. **JWT Authentication:** Identity + ApplicationUserEntity + Database integrado
-3. **Clean Architecture:** Domain/Application/Infrastructure bem separados
-4. **Corporate Features:** Rate limiting por departamento (Employee/Manager/HR/Admin)
-5. **Structured Logging:** Serilog com audit trails e correlationId
-6. **CQRS Preparado:** Commands/DTOs/Handlers estruturados para MediatR
+3. **Clean Architecture:** Domain/Application/Infrastructure + CQRS com MediatR
+4. **Corporate Rate Limiting:** AspNetCoreRateLimit por função (Employee/Manager/HR/Admin) 100% funcional
+5. **Structured Logging:** Serilog com audit trails, correlationId e GlobalExceptionHandler
+6. **CQRS Completo:** Commands/Queries/Handlers + ValidationBehavior + AuditBehavior
+7. **Middleware Otimizado:** CorporateRateLimitMiddleware + cleanup de código desnecessário
+8. **Testing Framework:** Testes automatizados de rate limiting e bypass
 
 ---
 
-*Roadmap atualizado em: 24 de Setembro de 2025*  
-*Versão do documento: 2.1*  
-*Próxima revisão: Final de Outubro 2025 (Pós Fase 2)*
+*Roadmap atualizado em: 25 de Setembro de 2025*  
+*Versão do documento: 3.0*  
+*Próxima revisão: Final de Outubro 2025 (Pós Fase 3)*
