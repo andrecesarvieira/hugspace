@@ -95,7 +95,7 @@ public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Empl
                 {
                     EmployeeId = employeeId,
                     DepartmentId = deptId,
-                    AssignedAt = DateTime.UtcNow
+                    StartDate = DateTime.UtcNow
                 });
             }
         }

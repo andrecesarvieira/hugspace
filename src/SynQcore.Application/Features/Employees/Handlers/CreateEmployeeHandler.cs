@@ -75,7 +75,7 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, Empl
                 {
                     EmployeeId = employee.Id,
                     DepartmentId = deptId,
-                    AssignedAt = DateTime.UtcNow
+                    StartDate = DateTime.UtcNow
                 });
             }
         }
