@@ -7,6 +7,46 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Não Lançado]
 
+## [4.1.0] - 2025-09-26
+
+### 🎉 **MARCO: Fase 4.1 - Corporate Real-Time Communication SignalR COMPLETA**
+
+#### ✨ **SignalR Hubs Corporativos**
+- **CorporateCollaborationHub**: Hub principal para colaboração em tempo real
+  - `JoinTeamChannel` / `LeaveTeamChannel` - Canais de equipe com grupos automáticos
+  - `JoinProjectChannel` / `LeaveProjectChannel` - Canais de projeto colaborativos  
+  - `SendTeamMessage` / `SendProjectMessage` - Mensagens em tempo real
+  - `UpdatePresenceStatus` - Sistema de presença (online/offline/busy)
+  - Eventos: `UserOnline`, `UserOffline`, `ReceiveTeamMessage`, `ReceiveProjectMessage`, `UserPresenceChanged`
+
+- **ExecutiveCommunicationHub**: Hub para comunicações executivas e anúncios
+  - `SendCompanyAnnouncement` - Anúncios para toda empresa (Manager/HR/Admin)
+  - `SendExecutiveCommunication` - Comunicações executivas confidenciais
+  - `SendPolicyUpdate` - Atualizações de políticas corporativas (HR/Admin)
+  - `JoinDepartmentCommunications` / `SendDepartmentCommunication` - Comunicação departamental
+  - Eventos: `ReceiveCompanyAnnouncement`, `ReceiveExecutiveCommunication`, `ReceivePolicyUpdate`, `ReceiveDepartmentCommunication`
+
+#### 🔐 **Segurança e Performance SignalR**
+- **JWT Authentication**: Autenticação via query string para WebSocket connections
+- **Role-Based Groups**: Grupos automáticos por função (Role_Admin, Role_Manager, etc.)
+- **LoggerMessage Delegates**: 18 delegates performance-optimized (Event IDs 4001-4109)
+- **Connection Management**: OnConnectedAsync/OnDisconnectedAsync com logging completo
+
+#### 📚 **SignalR Documentation System**
+- **SignalRDocumentationController**: 4 endpoints para documentação completa
+  - `GET /api/SignalRDocumentation/hubs` - Informações dos Hubs disponíveis
+  - `GET /api/SignalRDocumentation/examples/javascript` - Exemplos JavaScript prontos
+  - `GET /api/SignalRDocumentation/status` - Status das conexões ativas (Admin)
+  - `GET /api/SignalRDocumentation/implementation-guide` - Guia de implementação
+
+#### 🛠️ **Configuração Técnica**
+- **Program.cs**: AddSignalR() configurado com JWT support
+- **Endpoint Mapping**: `/hubs/corporate-collaboration` e `/hubs/executive-communication`
+- **Authentication Flow**: JWT Bearer token via access_token query parameter
+- **Error Handling**: Reconexão automática e tratamento de desconexões
+
+---
+
 ## [4.2.0] - 2025-09-26
 
 ### 🎉 **MARCO: Fase 4.2 - Corporate Notification System COMPLETA**
