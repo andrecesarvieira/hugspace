@@ -153,6 +153,20 @@ POST /api/v1/auth/login      - Login e obtenção de token JWT
 GET  /api/v1/auth/test       - Testar token (requer autenticação)
 ```
 
+#### 👑 **Usuário Administrador Padrão**
+O sistema cria automaticamente um usuário administrador no primeiro boot:
+- **Email**: `admin@dev.synqcore.com`
+- **Senha**: `DevAdmin@123!`
+- **Papel**: Admin (acesso completo ao sistema)
+
+#### 👤 **Papel Padrão para Novos Usuários**
+Quando um usuário se registra via `/auth/register`:
+- **Papel Automático**: `Employee` (funcionário padrão)
+- **Permissões**: Acesso básico ao sistema corporativo
+- **Escalação**: Admin pode alterar papéis via `/admin/users`
+
+> 🔒 **Importante**: Altere a senha do admin em produção!
+
 ### 👥 **Employee Management (Fase 2.5)**
 ```http
 POST   /api/v1/employees           - Criar funcionário
@@ -219,8 +233,8 @@ dotnet run --project src/SynQcore.Api
 
 | Serviço | URL | Status | Credenciais |
 |---------|-----|--------|-------------|
-| **API** | http://localhost:5006 | ✅ Funcionando | - |
-| **Swagger UI** | http://localhost:5006/swagger | ✅ Funcionando | - |
+| **API** | http://localhost:5006 | ✅ Funcionando | **Admin**: admin@dev.synqcore.com / DevAdmin@123! |
+| **Swagger UI** | http://localhost:5006/swagger | ✅ Funcionando | Use o admin acima para testar endpoints |
 | **Aplicação Blazor** | http://localhost:5001 | 🚧 Fase 5 | - |
 | **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@synqcore.dev / admin123 |
 | **PostgreSQL** | localhost:5432 | ✅ Funcionando | synqcore_user / synqcore_dev_password |

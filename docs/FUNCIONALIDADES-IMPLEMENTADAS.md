@@ -101,6 +101,22 @@ POST /api/v1/auth/login      ✅ Login e obtenção de JWT
 GET  /api/v1/auth/test       ✅ Testar token (requer auth)
 ```
 
+#### 👑 **Usuário Administrador Padrão (Bootstrap)**
+Sistema cria automaticamente no primeiro boot:
+- **Email**: `admin@dev.synqcore.com`
+- **Senha**: `DevAdmin@123!`  
+- **UserName**: `dev-admin`
+- **Papel**: Admin (acesso total ao sistema)
+- **Status**: EmailConfirmed = true (já ativo)
+
+#### � **Sistema de Papéis Automático**
+- **Registro via /auth/register**: Papel `Employee` atribuído automaticamente
+- **Criação via /admin/users**: Admin escolhe o papel específico
+- **Hierarquia**: Employee < Manager < HR < Admin
+- **Escalação**: Apenas admins podem alterar papéis de outros usuários
+
+> 🔒 **Segurança**: Alterar senha do admin em ambiente de produção!
+
 ### 👥 Employee Management
 ```http
 POST   /api/v1/employees           ✅ Criar funcionário
@@ -145,6 +161,7 @@ POST   /api/v1/tags                ✅ Criar nova tag
 ### 🔒 Segurança e Autorização
 - ✅ **JWT Authentication** com Bearer tokens
 - ✅ **Role-based Authorization** (Employee, Manager, HR, Admin)
+- ✅ **Admin Bootstrap** - Usuário admin padrão criado automaticamente
 - ✅ **Rate Limiting Corporativo** por função/departamento
 - ✅ **Input Validation** com FluentValidation
 - ✅ **Audit Logging** estruturado com Serilog
