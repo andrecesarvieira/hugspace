@@ -7,6 +7,10 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Api.Controllers;
 
+/// <summary>
+/// Controller para gerenciamento de tags
+/// Fornece endpoints para busca, criação e manutenção de tags corporativas
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
@@ -19,7 +23,15 @@ public class TagsController : ControllerBase
         _mediator = mediator;
     }
 
-    // Buscar tags com filtros avançados e ordenação personalizada
+    /// <summary>
+    /// Buscar tags com filtros avançados e ordenação personalizada
+    /// </summary>
+    /// <param name="type">Tipo de tag a filtrar</param>
+    /// <param name="searchTerm">Termo para busca textual</param>
+    /// <param name="minUsageCount">Número mínimo de usos da tag</param>
+    /// <param name="sortBy">Campo para ordenação (padrão: Name)</param>
+    /// <param name="sortDescending">Ordenação decrescente</param>
+    /// <returns>Lista de tags encontradas</returns>
     [HttpGet]
     public async Task<ActionResult<List<TagDto>>> GetTags(
         [FromQuery] TagType? type = null,
@@ -41,7 +53,12 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
-    // Obter tags mais populares por número de usos
+    /// <summary>
+    /// Obter tags mais populares por número de usos
+    /// </summary>
+    /// <param name="count">Número de tags a retornar (padrão: 20)</param>
+    /// <param name="type">Tipo de tag a filtrar</param>
+    /// <returns>Lista das tags mais populares</returns>
     [HttpGet("popular")]
     public async Task<ActionResult<List<TagDto>>> GetPopularTags(
         [FromQuery] int count = 20,
@@ -57,7 +74,11 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
-    // Obter tag específica por ID com informações de uso
+    /// <summary>
+    /// Obter tag específica por ID com informações de uso
+    /// </summary>
+    /// <param name="id">ID da tag</param>
+    /// <returns>Dados completos da tag</returns>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TagDto>> GetTag(Guid id)
     {
@@ -66,7 +87,11 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
-    // Criar nova tag (skill, knowledge, etc.)
+    /// <summary>
+    /// Criar nova tag (skill, knowledge, etc.)
+    /// </summary>
+    /// <param name="createDto">Dados para criação da tag</param>
+    /// <returns>Tag criada com ID gerado</returns>
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createDto)
     {
@@ -75,7 +100,12 @@ public class TagsController : ControllerBase
         return CreatedAtAction(nameof(GetTag), new { id = result.Id }, result);
     }
 
-    // Atualizar informações da tag existente
+    /// <summary>
+    /// Atualizar informações da tag existente
+    /// </summary>
+    /// <param name="id">ID da tag a atualizar</param>
+    /// <param name="updateDto">Novos dados da tag</param>
+    /// <returns>Tag atualizada</returns>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TagDto>> UpdateTag(Guid id, UpdateTagDto updateDto)
     {
@@ -84,7 +114,11 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
-    // Excluir tag (soft delete) com validação de dependências
+    /// <summary>
+    /// Excluir tag (soft delete) com validação de dependências
+    /// </summary>
+    /// <param name="id">ID da tag a excluir</param>
+    /// <returns>Confirmação da exclusão</returns>
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteTag(Guid id)
     {

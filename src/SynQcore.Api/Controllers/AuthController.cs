@@ -5,6 +5,10 @@ using SynQcore.Application.DTOs.Auth;
 
 namespace SynQcore.Api.Controllers;
 
+/// <summary>
+/// Controller para autenticação corporativa
+/// Gerencia registro e login de funcionários
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -16,7 +20,11 @@ public class AuthController : ControllerBase
         _mediator = mediator;
     }
 
-    // Registrar novo funcionário no sistema corporativo
+    /// <summary>
+    /// Registrar novo funcionário no sistema corporativo
+    /// </summary>
+    /// <param name="request">Dados de registro do funcionário</param>
+    /// <returns>Resposta com token JWT se sucesso</returns>
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request)
     {
@@ -35,7 +43,11 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    // Autenticar funcionário e gerar token JWT
+    /// <summary>
+    /// Autenticar funcionário e gerar token JWT
+    /// </summary>
+    /// <param name="request">Credenciais de login</param>
+    /// <returns>Resposta com token JWT se autenticação válida</returns>
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
     {

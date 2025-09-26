@@ -7,7 +7,9 @@ using SynQcore.Application.DTOs.Communication;
 
 namespace SynQcore.Api.Controllers;
 
-// Controller para gerenciamento de Discussion Threads corporativas
+/// <summary>
+/// Controller para gerenciamento de Discussion Threads corporativas
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -22,7 +24,11 @@ public partial class DiscussionThreadsController : ControllerBase
         _logger = logger;
     }
 
-    // Cria um novo comentário em discussion thread
+    /// <summary>
+    /// Cria um novo comentário em discussion thread
+    /// </summary>
+    /// <param name="request">Dados do comentário a ser criado</param>
+    /// <returns>Resposta da operação de criação do comentário</returns>
     [HttpPost("comments")]
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -46,7 +52,12 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Atualiza um comentário existente
+    /// <summary>
+    /// Atualiza um comentário existente
+    /// </summary>
+    /// <param name="commentId">ID do comentário a ser atualizado</param>
+    /// <param name="dto">Dados de atualização do comentário</param>
+    /// <returns>Resposta da operação de atualização do comentário</returns>
     [HttpPut("comments/{commentId:guid}")]
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -82,7 +93,11 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Exclui um comentário
+    /// <summary>
+    /// Exclui um comentário
+    /// </summary>
+    /// <param name="commentId">ID do comentário a ser excluído</param>
+    /// <returns>Resposta da operação de exclusão do comentário</returns>
     [HttpDelete("comments/{commentId:guid}")]
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -108,7 +123,13 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Obtém um comentário específico com contexto
+    /// <summary>
+    /// Obtém um comentário específico com contexto
+    /// </summary>
+    /// <param name="commentId">ID do comentário</param>
+    /// <param name="includeReplies">Se deve incluir respostas do comentário</param>
+    /// <param name="maxReplyDepth">Profundidade máxima de respostas aninhadas</param>
+    /// <returns>Dados do comentário com contexto</returns>
     [HttpGet("comments/{commentId:guid}")]
     [ProducesResponseType(typeof(DiscussionCommentDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -136,7 +157,12 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Resolve um comentário (Questions/Concerns/Actions)
+    /// <summary>
+    /// Resolve um comentário (Questions/Concerns/Actions)
+    /// </summary>
+    /// <param name="commentId">ID do comentário a ser resolvido</param>
+    /// <param name="dto">Dados de resolução do comentário</param>
+    /// <returns>Resposta da operação de resolução do comentário</returns>
     [HttpPost("comments/{commentId:guid}/resolve")]
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -163,7 +189,12 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Modera um comentário (apenas Manager/HR/Admin)
+    /// <summary>
+    /// Modera um comentário (apenas Manager/HR/Admin)
+    /// </summary>
+    /// <param name="commentId">ID do comentário a ser moderado</param>
+    /// <param name="dto">Dados de moderação do comentário</param>
+    /// <returns>Resposta da operação de moderação do comentário</returns>
     [HttpPost("comments/{commentId:guid}/moderate")]
     [Authorize(Roles = "Manager,HR,Admin")]
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
@@ -191,7 +222,12 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Destaca ou remove destaque de um comentário
+    /// <summary>
+    /// Destaca ou remove destaque de um comentário
+    /// </summary>
+    /// <param name="commentId">ID do comentário</param>
+    /// <param name="highlight">Se o comentário deve ser destacado</param>
+    /// <returns>Resposta da operação de destaque do comentário</returns>
     [HttpPost("comments/{commentId:guid}/highlight")]
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -218,7 +254,14 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Obtém thread completa de discussão de um post
+    /// <summary>
+    /// Obtém thread completa de discussão de um post
+    /// </summary>
+    /// <param name="postId">ID do post</param>
+    /// <param name="includeModerated">Se deve incluir comentários moderados</param>
+    /// <param name="filterByType">Filtro por tipo de comentário</param>
+    /// <param name="orderBy">Critério de ordenação dos comentários</param>
+    /// <returns>Thread completa de discussão do post</returns>
     [HttpGet("posts/{postId:guid}/thread")]
     [ProducesResponseType(typeof(DiscussionThreadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -242,7 +285,18 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Busca comentários por critérios específicos
+    /// <summary>
+    /// Busca comentários por critérios específicos
+    /// </summary>
+    /// <param name="searchTerm">Termo de busca</param>
+    /// <param name="postId">ID do post para filtrar</param>
+    /// <param name="commentType">Tipo de comentário</param>
+    /// <param name="moderationStatus">Status de moderação</param>
+    /// <param name="fromDate">Data inicial</param>
+    /// <param name="toDate">Data final</param>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Tamanho da página</param>
+    /// <returns>Lista paginada de comentários encontrados</returns>
     [HttpGet("comments/search")]
     [ProducesResponseType(typeof(List<DiscussionCommentDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<DiscussionCommentDto>>> SearchComments(
@@ -271,7 +325,13 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Obtém comentários pendentes de moderação (Manager/HR/Admin)
+    /// <summary>
+    /// Obtém comentários pendentes de moderação (Manager/HR/Admin)
+    /// </summary>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Tamanho da página</param>
+    /// <param name="departmentId">ID do departamento para filtrar</param>
+    /// <returns>Lista paginada de comentários pendentes de moderação</returns>
     [HttpGet("moderation/pending")]
     [Authorize(Roles = "Manager,HR,Admin")]
     [ProducesResponseType(typeof(List<DiscussionCommentDto>), StatusCodes.Status200OK)]
@@ -293,7 +353,14 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Obtém menções do usuário atual ou especificado
+    /// <summary>
+    /// Obtém menções do usuário atual ou especificado
+    /// </summary>
+    /// <param name="employeeId">ID do funcionário (opcional)</param>
+    /// <param name="onlyUnread">Se deve retornar apenas menções não lidas</param>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Tamanho da página</param>
+    /// <returns>Lista paginada de menções do usuário</returns>
     [HttpGet("mentions")]
     [ProducesResponseType(typeof(List<MentionNotificationDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<MentionNotificationDto>>> GetUserMentions(
@@ -317,7 +384,11 @@ public partial class DiscussionThreadsController : ControllerBase
         }
     }
 
-    // Marca uma menção como lida
+    /// <summary>
+    /// Marca uma menção como lida
+    /// </summary>
+    /// <param name="mentionId">ID da menção</param>
+    /// <returns>Confirmação da operação</returns>
     [HttpPost("mentions/{mentionId:guid}/mark-read")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

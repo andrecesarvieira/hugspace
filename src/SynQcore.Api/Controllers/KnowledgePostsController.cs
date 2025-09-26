@@ -160,7 +160,11 @@ public class KnowledgePostsController : ControllerBase
         return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
     }
 
-    // Buscar artigos de conhecimento com filtros e paginação
+    /// <summary>
+    /// Busca artigos de conhecimento com filtros e paginação
+    /// </summary>
+    /// <param name="searchRequest">Parâmetros de busca e filtros</param>
+    /// <returns>Lista paginada de artigos de conhecimento</returns>
     [HttpGet]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     [ProducesResponseType(typeof(PagedResult<KnowledgePostDto>), StatusCodes.Status200OK)]
@@ -184,7 +188,12 @@ public class KnowledgePostsController : ControllerBase
         }
     }
 
-    // Obter artigo de conhecimento específico por ID com incremento de visualização
+    /// <summary>
+    /// Obtém artigo de conhecimento específico por ID com incremento de visualização
+    /// </summary>
+    /// <param name="id">ID do artigo de conhecimento</param>
+    /// <param name="incrementViewCount">Se deve incrementar contador de visualizações</param>
+    /// <returns>Dados completos do artigo de conhecimento</returns>
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     [ProducesResponseType(typeof(KnowledgePostDto), StatusCodes.Status200OK)]
@@ -218,7 +227,15 @@ public class KnowledgePostsController : ControllerBase
         }
     }
 
-    // Buscar artigos de uma categoria específica com paginação e ordenação
+    /// <summary>
+    /// Busca artigos de uma categoria específica com paginação e ordenação
+    /// </summary>
+    /// <param name="categoryId">ID da categoria</param>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Tamanho da página</param>
+    /// <param name="sortBy">Campo de ordenação</param>
+    /// <param name="sortDescending">Se deve ordenar de forma decrescente</param>
+    /// <returns>Lista paginada de artigos da categoria</returns>
     [HttpGet("category/{categoryId:guid}")]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     [ProducesResponseType(typeof(PagedResult<KnowledgePostDto>), StatusCodes.Status200OK)]
@@ -260,7 +277,11 @@ public class KnowledgePostsController : ControllerBase
         }
     }
 
-    // Obter histórico de versões de um artigo de conhecimento
+    /// <summary>
+    /// Obtém histórico de versões de um artigo de conhecimento
+    /// </summary>
+    /// <param name="id">ID do artigo de conhecimento</param>
+    /// <returns>Lista de versões do artigo</returns>
     [HttpGet("{id:guid}/versions")]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     [ProducesResponseType(typeof(List<KnowledgePostDto>), StatusCodes.Status200OK)]
@@ -290,7 +311,11 @@ public class KnowledgePostsController : ControllerBase
         }
     }
 
-    // Criar novo artigo de conhecimento com validações corporativas
+    /// <summary>
+    /// Cria novo artigo de conhecimento com validações corporativas
+    /// </summary>
+    /// <param name="createDto">Dados do artigo a ser criado</param>
+    /// <returns>Artigo de conhecimento criado</returns>
     [HttpPost]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     [ProducesResponseType(typeof(KnowledgePostDto), StatusCodes.Status201Created)]
@@ -331,7 +356,12 @@ public class KnowledgePostsController : ControllerBase
         }
     }
 
-    // Atualizar artigo de conhecimento (apenas autor original ou admin)
+    /// <summary>
+    /// Atualiza artigo de conhecimento (apenas autor original ou admin)
+    /// </summary>
+    /// <param name="id">ID do artigo a ser atualizado</param>
+    /// <param name="updateDto">Dados de atualização do artigo</param>
+    /// <returns>Artigo de conhecimento atualizado</returns>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     [ProducesResponseType(typeof(KnowledgePostDto), StatusCodes.Status200OK)]
@@ -385,7 +415,11 @@ public class KnowledgePostsController : ControllerBase
         }
     }
 
-    // Excluir artigo de conhecimento (apenas Manager/HR/Admin)
+    /// <summary>
+    /// Exclui artigo de conhecimento (apenas Manager/HR/Admin)
+    /// </summary>
+    /// <param name="id">ID do artigo a ser excluído</param>
+    /// <returns>Confirmação da exclusão</returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Manager,HR,Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

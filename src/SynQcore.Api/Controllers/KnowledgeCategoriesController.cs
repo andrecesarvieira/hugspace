@@ -6,6 +6,10 @@ using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 
 namespace SynQcore.Api.Controllers;
 
+/// <summary>
+/// Controller para gerenciamento de categorias de conhecimento
+/// Fornece endpoints para organização hierárquica de conteúdo corporativo
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
@@ -18,7 +22,12 @@ public class KnowledgeCategoriesController : ControllerBase
         _mediator = mediator;
     }
 
-    // Buscar todas as categorias de conhecimento com opções de filtro
+    /// <summary>
+    /// Buscar todas as categorias de conhecimento com opções de filtro
+    /// </summary>
+    /// <param name="includeInactive">Incluir categorias inativas</param>
+    /// <param name="includeHierarchy">Incluir estrutura hierárquica</param>
+    /// <returns>Lista de categorias com estrutura opcional de hierarquia</returns>
     [HttpGet]
     public async Task<ActionResult<List<KnowledgeCategoryDto>>> GetCategories(
         [FromQuery] bool includeInactive = false,
@@ -34,7 +43,11 @@ public class KnowledgeCategoriesController : ControllerBase
         return Ok(result);
     }
 
-    // Obter categoria de conhecimento específica por ID
+    /// <summary>
+    /// Obter categoria de conhecimento específica por ID
+    /// </summary>
+    /// <param name="id">ID da categoria</param>
+    /// <returns>Dados completos da categoria incluindo hierarquia</returns>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<KnowledgeCategoryDto>> GetCategory(Guid id)
     {
@@ -43,7 +56,11 @@ public class KnowledgeCategoriesController : ControllerBase
         return Ok(result);
     }
 
-    // Criar nova categoria de conhecimento
+    /// <summary>
+    /// Criar nova categoria de conhecimento
+    /// </summary>
+    /// <param name="createDto">Dados da nova categoria incluindo hierarquia</param>
+    /// <returns>Categoria criada com ID gerado</returns>
     [HttpPost]
     public async Task<ActionResult<KnowledgeCategoryDto>> CreateCategory(CreateKnowledgeCategoryDto createDto)
     {
@@ -52,7 +69,12 @@ public class KnowledgeCategoriesController : ControllerBase
         return CreatedAtAction(nameof(GetCategory), new { id = result.Id }, result);
     }
 
-    // Atualizar categoria de conhecimento existente
+    /// <summary>
+    /// Atualizar categoria de conhecimento existente
+    /// </summary>
+    /// <param name="id">ID da categoria a atualizar</param>
+    /// <param name="updateDto">Novos dados da categoria</param>
+    /// <returns>Categoria atualizada</returns>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<KnowledgeCategoryDto>> UpdateCategory(Guid id, UpdateKnowledgeCategoryDto updateDto)
     {
@@ -61,7 +83,11 @@ public class KnowledgeCategoriesController : ControllerBase
         return Ok(result);
     }
 
-    // Excluir categoria de conhecimento (soft delete)
+    /// <summary>
+    /// Excluir categoria de conhecimento (soft delete)
+    /// </summary>
+    /// <param name="id">ID da categoria a excluir</param>
+    /// <returns>Confirmação da exclusão</returns>
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteCategory(Guid id)
     {

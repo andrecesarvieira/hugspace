@@ -25,7 +25,11 @@ public partial class DepartmentsController : ControllerBase
         _logger = logger;
     }
 
-    // Buscar departamentos com filtros e paginação
+    /// <summary>
+    /// Busca departamentos com filtros e paginação
+    /// </summary>
+    /// <param name="request">Critérios de busca e paginação</param>
+    /// <returns>Lista paginada de departamentos</returns>
     [HttpGet]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     public async Task<ActionResult<PagedResult<DepartmentDto>>> GetDepartments([FromQuery] GetDepartmentsRequest request)
@@ -47,7 +51,11 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
-    // Obter departamento específico por ID
+    /// <summary>
+    /// Obtém departamento específico por ID
+    /// </summary>
+    /// <param name="id">ID do departamento</param>
+    /// <returns>Dados do departamento</returns>
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     public async Task<ActionResult<DepartmentDto>> GetDepartmentById([Required] Guid id)
@@ -75,7 +83,11 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
-    // Obter hierarquia completa do departamento (subordinados e departamento pai)
+    /// <summary>
+    /// Obtém hierarquia completa do departamento (subordinados e departamento pai)
+    /// </summary>
+    /// <param name="id">ID do departamento</param>
+    /// <returns>Hierarquia completa do departamento</returns>
     [HttpGet("{id:guid}/hierarchy")]
     [Authorize(Roles = "Manager,HR,Admin")]
     public async Task<ActionResult<DepartmentHierarchyDto>> GetDepartmentHierarchy([Required] Guid id)
@@ -102,7 +114,11 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
-    // Criar novo departamento com validações de hierarquia (apenas HR/Admin)
+    /// <summary>
+    /// Cria novo departamento com validações de hierarquia (apenas HR/Admin)
+    /// </summary>
+    /// <param name="request">Dados do departamento a ser criado</param>
+    /// <returns>Dados do departamento criado</returns>
     [HttpPost]
     [Authorize(Roles = "HR,Admin")]
     public async Task<ActionResult<DepartmentDto>> CreateDepartment([FromBody, Required] CreateDepartmentRequest request)
@@ -134,7 +150,12 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
-    // Atualizar departamento existente com validações de negócio (apenas HR/Admin)
+    /// <summary>
+    /// Atualiza departamento existente com validações de negócio (apenas HR/Admin)
+    /// </summary>
+    /// <param name="id">ID do departamento</param>
+    /// <param name="request">Dados de atualização do departamento</param>
+    /// <returns>Dados do departamento atualizado</returns>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     public async Task<ActionResult<DepartmentDto>> UpdateDepartment([Required] Guid id, [FromBody, Required] UpdateDepartmentRequest request)
@@ -171,7 +192,11 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
-    // Excluir departamento com validação de dependências (apenas Admin)
+    /// <summary>
+    /// Exclui departamento com validação de dependências (apenas Admin)
+    /// </summary>
+    /// <param name="id">ID do departamento a ser excluído</param>
+    /// <returns>Confirmação da exclusão</returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteDepartment([Required] Guid id)

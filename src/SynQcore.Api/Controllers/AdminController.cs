@@ -8,7 +8,10 @@ using SynQcore.Application.Queries.Admin;
 
 namespace SynQcore.Api.Controllers;
 
-// Controller para funcionalidades administrativas do sistema corporativo
+/// <summary>
+/// Controller para funcionalidades administrativas do sistema corporativo
+/// Fornece endpoints para gerenciamento de usuários e configurações (apenas Admin)
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
@@ -21,7 +24,13 @@ public class AdminController : ControllerBase
         _mediator = mediator;
     }
 
-    // Listar todos os usuários do sistema com paginação e busca
+    /// <summary>
+    /// Listar todos os usuários do sistema com paginação e busca
+    /// </summary>
+    /// <param name="page">Número da página (padrão: 1)</param>
+    /// <param name="pageSize">Itens por página (padrão: 10)</param>
+    /// <param name="searchTerm">Termo para busca por nome ou email</param>
+    /// <returns>Lista paginada de usuários do sistema</returns>
     [HttpGet("users")]
     public async Task<ActionResult<UsersListResponse>> GetUsers(
         [FromQuery] int page = 1,
@@ -39,7 +48,11 @@ public class AdminController : ControllerBase
         return Ok(result);
     }
 
-    // Criar novo usuário com papel específico (apenas administradores)
+    /// <summary>
+    /// Criar novo usuário com papel específico (apenas administradores)
+    /// </summary>
+    /// <param name="request">Dados do novo usuário incluindo papel</param>
+    /// <returns>Usuário criado com confirmação</returns>
     [HttpPost("users")]
     public async Task<ActionResult<CreateUserResponse>> CreateUser([FromBody] CreateUserRequest request)
     {
@@ -61,7 +74,10 @@ public class AdminController : ControllerBase
             response);
     }
 
-    // Listar papéis disponíveis no sistema
+    /// <summary>
+    /// Listar papéis disponíveis no sistema
+    /// </summary>
+    /// <returns>Lista de papéis corporativos disponíveis</returns>
     [HttpGet("roles")]
     public ActionResult<IEnumerable<string>> GetAvailableRoles()
     {

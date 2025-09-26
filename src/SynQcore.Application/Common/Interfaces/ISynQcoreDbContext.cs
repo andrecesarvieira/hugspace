@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SynQcore.Domain.Entities.Organization;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Relationships;
+using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Common.Interfaces;
 
@@ -21,11 +22,20 @@ public interface ISynQcoreDbContext
     DbSet<PostLike> PostLikes { get; }
     DbSet<Notification> Notifications { get; }
 
+    // Feed and Discovery entities (Fase 3.4)
+    DbSet<FeedEntry> FeedEntries { get; }
+    DbSet<UserInterest> UserInterests { get; }
+
     // Knowledge Management entities
     DbSet<KnowledgeCategory> KnowledgeCategories { get; }
     DbSet<Tag> Tags { get; }
     DbSet<PostTag> PostTags { get; }
     DbSet<Endorsement> Endorsements { get; }
+
+    // Corporate Notifications entities (Fase 4.2)
+    DbSet<CorporateNotification> CorporateNotifications { get; }
+    DbSet<NotificationDelivery> NotificationDeliveries { get; }
+    DbSet<NotificationTemplate> NotificationTemplates { get; }
 
     // Relationship entities
     DbSet<EmployeeDepartment> EmployeeDepartments { get; }

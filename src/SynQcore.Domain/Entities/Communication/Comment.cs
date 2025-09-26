@@ -54,7 +54,6 @@ public class Comment : BaseEntity
     public ICollection<CommentLike> Likes { get; set; } = [];
     public ICollection<Endorsement> Endorsements { get; set; } = [];
     public ICollection<CommentMention> Mentions { get; set; } = [];
-    public ICollection<CommentMention> MentionsMade { get; set; } = [];
 }
 
 /// <summary>

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using SynQcore.Domain.Entities.Organization;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Relationships;
+using SynQcore.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using SynQcore.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -31,11 +32,20 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public DbSet<CommentMention> CommentMentions => Set<CommentMention>();
     public DbSet<Notification> Notifications => Set<Notification>();
     
+    // Feed and Discovery (Fase 3.4)
+    public DbSet<FeedEntry> FeedEntries => Set<FeedEntry>();
+    public DbSet<UserInterest> UserInterests => Set<UserInterest>();
+    
     // Knowledge Management
     public DbSet<KnowledgeCategory> KnowledgeCategories => Set<KnowledgeCategory>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<PostTag> PostTags => Set<PostTag>();
     public DbSet<Endorsement> Endorsements => Set<Endorsement>();
+
+    // Corporate Notifications (Fase 4.2)
+    public DbSet<CorporateNotification> CorporateNotifications => Set<CorporateNotification>();
+    public DbSet<NotificationDelivery> NotificationDeliveries => Set<NotificationDelivery>();
+    public DbSet<NotificationTemplate> NotificationTemplates => Set<NotificationTemplate>();
 
     // DbSets - Relationships
     public DbSet<EmployeeDepartment> EmployeeDepartments => Set<EmployeeDepartment>();

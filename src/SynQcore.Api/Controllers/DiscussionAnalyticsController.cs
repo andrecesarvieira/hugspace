@@ -7,7 +7,9 @@ using SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
 namespace SynQcore.Api.Controllers;
 
-// Controller para analytics de Discussion Threads corporativas
+/// <summary>
+/// Controller para analytics de Discussion Threads corporativas
+/// </summary>
 [ApiController]
 [Route("api/discussion-threads/analytics")]
 [Authorize]
@@ -22,7 +24,14 @@ public partial class DiscussionAnalyticsController : ControllerBase
         _logger = logger;
     }
 
-    // Obtém analytics detalhado de discussions
+    /// <summary>
+    /// Obtém analytics detalhado de discussions
+    /// </summary>
+    /// <param name="postId">ID do post para filtrar</param>
+    /// <param name="fromDate">Data inicial do período</param>
+    /// <param name="toDate">Data final do período</param>
+    /// <param name="departmentId">ID do departamento para filtrar</param>
+    /// <returns>Dados analíticos das discussões</returns>
     [HttpGet("overview")]
     [ProducesResponseType(typeof(DiscussionAnalyticsDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<DiscussionAnalyticsDto>> GetDiscussionAnalytics(
@@ -44,7 +53,13 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Obtém analytics de participação de usuário específico
+    /// <summary>
+    /// Obtém analytics de participação de usuário específico
+    /// </summary>
+    /// <param name="userId">ID do usuário</param>
+    /// <param name="fromDate">Data inicial do período</param>
+    /// <param name="toDate">Data final do período</param>
+    /// <returns>Dados analíticos de participação do usuário</returns>
     [HttpGet("users/{userId:guid}")]
     [ProducesResponseType(typeof(UserDiscussionAnalyticsDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +86,13 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Obtém métricas de moderação (Manager/HR/Admin)
+    /// <summary>
+    /// Obtém métricas de moderação (Manager/HR/Admin)
+    /// </summary>
+    /// <param name="fromDate">Data inicial do período</param>
+    /// <param name="toDate">Data final do período</param>
+    /// <param name="moderatorId">ID do moderador para filtrar</param>
+    /// <returns>Métricas de moderação de discussões</returns>
     [HttpGet("moderation")]
     [Authorize(Roles = "Manager,HR,Admin")]
     [ProducesResponseType(typeof(ModerationMetricsDto), StatusCodes.Status200OK)]
@@ -93,7 +114,15 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Obtém estatísticas de engagement por período
+    /// <summary>
+    /// Obtém estatísticas de engagement por período
+    /// </summary>
+    /// <param name="fromDate">Data inicial do período</param>
+    /// <param name="toDate">Data final do período</param>
+    /// <param name="groupBy">Agrupamento por período (Day, Week, Month)</param>
+    /// <param name="departmentId">ID do departamento para filtrar</param>
+    /// <param name="teamId">ID do time para filtrar</param>
+    /// <returns>Estatísticas de engagement das discussões</returns>
     [HttpGet("engagement")]
     [ProducesResponseType(typeof(EngagementStatisticsDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<EngagementStatisticsDto>> GetEngagementStatistics(
@@ -116,7 +145,15 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Obtém discussões em trending (alta atividade recente)
+    /// <summary>
+    /// Obtém discussões em trending (alta atividade recente)
+    /// </summary>
+    /// <param name="hours">Janela de horas para análise</param>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Tamanho da página</param>
+    /// <param name="department">Departamento para filtrar</param>
+    /// <param name="category">Categoria para filtrar</param>
+    /// <returns>Lista paginada de discussões em trending</returns>
     [HttpGet("trending")]
     [ProducesResponseType(typeof(PagedTrendingDiscussionsResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedTrendingDiscussionsResponse>> GetTrendingDiscussions(
@@ -139,7 +176,15 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Obtém comentários que precisam de atenção (questões não resolvidas, alta prioridade)
+    /// <summary>
+    /// Obtém comentários que precisam de atenção (questões não resolvidas, alta prioridade)
+    /// </summary>
+    /// <param name="userId">ID do usuário para filtrar</param>
+    /// <param name="unresolvedOnly">Se deve retornar apenas não resolvidos</param>
+    /// <param name="highPriorityOnly">Se deve retornar apenas alta prioridade</param>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Tamanho da página</param>
+    /// <returns>Lista paginada de comentários que precisam de atenção</returns>
     [HttpGet("attention-needed")]
     [ProducesResponseType(typeof(PagedCommentsResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedCommentsResponse>> GetCommentsNeedingAttention(
@@ -162,7 +207,13 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Gera relatório executivo de discussions (HR/Admin)
+    /// <summary>
+    /// Gera relatório executivo de discussions (HR/Admin)
+    /// </summary>
+    /// <param name="fromDate">Data inicial do relatório</param>
+    /// <param name="toDate">Data final do relatório</param>
+    /// <param name="departmentId">ID do departamento para filtrar</param>
+    /// <returns>Relatório executivo consolidado</returns>
     [HttpGet("executive-report")]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(ExecutiveDiscussionReportDto), StatusCodes.Status200OK)]
@@ -213,7 +264,14 @@ public partial class DiscussionAnalyticsController : ControllerBase
         }
     }
 
-    // Exporta dados de analytics para CSV (HR/Admin)
+    /// <summary>
+    /// Exporta dados de analytics para CSV (HR/Admin)
+    /// </summary>
+    /// <param name="reportType">Tipo de relatório (discussions, users, moderation)</param>
+    /// <param name="fromDate">Data inicial</param>
+    /// <param name="toDate">Data final</param>
+    /// <param name="departmentId">ID do departamento para filtrar</param>
+    /// <returns>Arquivo CSV com dados analíticos</returns>
     [HttpGet("export/{reportType}")]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]

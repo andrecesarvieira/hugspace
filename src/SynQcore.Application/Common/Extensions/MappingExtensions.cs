@@ -2,8 +2,11 @@ using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.DTOs.Communication;
+using SynQcore.Application.DTOs;
+using SynQcore.Application.DTOs.Notifications;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
+using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Common.Extensions;
 
@@ -320,5 +323,267 @@ public static class MappingExtensions
             CreatedAt = post.CreatedAt,
             UpdatedAt = post.UpdatedAt
         };
+    }
+
+    /// <summary>
+    /// Mapeia FeedEntry para FeedItemDto
+    /// </summary>
+    public static FeedItemDto ToFeedItemDto(this FeedEntry feedEntry)
+    {
+        ArgumentNullException.ThrowIfNull(feedEntry);
+        
+        return new FeedItemDto
+        {
+            Id = feedEntry.Id,
+            PostId = feedEntry.PostId,
+            Priority = feedEntry.Priority.ToString(),
+            RelevanceScore = feedEntry.RelevanceScore,
+            Reason = feedEntry.Reason.ToString(),
+            CreatedAt = feedEntry.CreatedAt,
+            ViewedAt = feedEntry.ViewedAt,
+            IsRead = feedEntry.IsRead,
+            IsBookmarked = feedEntry.IsBookmarked,
+            
+            // Post information - será preenchido nos handlers se Post incluído
+            Title = feedEntry.Post?.Title ?? string.Empty,
+            Content = feedEntry.Post?.Content ?? string.Empty,
+            Summary = feedEntry.Post?.Summary,
+            PostType = feedEntry.Post?.Type.ToString() ?? string.Empty,
+            ImageUrl = feedEntry.Post?.ImageUrl,
+            IsPinned = feedEntry.Post?.IsPinned ?? false,
+            IsOfficial = feedEntry.Post?.IsOfficial ?? false,
+            
+            // Author information - será preenchido se Author incluído
+            AuthorId = feedEntry.Post?.AuthorId ?? Guid.Empty,
+            AuthorName = feedEntry.Post?.Author != null 
+                ? $"{feedEntry.Post.Author.FirstName} {feedEntry.Post.Author.LastName}".Trim() 
+                : string.Empty,
+            AuthorEmail = feedEntry.Post?.Author?.Email ?? string.Empty,
+            AuthorAvatarUrl = feedEntry.Post?.Author?.ProfilePhotoUrl,
+            AuthorDepartment = feedEntry.Post?.Department?.Name,
+            
+            // Engagement metrics - valores padrão
+            LikeCount = 0,
+            CommentCount = 0,
+            ViewCount = 0,
+            
+            // User interaction - valores padrão
+            HasLiked = false,
+            HasCommented = false,
+            
+            // Tags and categories - será preenchido se incluídos
+            Tags = feedEntry.Post?.PostTags?.Select(pt => pt.Tag.Name).ToList() ?? [],
+            Category = feedEntry.Post?.Category?.Name
+        };
+    }
+
+    /// <summary>
+    /// Mapeia lista de FeedEntry para lista de FeedItemDto
+    /// </summary>
+    public static List<FeedItemDto> ToFeedItemDtos(this IEnumerable<FeedEntry> feedEntries)
+    {
+        return feedEntries.Select(fe => fe.ToFeedItemDto()).ToList();
+    }
+
+    /// <summary>
+    /// Mapeia UserInterest para UserInterestDto
+    /// </summary>
+    public static UserInterestDto ToUserInterestDto(this UserInterest userInterest)
+    {
+        ArgumentNullException.ThrowIfNull(userInterest);
+        
+        return new UserInterestDto
+        {
+            Id = userInterest.Id,
+            Type = userInterest.Type.ToString(),
+            Value = userInterest.InterestValue,
+            Score = userInterest.Score,
+            InteractionCount = userInterest.InteractionCount,
+            Source = userInterest.Source.ToString(),
+            FirstInteractionAt = userInterest.CreatedAt, // Usando CreatedAt como proxy
+            LastInteractionAt = userInterest.LastInteractionAt
+        };
+    }
+
+    /// <summary>
+    /// Mapeia lista de UserInterest para lista de UserInterestDto
+    /// </summary>
+    public static List<UserInterestDto> ToUserInterestDtos(this IEnumerable<UserInterest> userInterests)
+    {
+        return userInterests.Select(ui => ui.ToUserInterestDto()).ToList();
+    }
+
+    // ===== NOTIFICATION MAPPING EXTENSIONS =====
+
+    /// <summary>
+    /// Converte CorporateNotification entity para CorporateNotificationDto
+    /// </summary>
+    public static CorporateNotificationDto ToCorporateNotificationDto(this CorporateNotification notification)
+    {
+        ArgumentNullException.ThrowIfNull(notification);
+
+        return new CorporateNotificationDto
+        {
+            Id = notification.Id,
+            Title = notification.Title,
+            Content = notification.Content,
+            Type = notification.Type.ToString(),
+            Priority = notification.Priority.ToString(),
+            Status = notification.Status.ToString(),
+            CreatedBy = notification.CreatedByEmployee?.ToEmployeeBasicDto() ?? new EmployeeBasicDto(),
+            TargetDepartment = notification.TargetDepartment?.ToDepartmentBasicDto(),
+            CreatedAt = notification.CreatedAt,
+            ExpiresAt = notification.ExpiresAt,
+            ScheduledFor = notification.ScheduledFor,
+            RequiresApproval = notification.RequiresApproval,
+            ApprovedBy = notification.ApprovedByEmployee?.ToEmployeeBasicDto(),
+            ApprovedAt = notification.ApprovedAt,
+            RequiresAcknowledgment = notification.RequiresAcknowledgment,
+            EnabledChannels = GetEnabledChannelsList(notification.EnabledChannels)
+        };
+    }
+
+    /// <summary>
+    /// Converte lista de CorporateNotification entities para lista de CorporateNotificationDto
+    /// </summary>
+    public static List<CorporateNotificationDto> ToCorporateNotificationDtos(this IEnumerable<CorporateNotification> notifications)
+    {
+        ArgumentNullException.ThrowIfNull(notifications);
+        return notifications.Select(n => n.ToCorporateNotificationDto()).ToList();
+    }
+
+    /// <summary>
+    /// Converte NotificationDelivery entity para NotificationDeliveryDto
+    /// </summary>
+    public static NotificationDeliveryDto ToNotificationDeliveryDto(this NotificationDelivery delivery)
+    {
+        ArgumentNullException.ThrowIfNull(delivery);
+
+        return new NotificationDeliveryDto
+        {
+            Id = delivery.Id,
+            NotificationId = delivery.NotificationId,
+            Employee = delivery.Employee?.ToEmployeeBasicDto() ?? new EmployeeBasicDto(),
+            Status = delivery.Status.ToString(),
+            Channel = delivery.Channel.ToString(),
+            DeliveredAt = delivery.DeliveredAt,
+            ReadAt = delivery.ReadAt,
+            AcknowledgedAt = delivery.AcknowledgedAt,
+            DeliveryAttempts = delivery.DeliveryAttempts,
+            ErrorDetails = delivery.ErrorDetails
+        };
+    }
+
+    /// <summary>
+    /// Converte lista de NotificationDelivery entities para lista de NotificationDeliveryDto
+    /// </summary>
+    public static List<NotificationDeliveryDto> ToNotificationDeliveryDtos(this IEnumerable<NotificationDelivery> deliveries)
+    {
+        ArgumentNullException.ThrowIfNull(deliveries);
+        return deliveries.Select(d => d.ToNotificationDeliveryDto()).ToList();
+    }
+
+    /// <summary>
+    /// Converte NotificationTemplate entity para NotificationTemplateDto
+    /// </summary>
+    public static NotificationTemplateDto ToNotificationTemplateDto(this NotificationTemplate template)
+    {
+        ArgumentNullException.ThrowIfNull(template);
+
+        return new NotificationTemplateDto
+        {
+            Id = template.Id,
+            Name = template.Name,
+            Code = template.Code,
+            Category = template.Category,
+            TitleTemplate = template.TitleTemplate,
+            ContentTemplate = template.ContentTemplate,
+            DefaultType = template.DefaultType.ToString(),
+            DefaultPriority = template.DefaultPriority.ToString(),
+            DefaultChannels = GetEnabledChannelsList(template.DefaultChannels),
+            DefaultRequiresApproval = template.DefaultRequiresApproval,
+            DefaultRequiresAcknowledgment = template.DefaultRequiresAcknowledgment,
+            IsActive = template.IsActive,
+            AvailablePlaceholders = ParseAvailablePlaceholders(template.AvailablePlaceholders),
+            CreatedAt = template.CreatedAt
+        };
+    }
+
+    /// <summary>
+    /// Converte lista de NotificationTemplate entities para lista de NotificationTemplateDto
+    /// </summary>
+    public static List<NotificationTemplateDto> ToNotificationTemplateDtos(this IEnumerable<NotificationTemplate> templates)
+    {
+        ArgumentNullException.ThrowIfNull(templates);
+        return templates.Select(t => t.ToNotificationTemplateDto()).ToList();
+    }
+
+    /// <summary>
+    /// Converte Employee entity para EmployeeBasicDto (para notificações)
+    /// </summary>
+    public static EmployeeBasicDto ToEmployeeBasicDto(this Employee employee)
+    {
+        ArgumentNullException.ThrowIfNull(employee);
+
+        return new EmployeeBasicDto
+        {
+            Id = employee.Id,
+            FullName = employee.FullName,
+            Email = employee.Email,
+            Position = employee.Position
+        };
+    }
+
+    /// <summary>
+    /// Converte Department entity para DepartmentBasicDto (para notificações)
+    /// </summary>
+    public static DepartmentBasicDto ToDepartmentBasicDto(this Department department)
+    {
+        ArgumentNullException.ThrowIfNull(department);
+
+        return new DepartmentBasicDto
+        {
+            Id = department.Id,
+            Name = department.Name,
+            Code = department.Code
+        };
+    }
+
+    /// <summary>
+    /// Converte flags de canais para lista de strings
+    /// </summary>
+    private static List<string> GetEnabledChannelsList(NotificationChannels channels)
+    {
+        var channelList = new List<string>();
+
+        if (channels.HasFlag(NotificationChannels.InApp))
+            channelList.Add("InApp");
+        if (channels.HasFlag(NotificationChannels.Email))
+            channelList.Add("Email");
+        if (channels.HasFlag(NotificationChannels.Push))
+            channelList.Add("Push");
+        if (channels.HasFlag(NotificationChannels.SMS))
+            channelList.Add("SMS");
+        if (channels.HasFlag(NotificationChannels.Webhook))
+            channelList.Add("Webhook");
+        if (channels.HasFlag(NotificationChannels.Teams))
+            channelList.Add("Teams");
+        if (channels.HasFlag(NotificationChannels.Slack))
+            channelList.Add("Slack");
+
+        return channelList;
+    }
+
+    /// <summary>
+    /// Converte string de placeholders para lista
+    /// </summary>
+    private static List<string> ParseAvailablePlaceholders(string? placeholders)
+    {
+        if (string.IsNullOrEmpty(placeholders))
+            return new List<string>();
+
+        return placeholders.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                          .Select(p => p.Trim())
+                          .ToList();
     }
 }

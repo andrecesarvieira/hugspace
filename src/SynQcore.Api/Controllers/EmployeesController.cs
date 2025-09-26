@@ -11,6 +11,10 @@ using SynQcore.Infrastructure.Identity;
 
 namespace SynQcore.Api.Controllers;
 
+/// <summary>
+/// Controller para gerenciamento de funcionários
+/// Fornece endpoints para consulta, criação e manutenção de perfis de funcionários
+/// </summary>
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
@@ -27,7 +31,11 @@ public partial class EmployeesController : ControllerBase
         _logger = logger;
     }
 
-    // Buscar funcionários com filtros e paginação
+    /// <summary>
+    /// Buscar funcionários com filtros e paginação
+    /// </summary>
+    /// <param name="request">Parâmetros de busca e filtros</param>
+    /// <returns>Lista paginada de funcionários</returns>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<EmployeeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -37,7 +45,11 @@ public partial class EmployeesController : ControllerBase
         return Ok(result);
     }
 
-    // Obter funcionário específico por ID
+    /// <summary>
+    /// Obter funcionário específico por ID
+    /// </summary>
+    /// <param name="id">ID do funcionário</param>
+    /// <returns>Dados completos do funcionário</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -48,7 +60,11 @@ public partial class EmployeesController : ControllerBase
         return Ok(result);
     }
 
-    // Criar novo funcionário (apenas HR/Admin)
+    /// <summary>
+    /// Criar novo funcionário (apenas HR/Admin)
+    /// </summary>
+    /// <param name="request">Dados para criação do funcionário</param>
+    /// <returns>Funcionário criado com ID gerado</returns>
     [HttpPost]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status201Created)]
@@ -62,7 +78,12 @@ public partial class EmployeesController : ControllerBase
         return CreatedAtAction(nameof(GetEmployee), new { id = result.Id }, result);
     }
 
-    // Atualizar dados do funcionário (apenas HR/Admin)
+    /// <summary>
+    /// Atualizar dados do funcionário (apenas HR/Admin)
+    /// </summary>
+    /// <param name="id">ID do funcionário a atualizar</param>
+    /// <param name="request">Novos dados do funcionário</param>
+    /// <returns>Funcionário atualizado</returns>
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
@@ -77,7 +98,12 @@ public partial class EmployeesController : ControllerBase
         return Ok(result);
     }
 
-    // Fazer upload de avatar do funcionário com validações de segurança
+    /// <summary>
+    /// Faz upload de avatar do funcionário com validações de segurança
+    /// </summary>
+    /// <param name="id">ID do funcionário</param>
+    /// <param name="avatar">Arquivo de imagem do avatar</param>
+    /// <returns>URL do avatar atualizado</returns>
     [HttpPost("{id:guid}/avatar")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -89,7 +115,11 @@ public partial class EmployeesController : ControllerBase
         return Ok(new { avatarUrl });
     }
 
-    // Obter hierarquia organizacional do funcionário (subordinados e gerente)
+    /// <summary>
+    /// Obtém hierarquia organizacional do funcionário (subordinados e gerente)
+    /// </summary>
+    /// <param name="id">ID do funcionário</param>
+    /// <returns>Hierarquia organizacional do funcionário</returns>
     [HttpGet("{id:guid}/hierarchy")]
     [ProducesResponseType(typeof(EmployeeHierarchyDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -100,7 +130,11 @@ public partial class EmployeesController : ControllerBase
         return Ok(result);
     }
 
-    // Buscar funcionários por nome, email ou departamento
+    /// <summary>
+    /// Busca funcionários por nome, email ou departamento
+    /// </summary>
+    /// <param name="q">Termo de busca</param>
+    /// <returns>Lista de funcionários encontrados</returns>
     [HttpGet("search")]
     [ProducesResponseType(typeof(List<EmployeeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -110,7 +144,11 @@ public partial class EmployeesController : ControllerBase
         return Ok(result);
     }
 
-    // Desligar funcionário (soft delete + bloqueio de acesso) - apenas HR/Admin
+    /// <summary>
+    /// Desliga funcionário (soft delete + bloqueio de acesso) - apenas HR/Admin
+    /// </summary>
+    /// <param name="id">ID do funcionário</param>
+    /// <returns>Confirmação do desligamento</returns>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

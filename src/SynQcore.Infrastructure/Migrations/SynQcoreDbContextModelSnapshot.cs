@@ -325,9 +325,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.Property<Guid>("CommentId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("CommentId1")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("Context")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -338,6 +335,9 @@ namespace SynQcore.Infrastructure.Migrations
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("EmployeeId")
+                        .HasColumnType("uuid");
 
                     b.Property<bool>("HasBeenNotified")
                         .ValueGeneratedOnAdd()
@@ -387,9 +387,9 @@ namespace SynQcore.Infrastructure.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.HasIndex("CommentId1");
-
                     b.HasIndex("CreatedAt");
+
+                    b.HasIndex("EmployeeId");
 
                     b.HasIndex("MentionedById");
 
@@ -409,9 +409,6 @@ namespace SynQcore.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("CommentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("CommentId1")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Context")
@@ -445,9 +442,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.Property<Guid?>("PostId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("PostId1")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -458,8 +452,6 @@ namespace SynQcore.Infrastructure.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.HasIndex("CommentId1");
-
                     b.HasIndex("Context");
 
                     b.HasIndex("EndorsedAt");
@@ -467,8 +459,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.HasIndex("EndorserId");
 
                     b.HasIndex("PostId");
-
-                    b.HasIndex("PostId1");
 
                     b.HasIndex("Type");
 
@@ -486,6 +476,89 @@ namespace SynQcore.Infrastructure.Migrations
                         {
                             t.HasCheckConstraint("CK_Endorsement_ContentType", "(\"PostId\" IS NOT NULL AND \"CommentId\" IS NULL) OR (\"PostId\" IS NULL AND \"CommentId\" IS NOT NULL)");
                         });
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.Communication.FeedEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DepartmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsBookmarked")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Reason")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("RelevanceScore")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(5, 4)
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(0.5);
+
+                    b.Property<Guid?>("TeamId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ViewedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId")
+                        .HasDatabaseName("IX_FeedEntries_AuthorId");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("PostId")
+                        .HasDatabaseName("IX_FeedEntries_PostId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("CreatedAt", "IsRead")
+                        .HasDatabaseName("IX_FeedEntries_CreatedAt_IsRead");
+
+                    b.HasIndex("UserId", "CreatedAt")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("IX_FeedEntries_UserId_CreatedAt");
+
+                    b.HasIndex("UserId", "Priority", "RelevanceScore")
+                        .IsDescending(false, true, true)
+                        .HasDatabaseName("IX_FeedEntries_UserId_Priority_Relevance");
+
+                    b.ToTable("FeedEntries", (string)null);
                 });
 
             modelBuilder.Entity("SynQcore.Domain.Entities.Communication.KnowledgeCategory", b =>
@@ -894,6 +967,359 @@ namespace SynQcore.Infrastructure.Migrations
                     b.HasIndex("UsageCount");
 
                     b.ToTable("Tags", "Communication");
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.Communication.UserInterest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InteractionCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<string>("InterestValue")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsExplicit")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastInteractionAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("Score")
+                        .ValueGeneratedOnAdd()
+                        .HasPrecision(4, 2)
+                        .HasColumnType("double precision")
+                        .HasDefaultValue(1.0);
+
+                    b.Property<int>("Source")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastInteractionAt", "Score")
+                        .HasDatabaseName("IX_UserInterests_LastInteraction_Score");
+
+                    b.HasIndex("UserId", "Score")
+                        .IsDescending(false, true)
+                        .HasDatabaseName("IX_UserInterests_UserId_Score");
+
+                    b.HasIndex("Type", "InterestValue", "Score")
+                        .IsDescending(false, false, true)
+                        .HasDatabaseName("IX_UserInterests_Type_Value_Score");
+
+                    b.HasIndex("UserId", "Type", "InterestValue")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserInterests_UserId_Type_Value_Unique");
+
+                    b.ToTable("UserInterests", (string)null);
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.CorporateNotification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ApprovedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ApprovedByEmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CreatedByEmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EnabledChannels")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Metadata")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("RequiresAcknowledgment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("RequiresApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTimeOffset?>("ScheduledFor")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("TargetDepartmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApprovedByEmployeeId");
+
+                    b.HasIndex("CreatedByEmployeeId")
+                        .HasDatabaseName("IX_CorporateNotifications_CreatedByEmployeeId");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("IX_CorporateNotifications_ExpiresAt");
+
+                    b.HasIndex("Priority")
+                        .HasDatabaseName("IX_CorporateNotifications_Priority");
+
+                    b.HasIndex("ScheduledFor")
+                        .HasDatabaseName("IX_CorporateNotifications_ScheduledFor");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_CorporateNotifications_Status");
+
+                    b.HasIndex("TargetDepartmentId")
+                        .HasDatabaseName("IX_CorporateNotifications_TargetDepartmentId");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("IX_CorporateNotifications_Type");
+
+                    b.HasIndex("Status", "ScheduledFor")
+                        .HasDatabaseName("IX_CorporateNotifications_Status_ScheduledFor");
+
+                    b.ToTable("CorporateNotifications", (string)null);
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.NotificationDelivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("AcknowledgedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Channel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChannelData")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DeliveredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DeliveryAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ErrorDetails")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("NextAttemptAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("NotificationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Channel")
+                        .HasDatabaseName("IX_NotificationDeliveries_Channel");
+
+                    b.HasIndex("EmployeeId")
+                        .HasDatabaseName("IX_NotificationDeliveries_EmployeeId");
+
+                    b.HasIndex("NextAttemptAt")
+                        .HasDatabaseName("IX_NotificationDeliveries_NextAttemptAt");
+
+                    b.HasIndex("NotificationId")
+                        .HasDatabaseName("IX_NotificationDeliveries_NotificationId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_NotificationDeliveries_Status");
+
+                    b.HasIndex("EmployeeId", "Status")
+                        .HasDatabaseName("IX_NotificationDeliveries_EmployeeId_Status");
+
+                    b.HasIndex("NotificationId", "EmployeeId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_NotificationDeliveries_NotificationId_EmployeeId_Unique");
+
+                    b.HasIndex("Status", "NextAttemptAt")
+                        .HasDatabaseName("IX_NotificationDeliveries_Status_NextAttemptAt");
+
+                    b.ToTable("NotificationDeliveries", (string)null);
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.NotificationTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AvailablePlaceholders")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ContentTemplate")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DefaultChannels")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DefaultPriority")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("DefaultRequiresAcknowledgment")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("DefaultRequiresApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("DefaultType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EmailTemplate")
+                        .HasMaxLength(8000)
+                        .HasColumnType("character varying(8000)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("TitleTemplate")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Category")
+                        .HasDatabaseName("IX_NotificationTemplates_Category");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_NotificationTemplates_Code_Unique");
+
+                    b.HasIndex("DefaultType")
+                        .HasDatabaseName("IX_NotificationTemplates_DefaultType");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("IX_NotificationTemplates_IsActive");
+
+                    b.HasIndex("Category", "IsActive")
+                        .HasDatabaseName("IX_NotificationTemplates_Category_IsActive");
+
+                    b.ToTable("NotificationTemplates", (string)null);
                 });
 
             modelBuilder.Entity("SynQcore.Domain.Entities.Organization.Department", b =>
@@ -1481,12 +1907,12 @@ namespace SynQcore.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SynQcore.Domain.Entities.Communication.Comment", null)
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", null)
                         .WithMany("MentionsMade")
-                        .HasForeignKey("CommentId1");
+                        .HasForeignKey("EmployeeId");
 
                     b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "MentionedBy")
-                        .WithMany("MentionsMade")
+                        .WithMany()
                         .HasForeignKey("MentionedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1507,13 +1933,9 @@ namespace SynQcore.Infrastructure.Migrations
             modelBuilder.Entity("SynQcore.Domain.Entities.Communication.Endorsement", b =>
                 {
                     b.HasOne("SynQcore.Domain.Entities.Communication.Comment", "Comment")
-                        .WithMany()
+                        .WithMany("Endorsements")
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SynQcore.Domain.Entities.Communication.Comment", null)
-                        .WithMany("Endorsements")
-                        .HasForeignKey("CommentId1");
 
                     b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Endorser")
                         .WithMany()
@@ -1522,19 +1944,56 @@ namespace SynQcore.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("SynQcore.Domain.Entities.Communication.Post", "Post")
-                        .WithMany()
+                        .WithMany("Endorsements")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SynQcore.Domain.Entities.Communication.Post", null)
-                        .WithMany("Endorsements")
-                        .HasForeignKey("PostId1");
 
                     b.Navigation("Comment");
 
                     b.Navigation("Endorser");
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.Communication.FeedEntry", b =>
+                {
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SynQcore.Domain.Entities.Communication.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Team", "Team")
+                        .WithMany()
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("Team");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SynQcore.Domain.Entities.Communication.KnowledgeCategory", b =>
@@ -1664,6 +2123,61 @@ namespace SynQcore.Infrastructure.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("SynQcore.Domain.Entities.Communication.UserInterest", b =>
+                {
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.CorporateNotification", b =>
+                {
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "ApprovedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("ApprovedByEmployeeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "CreatedByEmployee")
+                        .WithMany()
+                        .HasForeignKey("CreatedByEmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Department", "TargetDepartment")
+                        .WithMany()
+                        .HasForeignKey("TargetDepartmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ApprovedByEmployee");
+
+                    b.Navigation("CreatedByEmployee");
+
+                    b.Navigation("TargetDepartment");
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.NotificationDelivery", b =>
+                {
+                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SynQcore.Domain.Entities.CorporateNotification", "Notification")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Notification");
+                });
+
             modelBuilder.Entity("SynQcore.Domain.Entities.Organization.Department", b =>
                 {
                     b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Manager")
@@ -1791,8 +2305,6 @@ namespace SynQcore.Infrastructure.Migrations
 
                     b.Navigation("Mentions");
 
-                    b.Navigation("MentionsMade");
-
                     b.Navigation("Replies");
                 });
 
@@ -1819,6 +2331,11 @@ namespace SynQcore.Infrastructure.Migrations
             modelBuilder.Entity("SynQcore.Domain.Entities.Communication.Tag", b =>
                 {
                     b.Navigation("PostTags");
+                });
+
+            modelBuilder.Entity("SynQcore.Domain.Entities.CorporateNotification", b =>
+                {
+                    b.Navigation("Deliveries");
                 });
 
             modelBuilder.Entity("SynQcore.Domain.Entities.Organization.Department", b =>

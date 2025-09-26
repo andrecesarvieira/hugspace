@@ -52,7 +52,7 @@ public class CommentMentionConfiguration : IEntityTypeConfiguration<CommentMenti
 
         // Relacionamentos explícitos com ForeignKey names únicos
         builder.HasOne(e => e.Comment)
-            .WithMany(c => c.Mentions)
+            .WithMany(c => c.Mentions) // Menções no comentário
             .HasForeignKey(e => e.CommentId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -62,7 +62,7 @@ public class CommentMentionConfiguration : IEntityTypeConfiguration<CommentMenti
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(e => e.MentionedBy)
-            .WithMany(emp => emp.MentionsMade) // Navigation collection específica já existe
+            .WithMany() // Usar WithMany() vazio para evitar conflito com Employee.MentionsMade
             .HasForeignKey(e => e.MentionedById)
             .OnDelete(DeleteBehavior.Restrict);
 

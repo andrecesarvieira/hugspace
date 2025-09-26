@@ -186,6 +186,23 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
     };
+    
+    // Enable JWT authentication for SignalR hubs
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            
+            // If the request is for SignalR hub, get the token from query string
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // Configure CORS for Corporate environment
@@ -255,6 +272,15 @@ builder.Services.AddMediatR(cfg =>
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 
+// Add SignalR for corporate real-time communication
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.MaximumReceiveMessageSize = 1024 * 1024; // 1MB limit for corporate messages
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
+    options.KeepAliveInterval = TimeSpan.FromMinutes(5);
+});
+
 // Mapeamento manual implementado via extensions - sem AutoMapper
 
 var app = builder.Build();
@@ -287,6 +313,10 @@ app.UseCors("CorporatePolicy");
 // Add authentication & authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Map SignalR Hubs
+app.MapHub<SynQcore.Api.Hubs.CorporateCollaborationHub>("/hubs/corporate-collaboration");
+app.MapHub<SynQcore.Api.Hubs.ExecutiveCommunicationHub>("/hubs/executive-communication");
 
 app.MapControllers();
 
