@@ -172,7 +172,7 @@ Quando um usuário se registra via `/auth/register`:
 POST   /api/v1/employees           - Criar funcionário
 GET    /api/v1/employees/{id}      - Obter funcionário por ID  
 PUT    /api/v1/employees/{id}      - Atualizar funcionário
-DELETE /api/v1/employees/{id}      - Deletar funcionário (soft delete)
+DELETE /api/v1/employees/{id}      - Desligar funcionário (soft delete + bloqueio de acesso)
 GET    /api/v1/employees           - Listar funcionários (paginação + filtros)
 GET    /api/v1/employees/search    - Buscar funcionários (nome/email)
 GET    /api/v1/employees/{id}/hierarchy - Ver hierarquia organizacional

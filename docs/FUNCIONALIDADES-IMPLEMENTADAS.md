@@ -122,11 +122,24 @@ Sistema cria automaticamente no primeiro boot:
 POST   /api/v1/employees           ✅ Criar funcionário
 GET    /api/v1/employees/{id}      ✅ Obter funcionário por ID
 PUT    /api/v1/employees/{id}      ✅ Atualizar funcionário
-DELETE /api/v1/employees/{id}      ✅ Deletar funcionário (soft delete)
+DELETE /api/v1/employees/{id}      ✅ Desligar funcionário (soft delete + bloqueio acesso)
 GET    /api/v1/employees           ✅ Listar funcionários (paginação + filtros)
 GET    /api/v1/employees/search    ✅ Buscar funcionários (nome/email)
 GET    /api/v1/employees/{id}/hierarchy ✅ Ver hierarquia organizacional
 POST   /api/v1/employees/{id}/avatar   ✅ Upload de avatar (5MB max)
+```
+
+#### 🚨 **Desligamento de Funcionários (DELETE /employees/{id})**
+```
+🎯 Processo Completo de Desligamento:
+1. ✅ Soft delete do Employee (IsDeleted = true)
+2. ✅ Remove relacionamentos (departamentos, teams)
+3. ✅ Bloqueia ApplicationUser (LockoutEnd = indefinido) 
+4. ✅ Força logout de todas as sessões (SecurityStamp)
+5. ⚠️ Validação: Impede demitir manager com subordinados
+
+🔒 Requisitos de Autorização: HR ou Admin
+📋 Preserva auditoria: Posts, comentários e histórico mantidos
 ```
 
 ### 🏢 Department Management

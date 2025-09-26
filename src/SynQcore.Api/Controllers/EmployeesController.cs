@@ -1,24 +1,29 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Employees.Commands;
 using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Employees.Queries;
+using SynQcore.Infrastructure.Identity;
 
 namespace SynQcore.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
 [Authorize]
-public class EmployeesController : ControllerBase
+public partial class EmployeesController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly UserManager<ApplicationUserEntity> _userManager;
     private readonly ILogger<EmployeesController> _logger;
 
-    public EmployeesController(IMediator mediator, ILogger<EmployeesController> logger)
+    public EmployeesController(IMediator mediator, UserManager<ApplicationUserEntity> userManager, ILogger<EmployeesController> logger)
     {
         _mediator = mediator;
+        _userManager = userManager;
         _logger = logger;
     }
 
@@ -104,4 +109,104 @@ public class EmployeesController : ControllerBase
         var result = await _mediator.Send(new SearchEmployeesQuery(q));
         return Ok(result);
     }
+
+    // Desligar funcionário (soft delete + bloqueio de acesso) - apenas HR/Admin
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "HR,Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult> TerminateEmployee(Guid id)
+    {
+        try
+        {
+            LogProcessingTermination(_logger, id);
+
+            // 1. Executar soft delete do Employee (lógica de negócio existente)
+            await _mediator.Send(new DeleteEmployeeCommand(id));
+
+            // 2. Buscar e bloquear usuário associado
+            await BlockAssociatedUser(id);
+
+            LogEmployeeTerminated(_logger, id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            LogEmployeeTerminationError(_logger, id, ex);
+            throw;
+        }
+    }
+
+    // Bloquear usuário associado ao Employee desligado
+    private async Task BlockAssociatedUser(Guid employeeId)
+    {
+        LogSearchingUser(_logger, employeeId);
+
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+
+        if (user != null)
+        {
+            LogBlockingUser(_logger, user.Id, user.Email ?? "N/A");
+
+            // Bloquear acesso indefinidamente
+            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            
+            // Forçar logout de todas as sessões ativas
+            await _userManager.UpdateSecurityStampAsync(user);
+
+            LogUserBlocked(_logger, user.Id);
+        }
+        else
+        {
+            LogUserNotFound(_logger, employeeId);
+        }
+    }
+
+    // LoggerMessage delegates para performance otimizada
+    [LoggerMessage(
+        EventId = 2001,
+        Level = LogLevel.Information,
+        Message = "Iniciando processo de desligamento do funcionário: {EmployeeId}")]
+    private static partial void LogProcessingTermination(ILogger logger, Guid employeeId);
+
+    [LoggerMessage(
+        EventId = 2002,
+        Level = LogLevel.Information,
+        Message = "Funcionário {EmployeeId} desligado com sucesso")]
+    private static partial void LogEmployeeTerminated(ILogger logger, Guid employeeId);
+
+    [LoggerMessage(
+        EventId = 2003,
+        Level = LogLevel.Error,
+        Message = "Erro durante desligamento do funcionário {EmployeeId}")]
+    private static partial void LogEmployeeTerminationError(ILogger logger, Guid employeeId, Exception exception);
+
+    [LoggerMessage(
+        EventId = 2004,
+        Level = LogLevel.Information,
+        Message = "Buscando usuário associado ao funcionário: {EmployeeId}")]
+    private static partial void LogSearchingUser(ILogger logger, Guid employeeId);
+
+    [LoggerMessage(
+        EventId = 2005,
+        Level = LogLevel.Information,
+        Message = "Bloqueando acesso do usuário: {UserId} - {Email}")]
+    private static partial void LogBlockingUser(ILogger logger, Guid userId, string email);
+
+    [LoggerMessage(
+        EventId = 2006,
+        Level = LogLevel.Information,
+        Message = "Usuário {UserId} bloqueado com sucesso")]
+    private static partial void LogUserBlocked(ILogger logger, Guid userId);
+
+    [LoggerMessage(
+        EventId = 2007,
+        Level = LogLevel.Warning,
+        Message = "Nenhum usuário encontrado associado ao funcionário: {EmployeeId}")]
+    private static partial void LogUserNotFound(ILogger logger, Guid employeeId);
 }
