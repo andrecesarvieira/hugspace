@@ -29,6 +29,7 @@ public class Post : BaseEntity
     public int ViewCount { get; set; }
     public int LikeCount { get; set; }
     public int CommentCount { get; set; }
+    public DateTime LastActivityAt { get; set; } = DateTime.UtcNow;
     
     // Versionamento
     public string Version { get; set; } = "1.0";
@@ -46,6 +47,7 @@ public class Post : BaseEntity
     public ICollection<Comment> Comments { get; set; } = [];
     public ICollection<PostLike> Likes { get; set; } = [];
     public ICollection<PostTag> PostTags { get; set; } = [];
+    public ICollection<Endorsement> Endorsements { get; set; } = [];
 }
 
 public enum PostType

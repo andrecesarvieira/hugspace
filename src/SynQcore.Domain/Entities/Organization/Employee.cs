@@ -15,6 +15,7 @@ public class Employee : BaseEntity
 
     // Dados Profissionais
     public string JobTitle { get; set; } = string.Empty;
+    public string Position { get; set; } = string.Empty; // Cargo/posição corporativa
     public DateTime HireDate { get; set; }
     public bool IsActive { get; set; } = true;
     
@@ -44,6 +45,7 @@ public class Employee : BaseEntity
     public ICollection<Comment> Comments { get; set; } = [];
     public ICollection<PostLike> PostLikes { get; set; } = [];
     public ICollection<CommentLike> CommentLikes { get; set; } = [];
+    public ICollection<CommentMention> MentionsMade { get; set; } = [];
     public ICollection<Notification> ReceivedNotifications { get; set; } = [];
     public ICollection<Notification> SentNotifications { get; set; } = [];
 }

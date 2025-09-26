@@ -16,14 +16,16 @@ public interface ISynQcoreDbContext
     // Communication entities  
     DbSet<Post> Posts { get; }
     DbSet<Comment> Comments { get; }
-    DbSet<PostLike> PostLikes { get; }
     DbSet<CommentLike> CommentLikes { get; }
+    DbSet<CommentMention> CommentMentions { get; }
+    DbSet<PostLike> PostLikes { get; }
     DbSet<Notification> Notifications { get; }
 
     // Knowledge Management entities
     DbSet<KnowledgeCategory> KnowledgeCategories { get; }
     DbSet<Tag> Tags { get; }
     DbSet<PostTag> PostTags { get; }
+    DbSet<Endorsement> Endorsements { get; }
 
     // Relationship entities
     DbSet<EmployeeDepartment> EmployeeDepartments { get; }

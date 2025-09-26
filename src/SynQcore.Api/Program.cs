@@ -63,6 +63,13 @@ var builder = WebApplication.CreateBuilder(args);
 // JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+// Current User Service
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SynQcore.Application.Common.Interfaces.ICurrentUserService, SynQcore.Infrastructure.Services.CurrentUserService>();
+
+// Discussion Thread Helper
+builder.Services.AddScoped<SynQcore.Application.Common.Helpers.DiscussionThreadHelper>();
+
 // Role Initialization Service
 builder.Services.AddScoped<RoleInitializationService>();
 

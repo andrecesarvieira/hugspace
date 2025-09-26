@@ -23,6 +23,10 @@ public class Notification : BaseEntity
     public Post? Post { get; set; }
     public Guid? CommentId { get; set; }
     public Comment? Comment { get; set; }
+    
+    // Referências genéricas para moderação e outros casos
+    public Guid? RelatedEntityId { get; set; }
+    public string? RelatedEntityType { get; set; }
 
     // Status
     public bool IsRead { get; set; }
@@ -42,7 +46,8 @@ public enum NotificationType
     SystemAlert = 7,        // Alertas do sistema
     Birthday = 8,           // Aniversário de colega
     WorkAnniversary = 9,    // Aniversário de trabalho
-    NewEmployee = 10        // Novo funcionário
+    NewEmployee = 10,       // Novo funcionário
+    ModerationAction = 11   // Ação de moderação realizada
 }
 
 public enum NotificationPriority

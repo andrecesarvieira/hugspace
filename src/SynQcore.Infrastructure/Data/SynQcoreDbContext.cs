@@ -28,12 +28,14 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public DbSet<PostLike> PostLikes => Set<PostLike>();
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<CommentLike> CommentLikes => Set<CommentLike>();
+    public DbSet<CommentMention> CommentMentions => Set<CommentMention>();
     public DbSet<Notification> Notifications => Set<Notification>();
     
     // Knowledge Management
     public DbSet<KnowledgeCategory> KnowledgeCategories => Set<KnowledgeCategory>();
     public DbSet<Tag> Tags => Set<Tag>();
     public DbSet<PostTag> PostTags => Set<PostTag>();
+    public DbSet<Endorsement> Endorsements => Set<Endorsement>();
 
     // DbSets - Relationships
     public DbSet<EmployeeDepartment> EmployeeDepartments => Set<EmployeeDepartment>();

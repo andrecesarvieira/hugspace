@@ -1,0 +1,310 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using SynQcore.Application.Queries.Communication.DiscussionThreads;
+using SynQcore.Application.DTOs.Communication;
+using SynQcore.Application.Handlers.Communication.DiscussionThreads;
+
+namespace SynQcore.Api.Controllers;
+
+// Controller para analytics de Discussion Threads corporativas
+[ApiController]
+[Route("api/discussion-threads/analytics")]
+[Authorize]
+public partial class DiscussionAnalyticsController : ControllerBase
+{
+    private readonly IMediator _mediator;
+    private readonly ILogger<DiscussionAnalyticsController> _logger;
+
+    public DiscussionAnalyticsController(IMediator mediator, ILogger<DiscussionAnalyticsController> logger)
+    {
+        _mediator = mediator;
+        _logger = logger;
+    }
+
+    // Obtém analytics detalhado de discussions
+    [HttpGet("overview")]
+    [ProducesResponseType(typeof(DiscussionAnalyticsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<DiscussionAnalyticsDto>> GetDiscussionAnalytics(
+        [FromQuery] Guid? postId = null,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] Guid? departmentId = null)
+    {
+        try
+        {
+            var query = new GetDiscussionAnalyticsQuery(postId, fromDate, toDate, departmentId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            LogErrorGettingAnalytics(_logger, ex);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Obtém analytics de participação de usuário específico
+    [HttpGet("users/{userId:guid}")]
+    [ProducesResponseType(typeof(UserDiscussionAnalyticsDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UserDiscussionAnalyticsDto>> GetUserAnalytics(
+        Guid userId,
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null)
+    {
+        try
+        {
+            var query = new GetUserDiscussionAnalyticsQuery(userId, fromDate, toDate);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            LogUserNotFound(_logger, ex, userId);
+            return NotFound(new { message = "Usuário não encontrado" });
+        }
+        catch (Exception ex)
+        {
+            LogErrorGettingUserAnalytics(_logger, ex, userId);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Obtém métricas de moderação (Manager/HR/Admin)
+    [HttpGet("moderation")]
+    [Authorize(Roles = "Manager,HR,Admin")]
+    [ProducesResponseType(typeof(ModerationMetricsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ModerationMetricsDto>> GetModerationMetrics(
+        [FromQuery] DateTime? fromDate = null,
+        [FromQuery] DateTime? toDate = null,
+        [FromQuery] Guid? moderatorId = null)
+    {
+        try
+        {
+            var query = new GetModerationMetricsQuery(fromDate, toDate, moderatorId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            LogErrorGettingModerationMetrics(_logger, ex);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Obtém estatísticas de engagement por período
+    [HttpGet("engagement")]
+    [ProducesResponseType(typeof(EngagementStatisticsDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<EngagementStatisticsDto>> GetEngagementStatistics(
+        [FromQuery] DateTime fromDate,
+        [FromQuery] DateTime toDate,
+        [FromQuery] string groupBy = "Day",
+        [FromQuery] Guid? departmentId = null,
+        [FromQuery] Guid? teamId = null)
+    {
+        try
+        {
+            var query = new GetEngagementStatisticsQuery(fromDate, toDate, groupBy, departmentId, teamId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            LogErrorGettingEngagementStats(_logger, ex);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Obtém discussões em trending (alta atividade recente)
+    [HttpGet("trending")]
+    [ProducesResponseType(typeof(PagedTrendingDiscussionsResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedTrendingDiscussionsResponse>> GetTrendingDiscussions(
+        [FromQuery] int hours = 24,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? department = null,
+        [FromQuery] string? category = null)
+    {
+        try
+        {
+            var query = new GetTrendingDiscussionsQuery(hours, page, pageSize, department, category);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            LogErrorGettingTrending(_logger, ex);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Obtém comentários que precisam de atenção (questões não resolvidas, alta prioridade)
+    [HttpGet("attention-needed")]
+    [ProducesResponseType(typeof(PagedCommentsResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedCommentsResponse>> GetCommentsNeedingAttention(
+        [FromQuery] Guid? userId = null,
+        [FromQuery] bool unresolvedOnly = true,
+        [FromQuery] bool highPriorityOnly = false,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20)
+    {
+        try
+        {
+            var query = new GetCommentsNeedingAttentionQuery(userId, unresolvedOnly, highPriorityOnly, page, pageSize);
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            LogErrorGettingAttentionNeeded(_logger, ex);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Gera relatório executivo de discussions (HR/Admin)
+    [HttpGet("executive-report")]
+    [Authorize(Roles = "HR,Admin")]
+    [ProducesResponseType(typeof(ExecutiveDiscussionReportDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ExecutiveDiscussionReportDto>> GetExecutiveReport(
+        [FromQuery] DateTime fromDate,
+        [FromQuery] DateTime toDate,
+        [FromQuery] Guid? departmentId = null)
+    {
+        try
+        {
+            // Combina múltiplas queries para relatório executivo
+            var discussionAnalytics = await _mediator.Send(new GetDiscussionAnalyticsQuery(null, fromDate, toDate, departmentId));
+            var moderationMetrics = await _mediator.Send(new GetModerationMetricsQuery(fromDate, toDate, null));
+            var engagementStats = await _mediator.Send(new GetEngagementStatisticsQuery(fromDate, toDate, "Week", departmentId, null));
+
+            var report = new ExecutiveDiscussionReportDto
+            {
+                ReportPeriod = new { FromDate = fromDate, ToDate = toDate },
+                DepartmentId = departmentId,
+                GeneratedAt = DateTime.UtcNow,
+                
+                TotalDiscussions = discussionAnalytics.TotalThreads,
+                TotalComments = discussionAnalytics.TotalComments,
+                UniqueParticipants = engagementStats.UniqueParticipants,
+                EngagementScore = engagementStats.TimeSeries.LastOrDefault()?.EngagementScore ?? 0,
+                
+                ModerationHealth = new ModerationHealthDto
+                {
+                    TotalModerated = moderationMetrics.TotalCommentsModerated,
+                    AverageResponseTime = moderationMetrics.AverageResponseTime,
+                    ApprovalRate = moderationMetrics.ApprovalRate,
+                    PendingCount = discussionAnalytics.PendingModeration
+                },
+                
+                TopContributors = discussionAnalytics.TopContributors.Take(5).ToList(),
+                MostActiveThreads = discussionAnalytics.MostActiveThreads.Take(5).ToList(),
+                
+                EngagementTrend = engagementStats.TimeSeries,
+                ModerationTrends = moderationMetrics.Trends
+            };
+
+            return Ok(report);
+        }
+        catch (Exception ex)
+        {
+            LogErrorGeneratingExecutiveReport(_logger, ex);
+            return StatusCode(500, new { message = "Erro interno do servidor" });
+        }
+    }
+
+    // Exporta dados de analytics para CSV (HR/Admin)
+    [HttpGet("export/{reportType}")]
+    [Authorize(Roles = "HR,Admin")]
+    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+    public Task<IActionResult> ExportAnalyticsData(
+        string reportType,
+        [FromQuery] DateTime fromDate,
+        [FromQuery] DateTime toDate,
+        [FromQuery] Guid? departmentId = null)
+    {
+        try
+        {
+            var fileName = $"discussion_analytics_{reportType}_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.csv";
+            var csvContent = "Implementação de export CSV seria feita aqui";
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+            
+            return Task.FromResult<IActionResult>(File(bytes, "text/csv", fileName));
+        }
+        catch (Exception ex)
+        {
+            LogErrorExportingData(_logger, ex, reportType);
+            return Task.FromResult<IActionResult>(StatusCode(500, new { message = "Erro interno do servidor" }));
+        }
+    }
+
+    #region LoggerMessage Delegates
+
+    [LoggerMessage(EventId = 4001, Level = LogLevel.Error,
+        Message = "Erro ao obter analytics de discussions")]
+    private static partial void LogErrorGettingAnalytics(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 4002, Level = LogLevel.Warning,
+        Message = "Usuário não encontrado: {UserId}")]
+    private static partial void LogUserNotFound(ILogger logger, Exception ex, Guid userId);
+
+    [LoggerMessage(EventId = 4003, Level = LogLevel.Error,
+        Message = "Erro ao obter analytics do usuário {UserId}")]
+    private static partial void LogErrorGettingUserAnalytics(ILogger logger, Exception ex, Guid userId);
+
+    [LoggerMessage(EventId = 4004, Level = LogLevel.Error,
+        Message = "Erro ao obter métricas de moderação")]
+    private static partial void LogErrorGettingModerationMetrics(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 4005, Level = LogLevel.Error,
+        Message = "Erro ao obter estatísticas de engagement")]
+    private static partial void LogErrorGettingEngagementStats(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 4006, Level = LogLevel.Error,
+        Message = "Erro ao obter discussões em trending")]
+    private static partial void LogErrorGettingTrending(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 4007, Level = LogLevel.Error,
+        Message = "Erro ao obter comentários que precisam de atenção")]
+    private static partial void LogErrorGettingAttentionNeeded(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 4008, Level = LogLevel.Error,
+        Message = "Erro ao gerar relatório executivo")]
+    private static partial void LogErrorGeneratingExecutiveReport(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 4009, Level = LogLevel.Error,
+        Message = "Erro ao exportar dados de analytics: {ReportType}")]
+    private static partial void LogErrorExportingData(ILogger logger, Exception ex, string reportType);
+
+    #endregion
+}
+
+// DTO para relatório executivo consolidado
+public class ExecutiveDiscussionReportDto
+{
+    public object ReportPeriod { get; set; } = new();
+    public Guid? DepartmentId { get; set; }
+    public DateTime GeneratedAt { get; set; }
+    
+    public int TotalDiscussions { get; set; }
+    public int TotalComments { get; set; }
+    public int UniqueParticipants { get; set; }
+    public double EngagementScore { get; set; }
+    
+    public ModerationHealthDto ModerationHealth { get; set; } = new();
+    
+    public List<TopContributor> TopContributors { get; set; } = [];
+    public List<ActiveThread> MostActiveThreads { get; set; } = [];
+    
+    public List<EngagementDataPoint> EngagementTrend { get; set; } = [];
+    public List<ModerationTrendItem> ModerationTrends { get; set; } = [];
+}
+
+// DTO para saúde da moderação
+public class ModerationHealthDto
+{
+    public int TotalModerated { get; set; }
+    public int AverageResponseTime { get; set; }
+    public double ApprovalRate { get; set; }
+    public int PendingCount { get; set; }
+}
