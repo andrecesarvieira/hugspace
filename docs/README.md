@@ -35,6 +35,12 @@ Esta pasta contém toda a documentação técnica e de desenvolvimento do projet
   - Contato e links
   - Histórico do projeto
 
+- **[`FUNCIONALIDADES-IMPLEMENTADAS.md`](./FUNCIONALIDADES-IMPLEMENTADAS.md)** ⭐
+  - Status completo do projeto (Fase 2.6)
+  - Lista de todas as funcionalidades implementadas
+  - Endpoints funcionais e recursos corporativos
+  - Próximos passos e roadmap
+
 ### 🧪 **Testes e Validação**
 
 - **[`testing/`](./testing/)** 📂
@@ -46,9 +52,10 @@ Esta pasta contém toda a documentação técnica e de desenvolvimento do projet
 ## 🎯 **Navegação Rápida**
 
 ### **Para Desenvolvedores**
-1. **Começar com**: [`ARCHITECTURE.md`](./ARCHITECTURE.md)
-2. **Entender estrutura**: [`CLASS_MAP.md`](./CLASS_MAP.md)
-3. **Contribuir**: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
+1. **Status atual**: [`FUNCIONALIDADES-IMPLEMENTADAS.md`](./FUNCIONALIDADES-IMPLEMENTADAS.md)
+2. **Começar com**: [`ARCHITECTURE.md`](./ARCHITECTURE.md)
+3. **Entender estrutura**: [`CLASS_MAP.md`](./CLASS_MAP.md)
+4. **Contribuir**: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 
 ### **Para Testes**
 1. **Ir para**: [`testing/`](./testing/)
@@ -105,4 +112,4 @@ Esta pasta contém toda a documentação técnica e de desenvolvimento do projet
 ```
 
 ---
-*Documentação organizada em: 25/09/2025*
+*Documentação atualizada em: 26/09/2025 (Fase 2.6 concluída)*
