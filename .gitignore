@@ -512,3 +512,13 @@ test-temp-*.sh
 test-local-*.sh
 temp-*.sh
 *.test.local.sh
+
+# === Documentos Privados e Estratégicos ===
+# Documentação confidencial, análises de mercado privadas, planos de negócio
+private/
+*.private.md
+*-private.md
+*-confidencial.md
+business-plan/
+monetization/
+strategy/

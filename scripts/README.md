@@ -44,6 +44,15 @@ Este diretório contém scripts para facilitar o desenvolvimento e execução do
 ./scripts/clean-build.sh
 ```
 
+### 🔧 Scripts de Migração
+
+#### Migração AutoMapper (Concluída)
+```bash
+./scripts/fix_automapper.sh
+```
+- Script de migração do AutoMapper para mapeamento manual
+- **Status**: ✅ Concluída - Aplicação 100% livre de dependências comerciais
+
 ## URLs Configuradas
 
 Após executar qualquer script de inicialização da API:
