@@ -3,6 +3,7 @@ using MediatR;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SynQcore.Application.Common.Interfaces;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Employees.Queries;
 

@@ -1,4 +1,5 @@
 using MediatR;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Employees.DTOs;
 
 namespace SynQcore.Application.Features.Employees.Queries;

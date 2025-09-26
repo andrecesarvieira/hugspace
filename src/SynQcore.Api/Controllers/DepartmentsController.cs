@@ -2,10 +2,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Departments.Commands;
 using SynQcore.Application.Features.Departments.DTOs;
 using SynQcore.Application.Features.Departments.Queries;
-using SynQcore.Application.Features.Employees.DTOs;
 using System.ComponentModel.DataAnnotations;
 using DepartmentDto = SynQcore.Application.Features.Departments.DTOs.DepartmentDto;
 

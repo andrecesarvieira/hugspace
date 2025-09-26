@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Employees.Commands;
 using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Employees.Queries;

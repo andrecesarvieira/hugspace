@@ -2,9 +2,9 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SynQcore.Application.Common.Interfaces;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Departments.DTOs;
 using SynQcore.Application.Features.Departments.Queries;
-using SynQcore.Application.Features.Employees.DTOs;
 
 namespace SynQcore.Application.Features.Departments.Handlers;
 
