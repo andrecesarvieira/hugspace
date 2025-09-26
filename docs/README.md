@@ -35,11 +35,17 @@ Esta pasta contém toda a documentação técnica e de desenvolvimento do projet
   - Contato e links
   - Histórico do projeto
 
-- **[`FUNCIONALIDADES-IMPLEMENTADAS.md`](./FUNCIONALIDADES-IMPLEMENTADAS.md)** ⭐
-  - Status completo do projeto (Fase 2.6)
-  - Lista de todas as funcionalidades implementadas
-  - Endpoints funcionais e recursos corporativos
-  - Próximos passos e roadmap
+- **[`ROADMAP.md`](./ROADMAP.md)** 🗺️
+  - Planejamento completo das 8 fases de desenvolvimento
+  - Status detalhado de cada funcionalidade
+  - Timeline e marcos do projeto
+  - Critérios de aceitação por fase
+
+- **[`CHANGELOG.md`](./CHANGELOG.md)** 📋
+  - Histórico completo de mudanças
+  - Atualizações por versão
+  - Correções e melhorias implementadas
+  - Logs de desenvolvimento
 
 ### 🧪 **Testes e Validação**
 

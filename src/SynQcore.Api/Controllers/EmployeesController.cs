@@ -119,7 +119,8 @@ public partial class EmployeesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult> TerminateEmployee(Guid id)
+    public async Task<ActionResult> TerminateEmployee(
+        [FromRoute] Guid id)
     {
         try
         {

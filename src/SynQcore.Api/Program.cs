@@ -11,6 +11,7 @@
  * built with Clean Architecture, .NET 9, and PostgreSQL.
  */
 
+using System.Reflection;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -83,42 +84,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "SynQcore Corporate API",
-        Description = @"
-    **🚀 SynQcore - Corporate Social Network API**
-    
-    Created by **André César Vieira** - Enterprise Software Architect
-    
-    ### About This API
-    Open-source corporate social network platform built with Clean Architecture,
-    .NET 9, and PostgreSQL. Designed for enterprise-grade performance and scalability.
-    
-    ### Key Features
-    - 🏢 Employee management and corporate directory
-    - 💬 Corporate posts, discussions, and collaboration
-    - 👥 Team management and reporting structures  
-    - 🔔 Real-time notification system
-    - 📊 Department and organizational analytics
-    - 🔒 JWT authentication with role-based access
-    - ⚡ Redis caching for optimal performance
-    - 📝 Complete audit trails and logging
-    - 🛡️ Corporate-grade rate limiting
-    
-    ### Technology Stack
-    - **.NET 9** - Latest Microsoft framework
-    - **PostgreSQL 16** - Enterprise database
-    - **Redis 7** - High-performance caching
-    - **Clean Architecture** - Maintainable and testable
-    - **CQRS Pattern** - Scalable command/query separation
-    - **Docker** - Containerized deployment
-    
-    ### Authentication & Security
-    All endpoints require JWT Bearer token except health checks and documentation.
-    Rate limiting varies by user role (Employee: 100/min, Manager: 300/min, HR: 500/min, Admin: 1000/min).
-    
-    ### Open Source
-    This project is open source under MIT License. 
-    ⭐ Star the repository: https://github.com/andrecesarvieira/synqcore
-            ",
+        Description = "API de rede social corporativa com .NET 9 e Clean Architecture. Endpoints requerem autenticação JWT exceto /health.",
         Contact = new OpenApiContact
         {
             Name = "André César Vieira",
@@ -161,6 +127,14 @@ builder.Services.AddSwaggerGen(options =>
 
     // Resolver conflitos de schema IDs usando nomes completos
     options.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
+    
+    // Incluir comentários XML na documentação Swagger
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 });
 
 // Add DbContext (Unified with Identity)
@@ -287,7 +261,7 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "SynQcore Corporate API v1");
-        options.RoutePrefix = string.Empty; // Serve Swagger UI at root
+        options.RoutePrefix = "swagger"; // Serve Swagger UI at /swagger
         options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
         options.DefaultModelsExpandDepth(-1); // Hide schemas by default
     });
@@ -354,6 +328,45 @@ try
         await RoleInitializationService.InitializeAsync(scope.ServiceProvider);
         // Criar administrador padrão se não existir nenhum
         await AdminBootstrapService.InitializeAsync(scope.ServiceProvider);
+    }
+    
+    // Abrir Swagger automaticamente no navegador padrão em desenvolvimento
+    if (app.Environment.IsDevelopment())
+    {
+        var serverUrls = app.Urls;
+        var baseUrl = serverUrls.FirstOrDefault() ?? "http://localhost:5000";
+        var swaggerUrl = $"{baseUrl}/swagger";
+        
+        // Executar após um pequeno delay para garantir que o servidor esteja pronto
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(2000); // Aguarda 2 segundos
+            try
+            {
+                // Detectar sistema operacional e abrir o navegador apropriado
+                if (OperatingSystem.IsWindows())
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = swaggerUrl,
+                        UseShellExecute = true
+                    });
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    System.Diagnostics.Process.Start("xdg-open", swaggerUrl);
+                }
+                else if (OperatingSystem.IsMacOS())
+                {
+                    System.Diagnostics.Process.Start("open", swaggerUrl);
+                }
+                Log.Information("Swagger UI aberto automaticamente: {SwaggerUrl}", swaggerUrl);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("Não foi possível abrir o Swagger automaticamente: {Error}", ex.Message);
+            }
+        });
     }
     
     app.Run();

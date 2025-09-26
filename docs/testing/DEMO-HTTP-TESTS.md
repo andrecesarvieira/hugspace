@@ -7,7 +7,7 @@
    dotnet run --project /mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/SynQcore.Api.csproj
    ```
    
-2. **Acesse o Swagger UI**: http://localhost:5006/swagger
+2. **Acesse o Swagger UI**: http://localhost:5000/swagger
 
 3. **Execute os testes na ordem** seguindo o guia em `TODOS-OS-TESTES-SWAGGER.md`
 
@@ -15,13 +15,13 @@
 
 ### 1️⃣ **VERIFICAR ESTADO INICIAL**
 ```http
-GET http://localhost:5006/api/KnowledgeCategories
+GET http://localhost:5000/api/KnowledgeCategories
 ```
 **Resultado esperado**: `[]` (array vazio)
 
 ### 2️⃣ **CRIAR PRIMEIRA CATEGORIA**
 ```http
-POST http://localhost:5006/api/KnowledgeCategories
+POST http://localhost:5000/api/KnowledgeCategories
 Content-Type: application/json
 
 {
@@ -36,7 +36,7 @@ Content-Type: application/json
 
 ### 3️⃣ **CRIAR SUBCATEGORIA**
 ```http
-POST http://localhost:5006/api/KnowledgeCategories
+POST http://localhost:5000/api/KnowledgeCategories
 Content-Type: application/json
 
 {
@@ -51,13 +51,13 @@ Content-Type: application/json
 
 ### 4️⃣ **VER HIERARQUIA**
 ```http
-GET http://localhost:5006/api/KnowledgeCategories?includeHierarchy=true
+GET http://localhost:5000/api/KnowledgeCategories?includeHierarchy=true
 ```
 **Resultado esperado**: Categoria TI com subcategoria Programação
 
 ### 5️⃣ **CRIAR TAGS**
 ```http
-POST http://localhost:5006/api/Tags
+POST http://localhost:5000/api/Tags
 Content-Type: application/json
 
 {
@@ -69,7 +69,7 @@ Content-Type: application/json
 ```
 
 ```http
-POST http://localhost:5006/api/Tags
+POST http://localhost:5000/api/Tags
 Content-Type: application/json
 
 {
@@ -82,7 +82,7 @@ Content-Type: application/json
 
 ### 6️⃣ **FILTRAR TAGS POR TIPO**
 ```http
-GET http://localhost:5006/api/Tags?type=2
+GET http://localhost:5000/api/Tags?type=2
 ```
 **Resultado esperado**: Só as tags de tecnologia (C# e .NET)
 
@@ -99,7 +99,7 @@ GET http://localhost:5006/api/Tags?type=2
 ### **Erro 409 - Conflito**
 Tente criar categoria com nome duplicado:
 ```http
-POST http://localhost:5006/api/KnowledgeCategories
+POST http://localhost:5000/api/KnowledgeCategories
 Content-Type: application/json
 
 {
@@ -112,7 +112,7 @@ Content-Type: application/json
 
 ### **Erro 404 - Não Encontrado**
 ```http
-GET http://localhost:5006/api/KnowledgeCategories/00000000-0000-0000-0000-000000000000
+GET http://localhost:5000/api/KnowledgeCategories/00000000-0000-0000-0000-000000000000
 ```
 
 ## 🎉 SUCESSO!

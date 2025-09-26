@@ -3,7 +3,7 @@
 ## 🎯 **Padrão Estabelecido: Swagger UI**
 
 ### ✅ **Decisão Arquitetural**
-- **Ferramenta Principal**: Swagger UI (http://localhost:5006/swagger)
+- **Ferramenta Principal**: Swagger UI (http://localhost:5000/swagger)
 - **Motivação**: Interface visual intuitiva, documentação automática, facilidade de uso
 - **Benefícios**: Não requer extensões adicionais, funciona em qualquer browser
 
@@ -24,7 +24,7 @@ dotnet run --project src/SynQcore.Api/SynQcore.Api.csproj
 ```
 
 ### **2. Acessar Swagger UI**
-- URL: http://localhost:5006/swagger
+- URL: http://localhost:5000/swagger
 - Interface completa com documentação automática
 
 ### **3. Executar Testes Sequenciais**

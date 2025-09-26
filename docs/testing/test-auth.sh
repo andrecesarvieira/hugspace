@@ -3,7 +3,7 @@
 # Script para testar endpoints de autenticação com MediatR
 # SynQcore - Corporate Authentication Testing
 
-API_URL="http://localhost:5005/api/auth"
+API_URL="http://localhost:5000/api/auth"
 
 echo "🧪 SynQcore - Testando MediatR Pipeline Authentication"
 echo "========================================="

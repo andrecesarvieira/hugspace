@@ -3,7 +3,7 @@
 # Script completo para testar Rate Limiting - SynQcore
 # Testa limites IP, Client ID e recovery
 
-API_URL="http://localhost:5005"
+API_URL="http://localhost:5000"
 HEALTH_ENDPOINT="$API_URL/health"
 TEST_ENDPOINT="$API_URL/api/auth/login"  # Endpoint real para teste de rate limit
 AUTH_ENDPOINT="$API_URL/api/auth/register"

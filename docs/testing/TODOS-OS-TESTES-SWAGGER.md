@@ -1,6 +1,6 @@
 # 🎯 EXECUÇÃO COMPLETA - TODOS OS TESTES VIA SWAGGER UI
 
-## 🚀 **API RODANDO**: http://localhost:5006/swagger
+## 🚀 **API RODANDO**: http://localhost:5000/swagger
 
 ### 📋 **SEQUÊNCIA COMPLETA DE TESTES**
 

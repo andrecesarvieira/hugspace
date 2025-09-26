@@ -66,8 +66,15 @@
 
 4. **Execute a API**
    ```bash
+   # Método recomendado - porta 5000 com Swagger automático
+   ./start.sh
+   
+   # Ou caminho completo
+   ./scripts/start-api-5000.sh
+   
+   # Ou método tradicional
    dotnet run --project src/SynQcore.Api
-   # API disponível em: http://localhost:5006
+   # API disponível em: http://localhost:5000
    ```
 
 5. **Execute a Aplicação Blazor** *(Fase 5)*
@@ -191,7 +198,7 @@ GET    /api/admin/roles    - Listar papéis disponíveis no sistema
 - ✅ **Autorização baseada em roles** (HR/Admin para modificações)
 - ✅ **Soft Delete** com auditoria completa
 - ✅ **Validação corporativa** (FluentValidation + business rules)
-- ✅ **Swagger UI** completo em http://localhost:5006/swagger
+- ✅ **Swagger UI** completo em http://localhost:5000/swagger
 - ✅ **Health Checks** em /health, /health/ready, /health/live
 
 ## 📝 Comandos Úteis
@@ -225,16 +232,18 @@ dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 # Criar nova migração
 dotnet ef migrations add <NomeMigracao> -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 
-# Executar API (porta 5006)
-dotnet run --project src/SynQcore.Api
+# Executar API (porta 5000)
+./start.sh
+# Ou: ./scripts/start-api-5000.sh
+# Ou: dotnet run --project src/SynQcore.Api
 ```
 
 ## 🌐 Acesso Local
 
 | Serviço | URL | Status | Credenciais |
 |---------|-----|--------|-------------|
-| **API** | http://localhost:5006 | ✅ Funcionando | **Admin**: admin@dev.synqcore.com / DevAdmin@123! |
-| **Swagger UI** | http://localhost:5006/swagger | ✅ Funcionando | Use o admin acima para testar endpoints |
+| **API** | http://localhost:5000 | ✅ Funcionando | **Admin**: admin@dev.synqcore.com / DevAdmin@123! |
+| **Swagger UI** | http://localhost:5000/swagger | ✅ Funcionando | Use o admin acima para testar endpoints |
 | **Aplicação Blazor** | http://localhost:5001 | 🚧 Fase 5 | - |
 | **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@synqcore.dev / admin123 |
 | **PostgreSQL** | localhost:5432 | ✅ Funcionando | synqcore_user / synqcore_dev_password |
@@ -269,14 +278,15 @@ dotnet run --project src/SynQcore.Api
 ## 📚 Documentação Completa
 
 ### 📋 **Planejamento e Progresso**
-- 🗺️ **[ROADMAP.md](ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
+- 🗺️ **[ROADMAP.md](docs/ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
 - 📊 **Status Atual:** Fase 2.6 completa (38% do projeto)
 
 ### 📚 **Documentação Técnica**
 - 📂 **[docs/](docs/README.md)** - Índice completo da documentação
-- 🏛️ **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Visão completa da arquitetura Clean Architecture
-- 🎨 **[docs/DIAGRAMS.md](docs/DIAGRAMS.md)** - Diagramas visuais (Mermaid) de entidades, fluxos e dependências
-- 🗺️ **[docs/CLASS_MAP.md](docs/CLASS_MAP.md)** - Mapa detalhado de todas as classes e responsabilidades
+- 🏛️ **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Visão completa da arquitetura Clean Architecture
+- 🎨 **[DIAGRAMS.md](docs/DIAGRAMS.md)** - Diagramas visuais (Mermaid) de entidades, fluxos e dependências
+- 🗺️ **[CLASS_MAP.md](docs/CLASS_MAP.md)** - Mapa detalhado de todas as classes e responsabilidades
+- 📋 **[CHANGELOG.md](docs/CHANGELOG.md)** - Histórico de mudanças e atualizações
 
 ### 🧪 **Testes e Validação**
 - � **[docs/testing/](docs/testing/README.md)** - Índice completo de testes
@@ -284,7 +294,8 @@ dotnet run --project src/SynQcore.Api
 - 🏗️ **[docs/testing/ESTRATEGIA-TESTES.md](docs/testing/ESTRATEGIA-TESTES.md)** - Estratégia estabelecida
 
 ### �🤝 **Contribuição e Legal**
-- 🤝 **[docs/CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Guia para contribuição
+- 🤝 **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Guia para contribuição
+- 👤 **[AUTHOR.md](docs/AUTHOR.md)** - Informações sobre o autor
 - 📄 **[LICENSE](LICENSE)** - Licença MIT
 
 ## 🤝 Contribuindo

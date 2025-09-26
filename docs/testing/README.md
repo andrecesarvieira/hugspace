@@ -64,7 +64,7 @@ Consulte: **[`TESTE-KNOWLEDGE-MANAGEMENT.md`](./TESTE-KNOWLEDGE-MANAGEMENT.md)**
    dotnet run --project src/SynQcore.Api/SynQcore.Api.csproj
    ```
 
-2. **Acessar Swagger UI**: http://localhost:5006/swagger
+2. **Acessar Swagger UI**: http://localhost:5000/swagger
 
 3. **Seguir guia principal**: [`TODOS-OS-TESTES-SWAGGER.md`](./TODOS-OS-TESTES-SWAGGER.md)
 

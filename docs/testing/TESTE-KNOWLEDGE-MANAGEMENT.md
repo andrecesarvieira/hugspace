@@ -5,15 +5,15 @@
 - 21 cenários de teste sequenciais
 - Inclui casos de erro e validação
 - Interface visual intuitiva via Swagger UIs
-- API rodando em `http://localhost:5006`
-- Swagger UI disponível em `http://localhost:5006/swagger`
+- API rodando em `http://localhost:5000`
+- Swagger UI disponível em `http://localhost:5000/swagger`
 - Seguir guia em `TODOS-OS-TESTES-SWAGGER.md` para execução sequencial
 
 ## 🎯 Cenários de Teste
 
 ### 1. **Teste via Swagger UI** (Padrão Estabelecido)
 
-Acesse: `http://localhost:5006/swagger`
+Acesse: `http://localhost:5000/swagger`
 
 #### **Knowledge Categories**
 1. **GET /api/KnowledgeCategories** - Lista categorias (inicialmente vazia)
