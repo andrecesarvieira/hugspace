@@ -5,7 +5,26 @@
 **SynQcore** é uma rede social corporativa **open source** desenvolvida com **.NET 9**, **Blazor** e **PostgreSQL**, projetada para conectar funcionários, facilitar colaboração e preservar conhecimento dentro das organizações.
 
 ### 🎯 Objetivos Principais
-- **Conectar funcionários** através de uma plataforma soc### ✅ **Fase 2.5 CONCLUÍDA - Employee Management:**
+- **Conectar funcionários** através de uma plataforma soc### ✅ **Fase 2.6### 🎯 **Status Atu### 🎯 **Objetivos da Fase 2.6:**
+```
+✅ Employee CRUD          (Create, Read, Update, Delete employees)
+✅ Department Management  (Associações e transferências)
+👨‍💼 Manager Relationships  (Hierarquia organizacional)
+📊 Organizational Chart   (Estrutura visual de reportes)
+🔍 Employee Search        (Busca avançada por skills/departamento)
+📸 Avatar Management      (Upload e validação de imagens)
+👑 Admin User Management  (Criação administrativa de usuários)
+🎭 Role Assignment        (Seleção e atribuição de papéis corporativos)
+```jeto (26/09/2025)**
+- ✅ **Fase 1 COMPLETA:** Docker + Clean Architecture + 12 Entidades + Migration + DB
+- ✅ **Fase 2.1 COMPLETA:** API Foundation + Swagger + Health Checks + Serilog
+- ✅ **Fase 2.2 COMPLETA:** JWT Authentication + Identity + Database Integration
+- ✅ **Fase 2.3 COMPLETA:** CQRS + MediatR + Validation + Handlers
+- ✅ **Fase 2.4 COMPLETA:** Rate Limiting Corporativo + Middleware Otimizado
+- ✅ **Fase 2.5 COMPLETA:** Employee Management System + CRUD + Hierarquia + Upload
+- ✅ **Fase 2.6 COMPLETA:** Admin User Management + Seleção de Papéis + Validação
+- 📊 **Progresso Geral:** 38% (Fase 2 100% concluída - 3.2 de 8 fases)
+- 🚀 **Próximo Sprint:** Fase 3 - Core Corporativo e Estrutura OrganizacionalA - Admin User Management:**
 ```
 ✅ Employee CRUD          (8 endpoints REST funcionais)
 ✅ Department Management  (Associações múltiplas e transferências)
@@ -13,6 +32,8 @@
 ✅ Organizational Chart   (Endpoint /hierarchy para estrutura)
 ✅ Employee Search        (Busca avançada por nome/email/departamento)
 ✅ Avatar Management      (Upload com validação 5MB + tipos permitidos)
+✅ Admin User Management  (Criação de usuários com seleção de papéis)
+✅ Role Assignment        (Endpoints para listagem e atribuição de funções)
 ✅ Clean Architecture     (DTOs, Commands, Queries, Handlers, Validation)
 ✅ Corporate Features     (Role-based auth, audit logs, rate limiting)
 ```rativa
@@ -143,6 +164,18 @@
 - [x] ✅ FluentValidation + AutoMapper + Entity relationships
 - [x] ✅ **Entregáveis:** Sistema de funcionários 100% completo
 
+#### ✅ **2.6 Admin User Management System** *(CONCLUÍDO - 26/09/2025)*
+- [x] ✅ Sistema completo de criação de usuários com seleção de papéis
+- [x] ✅ Endpoint POST /admin/users para criação administrativa de usuários
+- [x] ✅ Endpoint GET /admin/roles para listagem de papéis disponíveis
+- [x] ✅ Endpoint GET /admin/users com paginação e busca
+- [x] ✅ CreateUserCommand com validação completa de papéis
+- [x] ✅ CreateUserCommandHandler com LoggerMessage delegates otimizados
+- [x] ✅ CreateUserCommandValidator com regras corporativas de validação
+- [x] ✅ DTOs administrativos (CreateUserRequest, CreateUserResponse, UsersListResponse)
+- [x] ✅ Autorização Admin-only para todas as operações administrativas
+- [x] ✅ **Entregáveis:** Gerenciamento administrativo de usuários 100% funcional
+
 #### ✅ **Critérios de Aceitação Fase 2:** *(TODOS CONCLUÍDOS - 25/09/2025)*
 - ✅ **API corporativa** documentada com interface Swagger
 - ✅ **Autenticação de funcionários** funcionando (register/login)
@@ -157,6 +190,7 @@
 - ✅ **Middleware corporativo** otimizado e limpo
 - ✅ **Verificações de saúde** corporativas respondendo
 - ✅ **Employee Management** CRUD completo com hierarquia
+- ✅ **Admin User Management** com seleção de papéis e validação
 - ✅ **Upload de arquivos** com validação corporativa
 - ✅ **Build limpo** sem errors/warnings
 
@@ -390,7 +424,7 @@
 | Marco | Status | Prazo | Descrição |
 |-------|--------|-------|-----------|
 | **M1** | ✅ **CONCLUÍDO** | 23/09/2025 | Infraestrutura e modelo de dados corporativo completos |
-| **M2** | ✅ **CONCLUÍDO** | 25/09/2025 | API core, autenticação, CQRS, rate limiting e employee management funcionais |
+| **M2** | ✅ **CONCLUÍDO** | 26/09/2025 | API core, autenticação, CQRS, rate limiting, employee e admin management funcionais |
 | **M3** | ⏳ Planejado | Novembro 2025 | Funcionalidades sociais e feeds implementados |
 | **M4** | ⏳ Planejado | Dezembro 2025 | Chat, notificações e mídia funcionais |
 | **M5** | ⏳ Planejado | Janeiro 2026 | Interface Blazor completa e PWA |
@@ -435,10 +469,11 @@
 7. **Middleware Otimizado:** CorporateRateLimitMiddleware + cleanup de código desnecessário
 8. **Testing Framework:** Testes automatizados de rate limiting e bypass
 9. **Employee Management:** CRUD completo + hierarquia + departamentos + upload avatar
-10. **Enterprise Features:** Role-based authorization + soft delete + audit trails + validation
+10. **Admin User Management:** Sistema administrativo completo de criação de usuários com seleção de papéis
+11. **Enterprise Features:** Role-based authorization + soft delete + audit trails + validation
 
 ---
 
-*Roadmap atualizado em: 25 de Setembro de 2025*  
-*Versão do documento: 3.0*  
+*Roadmap atualizado em: 26 de Setembro de 2025*  
+*Versão do documento: 3.1*  
 *Próxima revisão: Final de Outubro 2025 (Pós Fase 3)*

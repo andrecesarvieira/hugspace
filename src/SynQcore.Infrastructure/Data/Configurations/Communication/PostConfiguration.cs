@@ -36,12 +36,14 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(e => e.Status)
             .IsRequired()
             .HasConversion<int>()
-            .HasDefaultValue(PostStatus.Published);
+            .HasDefaultValue(PostStatus.Draft)
+            .HasSentinel(PostStatus.Draft);
 
         builder.Property(e => e.Visibility)
             .IsRequired()
             .HasConversion<int>()
-            .HasDefaultValue(PostVisibility.Company);
+            .HasDefaultValue(PostVisibility.Public)
+            .HasSentinel(PostVisibility.Public);
 
         builder.Property(e => e.Version)
             .IsRequired()

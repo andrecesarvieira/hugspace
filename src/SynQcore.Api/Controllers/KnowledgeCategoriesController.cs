@@ -18,6 +18,7 @@ public class KnowledgeCategoriesController : ControllerBase
         _mediator = mediator;
     }
 
+    // Buscar todas as categorias de conhecimento com opções de filtro
     [HttpGet]
     public async Task<ActionResult<List<KnowledgeCategoryDto>>> GetCategories(
         [FromQuery] bool includeInactive = false,
@@ -33,6 +34,7 @@ public class KnowledgeCategoriesController : ControllerBase
         return Ok(result);
     }
 
+    // Obter categoria de conhecimento específica por ID
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<KnowledgeCategoryDto>> GetCategory(Guid id)
     {
@@ -41,6 +43,7 @@ public class KnowledgeCategoriesController : ControllerBase
         return Ok(result);
     }
 
+    // Criar nova categoria de conhecimento
     [HttpPost]
     public async Task<ActionResult<KnowledgeCategoryDto>> CreateCategory(CreateKnowledgeCategoryDto createDto)
     {
@@ -49,6 +52,7 @@ public class KnowledgeCategoriesController : ControllerBase
         return CreatedAtAction(nameof(GetCategory), new { id = result.Id }, result);
     }
 
+    // Atualizar categoria de conhecimento existente
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<KnowledgeCategoryDto>> UpdateCategory(Guid id, UpdateKnowledgeCategoryDto updateDto)
     {
@@ -57,6 +61,7 @@ public class KnowledgeCategoriesController : ControllerBase
         return Ok(result);
     }
 
+    // Excluir categoria de conhecimento (soft delete)
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteCategory(Guid id)
     {

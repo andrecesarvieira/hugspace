@@ -4,6 +4,8 @@
 
 **SynQcore** é uma rede social corporativa construída com **Clean Architecture**, seguindo os princípios SOLID e Domain-Driven Design (DDD). A arquitetura é projetada para ser escalável, testável e mantível em ambientes corporativos.
 
+**Status Atual:** Fase 2.6 concluída (38% do projeto) - Admin User Management System implementado com seleção completa de papéis corporativos.
+
 ## 🎯 Princípios Arquiteturais
 
 - **Clean Architecture** - Independência de frameworks e UI
@@ -342,7 +344,7 @@ graph TD
 ### Development Environment
 ```bash
 # 1. Docker Compose (Infrastructure)
-docker-compose up -d
+docker compose up -d
 
 # 2. Database Migration
 dotnet ef database update

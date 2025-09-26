@@ -42,6 +42,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
             return new AuthResponse { Success = false, Message = $"Registration failed: {errors}" };
         }
 
+        // Adicionar role padrão "Employee" para novos usuários
+        await _userManager.AddToRoleAsync(user, "Employee");
+
         // Gerar token JWT
         var token = _jwtService.GenerateToken(user);
 

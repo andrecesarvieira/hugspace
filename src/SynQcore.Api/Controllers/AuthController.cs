@@ -16,6 +16,7 @@ public class AuthController : ControllerBase
         _mediator = mediator;
     }
 
+    // Registrar novo funcionário no sistema corporativo
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request)
     {
@@ -34,6 +35,7 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    // Autenticar funcionário e gerar token JWT
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
     {

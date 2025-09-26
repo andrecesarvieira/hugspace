@@ -25,6 +25,7 @@ public partial class DepartmentsController : ControllerBase
         _logger = logger;
     }
 
+    // Buscar departamentos com filtros e paginação
     [HttpGet]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     public async Task<ActionResult<PagedResult<DepartmentDto>>> GetDepartments([FromQuery] GetDepartmentsRequest request)
@@ -46,6 +47,7 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
+    // Obter departamento específico por ID
     [HttpGet("{id:guid}")]
     [Authorize(Roles = "Employee,Manager,HR,Admin")]
     public async Task<ActionResult<DepartmentDto>> GetDepartmentById([Required] Guid id)
@@ -73,6 +75,7 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
+    // Obter hierarquia completa do departamento (subordinados e departamento pai)
     [HttpGet("{id:guid}/hierarchy")]
     [Authorize(Roles = "Manager,HR,Admin")]
     public async Task<ActionResult<DepartmentHierarchyDto>> GetDepartmentHierarchy([Required] Guid id)
@@ -99,6 +102,7 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
+    // Criar novo departamento com validações de hierarquia (apenas HR/Admin)
     [HttpPost]
     [Authorize(Roles = "HR,Admin")]
     public async Task<ActionResult<DepartmentDto>> CreateDepartment([FromBody, Required] CreateDepartmentRequest request)
@@ -130,6 +134,7 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
+    // Atualizar departamento existente com validações de negócio (apenas HR/Admin)
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     public async Task<ActionResult<DepartmentDto>> UpdateDepartment([Required] Guid id, [FromBody, Required] UpdateDepartmentRequest request)
@@ -166,6 +171,7 @@ public partial class DepartmentsController : ControllerBase
         }
     }
 
+    // Excluir departamento com validação de dependências (apenas Admin)
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteDepartment([Required] Guid id)

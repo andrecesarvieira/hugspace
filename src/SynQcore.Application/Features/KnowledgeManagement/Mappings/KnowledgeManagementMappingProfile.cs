@@ -20,5 +20,31 @@ public class KnowledgeManagementMappingProfile : Profile
         // Mapeamentos para Tag
         CreateMap<Tag, TagDto>();
         CreateMap<CreateTagDto, Tag>();
+        
+        // Mapeamentos para Post (Knowledge Articles)
+        CreateMap<Post, KnowledgePostDto>()
+            .ForMember(dest => dest.AuthorName, 
+                       opt => opt.MapFrom(src => $"{src.Author.FirstName} {src.Author.LastName}"))
+            .ForMember(dest => dest.AuthorEmail, 
+                       opt => opt.MapFrom(src => src.Author.Email))
+            .ForMember(dest => dest.CategoryName, 
+                       opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : null))
+            .ForMember(dest => dest.DepartmentName, 
+                       opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : null))
+            .ForMember(dest => dest.TeamName, 
+                       opt => opt.MapFrom(src => src.Team != null ? src.Team.Name : null))
+            .ForMember(dest => dest.ParentPostTitle, 
+                       opt => opt.MapFrom(src => src.ParentPost != null ? src.ParentPost.Title : null))
+            .ForMember(dest => dest.Tags, 
+                       opt => opt.MapFrom(src => src.PostTags.Select(pt => pt.Tag)))
+            .ForMember(dest => dest.Versions, 
+                       opt => opt.MapFrom(src => src.Versions.Where(v => !v.IsDeleted)));
+
+        CreateMap<CreateKnowledgePostDto, Post>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedAt, opt => opt.Ignore());
     }
 }

@@ -16,10 +16,10 @@ public class Post : BaseEntity
     public bool IsPinned { get; set; }
     public bool IsOfficial { get; set; }
     public bool RequiresApproval { get; set; }
-    public PostStatus Status { get; set; } = PostStatus.Published;
+    public PostStatus Status { get; set; } = PostStatus.Draft;
 
     // Visibilidade (corporativa)
-    public PostVisibility Visibility { get; set; } = PostVisibility.Company;
+    public PostVisibility Visibility { get; set; } = PostVisibility.Public;
     public Guid? DepartmentId { get; set; }
     public Guid? TeamId { get; set; }
 

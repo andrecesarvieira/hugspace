@@ -62,6 +62,12 @@ var builder = WebApplication.CreateBuilder(args);
 // JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+// Role Initialization Service
+builder.Services.AddScoped<RoleInitializationService>();
+
+// Admin Bootstrap Service
+builder.Services.AddScoped<AdminBootstrapService>();
+
 // Use Serilog as the logging provider
 builder.Host.UseSerilog();
 
@@ -299,9 +305,9 @@ app.UseMiddleware<AuditLoggingMiddleware>(); // Corporate audit logging
 
 app.UseCors("CorporatePolicy");
 
-// Add authentication & authorization middleware (quando implementado)
-// app.UseAuthentication();
-// app.UseAuthorization();
+// Add authentication & authorization middleware
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
@@ -341,6 +347,15 @@ app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthC
 try
 {
     Log.Information("Starting SynQcore Corporate API");
+    
+    // Inicializar roles corporativas
+    using (var scope = app.Services.CreateScope())
+    {
+        await RoleInitializationService.InitializeAsync(scope.ServiceProvider);
+        // Criar administrador padrão se não existir nenhum
+        await AdminBootstrapService.InitializeAsync(scope.ServiceProvider);
+    }
+    
     app.Run();
 }
 catch (Exception ex)

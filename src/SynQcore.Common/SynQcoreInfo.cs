@@ -9,74 +9,46 @@
 
 namespace SynQcore.Common;
 
-/// <summary>
-/// SynQcore project information and author details
-/// </summary>
+// Informações e constantes do projeto SynQcore
 public static class SynQcoreInfo
 {
-    /// <summary>
-    /// Project name
-    /// </summary>
+    // Nome do projeto
     public const string ProjectName = "SynQcore";
     
-    /// <summary>
-    /// Full project title
-    /// </summary>
+    // Título completo do projeto
     public const string FullTitle = "SynQcore - Corporate Social Network API";
     
-    /// <summary>
-    /// Project description
-    /// </summary>
+    // Descrição do projeto
     public const string Description = "Open Source Corporate Social Network API with Clean Architecture";
     
-    /// <summary>
-    /// Current version
-    /// </summary>
+    // Versão atual
     public const string Version = "2.1.0";
     
-    /// <summary>
-    /// Project author
-    /// </summary>
+    // Autor do projeto
     public const string Author = "André César Vieira";
     
-    /// <summary>
-    /// Author email
-    /// </summary>
+    // Email do autor
     public const string AuthorEmail = "andrecesarvieira@hotmail.com";
     
-    /// <summary>
-    /// Author GitHub profile
-    /// </summary>
+    // Perfil GitHub do autor
     public const string AuthorGitHub = "https://github.com/andrecesarvieira";
     
-    /// <summary>
-    /// Copyright notice
-    /// </summary>
+    // Aviso de direitos autorais
     public const string Copyright = "Copyright (c) 2025 André César Vieira";
     
-    /// <summary>
-    /// License type
-    /// </summary>
+    // Tipo de licença
     public const string License = "MIT License";
     
-    /// <summary>
-    /// Project repository URL
-    /// </summary>
+    // URL do repositório do projeto
     public const string RepositoryUrl = "https://github.com/andrecesarvieira/synqcore";
     
-    /// <summary>
-    /// Project website/documentation URL
-    /// </summary>
+    // URL do website/documentação do projeto
     public const string ProjectUrl = "https://github.com/andrecesarvieira/synqcore";
     
-    /// <summary>
-    /// Build date (updated on compilation)
-    /// </summary>
+    // Data de build (atualizada na compilação)
     public static readonly DateTime BuildDate = DateTime.UtcNow;
     
-    /// <summary>
-    /// Technology stack information
-    /// </summary>
+    // Informações da stack tecnológica
     public static class Technologies
     {
         public const string Framework = ".NET 9";
@@ -88,9 +60,7 @@ public static class SynQcoreInfo
         public const string Containerization = "Docker & Docker Compose";
     }
     
-    /// <summary>
-    /// Project statistics and metrics
-    /// </summary>
+    // Estatísticas e métricas do projeto
     public static class Metrics
     {
         public const int EntitiesCount = 12;
@@ -100,9 +70,7 @@ public static class SynQcoreInfo
         public const string NextPhase = "Phase 2.2 - Corporate Authentication";
     }
     
-    /// <summary>
-    /// Gets formatted project information
-    /// </summary>
+    // Obter informações formatadas do projeto
     public static string GetProjectInfo()
     {
         return $"{FullTitle} v{Version}\n" +
@@ -113,9 +81,7 @@ public static class SynQcoreInfo
                $"Built on: {BuildDate:yyyy-MM-dd HH:mm:ss} UTC";
     }
     
-    /// <summary>
-    /// Gets formatted technology stack information
-    /// </summary>
+    // Obter informações formatadas da stack tecnológica
     public static string GetTechStackInfo()
     {
         return $"Technology Stack:\n" +

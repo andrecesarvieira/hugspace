@@ -22,6 +22,7 @@ public class EmployeesController : ControllerBase
         _logger = logger;
     }
 
+    // Buscar funcionários com filtros e paginação
     [HttpGet]
     [ProducesResponseType(typeof(PagedResult<EmployeeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -31,6 +32,7 @@ public class EmployeesController : ControllerBase
         return Ok(result);
     }
 
+    // Obter funcionário específico por ID
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -41,6 +43,7 @@ public class EmployeesController : ControllerBase
         return Ok(result);
     }
 
+    // Criar novo funcionário (apenas HR/Admin)
     [HttpPost]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status201Created)]
@@ -54,6 +57,7 @@ public class EmployeesController : ControllerBase
         return CreatedAtAction(nameof(GetEmployee), new { id = result.Id }, result);
     }
 
+    // Atualizar dados do funcionário (apenas HR/Admin)
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(EmployeeDto), StatusCodes.Status200OK)]
@@ -68,6 +72,7 @@ public class EmployeesController : ControllerBase
         return Ok(result);
     }
 
+    // Fazer upload de avatar do funcionário com validações de segurança
     [HttpPost("{id:guid}/avatar")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,6 +84,7 @@ public class EmployeesController : ControllerBase
         return Ok(new { avatarUrl });
     }
 
+    // Obter hierarquia organizacional do funcionário (subordinados e gerente)
     [HttpGet("{id:guid}/hierarchy")]
     [ProducesResponseType(typeof(EmployeeHierarchyDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -89,6 +95,7 @@ public class EmployeesController : ControllerBase
         return Ok(result);
     }
 
+    // Buscar funcionários por nome, email ou departamento
     [HttpGet("search")]
     [ProducesResponseType(typeof(List<EmployeeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

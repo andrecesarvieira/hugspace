@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-[![Fase](https://img.shields.io/badge/Fase-2.5%20Completa-success)](ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-2.6%20Completa-success)](ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 [![Autor](https://img.shields.io/badge/Autor-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
@@ -89,14 +89,14 @@ src/
 
 ## 📊 Status do Desenvolvimento
 
-> **🎯 Fase 2.5 CONCLUÍDA!** *(25/09/2025)* - Employee Management System + CRUD + Hierarquia + Upload completos!
+> **🎯 Fase 2.6 CONCLUÍDA!** *(26/09/2025)* - Admin User Management + Seleção de Papéis + Employee Management System completos!
 
 📋 **[📈 ROADMAP DETALHADO →](ROADMAP.md)** - Acompanhe todo o progresso e planejamento das 8 fases!
 
 | Fase | Status | Descrição | Timeline |
 |------|--------|-----------|----------|
 | **Fase 1** | ✅ **CONCLUÍDO** | Modelo Corporativo + Database Schema | Set/2025 |
-| **Fase 2** | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting + Employee Management | Set/2025 |
+| **Fase 2** | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting + Employee + Admin Management | Set/2025 |
 | **Fase 3** | 🚀 **PRÓXIMO** | Core Corporativo + Estrutura Organizacional | Out/2025 |
 | **Fase 4** | ⏳ Planejado | Chat + Notificações + Mídia | Nov/2025 |
 | **Fase 5** | ⏳ Planejado | Interface Blazor + PWA | Dez/2025 |
@@ -114,6 +114,7 @@ src/
    • CQRS com MediatR + FluentValidation
    • Rate Limiting corporativo por função (Employee/Manager/HR/Admin)
    • Employee Management System completo (8 endpoints)
+   • Admin User Management com seleção de papéis (3 endpoints)
    • Swagger UI + Health Checks + Audit Logging
    • GlobalExceptionHandler + estrutura de testes
 ```
@@ -164,6 +165,13 @@ GET    /api/v1/employees/{id}/hierarchy - Ver hierarquia organizacional
 POST   /api/v1/employees/{id}/avatar   - Upload de avatar (5MB max)
 ```
 
+### 👑 **Admin User Management (Fase 2.6)**
+```http
+POST   /api/admin/users    - Criar usuário com papel específico (Admin only)
+GET    /api/admin/users    - Listar todos os usuários (paginação + busca)  
+GET    /api/admin/roles    - Listar papéis disponíveis no sistema
+```
+
 ### 💡 **Recursos Corporativos**
 - ✅ **Rate Limiting** por função (Employee: 100/min, Manager: 200/min, HR/Admin: 500/min)
 - ✅ **Autorização baseada em roles** (HR/Admin para modificações)
@@ -177,16 +185,16 @@ POST   /api/v1/employees/{id}/avatar   - Upload de avatar (5MB max)
 ### 🐳 **Docker & Infraestrutura:**
 ```bash
 # Iniciar todos os serviços
-docker-compose up -d
+docker compose up -d
 
 # Verificar status dos containers
-docker-compose ps
+docker compose ps
 
 # Parar todos os serviços  
-docker-compose down
+docker compose down
 
 # Logs dos serviços
-docker-compose logs -f postgres redis pgadmin
+docker compose logs -f postgres redis pgadmin
 ```
 
 ### 🔧 **Desenvolvimento:**
@@ -248,7 +256,7 @@ dotnet run --project src/SynQcore.Api
 
 ### 📋 **Planejamento e Progresso**
 - 🗺️ **[ROADMAP.md](ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
-- 📊 **Status Atual:** Fase 2.5 completa (35% do projeto)
+- 📊 **Status Atual:** Fase 2.6 completa (38% do projeto)
 
 ### 📚 **Documentação Técnica**
 - 📂 **[docs/](docs/README.md)** - Índice completo da documentação

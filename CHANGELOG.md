@@ -11,7 +11,36 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ---
 
-## [2.2.0] - 2025-09-24 - **Versão Atual**
+## [2.6.0] - 2025-09-26 - **Versão Atual**
+
+### 🚀 Adicionado - Admin User Management System
+- **AdminController** com autorização Admin-only para operações administrativas
+- **CreateUserCommand** para criação de usuários com seleção de papéis corporativos
+- **CreateUserCommandHandler** com LoggerMessage delegates otimizados para performance
+- **CreateUserCommandValidator** com validação completa de papéis e dados corporativos
+- **DTOs Administrativos** (CreateUserRequest, CreateUserResponse, UsersListResponse)
+- **Endpoint POST /admin/users** para criação administrativa de usuários
+- **Endpoint GET /admin/roles** para listagem de papéis disponíveis no sistema
+- **Endpoint GET /admin/users** com paginação e busca avançada
+- **Sistema de Seleção de Papéis** com validação de Employee, Manager, HR, Admin
+- **Validação de Existência** de usuários duplicados por email ou username
+
+### 🔧 Melhorias Técnicas - Admin Management
+- **Autorização Granular** com [Authorize(Roles = "Admin")] nos endpoints administrativos
+- **Logging Otimizado** com LoggerMessage source generators para auditoria corporativa
+- **Rollback Automático** em caso de falhas na atribuição de papéis
+- **Validação Corporativa** com FluentValidation para regras de negócio
+- **Clean Architecture** mantida com Commands/Queries/Handlers/DTOs organizados
+- **CQRS Pattern** seguido rigorosamente para operações administrativas
+
+### 📚 Documentação
+- **Copilot Instructions** em português brasileiro com guias de arquitetura completos
+- **Padrões de Desenvolvimento** documentados para consistência de código
+- **Instruções de Chat IA** com diretrizes específicas para interação
+
+---
+
+## [2.2.0] - 2025-09-24
 
 ### 🚀 Adicionado - Autenticação Corporativa Completa
 - **Integração ASP.NET Core Identity** com ApplicationUserEntity

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 using SynQcore.Infrastructure.Identity;
 
 namespace SynQcore.Infrastructure.Services.Auth;
@@ -12,10 +13,12 @@ namespace SynQcore.Infrastructure.Services.Auth;
 public class JwtService : IJwtService
 {
     private readonly IConfiguration _configuration;
+    private readonly UserManager<ApplicationUserEntity> _userManager;
 
-    public JwtService(IConfiguration configuration)
+    public JwtService(IConfiguration configuration, UserManager<ApplicationUserEntity> userManager)
     {
         _configuration = configuration;
+        _userManager = userManager;
     }
 
     public string GenerateToken(ApplicationUserEntity user)
@@ -23,13 +26,22 @@ public class JwtService : IJwtService
         var jwtSettings = _configuration.GetSection("JWT");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!));
 
-        var claims = new[]
+        // Obter roles do usuário
+        var userRoles = _userManager.GetRolesAsync(user).Result;
+
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(ClaimTypes.Name, user.UserName!)
         };
+
+        // Adicionar roles aos claims
+        foreach (var role in userRoles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],

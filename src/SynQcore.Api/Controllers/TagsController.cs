@@ -19,6 +19,7 @@ public class TagsController : ControllerBase
         _mediator = mediator;
     }
 
+    // Buscar tags com filtros avançados e ordenação personalizada
     [HttpGet]
     public async Task<ActionResult<List<TagDto>>> GetTags(
         [FromQuery] TagType? type = null,
@@ -40,6 +41,7 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
+    // Obter tags mais populares por número de usos
     [HttpGet("popular")]
     public async Task<ActionResult<List<TagDto>>> GetPopularTags(
         [FromQuery] int count = 20,
@@ -55,6 +57,7 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
+    // Obter tag específica por ID com informações de uso
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TagDto>> GetTag(Guid id)
     {
@@ -63,6 +66,7 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
+    // Criar nova tag (skill, knowledge, etc.)
     [HttpPost]
     public async Task<ActionResult<TagDto>> CreateTag(CreateTagDto createDto)
     {
@@ -71,6 +75,7 @@ public class TagsController : ControllerBase
         return CreatedAtAction(nameof(GetTag), new { id = result.Id }, result);
     }
 
+    // Atualizar informações da tag existente
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TagDto>> UpdateTag(Guid id, UpdateTagDto updateDto)
     {
@@ -79,6 +84,7 @@ public class TagsController : ControllerBase
         return Ok(result);
     }
 
+    // Excluir tag (soft delete) com validação de dependências
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteTag(Guid id)
     {
