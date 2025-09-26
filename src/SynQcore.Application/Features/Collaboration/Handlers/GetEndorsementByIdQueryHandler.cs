@@ -1,7 +1,7 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Features.Collaboration.Helpers;
@@ -15,7 +15,6 @@ namespace SynQcore.Application.Features.Collaboration.Handlers;
 public partial class GetEndorsementByIdQueryHandler : IRequestHandler<GetEndorsementByIdQuery, EndorsementDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetEndorsementByIdQueryHandler> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -37,11 +36,9 @@ public partial class GetEndorsementByIdQueryHandler : IRequestHandler<GetEndorse
 
     public GetEndorsementByIdQueryHandler(
         ISynQcoreDbContext context, 
-        IMapper mapper, 
         ILogger<GetEndorsementByIdQueryHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -66,14 +63,10 @@ public partial class GetEndorsementByIdQueryHandler : IRequestHandler<GetEndorse
 
             LogEndorsementFound(_logger, endorsement.Id, endorsement.Type);
 
-            // Mapear para DTO
-            var result = _mapper.Map<EndorsementDto>(endorsement);
+            // Mapear para DTO usando extensões manuais
+            var result = endorsement.ToEndorsementDto();
             
-            // Adicionar informações de display do tipo
-            var typeInfo = EndorsementTypeHelper.GetTypeInfo(result.Type);
-            result.TypeDisplayName = typeInfo.DisplayName;
-            result.TypeIcon = typeInfo.Icon;
-
+            // As informações de tipo já são adicionadas no ToEndorsementDto()
             return result;
         }
         catch (Exception ex) when (!(ex is ArgumentException))

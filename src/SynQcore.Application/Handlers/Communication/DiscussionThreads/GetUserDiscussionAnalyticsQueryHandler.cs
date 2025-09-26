@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
+using System.Globalization;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -111,7 +112,7 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
     }
 
     /// Calcula distribuição de comentários por tipo
-    private Dictionary<string, int> CalculateCommentsByType(List<Domain.Entities.Communication.Comment> comments)
+    private static Dictionary<string, int> CalculateCommentsByType(List<Domain.Entities.Communication.Comment> comments)
     {
         return comments
             .GroupBy(c => c.Type.ToString())
@@ -183,7 +184,7 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
     }
 
     /// Calcula score de engajamento baseado em atividade e interações
-    private double CalculateEngagementScore(int totalComments, int likesReceived, int endorsementsReceived)
+    private static double CalculateEngagementScore(int totalComments, int likesReceived, int endorsementsReceived)
     {
         if (totalComments == 0) return 0;
 
@@ -196,7 +197,7 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
     }
 
     /// Calcula atividade diária no período
-    private Dictionary<string, int> CalculateActivityByDay(
+    private static Dictionary<string, int> CalculateActivityByDay(
         List<Domain.Entities.Communication.Comment> comments, 
         DateTime fromDate, 
         DateTime toDate)
@@ -206,12 +207,12 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
         // Inicializa todos os dias no período com 0
         for (var date = fromDate.Date; date <= toDate.Date; date = date.AddDays(1))
         {
-            result[date.ToString("yyyy-MM-dd")] = 0;
+            result[date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)] = 0;
         }
 
         // Conta comentários por dia
         var commentsByDay = comments
-            .GroupBy(c => c.CreatedAt.Date.ToString("yyyy-MM-dd"))
+            .GroupBy(c => c.CreatedAt.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
             .ToDictionary(g => g.Key, g => g.Count());
 
         // Atualiza com dados reais

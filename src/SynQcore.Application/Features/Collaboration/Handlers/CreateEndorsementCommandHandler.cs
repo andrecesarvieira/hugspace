@@ -1,4 +1,4 @@
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,6 @@ namespace SynQcore.Application.Features.Collaboration.Handlers;
 public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEndorsementCommand, EndorsementDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<CreateEndorsementCommandHandler> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -46,11 +45,9 @@ public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEnd
 
     public CreateEndorsementCommandHandler(
         ISynQcoreDbContext context, 
-        IMapper mapper, 
         ILogger<CreateEndorsementCommandHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -142,7 +139,7 @@ public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEnd
                 .FirstAsync(e => e.Id == endorsement.Id, cancellationToken);
 
             // Mapear para DTO com informações de display
-            var result = _mapper.Map<EndorsementDto>(createdEndorsement);
+            var result = createdEndorsement.ToEndorsementDto();
             
             // Adicionar informações de display do tipo
             var typeInfo = EndorsementTypeHelper.GetTypeInfo(result.Type);

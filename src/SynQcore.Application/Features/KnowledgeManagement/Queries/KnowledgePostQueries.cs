@@ -3,7 +3,7 @@ using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Common.Exceptions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Common.DTOs;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
@@ -18,12 +18,10 @@ public class GetKnowledgePostsQuery : IRequest<PagedResult<KnowledgePostDto>>
 public class GetKnowledgePostsQueryHandler : IRequestHandler<GetKnowledgePostsQuery, PagedResult<KnowledgePostDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetKnowledgePostsQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetKnowledgePostsQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<PagedResult<KnowledgePostDto>> Handle(GetKnowledgePostsQuery request, CancellationToken cancellationToken)
@@ -99,7 +97,7 @@ public class GetKnowledgePostsQueryHandler : IRequestHandler<GetKnowledgePostsQu
             .Take(searchRequest.PageSize)
             .ToListAsync(cancellationToken);
 
-        var postDtos = _mapper.Map<List<KnowledgePostDto>>(posts);
+        var postDtos = posts.Select(p => p.ToKnowledgePostDto()).ToList();
 
         return new PagedResult<KnowledgePostDto>
         {
@@ -122,12 +120,10 @@ public class GetKnowledgePostByIdQuery : IRequest<KnowledgePostDto>
 public class GetKnowledgePostByIdQueryHandler : IRequestHandler<GetKnowledgePostByIdQuery, KnowledgePostDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetKnowledgePostByIdQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetKnowledgePostByIdQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<KnowledgePostDto> Handle(GetKnowledgePostByIdQuery request, CancellationToken cancellationToken)
@@ -152,7 +148,7 @@ public class GetKnowledgePostByIdQueryHandler : IRequestHandler<GetKnowledgePost
             await _context.SaveChangesAsync(cancellationToken);
         }
 
-        return _mapper.Map<KnowledgePostDto>(post);
+        return post.ToKnowledgePostDto();
     }
 }
 
@@ -165,12 +161,10 @@ public class GetKnowledgePostVersionsQuery : IRequest<List<KnowledgePostDto>>
 public class GetKnowledgePostVersionsQueryHandler : IRequestHandler<GetKnowledgePostVersionsQuery, List<KnowledgePostDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetKnowledgePostVersionsQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetKnowledgePostVersionsQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<List<KnowledgePostDto>> Handle(GetKnowledgePostVersionsQuery request, CancellationToken cancellationToken)
@@ -190,7 +184,7 @@ public class GetKnowledgePostVersionsQueryHandler : IRequestHandler<GetKnowledge
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
 
-        return _mapper.Map<List<KnowledgePostDto>>(versions);
+        return versions.Select(p => p.ToKnowledgePostDto()).ToList();
     }
 }
 
@@ -207,12 +201,10 @@ public class GetKnowledgePostsByCategoryQuery : IRequest<PagedResult<KnowledgePo
 public class GetKnowledgePostsByCategoryQueryHandler : IRequestHandler<GetKnowledgePostsByCategoryQuery, PagedResult<KnowledgePostDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetKnowledgePostsByCategoryQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetKnowledgePostsByCategoryQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<PagedResult<KnowledgePostDto>> Handle(GetKnowledgePostsByCategoryQuery request, CancellationToken cancellationToken)
@@ -250,7 +242,7 @@ public class GetKnowledgePostsByCategoryQueryHandler : IRequestHandler<GetKnowle
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var postDtos = _mapper.Map<List<KnowledgePostDto>>(posts);
+        var postDtos = posts.Select(p => p.ToKnowledgePostDto()).ToList();
 
         return new PagedResult<KnowledgePostDto>
         {

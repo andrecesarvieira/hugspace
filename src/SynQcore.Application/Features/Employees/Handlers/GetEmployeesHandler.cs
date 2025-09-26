@@ -1,7 +1,7 @@
 using System.Globalization;
 using MediatR;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Employees.DTOs;
@@ -12,12 +12,10 @@ namespace SynQcore.Application.Features.Employees.Handlers;
 public class GetEmployeesHandler : IRequestHandler<GetEmployeesQuery, PagedResult<EmployeeDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetEmployeesHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetEmployeesHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<PagedResult<EmployeeDto>> Handle(GetEmployeesQuery request, CancellationToken cancellationToken)
@@ -72,7 +70,7 @@ public class GetEmployeesHandler : IRequestHandler<GetEmployeesQuery, PagedResul
             .Take(request.Request.PageSize)
             .ToListAsync(cancellationToken);
 
-        var employeeDtos = _mapper.Map<List<EmployeeDto>>(employees);
+        var employeeDtos = employees.ToEmployeeDtos();
 
         return new PagedResult<EmployeeDto>
         {

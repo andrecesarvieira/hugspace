@@ -3,7 +3,7 @@ using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Common.Exceptions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Domain.Entities.Communication;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Queries;
@@ -20,12 +20,10 @@ public class GetTagsQuery : IRequest<List<TagDto>>
 public class GetTagsQueryHandler : IRequestHandler<GetTagsQuery, List<TagDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetTagsQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetTagsQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<List<TagDto>> Handle(GetTagsQuery request, CancellationToken cancellationToken)
@@ -54,7 +52,7 @@ public class GetTagsQueryHandler : IRequestHandler<GetTagsQuery, List<TagDto>>
 
         var tags = await query.ToListAsync(cancellationToken);
 
-        return _mapper.Map<List<TagDto>>(tags);
+        return tags.ToTagDtos();
     }
 }
 
@@ -66,12 +64,10 @@ public class GetTagByIdQuery : IRequest<TagDto>
 public class GetTagByIdQueryHandler : IRequestHandler<GetTagByIdQuery, TagDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetTagByIdQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetTagByIdQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<TagDto> Handle(GetTagByIdQuery request, CancellationToken cancellationToken)
@@ -82,7 +78,7 @@ public class GetTagByIdQueryHandler : IRequestHandler<GetTagByIdQuery, TagDto>
         if (tag == null)
             throw new NotFoundException($"Tag com ID {request.Id} não encontrada.");
 
-        return _mapper.Map<TagDto>(tag);
+        return tag.ToTagDto();
     }
 }
 
@@ -95,12 +91,10 @@ public class GetPopularTagsQuery : IRequest<List<TagDto>>
 public class GetPopularTagsQueryHandler : IRequestHandler<GetPopularTagsQuery, List<TagDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetPopularTagsQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetPopularTagsQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<List<TagDto>> Handle(GetPopularTagsQuery request, CancellationToken cancellationToken)
@@ -116,6 +110,6 @@ public class GetPopularTagsQueryHandler : IRequestHandler<GetPopularTagsQuery, L
             .Take(request.Count)
             .ToListAsync(cancellationToken);
 
-        return _mapper.Map<List<TagDto>>(tags);
+        return tags.ToTagDtos();
     }
 }

@@ -1,8 +1,8 @@
 using MediatR;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Exceptions;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Employees.Commands;
 using SynQcore.Application.Features.Employees.DTOs;
@@ -12,17 +12,15 @@ namespace SynQcore.Application.Features.Employees.Handlers;
 public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, EmployeeDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<UpdateEmployeeHandler> _logger;
 
     private static readonly Action<ILogger, Guid, string, Exception?> LogEmployeeUpdated =
         LoggerMessage.Define<Guid, string>(LogLevel.Information, new EventId(1, "EmployeeUpdated"),
             "Employee updated successfully: {EmployeeId} - {EmployeeName}");
 
-    public UpdateEmployeeHandler(ISynQcoreDbContext context, IMapper mapper, ILogger<UpdateEmployeeHandler> logger)
+    public UpdateEmployeeHandler(ISynQcoreDbContext context, ILogger<UpdateEmployeeHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -142,6 +140,6 @@ public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Empl
                 .ThenInclude(tm => tm.Team)
             .FirstOrDefaultAsync(e => e.Id == employeeId && !e.IsDeleted, cancellationToken);
 
-        return _mapper.Map<EmployeeDto>(employee!);
+        return employee!.ToEmployeeDto();
     }
 }

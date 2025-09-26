@@ -3,7 +3,7 @@ using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Common.Exceptions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Domain.Entities.Communication;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Commands;
@@ -16,12 +16,10 @@ public class CreateTagCommand : IRequest<TagDto>
 public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, TagDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CreateTagCommandHandler(ISynQcoreDbContext context, IMapper mapper)
+    public CreateTagCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<TagDto> Handle(CreateTagCommand request, CancellationToken cancellationToken)
@@ -44,7 +42,7 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, TagDto>
         _context.Tags.Add(tag);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<TagDto>(tag);
+        return tag.ToTagDto();
     }
 }
 
@@ -57,12 +55,10 @@ public class UpdateTagCommand : IRequest<TagDto>
 public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, TagDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public UpdateTagCommandHandler(ISynQcoreDbContext context, IMapper mapper)
+    public UpdateTagCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<TagDto> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
@@ -98,7 +94,7 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, TagDto>
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<TagDto>(tag);
+        return tag.ToTagDto();
     }
 }
 

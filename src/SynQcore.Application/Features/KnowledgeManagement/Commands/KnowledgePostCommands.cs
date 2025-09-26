@@ -3,7 +3,7 @@ using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Common.Exceptions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Domain.Entities.Communication;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Commands;
@@ -18,12 +18,10 @@ public class CreateKnowledgePostCommand : IRequest<KnowledgePostDto>
 public class CreateKnowledgePostCommandHandler : IRequestHandler<CreateKnowledgePostCommand, KnowledgePostDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CreateKnowledgePostCommandHandler(ISynQcoreDbContext context, IMapper mapper)
+    public CreateKnowledgePostCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<KnowledgePostDto> Handle(CreateKnowledgePostCommand request, CancellationToken cancellationToken)
@@ -107,7 +105,7 @@ public class CreateKnowledgePostCommandHandler : IRequestHandler<CreateKnowledge
             .Include(p => p.PostTags).ThenInclude(pt => pt.Tag)
             .FirstAsync(p => p.Id == post.Id, cancellationToken);
 
-        return _mapper.Map<KnowledgePostDto>(createdPost);
+        return createdPost.ToKnowledgePostDto();
     }
 }
 
@@ -122,12 +120,10 @@ public class UpdateKnowledgePostCommand : IRequest<KnowledgePostDto>
 public class UpdateKnowledgePostCommandHandler : IRequestHandler<UpdateKnowledgePostCommand, KnowledgePostDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public UpdateKnowledgePostCommandHandler(ISynQcoreDbContext context, IMapper mapper)
+    public UpdateKnowledgePostCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<KnowledgePostDto> Handle(UpdateKnowledgePostCommand request, CancellationToken cancellationToken)
@@ -235,7 +231,7 @@ public class UpdateKnowledgePostCommandHandler : IRequestHandler<UpdateKnowledge
             .Include(p => p.PostTags).ThenInclude(pt => pt.Tag)
             .FirstAsync(p => p.Id == post.Id, cancellationToken);
 
-        return _mapper.Map<KnowledgePostDto>(updatedPost);
+        return updatedPost.ToKnowledgePostDto();
     }
 }
 

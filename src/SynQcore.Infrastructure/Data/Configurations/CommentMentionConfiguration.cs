@@ -30,28 +30,39 @@ public class CommentMentionConfiguration : IEntityTypeConfiguration<CommentMenti
         builder.Property(e => e.IsRead)
             .HasDefaultValue(false);
 
-        // Enum configurations
+        // Enum configurations com sentinel values
         builder.Property(e => e.Context)
             .HasConversion<int>()
             .HasDefaultValue(MentionContext.General);
 
         builder.Property(e => e.Urgency)
             .HasConversion<int>()
-            .HasDefaultValue(MentionUrgency.Normal);
+            .HasDefaultValue(MentionUrgency.Normal)
+            .HasSentinel(MentionUrgency.Low); // Define Low como sentinel value
 
-        // Relacionamentos
+        // Configurar propriedades FK explicitamente
+        builder.Property(e => e.CommentId)
+            .IsRequired();
+            
+        builder.Property(e => e.MentionedEmployeeId)
+            .IsRequired();
+            
+        builder.Property(e => e.MentionedById)
+            .IsRequired();
+
+        // Relacionamentos explícitos com ForeignKey names únicos
         builder.HasOne(e => e.Comment)
             .WithMany(c => c.Mentions)
             .HasForeignKey(e => e.CommentId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(e => e.MentionedEmployee)
-            .WithMany()
+            .WithMany() // Sem navigation collection para evitar ambiguidade
             .HasForeignKey(e => e.MentionedEmployeeId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(e => e.MentionedBy)
-            .WithMany(emp => emp.MentionsMade)
+            .WithMany(emp => emp.MentionsMade) // Navigation collection específica já existe
             .HasForeignKey(e => e.MentionedById)
             .OnDelete(DeleteBehavior.Restrict);
 

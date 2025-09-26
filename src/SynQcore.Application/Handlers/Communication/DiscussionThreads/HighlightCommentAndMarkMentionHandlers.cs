@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using SynQcore.Application.Commands.Communication.DiscussionThreads;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -12,18 +12,16 @@ namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 public partial class HighlightDiscussionCommentCommandHandler : IRequestHandler<HighlightDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<HighlightDiscussionCommentCommandHandler> _logger;
 
     public HighlightDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
-        IMapper mapper,
+        
         ICurrentUserService currentUserService,
         ILogger<HighlightDiscussionCommentCommandHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _currentUserService = currentUserService;
         _logger = logger;
     }
@@ -94,7 +92,7 @@ public partial class HighlightDiscussionCommentCommandHandler : IRequestHandler<
                     .ThenInclude(m => m.MentionedEmployee)
                 .FirstOrDefaultAsync(c => c.Id == comment.Id, cancellationToken);
 
-            var commentDto = _mapper.Map<DiscussionCommentDto>(updatedComment);
+            var commentDto = updatedComment.ToDiscussionCommentDto();
 
             return new CommentOperationResponse
             {

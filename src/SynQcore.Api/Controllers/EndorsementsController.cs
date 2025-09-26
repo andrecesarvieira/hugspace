@@ -48,8 +48,44 @@ public class EndorsementsController : ControllerBase
             "Endorsement atualizado com sucesso: {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogEndorsementDeleteRequest =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(4007, nameof(LogEndorsementDeleteRequest)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(4007, nameof(LogEndorsementDeleteRequest)),
             "Requisição de exclusão do endorsement {EndorsementId} por usuário {UserId}");
+
+    private static readonly Action<ILogger, Exception?> LogEndorsementError =
+        LoggerMessage.Define(LogLevel.Error, new EventId(4008, nameof(LogEndorsementError)), 
+            "Erro ao buscar endorsements");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogEndorsementByIdError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4009, nameof(LogEndorsementByIdError)), 
+            "Erro ao buscar endorsement {EndorsementId}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogPostEndorsementsError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4010, nameof(LogPostEndorsementsError)), 
+            "Erro ao buscar endorsements do post {PostId}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCommentEndorsementsError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4011, nameof(LogCommentEndorsementsError)), 
+            "Erro ao buscar endorsements do comment {CommentId}");
+
+    private static readonly Action<ILogger, Exception?> LogEndorsementStatsError =
+        LoggerMessage.Define(LogLevel.Error, new EventId(4012, nameof(LogEndorsementStatsError)), 
+            "Erro ao calcular estatísticas de endorsements");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogCreateEndorsementError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4013, nameof(LogCreateEndorsementError)), 
+            "Erro ao criar endorsement por usuário {UserId}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogToggleEndorsementError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4014, nameof(LogToggleEndorsementError)), 
+            "Erro no toggle de endorsement por usuário {UserId}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogUpdateEndorsementError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4015, nameof(LogUpdateEndorsementError)), 
+            "Erro ao atualizar endorsement {EndorsementId}");
+
+    private static readonly Action<ILogger, Guid, Exception?> LogDeleteEndorsementError =
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4016, nameof(LogDeleteEndorsementError)),
+            "Erro ao excluir endorsement {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEndorsementDeleted =
         LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4008, nameof(LogEndorsementDeleted)), 
@@ -103,7 +139,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar endorsements");
+            LogEndorsementError(_logger, ex);
             return StatusCode(500, "Erro interno do servidor ao buscar endorsements.");
         }
     }
@@ -130,7 +166,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar endorsement {EndorsementId}", id);
+            LogEndorsementByIdError(_logger, id, ex);
             return StatusCode(500, "Erro interno do servidor ao buscar endorsement.");
         }
     }
@@ -164,7 +200,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar endorsements do post {PostId}", postId);
+            LogPostEndorsementsError(_logger, postId, ex);
             return StatusCode(500, "Erro interno do servidor.");
         }
     }
@@ -198,7 +234,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar endorsements do comment {CommentId}", commentId);
+            LogCommentEndorsementsError(_logger, commentId, ex);
             return StatusCode(500, "Erro interno do servidor.");
         }
     }
@@ -233,7 +269,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao calcular estatísticas de endorsements");
+            LogEndorsementStatsError(_logger, ex);
             return StatusCode(500, "Erro interno do servidor.");
         }
     }
@@ -275,7 +311,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar endorsement por usuário {UserId}", userId);
+            LogCreateEndorsementError(_logger, userId, ex);
             return StatusCode(500, "Erro interno do servidor ao criar endorsement.");
         }
     }
@@ -333,7 +369,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro no toggle de endorsement por usuário {UserId}", userId);
+            LogToggleEndorsementError(_logger, userId, ex);
             return StatusCode(500, "Erro interno do servidor no toggle de endorsement.");
         }
     }
@@ -386,7 +422,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar endorsement {EndorsementId}", id);
+            LogUpdateEndorsementError(_logger, id, ex);
             return StatusCode(500, "Erro interno do servidor ao atualizar endorsement.");
         }
     }
@@ -433,7 +469,7 @@ public class EndorsementsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir endorsement {EndorsementId}", id);
+            LogDeleteEndorsementError(_logger, id, ex);
             return StatusCode(500, "Erro interno do servidor ao excluir endorsement.");
         }
     }

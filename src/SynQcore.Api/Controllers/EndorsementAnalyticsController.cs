@@ -15,7 +15,7 @@ namespace SynQcore.Api.Controllers;
 [Route("api/endorsements/analytics")]
 [Authorize]
 [Produces("application/json")]
-public class EndorsementAnalyticsController : ControllerBase
+public partial class EndorsementAnalyticsController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<EndorsementAnalyticsController> _logger;
@@ -36,6 +36,31 @@ public class EndorsementAnalyticsController : ControllerBase
     private static readonly Action<ILogger, Guid, Exception?> LogEmployeeAnalyticsRequest =
         LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(5004, nameof(LogEmployeeAnalyticsRequest)), 
             "Gerando analytics para funcionário: {EmployeeId}");
+
+    // LoggerMessage delegates para erros
+    [LoggerMessage(EventId = 5101, Level = LogLevel.Error,
+        Message = "Erro ao gerar ranking de endorsements")]
+    private static partial void LogRankingError(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 5102, Level = LogLevel.Error,
+        Message = "Erro ao gerar trending de endorsements")]
+    private static partial void LogTrendingError(ILogger logger, Exception ex);
+
+    [LoggerMessage(EventId = 5103, Level = LogLevel.Error,
+        Message = "Erro ao buscar endorsements dados por {EmployeeId}")]
+    private static partial void LogEmployeeEndorsementsGivenError(ILogger logger, Guid employeeId, Exception ex);
+
+    [LoggerMessage(EventId = 5104, Level = LogLevel.Error,
+        Message = "Erro ao buscar endorsements recebidos por {EmployeeId}")]
+    private static partial void LogEmployeeEndorsementsReceivedError(ILogger logger, Guid employeeId, Exception ex);
+
+    [LoggerMessage(EventId = 5105, Level = LogLevel.Error,
+        Message = "Erro ao verificar endorsement do usuário {UserId}")]
+    private static partial void LogCheckEndorsementError(ILogger logger, Guid userId, Exception ex);
+
+    [LoggerMessage(EventId = 5106, Level = LogLevel.Error,
+        Message = "Erro ao gerar dashboard executivo de endorsements")]
+    private static partial void LogDashboardError(ILogger logger, Exception ex);
 
     public EndorsementAnalyticsController(IMediator mediator, ILogger<EndorsementAnalyticsController> logger)
     {
@@ -86,7 +111,7 @@ public class EndorsementAnalyticsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao gerar ranking de endorsements");
+            LogRankingError(_logger, ex);
             return StatusCode(500, "Erro interno do servidor ao gerar ranking.");
         }
     }
@@ -127,7 +152,7 @@ public class EndorsementAnalyticsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao gerar trending de endorsements");
+            LogTrendingError(_logger, ex);
             return StatusCode(500, "Erro interno do servidor ao gerar trending.");
         }
     }
@@ -177,7 +202,7 @@ public class EndorsementAnalyticsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar endorsements dados por {EmployeeId}", employeeId);
+            LogEmployeeEndorsementsGivenError(_logger, employeeId, ex);
             return StatusCode(500, "Erro interno do servidor.");
         }
     }
@@ -227,7 +252,7 @@ public class EndorsementAnalyticsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao buscar endorsements recebidos por {EmployeeId}", employeeId);
+            LogEmployeeEndorsementsReceivedError(_logger, employeeId, ex);
             return StatusCode(500, "Erro interno do servidor.");
         }
     }
@@ -273,7 +298,7 @@ public class EndorsementAnalyticsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao verificar endorsement do usuário {UserId}", userId);
+            LogCheckEndorsementError(_logger, userId, ex);
             return StatusCode(500, "Erro interno do servidor.");
         }
     }
@@ -336,7 +361,7 @@ public class EndorsementAnalyticsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao gerar dashboard executivo de endorsements");
+            LogDashboardError(_logger, ex);
             return StatusCode(500, "Erro interno do servidor ao gerar dashboard.");
         }
     }

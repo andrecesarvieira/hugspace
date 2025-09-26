@@ -1,4 +1,4 @@
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,6 @@ namespace SynQcore.Application.Features.Collaboration.Handlers;
 public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEndorsementCommand, EndorsementDto?>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<ToggleEndorsementCommandHandler> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -46,11 +45,9 @@ public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEnd
 
     public ToggleEndorsementCommandHandler(
         ISynQcoreDbContext context, 
-        IMapper mapper, 
         ILogger<ToggleEndorsementCommandHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -145,13 +142,10 @@ public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEnd
                     .Include(e => e.Comment)
                     .FirstAsync(e => e.Id == newEndorsement.Id, cancellationToken);
 
-                // Mapear para DTO
-                var result = _mapper.Map<EndorsementDto>(createdEndorsement);
+                // Mapear para DTO usando extensões manuais
+                var result = createdEndorsement.ToEndorsementDto();
                 
-                // Adicionar informações de display do tipo
-                var typeInfo = EndorsementTypeHelper.GetTypeInfo(result.Type);
-                result.TypeDisplayName = typeInfo.DisplayName;
-                result.TypeIcon = typeInfo.Icon;
+                // As informações de tipo já são adicionadas no ToEndorsementDto()
 
                 return result;
             }

@@ -6,7 +6,7 @@ using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Common.Helpers;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Domain.Entities.Communication;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -14,20 +14,18 @@ namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<ModerateDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly DiscussionThreadHelper _threadHelper;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<ModerateDiscussionCommentCommandHandler> _logger;
 
     public ModerateDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
-        IMapper mapper,
+        
         DiscussionThreadHelper threadHelper,
         ICurrentUserService currentUserService,
         ILogger<ModerateDiscussionCommentCommandHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _threadHelper = threadHelper;
         _currentUserService = currentUserService;
         _logger = logger;
@@ -106,7 +104,7 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
                     .ThenInclude(m => m.MentionedEmployee)
                 .FirstOrDefaultAsync(c => c.Id == comment.Id, cancellationToken);
 
-            var commentDto = _mapper.Map<DiscussionCommentDto>(moderatedComment);
+            var commentDto = moderatedComment.ToDiscussionCommentDto();
 
             return new CommentOperationResponse
             {

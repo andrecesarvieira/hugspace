@@ -2,7 +2,7 @@ using MediatR;
 using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Common.Exceptions;
 using SynQcore.Application.Common.Interfaces;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Queries;
@@ -16,12 +16,10 @@ public class GetKnowledgeCategoriesQuery : IRequest<List<KnowledgeCategoryDto>>
 public class GetKnowledgeCategoriesQueryHandler : IRequestHandler<GetKnowledgeCategoriesQuery, List<KnowledgeCategoryDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetKnowledgeCategoriesQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetKnowledgeCategoriesQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<List<KnowledgeCategoryDto>> Handle(GetKnowledgeCategoriesQuery request, CancellationToken cancellationToken)
@@ -40,7 +38,7 @@ public class GetKnowledgeCategoriesQueryHandler : IRequestHandler<GetKnowledgeCa
             .OrderBy(c => c.Name)
             .ToListAsync(cancellationToken);
 
-        var result = _mapper.Map<List<KnowledgeCategoryDto>>(categories);
+        var result = categories.ToKnowledgeCategoryDtos();
 
         // Adicionar contagem de posts para cada categoria
         var categoryIds = categories.Select(c => c.Id).ToList();
@@ -68,12 +66,10 @@ public class GetKnowledgeCategoryByIdQuery : IRequest<KnowledgeCategoryDto>
 public class GetKnowledgeCategoryByIdQueryHandler : IRequestHandler<GetKnowledgeCategoryByIdQuery, KnowledgeCategoryDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetKnowledgeCategoryByIdQueryHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetKnowledgeCategoryByIdQueryHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<KnowledgeCategoryDto> Handle(GetKnowledgeCategoryByIdQuery request, CancellationToken cancellationToken)
@@ -86,7 +82,7 @@ public class GetKnowledgeCategoryByIdQueryHandler : IRequestHandler<GetKnowledge
         if (category == null)
             throw new NotFoundException($"Categoria com ID {request.Id} não encontrada.");
 
-        var result = _mapper.Map<KnowledgeCategoryDto>(category);
+        var result = category.ToKnowledgeCategoryDto();
 
         // Adicionar contagem de posts
         result.PostsCount = await _context.Posts

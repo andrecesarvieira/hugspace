@@ -1,4 +1,4 @@
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,6 @@ namespace SynQcore.Application.Features.Collaboration.Handlers;
 public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<GetEmployeeEndorsementsGivenQuery, PagedResult<EndorsementDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetEmployeeEndorsementsGivenQueryHandler> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -38,11 +37,10 @@ public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<
 
     public GetEmployeeEndorsementsGivenQueryHandler(
         ISynQcoreDbContext context, 
-        IMapper mapper, 
+        
         ILogger<GetEmployeeEndorsementsGivenQueryHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -97,7 +95,7 @@ public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<
             // Mapear para DTOs
             var endorsementDtos = endorsements.Select(e =>
             {
-                var dto = _mapper.Map<EndorsementDto>(e);
+                var dto = e.ToEndorsementDto();
                 var typeInfo = EndorsementTypeHelper.GetTypeInfo(dto.Type);
                 dto.TypeDisplayName = typeInfo.DisplayName;
                 dto.TypeIcon = typeInfo.Icon;
@@ -129,7 +127,6 @@ public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<
 public partial class GetEmployeeEndorsementsReceivedQueryHandler : IRequestHandler<GetEmployeeEndorsementsReceivedQuery, PagedResult<EndorsementDto>>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<GetEmployeeEndorsementsReceivedQueryHandler> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -151,11 +148,10 @@ public partial class GetEmployeeEndorsementsReceivedQueryHandler : IRequestHandl
 
     public GetEmployeeEndorsementsReceivedQueryHandler(
         ISynQcoreDbContext context, 
-        IMapper mapper, 
+        
         ILogger<GetEmployeeEndorsementsReceivedQueryHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -224,7 +220,7 @@ public partial class GetEmployeeEndorsementsReceivedQueryHandler : IRequestHandl
             // Mapear para DTOs
             var endorsementDtos = pagedEndorsements.Select(e =>
             {
-                var dto = _mapper.Map<EndorsementDto>(e);
+                var dto = e.ToEndorsementDto();
                 var typeInfo = EndorsementTypeHelper.GetTypeInfo(dto.Type);
                 dto.TypeDisplayName = typeInfo.DisplayName;
                 dto.TypeIcon = typeInfo.Icon;

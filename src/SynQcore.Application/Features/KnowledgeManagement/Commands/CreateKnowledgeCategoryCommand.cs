@@ -3,7 +3,7 @@ using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Common.Exceptions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Domain.Entities.Communication;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Commands;
@@ -16,12 +16,10 @@ public class CreateKnowledgeCategoryCommand : IRequest<KnowledgeCategoryDto>
 public class CreateKnowledgeCategoryCommandHandler : IRequestHandler<CreateKnowledgeCategoryCommand, KnowledgeCategoryDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public CreateKnowledgeCategoryCommandHandler(ISynQcoreDbContext context, IMapper mapper)
+    public CreateKnowledgeCategoryCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<KnowledgeCategoryDto> Handle(CreateKnowledgeCategoryCommand request, CancellationToken cancellationToken)
@@ -56,6 +54,6 @@ public class CreateKnowledgeCategoryCommandHandler : IRequestHandler<CreateKnowl
         _context.KnowledgeCategories.Add(category);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return _mapper.Map<KnowledgeCategoryDto>(category);
+        return category.ToKnowledgeCategoryDto();
     }
 }

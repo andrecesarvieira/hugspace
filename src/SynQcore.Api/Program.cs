@@ -38,6 +38,7 @@ Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+
     .Enrich.FromLogContext()
     .Enrich.WithEnvironmentName()
     .Enrich.WithMachineName()
@@ -254,10 +255,7 @@ builder.Services.AddMediatR(cfg =>
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
 
-// Add AutoMapper manually
-builder.Services.AddAutoMapper(config => {
-    config.AddMaps(typeof(LoginCommand).Assembly);
-});
+// Mapeamento manual implementado via extensions - sem AutoMapper
 
 var app = builder.Build();
 

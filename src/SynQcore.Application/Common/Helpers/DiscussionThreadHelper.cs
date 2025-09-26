@@ -82,7 +82,7 @@ public class DiscussionThreadHelper
     /// <summary>
     /// Processa menções em um comentário
     /// </summary>
-    public List<CommentMention> ExtractMentions(string content, Guid commentId, Guid authorId)
+    public static List<CommentMention> ExtractMentions(string content, Guid commentId, Guid authorId)
     {
         var mentions = new List<CommentMention>();
         var mentionPattern = @"@(\w+(?:\.\w+)?)"; // Matches @username or @first.last

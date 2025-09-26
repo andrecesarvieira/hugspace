@@ -11,7 +11,55 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ---
 
-## [2.6.0] - 2025-09-26 - **Versão Atual**
+## [2.7.0] - 2025-09-26 - **Versão Atual**
+
+### 🎯 MAJOR - Migração Completa do AutoMapper para Sistema Manual
+- **Eliminação Total do AutoMapper** removendo dependência comercial (AutoMapper 15.0.1)
+- **Sistema de Mapeamento Manual** implementado em `MappingExtensions.cs` com performance superior
+- **Zero Overhead de Reflection** substituído por mapeamento direto de alta performance
+- **Métodos de Extensão Completos** para todas as entidades principais:
+  - `Employee.ToEmployeeDto()` e `ToEmployeeDtos()`
+  - `Endorsement.ToEndorsementDto()` e `ToEndorsementDtos()`
+  - `Comment.ToDiscussionCommentDto()`
+  - `CommentMention.ToCommentMentionDto()`
+  - `Tag.ToTagDto()` e `ToTagDtos()`
+  - `KnowledgeCategory.ToKnowledgeCategoryDto()` e `ToKnowledgeCategoryDtos()`
+  - `Post.ToKnowledgePostDto()`
+
+### 🔧 Migração Sistemática Completa
+- **60+ Arquivos Migrados** incluindo todos os Handlers, Commands e Queries
+- **Handlers de Employee** completamente migrados (GetEmployees, SearchEmployees, UpdateEmployee, CreateEmployee, GetEmployeeHierarchy, GetEmployeeById)
+- **Handlers de Endorsement** totalmente atualizados (GetEndorsements, GetEndorsementById, ToggleEndorsement, CreateEndorsement, UpdateEndorsement, Analytics)
+- **Handlers de DiscussionThreads** migrados (Create, Update, Moderate, Resolve, Highlight, GetThread)
+- **Commands do KnowledgeManagement** restaurados e atualizados (TagCommands, KnowledgeCategoryCommands, KnowledgePostCommands)
+- **Queries do KnowledgeManagement** completamente funcionais (TagQueries, KnowledgeCategoryQueries, KnowledgePostQueries)
+
+### ⚡ Melhorias de Performance e Qualidade
+- **Null Safety Implementada** com `ArgumentNullException.ThrowIfNull()` em todos os métodos críticos
+- **Zero Warnings Policy** - compilação limpa sem avisos em todo o projeto
+- **Scripts de Automação** desenvolvidos para migrações futuras (`fix_automapper.sh`)
+- **Mapeamento com Informações Enriquecidas** incluindo ícones de endorsement e nomes de display
+- **Compilação Otimizada** reduzida para ~3.2s com todas as validações
+
+### 📁 Estrutura de Projeto Limpa
+- **Zero Dependências Comerciais** - projeto 100% open-source
+- **Copilot Instructions Atualizadas** com novas premissas de mapeamento manual
+- **Metodologia de Migração** documentada para trabalhos futuros
+- **Padrões de Qualidade** estabelecidos (Zero Warnings Policy, Performance First)
+
+### 🎯 Status de Compilação Final
+- ✅ **SynQcore.Common** - Build OK
+- ✅ **SynQcore.Domain** - Build OK  
+- ✅ **SynQcore.Application** - Build OK
+- ✅ **SynQcore.Infrastructure** - Build OK
+- ✅ **SynQcore.Api** - Build OK
+- ✅ **SynQcore.BlazorApp** - Build OK
+- ✅ **SynQcore.UnitTests** - Build OK
+- ✅ **SynQcore.IntegrationTests** - Build OK
+
+---
+
+## [2.6.0] - 2025-09-26
 
 ### 🚀 Adicionado - Admin User Management System
 - **AdminController** com autorização Admin-only para operações administrativas

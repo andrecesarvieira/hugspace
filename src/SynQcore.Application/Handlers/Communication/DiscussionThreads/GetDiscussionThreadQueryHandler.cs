@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Application.Queries.Communication.DiscussionThreads;
-using AutoMapper;
+using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -12,18 +12,16 @@ namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscussionThreadQuery, DiscussionThreadDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<GetDiscussionThreadQueryHandler> _logger;
 
     public GetDiscussionThreadQueryHandler(
         ISynQcoreDbContext context,
-        IMapper mapper,
+        
         ICurrentUserService currentUserService,
         ILogger<GetDiscussionThreadQueryHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _currentUserService = currentUserService;
         _logger = logger;
     }
@@ -145,7 +143,7 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
     }
 
     /// Mapeia Comment para DiscussionCommentDto com dados de engagement
-    private DiscussionCommentDto MapToDiscussionCommentDto(Domain.Entities.Communication.Comment comment, Guid currentUserId)
+    private static DiscussionCommentDto MapToDiscussionCommentDto(Domain.Entities.Communication.Comment comment, Guid currentUserId)
     {
         var isLikedByCurrentUser = comment.Likes.Any(l => l.EmployeeId == currentUserId);
 
@@ -181,7 +179,7 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
             EndorsementCount = comment.EndorsementCount,
             IsLikedByCurrentUser = isLikedByCurrentUser,
             LastActivityAt = comment.LastActivityAt,
-            Mentions = comment.Mentions.Select(m => _mapper.Map<CommentMentionDto>(m)).ToList(),
+            Mentions = comment.Mentions.Select(m => m.ToCommentMentionDto()).ToList(),
             CreatedAt = comment.CreatedAt,
             UpdatedAt = comment.UpdatedAt
         };

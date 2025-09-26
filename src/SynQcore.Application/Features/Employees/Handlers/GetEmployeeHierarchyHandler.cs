@@ -1,7 +1,7 @@
 using MediatR;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using SynQcore.Application.Common.Exceptions;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Employees.Queries;
@@ -11,12 +11,10 @@ namespace SynQcore.Application.Features.Employees.Handlers;
 public class GetEmployeeHierarchyHandler : IRequestHandler<GetEmployeeHierarchyQuery, EmployeeHierarchyDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
 
-    public GetEmployeeHierarchyHandler(ISynQcoreDbContext context, IMapper mapper)
+    public GetEmployeeHierarchyHandler(ISynQcoreDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<EmployeeHierarchyDto> Handle(GetEmployeeHierarchyQuery request, CancellationToken cancellationToken)
@@ -62,10 +60,10 @@ public class GetEmployeeHierarchyHandler : IRequestHandler<GetEmployeeHierarchyQ
 
         return new EmployeeHierarchyDto
         {
-            Employee = _mapper.Map<EmployeeDto>(employee),
-            Manager = employee.Manager != null ? _mapper.Map<EmployeeDto>(employee.Manager) : null,
-            Subordinates = _mapper.Map<List<EmployeeDto>>(subordinates),
-            Peers = _mapper.Map<List<EmployeeDto>>(peers)
+            Employee = employee.ToEmployeeDto(),
+            Manager = employee.Manager?.ToEmployeeDto(),
+            Subordinates = subordinates.ToEmployeeDtos(),
+            Peers = peers.ToEmployeeDtos()
         };
     }
 }

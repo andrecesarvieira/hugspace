@@ -47,19 +47,29 @@ public class EndorsementConfiguration : IEntityTypeConfiguration<Endorsement>
             .IsUnique()
             .HasFilter("\"CommentId\" IS NOT NULL");
 
-        // Relacionamentos
+        // Configurar propriedades de FK explicitamente para evitar shadow state
+        builder.Property(e => e.PostId)
+            .IsRequired(false);
+            
+        builder.Property(e => e.CommentId)
+            .IsRequired(false);
+            
+        builder.Property(e => e.EndorserId)
+            .IsRequired();
+
+        // Relacionamentos - especificar navigation properties explicitamente
         builder.HasOne(e => e.Post)
-            .WithMany() // Post terá navigation property para Endorsements
+            .WithMany(p => p.Endorsements) // Post com navigation collection
             .HasForeignKey(e => e.PostId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(e => e.Comment)
-            .WithMany() // Comment terá navigation property para Endorsements
+            .WithMany(c => c.Endorsements) // Comment com navigation collection
             .HasForeignKey(e => e.CommentId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(e => e.Endorser)
-            .WithMany() // Employee pode ter muitos endorsements dados
+            .WithMany() // Employee sem navigation collection específica para evitar conflitos
             .HasForeignKey(e => e.EndorserId)
             .OnDelete(DeleteBehavior.Restrict);
 

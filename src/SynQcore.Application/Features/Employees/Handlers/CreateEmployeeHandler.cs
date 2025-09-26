@@ -1,8 +1,8 @@
 using MediatR;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Exceptions;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Employees.Commands;
 using SynQcore.Application.Features.Employees.DTOs;
@@ -14,17 +14,15 @@ namespace SynQcore.Application.Features.Employees.Handlers;
 public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, EmployeeDto>
 {
     private readonly ISynQcoreDbContext _context;
-    private readonly IMapper _mapper;
     private readonly ILogger<CreateEmployeeHandler> _logger;
 
     private static readonly Action<ILogger, Guid, string, Exception?> LogEmployeeCreated =
         LoggerMessage.Define<Guid, string>(LogLevel.Information, new EventId(1, "EmployeeCreated"),
             "Employee created successfully: {EmployeeId} - {EmployeeName}");
 
-    public CreateEmployeeHandler(ISynQcoreDbContext context, IMapper mapper, ILogger<CreateEmployeeHandler> logger)
+    public CreateEmployeeHandler(ISynQcoreDbContext context, ILogger<CreateEmployeeHandler> logger)
     {
         _context = context;
-        _mapper = mapper;
         _logger = logger;
     }
 
@@ -118,6 +116,6 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, Empl
         if (employee == null)
             throw new NotFoundException($"Employee with ID {employeeId} not found");
 
-        return _mapper.Map<EmployeeDto>(employee);
+        return employee.ToEmployeeDto();
     }
 }
