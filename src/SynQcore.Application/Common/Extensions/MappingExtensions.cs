@@ -2,6 +2,8 @@ using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Features.CorporateDocuments.DTOs;
+using SynQcore.Application.Features.MediaAssets.DTOs;
+using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Application.DTOs;
 using SynQcore.Application.DTOs.Notifications;
@@ -664,5 +666,84 @@ public static class MappingExtensions
     public static List<CorporateDocumentDto> ToCorporateDocumentDtos(this IEnumerable<CorporateDocument> documents)
     {
         return documents.Select(d => d.ToCorporateDocumentDto()).ToList();
+    }
+
+    // ===== MEDIA ASSET MAPPING EXTENSIONS =====
+
+    /// <summary>
+    /// Converte MediaAsset entity para MediaAssetDto
+    /// </summary>
+    public static MediaAssetDto ToMediaAssetDto(this MediaAsset asset)
+    {
+        ArgumentNullException.ThrowIfNull(asset);
+
+        return new MediaAssetDto
+        {
+            Id = asset.Id,
+            Title = asset.Name,
+            Description = asset.Description,
+            AssetType = asset.Type.ToString(),
+            AccessLevel = asset.AccessLevel,
+            FileSizeBytes = asset.FileSizeBytes,
+            FileName = asset.OriginalFileName,
+            ContentType = asset.ContentType,
+            ThumbnailPath = asset.ThumbnailUrl,
+            CreatedAt = asset.CreatedAt,
+            UpdatedAt = asset.UpdatedAt,
+            Width = asset.Width,
+            Height = asset.Height,
+            Duration = asset.DurationSeconds,
+            CreatedById = asset.UploadedByEmployeeId,
+            CreatedByName = asset.UploadedByEmployee?.FullName ?? string.Empty,
+            DepartmentId = null, // MediaAsset não tem DepartmentId direto
+            DepartmentName = null,
+            Tags = !string.IsNullOrEmpty(asset.Tags) ? asset.Tags.Split(',').ToList() : new List<string>(),
+            ViewCount = 0, // Pode ser implementado depois
+            DownloadCount = asset.DownloadCount
+        };
+    }
+
+    /// <summary>
+    /// Converte lista de MediaAsset entities para lista de MediaAssetDto
+    /// </summary>
+    public static List<MediaAssetDto> ToMediaAssetDtos(this IEnumerable<MediaAsset> assets)
+    {
+        return assets.Select(a => a.ToMediaAssetDto()).ToList();
+    }
+
+    // ===== DOCUMENT TEMPLATE MAPPING EXTENSIONS =====
+
+    /// <summary>
+    /// Converte DocumentTemplate entity para DocumentTemplateDto
+    /// </summary>
+    public static DocumentTemplateDto ToDocumentTemplateDto(this DocumentTemplate template)
+    {
+        ArgumentNullException.ThrowIfNull(template);
+
+        return new DocumentTemplateDto
+        {
+            Id = template.Id,
+            Name = template.Name,
+            Description = template.Description,
+            Category = template.DefaultCategory.ToString(),
+            DefaultAccessLevel = template.DefaultAccessLevel,
+            RequiresApproval = false, // Pode ser implementado depois
+            IsActive = template.IsActive,
+            CreatedAt = template.CreatedAt,
+            UpdatedAt = template.UpdatedAt,
+            CreatedById = template.CreatedByEmployeeId,
+            CreatedByName = template.CreatedByEmployee?.FullName ?? string.Empty,
+            AllowedDepartments = new List<string>(), // Pode ser implementado depois
+            UsageCount = template.UsageCount,
+            LastUsedAt = template.LastUsedAt?.DateTime
+        };
+    }
+
+    /// <summary>
+    /// Converte lista de DocumentTemplate entities para lista de DocumentTemplateDto
+    /// </summary>
+    public static List<DocumentTemplateDto> ToDocumentTemplateDtos(this IEnumerable<DocumentTemplate> templates)
+    {
+        return templates.Select(t => t.ToDocumentTemplateDto()).ToList();
     }
 }

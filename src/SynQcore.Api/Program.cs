@@ -31,6 +31,13 @@ using SynQcore.Application.Commands.Auth;
 using MediatR;
 using FluentValidation;
 using SynQcore.Application.Behaviors;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.MediaAssets.Queries;
+using SynQcore.Application.Features.MediaAssets.DTOs;
+using SynQcore.Application.Features.MediaAssets.Handlers;
+using SynQcore.Application.Features.DocumentTemplates.Queries;
+using SynQcore.Application.Features.DocumentTemplates.DTOs;
+using SynQcore.Application.Features.DocumentTemplates.Handlers;
 
 
 // Configure Serilog for corporate logging with audit trails
@@ -260,7 +267,7 @@ builder.Services.AddMemoryCache();
 // Add corporate rate limiting
 builder.Services.AddCorporateRateLimit(builder.Configuration);
 
-// Add MediatR
+// Add MediatR - Registrar handlers da Application layer
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -268,6 +275,10 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 });
+
+// Registrar handlers manualmente para garantir que sejam encontrados
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetsQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTemplatesQuery, PagedResult<DocumentTemplateDto>>, GetTemplatesQueryHandler>();
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);
