@@ -16,6 +16,8 @@ copilot-instructions.md
 .chatmodes
 chatmode.sh
 cm
+.vscode
+docs/testing
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
