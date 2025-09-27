@@ -7,7 +7,6 @@
 [![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
 [![Fase](https://img.shields.io/badge/Fase-4.1--4.2%20Completa-success)](docs/ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
-[![Autor](https://img.shields.io/badge/Autor-André%20César%20Vieira-blue)](https://github.com/andrecesarvieira)
 
 ## 🏆 **PIONEIRO NO BRASIL**
 
@@ -17,19 +16,9 @@
 
 ---
 
-> **API de Rede Social Corporativa Open Source** criada por **[André César Vieira](https://github.com/andrecesarvieira)**  
+> **API de Rede Social Corporativa Open Source** para ambientes empresariais  
 > Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  
 > Arquitetura empresarial com .NET 9, Clean Architecture e performance otimizada.
-
-## 👨‍💻 Sobre o Criador
-
-**André César Vieira** é um desenvolvedor senior especializado em arquitetura .NET e sistemas corporativos escaláveis.  
-
-- 🌐 **GitHub**: [@andrecesarvieira](https://github.com/andrecesarvieira)  
-- 📧 **Email**: [andrecesarvieira@hotmail.com](mailto:andrecesarvieira@hotmail.com)  
-- 🏗️ **Especialidades**: Clean Architecture, .NET Enterprise, PostgreSQL, Otimização de Performance  
-
-**SynQcore** representa anos de experiência em desenvolvimento corporativo, aplicando as melhores práticas da indústria em um projeto open source completo.
 
 ## ✨ Características
 
@@ -397,19 +386,9 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 ---
 
 <p align="center">
-  <strong>Created with ❤️ by <a href="https://github.com/andrecesarvieira">André César Vieira</a></strong><br>
-  <em>Enterprise Software Architect | .NET Specialist | Open Source Enthusiast</em><br><br>
+  <strong>🏆 PIONEIRO BRASILEIRO</strong><br>
+  <em>Primeira rede social corporativa open source nacional em C#/.NET</em><br><br>
   
-  <a href="https://github.com/andrecesarvieira">
-    <img src="https://img.shields.io/badge/Follow-André%20César%20Vieira-blue?style=social&logo=github" alt="Follow André César Vieira">
-  </a>
-  <a href="mailto:andrecesarvieira@hotmail.com">
-    <img src="https://img.shields.io/badge/Contact-Email-red?style=social&logo=gmail" alt="Email André">
-  </a>
-</p>
-
-<p align="center">
-  <sub>🏆 **PIONEIRO BRASILEIRO** - Primeira rede social corporativa open source nacional em C#/.NET</sub><br>
-  <sub>⭐ **Marque com estrela** se o SynQcore representa o futuro das soluções corporativas brasileiras!</sub><br>
-  <sub>🤝 **Contribuições bem-vindas** - Faça parte da história do desenvolvimento corporativo brasileiro</sub>
+  <sub>⭐ **Marque com estrela** se acredita no futuro das soluções corporativas brasileiras!</sub><br>
+  <sub>🤝 **Contribuições bem-vindas** - Faça parte da evolução do software corporativo nacional</sub>
 </p>
