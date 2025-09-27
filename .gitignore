@@ -19,6 +19,7 @@ cm
 .vscode
 docs/testing
 
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -527,3 +528,4 @@ private/
 business-plan/
 monetization/
 strategy/
+scripts/
