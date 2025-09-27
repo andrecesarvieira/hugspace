@@ -1,6 +1,7 @@
 using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Features.KnowledgeManagement.DTOs;
+using SynQcore.Application.Features.CorporateDocuments.DTOs;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Application.DTOs;
 using SynQcore.Application.DTOs.Notifications;
@@ -22,7 +23,7 @@ public static class MappingExtensions
     public static EmployeeDto ToEmployeeDto(this Employee employee)
     {
         ArgumentNullException.ThrowIfNull(employee);
-        
+
         return new EmployeeDto
         {
             Id = employee.Id,
@@ -126,7 +127,7 @@ public static class MappingExtensions
     public static EndorsementDto ToEndorsementDto(this Endorsement endorsement)
     {
         ArgumentNullException.ThrowIfNull(endorsement);
-        
+
         return new EndorsementDto
         {
             Id = endorsement.Id,
@@ -291,7 +292,7 @@ public static class MappingExtensions
     public static KnowledgePostDto ToKnowledgePostDto(this Post post)
     {
         ArgumentNullException.ThrowIfNull(post);
-        
+
         return new KnowledgePostDto
         {
             Id = post.Id,
@@ -331,7 +332,7 @@ public static class MappingExtensions
     public static FeedItemDto ToFeedItemDto(this FeedEntry feedEntry)
     {
         ArgumentNullException.ThrowIfNull(feedEntry);
-        
+
         return new FeedItemDto
         {
             Id = feedEntry.Id,
@@ -343,7 +344,7 @@ public static class MappingExtensions
             ViewedAt = feedEntry.ViewedAt,
             IsRead = feedEntry.IsRead,
             IsBookmarked = feedEntry.IsBookmarked,
-            
+
             // Post information - será preenchido nos handlers se Post incluído
             Title = feedEntry.Post?.Title ?? string.Empty,
             Content = feedEntry.Post?.Content ?? string.Empty,
@@ -352,25 +353,25 @@ public static class MappingExtensions
             ImageUrl = feedEntry.Post?.ImageUrl,
             IsPinned = feedEntry.Post?.IsPinned ?? false,
             IsOfficial = feedEntry.Post?.IsOfficial ?? false,
-            
+
             // Author information - será preenchido se Author incluído
             AuthorId = feedEntry.Post?.AuthorId ?? Guid.Empty,
-            AuthorName = feedEntry.Post?.Author != null 
-                ? $"{feedEntry.Post.Author.FirstName} {feedEntry.Post.Author.LastName}".Trim() 
+            AuthorName = feedEntry.Post?.Author != null
+                ? $"{feedEntry.Post.Author.FirstName} {feedEntry.Post.Author.LastName}".Trim()
                 : string.Empty,
             AuthorEmail = feedEntry.Post?.Author?.Email ?? string.Empty,
             AuthorAvatarUrl = feedEntry.Post?.Author?.ProfilePhotoUrl,
             AuthorDepartment = feedEntry.Post?.Department?.Name,
-            
+
             // Engagement metrics - valores padrão
             LikeCount = 0,
             CommentCount = 0,
             ViewCount = 0,
-            
+
             // User interaction - valores padrão
             HasLiked = false,
             HasCommented = false,
-            
+
             // Tags and categories - será preenchido se incluídos
             Tags = feedEntry.Post?.PostTags?.Select(pt => pt.Tag.Name).ToList() ?? [],
             Category = feedEntry.Post?.Category?.Name
@@ -391,7 +392,7 @@ public static class MappingExtensions
     public static UserInterestDto ToUserInterestDto(this UserInterest userInterest)
     {
         ArgumentNullException.ThrowIfNull(userInterest);
-        
+
         return new UserInterestDto
         {
             Id = userInterest.Id,
@@ -585,5 +586,83 @@ public static class MappingExtensions
         return placeholders.Split(',', StringSplitOptions.RemoveEmptyEntries)
                           .Select(p => p.Trim())
                           .ToList();
+    }
+
+    // ===== CORPORATE DOCUMENT MAPPING EXTENSIONS =====
+
+    /// <summary>
+    /// Converte CorporateDocument entity para CorporateDocumentDto
+    /// </summary>
+    public static CorporateDocumentDto ToCorporateDocumentDto(this CorporateDocument document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+
+        return new CorporateDocumentDto
+        {
+            Id = document.Id,
+            Title = document.Title,
+            Description = document.Description,
+            Category = document.Category.ToString(),
+            Status = document.Status,
+            AccessLevel = document.AccessLevel,
+            RequiresApproval = false,
+            Version = document.Version,
+            FileSizeBytes = document.FileSizeBytes,
+            FileName = document.OriginalFileName,
+            ContentType = document.ContentType,
+            CreatedAt = document.CreatedAt,
+            UpdatedAt = document.UpdatedAt,
+            AuthorId = document.UploadedByEmployeeId,
+            AuthorName = document.UploadedByEmployee?.FullName ?? string.Empty,
+            DepartmentId = document.OwnerDepartmentId,
+            DepartmentName = document.OwnerDepartment?.Name,
+            ApprovedById = document.ApprovedByEmployeeId,
+            ApprovedByName = document.ApprovedByEmployee?.FullName,
+            ApprovedAt = document.ApprovedAt?.DateTime,
+            Tags = !string.IsNullOrEmpty(document.Tags) ? document.Tags.Split(',').ToList() : new List<string>(),
+            ViewCount = 0,
+            DownloadCount = document.DownloadCount
+        };
+    }
+
+    /// <summary>
+    /// Converte CorporateDocument entity para CorporateDocumentDetailDto
+    /// </summary>
+    public static CorporateDocumentDetailDto ToCorporateDocumentDetailDto(this CorporateDocument document)
+    {
+        ArgumentNullException.ThrowIfNull(document);
+
+        return new CorporateDocumentDetailDto
+        {
+            Id = document.Id,
+            Title = document.Title,
+            Description = document.Description,
+            Category = document.Category.ToString(),
+            Status = document.Status,
+            AccessLevel = document.AccessLevel,
+            Version = document.Version,
+            FileSizeBytes = document.FileSizeBytes,
+            FileName = document.OriginalFileName,
+            ContentType = document.ContentType,
+            CreatedAt = document.CreatedAt,
+            UpdatedAt = document.UpdatedAt,
+            AuthorId = document.UploadedByEmployeeId,
+            AuthorName = document.UploadedByEmployee?.FullName ?? string.Empty,
+            DepartmentId = document.OwnerDepartmentId,
+            DepartmentName = document.OwnerDepartment?.Name,
+            ApprovedById = document.ApprovedByEmployeeId,
+            ApprovedByName = document.ApprovedByEmployee?.FullName,
+            ApprovedAt = document.ApprovedAt?.DateTime,
+            Tags = !string.IsNullOrEmpty(document.Tags) ? document.Tags.Split(',').ToList() : new List<string>(),
+            DownloadCount = document.DownloadCount
+        };
+    }
+
+    /// <summary>
+    /// Converte lista de CorporateDocument entities para lista de CorporateDocumentDto
+    /// </summary>
+    public static List<CorporateDocumentDto> ToCorporateDocumentDtos(this IEnumerable<CorporateDocument> documents)
+    {
+        return documents.Select(d => d.ToCorporateDocumentDto()).ToList();
     }
 }

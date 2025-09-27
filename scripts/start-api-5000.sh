@@ -1,7 +1,7 @@
 #!/bin/bash
 # Script para iniciar SynQcore API na porta 5000 com Swagger
 # Executa: ./scripts/start-api-5000.sh
-# 
+#
 # URLs disponíveis:
 # - API: http://localhost:5000
 # - Swagger: http://localhost:5000/swagger
@@ -38,14 +38,14 @@ log_error() {
 # Verifica se a porta 5000 está livre
 if lsof -Pi :5000 -sTCP:LISTEN -t >/dev/null 2>&1; then
     log_warning "Porta 5000 está ocupada. Liberando automaticamente..."
-    
+
     # Tenta finalizar processos relacionados ao SynQcore
     pkill -f "dotnet.*SynQcore" 2>/dev/null || true
     pkill -f "SynQcore.Api" 2>/dev/null || true
-    
+
     # Aguarda um pouco mais para garantir a liberação
     sleep 3
-    
+
     # Verifica novamente
     if lsof -Pi :5000 -sTCP:LISTEN -t >/dev/null 2>&1; then
         log_warning "Tentativa adicional de liberação da porta..."
@@ -55,7 +55,7 @@ if lsof -Pi :5000 -sTCP:LISTEN -t >/dev/null 2>&1; then
             kill -9 $PIDs 2>/dev/null || true
             sleep 2
         fi
-        
+
         # Verificação final
         if lsof -Pi :5000 -sTCP:LISTEN -t >/dev/null 2>&1; then
             log_error "Não foi possível liberar a porta 5000. Processos ainda ativos:"
@@ -70,16 +70,15 @@ if lsof -Pi :5000 -sTCP:LISTEN -t >/dev/null 2>&1; then
 fi
 
 # Detecta a raiz do projeto (onde está o .sln)
-SCRIPT_PATH="${BASH_SOURCE[0]}"
-# Resolve links simbólicos
-while [ -L "$SCRIPT_PATH" ]; do
-    SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_PATH")" >/dev/null 2>&1 && pwd)"
-    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
-    [[ $SCRIPT_PATH != /* ]] && SCRIPT_PATH="$SCRIPT_DIR/$SCRIPT_PATH"
-done
-SCRIPT_DIR="$(cd -P "$(dirname "$SCRIPT_PATH")" >/dev/null 2>&1 && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(pwd)"
 PROJECT_DIR="$PROJECT_ROOT/src/SynQcore.Api"
+
+# Verifica se estamos na raiz do projeto
+if [ ! -f "SynQcore.sln" ]; then
+    log_error "Execute este script a partir da raiz do projeto SynQcore"
+    exit 1
+fi
+
 cd "$PROJECT_DIR"
 
 log_info "Verificando dependências do projeto..."
@@ -106,7 +105,7 @@ echo ""
 # Função para cleanup ao encerrar o script
 cleanup() {
     log_info "Encerrando aplicação..."
-    
+
     # Verificar se ainda há processos SynQcore ativos antes de tentar finalizar
     if pgrep -f "dotnet.*SynQcore" >/dev/null 2>&1; then
         pkill -f "dotnet.*SynQcore" >/dev/null 2>&1 || true
@@ -114,7 +113,7 @@ cleanup() {
         # Verificação final silenciosa
         pgrep -f "dotnet.*SynQcore" >/dev/null 2>&1 && pkill -9 -f "dotnet.*SynQcore" >/dev/null 2>&1 || true
     fi
-    
+
     exit 0
 }
 

@@ -136,7 +136,8 @@ public class DocumentTemplateConfiguration : IEntityTypeConfiguration<DocumentTe
         builder.Property(dt => dt.DefaultAccessLevel)
             .HasConversion<int>()
             .IsRequired()
-            .HasDefaultValue(DocumentAccessLevel.Internal);
+            .HasDefaultValue(DocumentAccessLevel.Internal)
+            .HasSentinel(DocumentAccessLevel.Internal);
 
         // Valores padrão
         builder.Property(dt => dt.IsActive)
@@ -253,7 +254,8 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
         builder.Property(ma => ma.AccessLevel)
             .HasConversion<int>()
             .IsRequired()
-            .HasDefaultValue(DocumentAccessLevel.Internal);
+            .HasDefaultValue(DocumentAccessLevel.Internal)
+            .HasSentinel(DocumentAccessLevel.Internal);
 
         // Valores padrão
         builder.Property(ma => ma.IsApproved)

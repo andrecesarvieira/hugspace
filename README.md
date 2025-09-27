@@ -10,14 +10,12 @@
 
 ## 🏆 **PIONEIRO NO BRASIL**
 
-> **🇧🇷 PRIMEIRA rede social corporativa open source 100% brasileira em C#/.NET**  
-> **Pesquisa de mercado comprovada**: [Zero concorrentes nacionais identificados](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)  
-> **Oportunidade única**: Market leader por pioneirismo no segmento
+> **🇧🇷 PRIMEIRA rede social corporativa open source 100% brasileira em C#/.NET** > **Pesquisa de mercado comprovada**: [Zero concorrentes nacionais identificados](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) > **Oportunidade única**: Market leader por pioneirismo no segmento
 
 ---
 
-> **API de Rede Social Corporativa Open Source** para ambientes empresariais  
-> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  
+> **API de Rede Social Corporativa Open Source** para ambientes empresariais
+> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.
 > Arquitetura empresarial com .NET 9, Clean Architecture e performance otimizada.
 
 ## ✨ Características
@@ -49,12 +47,14 @@
 - ✅ **Oportunidade única** de market leadership por pioneirismo
 
 #### 📊 **Dados da Pesquisa**
+
 - **Repositórios analisados**: 26 projetos brasileiros em C#
-- **Termos pesquisados**: "rede social corporativa", "corporate social network", "collaboration platform"  
+- **Termos pesquisados**: "rede social corporativa", "corporate social network", "collaboration platform"
 - **Resultado**: Apenas utilitários (PIX, CPF/CNPJ) - **nenhum sistema completo**
 - **Conclusão**: **SynQcore é ÚNICO no segmento**
 
 #### 🎯 **Posicionamento Estratégico**
+
 - **Pioneiro absoluto** no mercado brasileiro
 - **Referência técnica** em Clean Architecture + CQRS para corporações
 - **Zero dependências comerciais** - 100% livre para empresas
@@ -67,12 +67,14 @@
 ## 🚀 Início Rápido
 
 ### 🎯 **Chat Modes Sempre Ativos**
+
 ```bash
 # Ver status e instruções de todos os modos sempre ativos
 ./chatmode.sh
 # ou
 ./cm
 ```
+
 **Todos os 10 modos** (desenvolvimento, arquitetura, debugging, testing, documentação, deployment, segurança, performance, blazor, api) estão **sempre ativos simultaneamente** para máxima qualidade e consistência.
 
 ### Pré-requisitos
@@ -84,35 +86,39 @@
 ### Executando Localmente
 
 1. **Clone o repositório**
+
    ```bash
    git clone https://github.com/andrecesarvieira/synqcore
    cd synqcore
    ```
 
 2. **Inicie a infraestrutura**
+
    ```bash
    ./scripts/start-dev.sh
    ```
 
 3. **Aplicar migrações do banco**
+
    ```bash
    dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
    ```
 
 4. **Execute a API**
+
    ```bash
    # Método recomendado - porta 5000 com Swagger automático
    ./start.sh
-   
+
    # Ou caminho completo
    ./scripts/start-api-5000.sh
-   
+
    # Ou método tradicional
    dotnet run --project src/SynQcore.Api
    # API disponível em: http://localhost:5000
    ```
 
-5. **Execute a Aplicação Blazor** *(Fase 5)*
+5. **Execute a Aplicação Blazor** _(Fase 5)_
    ```bash
    dotnet run --project src/SynQcore.BlazorApp/SynQcore.BlazorApp
    ```
@@ -131,20 +137,21 @@ src/
 
 ## 📊 Status do Desenvolvimento
 
-> **🎯 Fase 4.2 CONCLUÍDA!** *(26/09/2025)* - Corporate Notification System completo com multi-channel delivery!
+> **🎯 Fase 4.2 CONCLUÍDA!** _(26/09/2025)_ - Corporate Notification System completo com multi-channel delivery!
 
 📋 **[📈 ROADMAP DETALHADO →](docs/ROADMAP.md)** - Acompanhe todo o progresso e planejamento das 8 fases!
 
-| Fase | Status | Descrição | Timeline |
-|------|--------|-----------|----------|
-| **Fase 1** | ✅ **CONCLUÍDO** | Modelo Corporativo + Database Schema | Set/2025 |
-| **Fase 2** | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting + Employee + Admin Management | Set/2025 |
-| **Fase 3** | ✅ **CONCLUÍDO** | Core Corporativo + Knowledge Management + Collaboration + Feed | Set/2025 |
-| **Fase 4.1-4.2** | ✅ **CONCLUÍDO** | SignalR + Corporate Notification System Multi-Channel | Set/2025 |
-| **Fase 4.3** | 🚀 **PRÓXIMO** | Corporate Media + Document Management | Out/2025 |
-| **Fase 5** | ⏳ Planejado | Interface Blazor + PWA | Nov/2025 |
+| Fase             | Status           | Descrição                                                                | Timeline |
+| ---------------- | ---------------- | ------------------------------------------------------------------------ | -------- |
+| **Fase 1**       | ✅ **CONCLUÍDO** | Modelo Corporativo + Database Schema                                     | Set/2025 |
+| **Fase 2**       | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting + Employee + Admin Management | Set/2025 |
+| **Fase 3**       | ✅ **CONCLUÍDO** | Core Corporativo + Knowledge Management + Collaboration + Feed           | Set/2025 |
+| **Fase 4.1-4.2** | ✅ **CONCLUÍDO** | SignalR + Corporate Notification System Multi-Channel                    | Set/2025 |
+| **Fase 4.3**     | ✅ **CONCLUÍDO** | Corporate Media + Document Management                                    | Set/2025 |
+| **Fase 5**       | ⏳ Planejado     | Interface Blazor + PWA                                                   | Nov/2025 |
 
-### 🎊 Conquistas das Fases 1-4.2:
+### 🎊 Conquistas das Fases 1-4.3:
+
 ```
 ✅ Fase 1 - Infraestrutura:
    • Docker Compose (PostgreSQL 16 + Redis 7 + pgAdmin)
@@ -179,25 +186,35 @@ src/
    • Multi-Channel Delivery (7 canais: Email, Push, SMS, etc.)
    • Workflow de Aprovação (10 status corporativos)
    • Templates System + Analytics + Performance Logging
+
+✅ Fase 4.3 - Corporate Media e Document Management:
+   • Corporate Documents Controller (12 endpoints + upload/download)
+   • Media Assets Controller (15 endpoints + thumbnails/gallery)
+   • Document Templates Controller (10 endpoints + versioning)
+   • Database Schema (4 tabelas: CorporateDocuments, MediaAssets, etc.)
+   • File Management (upload, versioning, access control)
+   • Corporate Asset Library (logos, templates, policies)
+   • Authorization role-based + Performance logging
 ```
 
 ## 🛠️ Stack Tecnológica
 
-| Categoria | Tecnologia | Status |
-|-----------|------------|---------|
-| **Backend** | .NET 9, ASP.NET Core, EF Core 9 | ✅ Configurado |
-| **Frontend** | Blazor Híbrido (Server + WebAssembly) | 🚧 Fase 5 |
-| **Banco** | PostgreSQL 16 + Npgsql 9.0.4 | ✅ Schema Completo |
-| **Cache** | Redis 7 Alpine | ✅ Configurado |
-| **Tempo Real** | SignalR | 🚧 Fase 4 |
-| **Arquitetura** | Clean Architecture + CQRS | ✅ Implementado |
-| **DevOps** | Docker Compose + GitHub | ✅ Funcionando |
+| Categoria       | Tecnologia                            | Status             |
+| --------------- | ------------------------------------- | ------------------ |
+| **Backend**     | .NET 9, ASP.NET Core, EF Core 9       | ✅ Configurado     |
+| **Frontend**    | Blazor Híbrido (Server + WebAssembly) | 🚧 Fase 5          |
+| **Banco**       | PostgreSQL 16 + Npgsql 9.0.4          | ✅ Schema Completo |
+| **Cache**       | Redis 7 Alpine                        | ✅ Configurado     |
+| **Tempo Real**  | SignalR                               | 🚧 Fase 4          |
+| **Arquitetura** | Clean Architecture + CQRS             | ✅ Implementado    |
+| **DevOps**      | Docker Compose + GitHub               | ✅ Funcionando     |
 
 ### 🏗️ **Arquitetura Implementada:**
+
 ```
 📁 Clean Architecture (9 Projetos):
 ├── 🎯 SynQcore.Domain        - Entidades + Regras de Negócio
-├── 📋 SynQcore.Application   - Casos de Uso (CQRS + MediatR)  
+├── 📋 SynQcore.Application   - Casos de Uso (CQRS + MediatR)
 ├── 🔧 SynQcore.Infrastructure - EF Core + Redis + Externos
 ├── 🌐 SynQcore.Api           - Web API + Controllers
 ├── 💻 SynQcore.BlazorApp     - Frontend Híbrido
@@ -209,6 +226,7 @@ src/
 ## 🔌 API Endpoints Implementados
 
 ### 🔐 **Autenticação (Fase 2.2)**
+
 ```http
 POST /api/v1/auth/register    - Registrar novo funcionário
 POST /api/v1/auth/login      - Login e obtenção de token JWT
@@ -216,13 +234,17 @@ GET  /api/v1/auth/test       - Testar token (requer autenticação)
 ```
 
 #### 👑 **Usuário Administrador Padrão**
+
 O sistema cria automaticamente um usuário administrador no primeiro boot:
+
 - **Email**: `admin@dev.synqcore.com`
 - **Senha**: `DevAdmin@123!`
 - **Papel**: Admin (acesso completo ao sistema)
 
 #### 👤 **Papel Padrão para Novos Usuários**
+
 Quando um usuário se registra via `/auth/register`:
+
 - **Papel Automático**: `Employee` (funcionário padrão)
 - **Permissões**: Acesso básico ao sistema corporativo
 - **Escalação**: Admin pode alterar papéis via `/admin/users`
@@ -230,9 +252,10 @@ Quando um usuário se registra via `/auth/register`:
 > 🔒 **Importante**: Altere a senha do admin em produção!
 
 ### 👥 **Employee Management (Fase 2.5)**
+
 ```http
 POST   /api/v1/employees           - Criar funcionário
-GET    /api/v1/employees/{id}      - Obter funcionário por ID  
+GET    /api/v1/employees/{id}      - Obter funcionário por ID
 PUT    /api/v1/employees/{id}      - Atualizar funcionário
 DELETE /api/v1/employees/{id}      - Desligar funcionário (soft delete + bloqueio de acesso)
 GET    /api/v1/employees           - Listar funcionários (paginação + filtros)
@@ -242,13 +265,15 @@ POST   /api/v1/employees/{id}/avatar   - Upload de avatar (5MB max)
 ```
 
 ### 👑 **Admin User Management (Fase 2.6)**
+
 ```http
 POST   /api/admin/users    - Criar usuário com papel específico (Admin only)
-GET    /api/admin/users    - Listar todos os usuários (paginação + busca)  
+GET    /api/admin/users    - Listar todos os usuários (paginação + busca)
 GET    /api/admin/roles    - Listar papéis disponíveis no sistema
 ```
 
 ### � **Corporate Notification System (Fase 4.2)**
+
 ```http
 POST   /api/notifications                    - Criar notificação (Admin/HR/Manager)
 GET    /api/notifications/my-notifications   - Minhas notificações
@@ -262,6 +287,7 @@ POST   /api/notifications/{id}/cancel        - Cancelar notificação
 ```
 
 ### �💡 **Recursos Corporativos**
+
 - ✅ **Rate Limiting** atualizado (Employee: 500/min, Manager: 1000/min, HR: 1500/min, Admin: 2000/min)
 - ✅ **Multi-Channel Delivery** (7 canais: InApp, Email, Push, SMS, Webhook, Teams, Slack)
 - ✅ **Workflow de Aprovação** (10 status corporativos)
@@ -276,6 +302,7 @@ POST   /api/notifications/{id}/cancel        - Cancelar notificação
 ## 📝 Comandos Úteis
 
 ### 🐳 **Docker & Infraestrutura:**
+
 ```bash
 # Iniciar todos os serviços
 docker compose up -d
@@ -283,7 +310,7 @@ docker compose up -d
 # Verificar status dos containers
 docker compose ps
 
-# Parar todos os serviços  
+# Parar todos os serviços
 docker compose down
 
 # Logs dos serviços
@@ -291,6 +318,7 @@ docker compose logs -f postgres redis pgadmin
 ```
 
 ### 🔧 **Desenvolvimento:**
+
 ```bash
 # Build completo (zero warnings)
 dotnet build
@@ -312,16 +340,17 @@ dotnet ef migrations add <NomeMigracao> -p src/SynQcore.Infrastructure -s src/Sy
 
 ## 🌐 Acesso Local
 
-| Serviço | URL | Status | Credenciais |
-|---------|-----|--------|-------------|
-| **API** | http://localhost:5000 | ✅ Funcionando | **Admin**: admin@dev.synqcore.com / DevAdmin@123! |
-| **Swagger UI** | http://localhost:5000/swagger | ✅ Funcionando | Use o admin acima para testar endpoints |
-| **Aplicação Blazor** | http://localhost:5001 | 🚧 Fase 5 | - |
-| **pgAdmin** | http://localhost:8080 | ✅ Funcionando | admin@synqcore.dev / admin123 |
-| **PostgreSQL** | localhost:5432 | ✅ Funcionando | synqcore_user / synqcore_dev_password |
-| **Redis** | localhost:6379 | ✅ Funcionando | - |
+| Serviço              | URL                           | Status         | Credenciais                                       |
+| -------------------- | ----------------------------- | -------------- | ------------------------------------------------- |
+| **API**              | http://localhost:5000         | ✅ Funcionando | **Admin**: admin@dev.synqcore.com / DevAdmin@123! |
+| **Swagger UI**       | http://localhost:5000/swagger | ✅ Funcionando | Use o admin acima para testar endpoints           |
+| **Aplicação Blazor** | http://localhost:5001         | 🚧 Fase 5      | -                                                 |
+| **pgAdmin**          | http://localhost:8080         | ✅ Funcionando | admin@synqcore.dev / admin123                     |
+| **PostgreSQL**       | localhost:5432                | ✅ Funcionando | synqcore_user / synqcore_dev_password             |
+| **Redis**            | localhost:6379                | ✅ Funcionando | -                                                 |
 
 ### 🗄️ **Banco de Dados Atual:**
+
 ```
 📊 13 Tabelas Criadas (Schema Corporativo Completo):
 
@@ -350,10 +379,12 @@ dotnet ef migrations add <NomeMigracao> -p src/SynQcore.Infrastructure -s src/Sy
 ## 📚 Documentação Completa
 
 ### 📋 **Planejamento e Progresso**
+
 - 🗺️ **[ROADMAP.md](docs/ROADMAP.md)** - Planejamento detalhado das 8 fases de desenvolvimento
 - 📊 **Status Atual:** Fase 2.6 completa (38% do projeto)
 
 ### 📚 **Documentação Técnica**
+
 - 📂 **[docs/](docs/README.md)** - Índice completo da documentação
 - 🏛️ **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Visão completa da arquitetura Clean Architecture
 - 🎨 **[DIAGRAMS.md](docs/DIAGRAMS.md)** - Diagramas visuais (Mermaid) de entidades, fluxos e dependências
@@ -361,11 +392,13 @@ dotnet ef migrations add <NomeMigracao> -p src/SynQcore.Infrastructure -s src/Sy
 - 📋 **[CHANGELOG.md](docs/CHANGELOG.md)** - Histórico de mudanças e atualizações
 
 ### 🧪 **Testes e Validação**
+
 - � **[docs/testing/](docs/testing/README.md)** - Índice completo de testes
 - 📋 **[docs/testing/TODOS-OS-TESTES-SWAGGER.md](docs/testing/TODOS-OS-TESTES-SWAGGER.md)** ⭐ - Guia principal
 - 🏗️ **[docs/testing/ESTRATEGIA-TESTES.md](docs/testing/ESTRATEGIA-TESTES.md)** - Estratégia estabelecida
 
 ### �🤝 **Contribuição e Legal**
+
 - 🤝 **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Guia para contribuição
 - 👤 **[AUTHOR.md](docs/AUTHOR.md)** - Informações sobre o autor
 - 📄 **[LICENSE](LICENSE)** - Licença MIT
@@ -397,7 +430,8 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 <p align="center">
   <strong>🏆 PIONEIRO BRASILEIRO</strong><br>
   <em>Primeira rede social corporativa open source nacional em C#/.NET</em><br><br>
-  
-  <sub>⭐ **Marque com estrela** se acredita no futuro das soluções corporativas brasileiras!</sub><br>
-  <sub>🤝 **Contribuições bem-vindas** - Faça parte da evolução do software corporativo nacional</sub>
+
+<sub>⭐ **Marque com estrela** se acredita no futuro das soluções corporativas brasileiras!</sub><br>
+<sub>🤝 **Contribuições bem-vindas** - Faça parte da evolução do software corporativo nacional</sub>
+
 </p>

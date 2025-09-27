@@ -1,12 +1,12 @@
 /*
  * SynQcore - Corporate Social Network API
- * 
+ *
  * Copyright (c) 2025 André César Vieira
- * 
+ *
  * Licensed under the MIT License
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  * GitHub: https://github.com/andrecesarvieira/synqcore
- * 
+ *
  * This file is part of SynQcore, an open-source corporate social network API
  * built with Clean Architecture, .NET 9, and PostgreSQL.
  */
@@ -45,14 +45,14 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithThreadId()
     .WriteTo.Console(
         formatProvider: System.Globalization.CultureInfo.InvariantCulture,
-        outputTemplate: 
+        outputTemplate:
         "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj} " +
         "| CorrelationId: {CorrelationId} | UserId: {UserId} | IP: {ClientIP}{NewLine}{Exception}")
     .WriteTo.File("logs/synqcore-corporate-.log",
         rollingInterval: RollingInterval.Day,
         retainedFileCountLimit: 30,
         formatProvider: System.Globalization.CultureInfo.InvariantCulture,
-        outputTemplate: 
+        outputTemplate:
             "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level:u3}] {Message:lj} " +
             "| CorrelationId: {CorrelationId} | UserId: {UserId} | IP: {ClientIP} " +
             "| {SourceContext}{NewLine}{Exception}")
@@ -106,7 +106,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-   
+
     // Add JWT Bearer authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -135,7 +135,7 @@ builder.Services.AddSwaggerGen(options =>
 
     // Resolver conflitos de schema IDs usando nomes completos
     options.CustomSchemaIds(type => type.FullName?.Replace('+', '.'));
-    
+
     // Incluir comentários XML na documentação Swagger
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -150,7 +150,7 @@ builder.Services.AddDbContext<SynQcoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register DbContext interface
-builder.Services.AddScoped<SynQcore.Application.Common.Interfaces.ISynQcoreDbContext>(provider => 
+builder.Services.AddScoped<SynQcore.Application.Common.Interfaces.ISynQcoreDbContext>(provider =>
     provider.GetRequiredService<SynQcoreDbContext>());
 
 // Identity Configuration
@@ -186,7 +186,7 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
     };
-    
+
     // Enable JWT authentication for SignalR hubs
     options.Events = new JwtBearerEvents
     {
@@ -194,7 +194,7 @@ builder.Services.AddAuthentication(options =>
         {
             var accessToken = context.Request.Query["access_token"];
             var path = context.HttpContext.Request.Path;
-            
+
             // If the request is for SignalR hub, get the token from query string
             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
             {
@@ -298,7 +298,11 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     });
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection apenas em produção para evitar warnings em desenvolvimento
+if (app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 
 // Corporate middleware pipeline
 app.UseExceptionHandler(); // Global exception handler
@@ -356,7 +360,7 @@ app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthC
 try
 {
     Log.Information("Starting SynQcore Corporate API");
-    
+
     // Inicializar roles corporativas
     using (var scope = app.Services.CreateScope())
     {
@@ -364,14 +368,14 @@ try
         // Criar administrador padrão se não existir nenhum
         await AdminBootstrapService.InitializeAsync(scope.ServiceProvider);
     }
-    
+
     // Abrir Swagger automaticamente no navegador padrão em desenvolvimento
     if (app.Environment.IsDevelopment())
     {
         var serverUrls = app.Urls;
         var baseUrl = serverUrls.FirstOrDefault() ?? "http://localhost:5000";
         var swaggerUrl = $"{baseUrl}/swagger";
-        
+
         // Executar após um pequeno delay para garantir que o servidor esteja pronto
         _ = Task.Run(async () =>
         {
@@ -403,7 +407,7 @@ try
             }
         });
     }
-    
+
     app.Run();
 }
 catch (Exception ex)

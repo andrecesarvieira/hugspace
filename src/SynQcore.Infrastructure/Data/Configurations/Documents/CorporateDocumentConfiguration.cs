@@ -62,12 +62,14 @@ public class CorporateDocumentConfiguration : IEntityTypeConfiguration<Corporate
         builder.Property(d => d.Status)
             .HasConversion<int>()
             .IsRequired()
-            .HasDefaultValue(DocumentStatus.Draft);
+            .HasDefaultValue(DocumentStatus.Draft)
+            .HasSentinel(DocumentStatus.Draft);
 
         builder.Property(d => d.AccessLevel)
             .HasConversion<int>()
             .IsRequired()
-            .HasDefaultValue(DocumentAccessLevel.Internal);
+            .HasDefaultValue(DocumentAccessLevel.Internal)
+            .HasSentinel(DocumentAccessLevel.Internal);
 
         builder.Property(d => d.Category)
             .HasConversion<int>()
