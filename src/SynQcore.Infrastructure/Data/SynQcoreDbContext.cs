@@ -47,6 +47,13 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public DbSet<NotificationDelivery> NotificationDeliveries => Set<NotificationDelivery>();
     public DbSet<NotificationTemplate> NotificationTemplates => Set<NotificationTemplate>();
 
+    // Corporate Document Management (Fase 4.3)
+    public DbSet<CorporateDocument> CorporateDocuments => Set<CorporateDocument>();
+    public DbSet<DocumentAccess> DocumentAccesses => Set<DocumentAccess>();
+    public DbSet<DocumentAccessLog> DocumentAccessLogs => Set<DocumentAccessLog>();
+    public DbSet<DocumentTemplate> DocumentTemplates => Set<DocumentTemplate>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+
     // DbSets - Relationships
     public DbSet<EmployeeDepartment> EmployeeDepartments => Set<EmployeeDepartment>();
     public DbSet<TeamMembership> TeamMemberships => Set<TeamMembership>();

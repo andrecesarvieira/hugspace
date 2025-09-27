@@ -66,6 +66,15 @@
 
 ## 🚀 Início Rápido
 
+### 🎯 **Chat Modes Sempre Ativos**
+```bash
+# Ver status e instruções de todos os modos sempre ativos
+./chatmode.sh
+# ou
+./cm
+```
+**Todos os 10 modos** (desenvolvimento, arquitetura, debugging, testing, documentação, deployment, segurança, performance, blazor, api) estão **sempre ativos simultaneamente** para máxima qualidade e consistência.
+
 ### Pré-requisitos
 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)

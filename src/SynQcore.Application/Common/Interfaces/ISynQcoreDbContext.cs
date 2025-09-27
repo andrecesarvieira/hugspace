@@ -37,6 +37,13 @@ public interface ISynQcoreDbContext
     DbSet<NotificationDelivery> NotificationDeliveries { get; }
     DbSet<NotificationTemplate> NotificationTemplates { get; }
 
+    // Corporate Document Management entities (Fase 4.3)
+    DbSet<CorporateDocument> CorporateDocuments { get; }
+    DbSet<DocumentAccess> DocumentAccesses { get; }
+    DbSet<DocumentAccessLog> DocumentAccessLogs { get; }
+    DbSet<DocumentTemplate> DocumentTemplates { get; }
+    DbSet<MediaAsset> MediaAssets { get; }
+
     // Relationship entities
     DbSet<EmployeeDepartment> EmployeeDepartments { get; }
     DbSet<TeamMembership> TeamMemberships { get; }

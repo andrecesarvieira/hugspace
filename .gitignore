@@ -13,6 +13,9 @@
 *.userosscache
 *.sln.docstates
 copilot-instructions.md
+.chatmodes
+chatmode.sh
+cm
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
