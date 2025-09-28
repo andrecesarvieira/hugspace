@@ -10,6 +10,9 @@ namespace SynQcore.Application.Validators.Communication.DiscussionThreads;
 /// </summary>
 public class CreateDiscussionCommentCommandValidator : AbstractValidator<CreateDiscussionCommentCommand>
 {
+    /// <summary>
+    /// Inicializa validator para comando de criação de comentário em thread.
+    /// </summary>
     public CreateDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.PostId)
@@ -62,8 +65,8 @@ public class CreateDiscussionCommentCommandValidator : AbstractValidator<CreateD
     private static bool HaveValidMentions(List<CreateCommentMentionDto>? mentions)
     {
         if (mentions == null) return true;
-        
-        return mentions.All(m => 
+
+        return mentions.All(m =>
             m.MentionedEmployeeId != Guid.Empty &&
             !string.IsNullOrWhiteSpace(m.MentionText) &&
             m.StartPosition >= 0 &&
@@ -76,6 +79,9 @@ public class CreateDiscussionCommentCommandValidator : AbstractValidator<CreateD
 /// </summary>
 public class UpdateDiscussionCommentCommandValidator : AbstractValidator<UpdateDiscussionCommentCommand>
 {
+    /// <summary>
+    /// Inicializa validator para comando de atualização de comentário.
+    /// </summary>
     public UpdateDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.CommentId)
@@ -124,6 +130,9 @@ public class UpdateDiscussionCommentCommandValidator : AbstractValidator<UpdateD
 /// </summary>
 public class ModerateDiscussionCommentCommandValidator : AbstractValidator<ModerateDiscussionCommentCommand>
 {
+    /// <summary>
+    /// Inicializa validator para comando de moderação de comentário.
+    /// </summary>
     public ModerateDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.CommentId)
@@ -157,6 +166,9 @@ public class ModerateDiscussionCommentCommandValidator : AbstractValidator<Moder
 /// </summary>
 public class ResolveDiscussionCommentCommandValidator : AbstractValidator<ResolveDiscussionCommentCommand>
 {
+    /// <summary>
+    /// Inicializa validator para comando de resolução de comentário.
+    /// </summary>
     public ResolveDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.CommentId)

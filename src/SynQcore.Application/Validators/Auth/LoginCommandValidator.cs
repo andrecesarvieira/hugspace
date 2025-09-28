@@ -3,8 +3,15 @@ using SynQcore.Application.Commands.Auth;
 
 namespace SynQcore.Application.Validators.Auth;
 
+/// <summary>
+/// Validator para LoginCommand usando FluentValidation.
+/// Define regras de validação para credenciais de login.
+/// </summary>
 public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
+    /// <summary>
+    /// Inicializa as regras de validação para login.
+    /// </summary>
     public LoginCommandValidator()
     {
         RuleFor(x => x.Email)

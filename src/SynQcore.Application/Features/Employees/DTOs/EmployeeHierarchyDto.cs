@@ -1,17 +1,28 @@
 namespace SynQcore.Application.Features.Employees.DTOs;
 
-// Dados hierárquicos do funcionário com superior, subordinados e pares
+/// <summary>
+/// DTO para representar a hierarquia organizacional de um funcionário.
+/// Inclui dados do funcionário, seu gestor, subordinados e pares.
+/// </summary>
 public record EmployeeHierarchyDto
 {
-    // Dados do funcionário principal
+    /// <summary>
+    /// Dados completos do funcionário principal na hierarquia.
+    /// </summary>
     public EmployeeDto Employee { get; init; } = null!;
-    
-    // Dados do gerente/supervisor direto
+
+    /// <summary>
+    /// Dados do gerente/supervisor direto (nulo se for o topo da hierarquia).
+    /// </summary>
     public EmployeeDto? Manager { get; init; }
-    
-    // Lista de funcionários subordinados diretos
+
+    /// <summary>
+    /// Lista de funcionários subordinados diretos.
+    /// </summary>
     public List<EmployeeDto> Subordinates { get; init; } = new();
-    
-    // Lista de funcionários do mesmo nível hierárquico
+
+    /// <summary>
+    /// Lista de funcionários do mesmo nível hierárquico (mesmo gestor).
+    /// </summary>
     public List<EmployeeDto> Peers { get; init; } = new();
 }

@@ -1,26 +1,44 @@
 namespace SynQcore.Application.Common.DTOs;
 
-// Resultado paginado genérico para consultas que retornam listas
+/// <summary>
+/// Resultado paginado genérico para consultas que retornam listas.
+/// Fornece metadados de paginação e navegação entre páginas.
+/// </summary>
+/// <typeparam name="T">Tipo dos itens na lista paginada.</typeparam>
 public record PagedResult<T>
 {
-    // Lista de itens da página atual
+    /// <summary>
+    /// Lista de itens da página atual.
+    /// </summary>
     public List<T> Items { get; init; } = new();
-    
-    // Total de itens na consulta completa
+
+    /// <summary>
+    /// Total de itens na consulta completa (todas as páginas).
+    /// </summary>
     public int TotalCount { get; init; }
-    
-    // Número da página atual (baseado em 1)
+
+    /// <summary>
+    /// Número da página atual (baseado em 1).
+    /// </summary>
     public int Page { get; init; }
-    
-    // Tamanho da página (itens por página)
+
+    /// <summary>
+    /// Tamanho da página (número de itens por página).
+    /// </summary>
     public int PageSize { get; init; }
-    
-    // Total de páginas disponíveis
+
+    /// <summary>
+    /// Total de páginas disponíveis calculado.
+    /// </summary>
     public int TotalPages { get; init; }
-    
-    // Indica se existe página anterior
+
+    /// <summary>
+    /// Indica se existe página anterior à atual.
+    /// </summary>
     public bool HasPrevious => Page > 1;
-    
-    // Indica se existe próxima página
+
+    /// <summary>
+    /// Indica se existe próxima página após a atual.
+    /// </summary>
     public bool HasNext => Page < TotalPages;
 }

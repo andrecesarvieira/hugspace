@@ -10,7 +10,10 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para moderação de comentários em discussion threads
+/// <summary>
+/// Handler para moderação de comentários em discussion threads.
+/// Gerencia status de moderação, transições válidas e ações automatizadas.
+/// </summary>
 public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<ModerateDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
@@ -18,9 +21,16 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<ModerateDiscussionCommentCommandHandler> _logger;
 
+    /// <summary>
+    /// Inicializa nova instância do handler de moderação de comentários.
+    /// </summary>
+    /// <param name="context">Contexto de acesso a dados.</param>
+    /// <param name="threadHelper">Helper para operações de thread.</param>
+    /// <param name="currentUserService">Serviço de usuário atual.</param>
+    /// <param name="logger">Logger para rastreamento de operações.</param>
     public ModerateDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
-        
+
         DiscussionThreadHelper threadHelper,
         ICurrentUserService currentUserService,
         ILogger<ModerateDiscussionCommentCommandHandler> logger)
@@ -31,6 +41,12 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processa comando de moderação com validações de permissões e transições.
+    /// </summary>
+    /// <param name="request">Command contendo ID do comentário e novo status.</param>
+    /// <param name="cancellationToken">Token de cancelamento.</param>
+    /// <returns>Resultado da operação com comentário moderado.</returns>
     public async Task<CommentOperationResponse> Handle(ModerateDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogModeratingComment(_logger, request.CommentId, request.ModerationStatus);

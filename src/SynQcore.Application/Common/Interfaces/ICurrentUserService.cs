@@ -1,23 +1,40 @@
 namespace SynQcore.Application.Common.Interfaces;
 
-// Interface para serviço de usuário atual corporativo
+/// <summary>
+/// Interface para serviço de usuário atual corporativo.
+/// Fornece informações do contexto do usuário autenticado.
+/// </summary>
 public interface ICurrentUserService
 {
-    // ID do usuário atual autenticado (lança exceção se não autenticado)
+    /// <summary>
+    /// ID do usuário atual autenticado.
+    /// Lança exceção se não houver usuário autenticado.
+    /// </summary>
     Guid UserId { get; }
-    
-    // Nome de usuário (email) do usuário atual
+
+    /// <summary>
+    /// Nome de usuário (email) do usuário atual.
+    /// </summary>
     string? UserName { get; }
-    
-    // Papel corporativo do usuário atual
+
+    /// <summary>
+    /// Papel/perfil corporativo do usuário atual no sistema.
+    /// </summary>
     string? Role { get; }
-    
-    // Departamento ID do usuário atual (nullable pois pode não ter)
+
+    /// <summary>
+    /// ID do departamento do usuário atual.
+    /// Nulo se o usuário não estiver associado a um departamento.
+    /// </summary>
     Guid? DepartmentId { get; }
-    
-    // Verifica se o usuário atual tem permissão para moderar
+
+    /// <summary>
+    /// Indica se o usuário atual tem permissões de moderação.
+    /// </summary>
     bool CanModerate { get; }
-    
-    // Verifica se o usuário atual é admin
+
+    /// <summary>
+    /// Indica se o usuário atual tem perfil de administrador.
+    /// </summary>
     bool IsAdmin { get; }
 }

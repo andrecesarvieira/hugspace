@@ -38,6 +38,10 @@ using SynQcore.Application.Features.MediaAssets.Handlers;
 using SynQcore.Application.Features.DocumentTemplates.Queries;
 using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.Features.DocumentTemplates.Handlers;
+using SynQcore.Application.Features.CorporateSearch.DTOs;
+using SynQcore.Application.Features.CorporateSearch.Queries;
+using SynQcore.Application.Features.CorporateSearch.Handlers;
+
 
 
 // Configure Serilog for corporate logging with audit trails
@@ -279,6 +283,19 @@ builder.Services.AddMediatR(cfg =>
 // Registrar handlers manualmente para garantir que sejam encontrados
 builder.Services.AddScoped<IRequestHandler<GetMediaAssetsQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetTemplatesQuery, PagedResult<DocumentTemplateDto>>, GetTemplatesQueryHandler>();
+
+// Registrar handlers de Corporate Search
+builder.Services.AddScoped<IRequestHandler<CorporateSearchQuery, PagedResult<SearchResultDto>>, CorporateSearchQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetSearchSuggestionsQuery, List<SearchSuggestionDto>>, GetSearchSuggestionsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetSearchAnalyticsQuery, SearchAnalyticsDto>, GetSearchAnalyticsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<TrendingTopicDto>>, GetTrendingTopicsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto>, GetContentStatsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
+
+// OBRIGATÓRIO: Registro manual dos handlers de notificação (Fase 5.0)
+
+
+// Configure rate limiting with corporate thresholds
 
 // Add FluentValidation
 builder.Services.AddValidatorsFromAssembly(typeof(LoginCommand).Assembly);

@@ -8,16 +8,25 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para destacar/deshighlightar comentários importantes
+/// <summary>
+/// Handler para destacar/deshighlightar comentários importantes.
+/// Permite destacar comentários relevantes para melhor visibilidade na thread.
+/// </summary>
 public partial class HighlightDiscussionCommentCommandHandler : IRequestHandler<HighlightDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<HighlightDiscussionCommentCommandHandler> _logger;
 
+    /// <summary>
+    /// Inicializa nova instância do handler de destaque de comentários.
+    /// </summary>
+    /// <param name="context">Contexto de acesso a dados.</param>
+    /// <param name="currentUserService">Serviço de usuário atual.</param>
+    /// <param name="logger">Logger para rastreamento de operações.</param>
     public HighlightDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
-        
+
         ICurrentUserService currentUserService,
         ILogger<HighlightDiscussionCommentCommandHandler> logger)
     {
@@ -26,6 +35,12 @@ public partial class HighlightDiscussionCommentCommandHandler : IRequestHandler<
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processa destaque/remoção de destaque do comentário.
+    /// </summary>
+    /// <param name="request">Command contendo ID do comentário e status de destaque.</param>
+    /// <param name="cancellationToken">Token de cancelamento.</param>
+    /// <returns>Resultado da operação com comentário destacado.</returns>
     public async Task<CommentOperationResponse> Handle(HighlightDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogHighlightingComment(_logger, request.CommentId, request.IsHighlighted);
@@ -65,10 +80,10 @@ public partial class HighlightDiscussionCommentCommandHandler : IRequestHandler<
             // Verifica se já está no estado desejado
             if (comment.IsHighlighted == request.IsHighlighted)
             {
-                var existingStateMessage = request.IsHighlighted 
-                    ? "Este comentário já está destacado." 
+                var existingStateMessage = request.IsHighlighted
+                    ? "Este comentário já está destacado."
                     : "Este comentário não está destacado.";
-                
+
                 return new CommentOperationResponse
                 {
                     Success = false,
@@ -158,13 +173,22 @@ public partial class HighlightDiscussionCommentCommandHandler : IRequestHandler<
     private static partial void LogErrorHighlightingComment(ILogger logger, Exception ex, Guid commentId);
 }
 
-/// Handler para marcar menção como lida
+/// <summary>
+/// Handler para marcar menção como lida.
+/// Processa marcação de menções em comentários como visualizadas pelo usuário.
+/// </summary>
 public partial class MarkMentionAsReadCommandHandler : IRequestHandler<MarkMentionAsReadCommand, bool>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<MarkMentionAsReadCommandHandler> _logger;
 
+    /// <summary>
+    /// Inicializa nova instância do handler de marcação de menções.
+    /// </summary>
+    /// <param name="context">Contexto de acesso a dados.</param>
+    /// <param name="currentUserService">Serviço de usuário atual.</param>
+    /// <param name="logger">Logger para rastreamento de operações.</param>
     public MarkMentionAsReadCommandHandler(
         ISynQcoreDbContext context,
         ICurrentUserService currentUserService,
@@ -175,6 +199,12 @@ public partial class MarkMentionAsReadCommandHandler : IRequestHandler<MarkMenti
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processa marcação de menção como lida verificando autorização.
+    /// </summary>
+    /// <param name="request">Command contendo ID da menção.</param>
+    /// <param name="cancellationToken">Token de cancelamento.</param>
+    /// <returns>True se marcada com sucesso, false caso contrário.</returns>
     public async Task<bool> Handle(MarkMentionAsReadCommand request, CancellationToken cancellationToken)
     {
         LogMarkingMentionAsRead(_logger, request.MentionId);

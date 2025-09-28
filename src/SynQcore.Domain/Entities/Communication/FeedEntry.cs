@@ -6,31 +6,89 @@ namespace SynQcore.Domain.Entities.Communication;
 /// </summary>
 public class FeedEntry : BaseEntity
 {
-    // Identificação da entrada no feed
-    public Guid UserId { get; set; } // Funcionário que verá essa entrada
-    public Guid PostId { get; set; } // Post associado
-    public Guid AuthorId { get; set; } // Autor do post original
-    
-    // Prioridade e relevância
+    /// <summary>
+    /// ID do funcionário que verá esta entrada no feed.
+    /// </summary>
+    public Guid UserId { get; set; }
+
+    /// <summary>
+    /// ID do post associado a esta entrada do feed.
+    /// </summary>
+    public Guid PostId { get; set; }
+
+    /// <summary>
+    /// ID do autor do post original.
+    /// </summary>
+    public Guid AuthorId { get; set; }
+
+    /// <summary>
+    /// Prioridade da entrada no feed para ordenação.
+    /// </summary>
     public FeedPriority Priority { get; set; } = FeedPriority.Normal;
-    public double RelevanceScore { get; set; } // Algoritmo de relevância (0-1)
-    public FeedReason Reason { get; set; } // Por que aparece no feed
-    
-    // Engajamento e métricas
-    public DateTime? ViewedAt { get; set; } // Quando foi visualizado
+
+    /// <summary>
+    /// Score de relevância calculado pelo algoritmo (0.0 a 1.0).
+    /// </summary>
+    public double RelevanceScore { get; set; }
+
+    /// <summary>
+    /// Razão pela qual esta entrada aparece no feed do usuário.
+    /// </summary>
+    public FeedReason Reason { get; set; }
+
+    /// <summary>
+    /// Data e hora quando a entrada foi visualizada pelo usuário.
+    /// </summary>
+    public DateTime? ViewedAt { get; set; }
+
+    /// <summary>
+    /// Indica se a entrada foi lida pelo usuário.
+    /// </summary>
     public bool IsRead { get; set; }
+
+    /// <summary>
+    /// Indica se a entrada foi marcada como favorita pelo usuário.
+    /// </summary>
     public bool IsBookmarked { get; set; }
-    public bool IsHidden { get; set; } // Usuário ocultou
-    
-    // Contexto corporativo
-    public Guid? DepartmentId { get; set; } // Departamento relevante
-    public Guid? TeamId { get; set; } // Team relevante
-    
-    // Relacionamentos
+
+    /// <summary>
+    /// Indica se o usuário ocultou esta entrada do feed.
+    /// </summary>
+    public bool IsHidden { get; set; }
+
+    /// <summary>
+    /// ID do departamento relevante para esta entrada (se aplicável).
+    /// </summary>
+    public Guid? DepartmentId { get; set; }
+
+    /// <summary>
+    /// ID da equipe relevante para esta entrada (se aplicável).
+    /// </summary>
+    public Guid? TeamId { get; set; }
+
+    /// <summary>
+    /// Funcionário proprietário do feed.
+    /// </summary>
     public Employee User { get; set; } = null!;
+
+    /// <summary>
+    /// Post associado a esta entrada do feed.
+    /// </summary>
     public Post Post { get; set; } = null!;
+
+    /// <summary>
+    /// Autor do post original.
+    /// </summary>
     public Employee Author { get; set; } = null!;
+
+    /// <summary>
+    /// Departamento relevante para contexto (se aplicável).
+    /// </summary>
     public Department? Department { get; set; }
+
+    /// <summary>
+    /// Equipe relevante para contexto (se aplicável).
+    /// </summary>
     public Team? Team { get; set; }
 }
 
@@ -40,11 +98,30 @@ public class FeedEntry : BaseEntity
 /// </summary>
 public enum FeedPriority
 {
-    Low = 0,        // Conteúdo menos relevante
-    Normal = 1,     // Prioridade padrão
-    High = 2,       // Conteúdo importante
-    Urgent = 3,     // Comunicados urgentes
-    Executive = 4   // Comunicação da diretoria
+    /// <summary>
+    /// Prioridade baixa - conteúdo menos relevante.
+    /// </summary>
+    Low = 0,
+
+    /// <summary>
+    /// Prioridade normal - padrão para a maioria do conteúdo.
+    /// </summary>
+    Normal = 1,
+
+    /// <summary>
+    /// Prioridade alta - conteúdo importante que merece destaque.
+    /// </summary>
+    High = 2,
+
+    /// <summary>
+    /// Prioridade urgente - comunicados que requerem atenção imediata.
+    /// </summary>
+    Urgent = 3,
+
+    /// <summary>
+    /// Prioridade executiva - comunicação da diretoria ou alta gestão.
+    /// </summary>
+    Executive = 4
 }
 
 /// <summary>
@@ -53,14 +130,53 @@ public enum FeedPriority
 /// </summary>
 public enum FeedReason
 {
-    Following = 0,          // Segue o autor
-    SameDepartment = 1,     // Mesmo departamento
-    SameTeam = 2,          // Mesma equipe
-    SimilarSkills = 3,     // Skills similares
-    TagInterest = 4,       // Interesse em tags
-    Trending = 5,          // Conteúdo em alta
-    Recommended = 6,       // Algoritmo recomenda
-    Official = 7,          // Comunicação oficial
-    Mentioned = 8,         // Foi mencionado
-    CategoryInterest = 9   // Interesse na categoria
+    /// <summary>
+    /// Aparece porque o usuário segue o autor do post.
+    /// </summary>
+    Following = 0,
+
+    /// <summary>
+    /// Aparece porque é do mesmo departamento do usuário.
+    /// </summary>
+    SameDepartment = 1,
+
+    /// <summary>
+    /// Aparece porque é da mesma equipe do usuário.
+    /// </summary>
+    SameTeam = 2,
+
+    /// <summary>
+    /// Aparece porque relacionado a habilidades similares.
+    /// </summary>
+    SimilarSkills = 3,
+
+    /// <summary>
+    /// Aparece porque o usuário tem interesse nas tags do post.
+    /// </summary>
+    TagInterest = 4,
+
+    /// <summary>
+    /// Aparece porque o conteúdo está em alta na empresa.
+    /// </summary>
+    Trending = 5,
+
+    /// <summary>
+    /// Aparece porque o algoritmo recomenda baseado no perfil.
+    /// </summary>
+    Recommended = 6,
+
+    /// <summary>
+    /// Aparece porque é comunicação oficial da empresa.
+    /// </summary>
+    Official = 7,
+
+    /// <summary>
+    /// Aparece porque o usuário foi mencionado no conteúdo.
+    /// </summary>
+    Mentioned = 8,
+
+    /// <summary>
+    /// Aparece porque o usuário tem interesse na categoria.
+    /// </summary>
+    CategoryInterest = 9
 }

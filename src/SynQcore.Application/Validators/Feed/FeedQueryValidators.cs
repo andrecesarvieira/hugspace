@@ -9,12 +9,15 @@ namespace SynQcore.Application.Validators.Feed;
 /// </summary>
 public class GetCorporateFeedQueryValidator : AbstractValidator<GetCorporateFeedQuery>
 {
-    private static readonly string[] ValidFeedTypes = 
+    private static readonly string[] ValidFeedTypes =
         { "mixed", "department", "team", "following" };
 
-    private static readonly string[] ValidSortOptions = 
+    private static readonly string[] ValidSortOptions =
         { "relevance", "date", "popularity" };
 
+    /// <summary>
+    /// Inicializa validator para query do feed corporativo.
+    /// </summary>
     public GetCorporateFeedQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -50,6 +53,9 @@ public class GetCorporateFeedQueryValidator : AbstractValidator<GetCorporateFeed
 /// </summary>
 public class GetFeedStatsQueryValidator : AbstractValidator<GetFeedStatsQuery>
 {
+    /// <summary>
+    /// Inicializa validator para query de estatísticas do feed.
+    /// </summary>
     public GetFeedStatsQueryValidator()
     {
         RuleFor(x => x.UserId)

@@ -9,6 +9,10 @@ using SynQcore.Application.Features.Employees.DTOs;
 
 namespace SynQcore.Application.Features.Employees.Handlers;
 
+/// <summary>
+/// Handler para atualização de dados de funcionários existentes.
+/// Gerencia mudanças hierárquicas e relacionamentos organizacionais.
+/// </summary>
 public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, EmployeeDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -18,12 +22,23 @@ public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Empl
         LoggerMessage.Define<Guid, string>(LogLevel.Information, new EventId(1, "EmployeeUpdated"),
             "Employee updated successfully: {EmployeeId} - {EmployeeName}");
 
+    /// <summary>
+    /// Inicializa nova instância do handler de atualização de funcionários.
+    /// </summary>
+    /// <param name="context">Contexto de acesso a dados.</param>
+    /// <param name="logger">Logger para rastreamento de operações.</param>
     public UpdateEmployeeHandler(ISynQcoreDbContext context, ILogger<UpdateEmployeeHandler> logger)
     {
         _context = context;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processa comando de atualização de funcionário com validações hierárquicas.
+    /// </summary>
+    /// <param name="request">Command contendo ID e novos dados do funcionário.</param>
+    /// <param name="cancellationToken">Token de cancelamento.</param>
+    /// <returns>DTO do funcionário atualizado.</returns>
     public async Task<EmployeeDto> Handle(UpdateEmployeeCommand request, CancellationToken cancellationToken)
     {
         var employee = await _context.Employees
@@ -43,7 +58,7 @@ public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Empl
 
             var manager = await _context.Employees
                 .FirstOrDefaultAsync(e => e.Id == request.Request.ManagerId.Value && !e.IsDeleted, cancellationToken);
-            
+
             if (manager == null)
                 throw new NotFoundException($"Manager with ID {request.Request.ManagerId.Value} not found");
         }
@@ -86,7 +101,7 @@ public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Empl
         {
             var department = await _context.Departments
                 .FirstOrDefaultAsync(d => d.Id == deptId && !d.IsDeleted, cancellationToken);
-            
+
             if (department != null)
             {
                 _context.EmployeeDepartments.Add(new Domain.Entities.Relationships.EmployeeDepartment
@@ -116,7 +131,7 @@ public class UpdateEmployeeHandler : IRequestHandler<UpdateEmployeeCommand, Empl
         {
             var team = await _context.Teams
                 .FirstOrDefaultAsync(t => t.Id == teamId && !t.IsDeleted, cancellationToken);
-            
+
             if (team != null)
             {
                 _context.TeamMemberships.Add(new Domain.Entities.Relationships.TeamMembership

@@ -5,26 +5,60 @@ namespace SynQcore.Domain.Entities.Communication;
 /// </summary>
 public class Endorsement : BaseEntity
 {
-    // Relacionamentos - Conteúdo endossado
+    /// <summary>
+    /// ID do post endossado (se aplicável).
+    /// </summary>
     public Guid? PostId { get; set; }
+
+    /// <summary>
+    /// Post endossado (se aplicável).
+    /// </summary>
     public Post? Post { get; set; }
+
+    /// <summary>
+    /// ID do comentário endossado (se aplicável).
+    /// </summary>
     public Guid? CommentId { get; set; }
+
+    /// <summary>
+    /// Comentário endossado (se aplicável).
+    /// </summary>
     public Comment? Comment { get; set; }
-    
-    // Relacionamentos - Quem endossa
+
+    /// <summary>
+    /// ID do funcionário que fez o endorsement.
+    /// </summary>
     public Guid EndorserId { get; set; }
+
+    /// <summary>
+    /// Funcionário que fez o endorsement.
+    /// </summary>
     public Employee Endorser { get; set; } = null!;
-    
-    // Tipo de endorsement corporativo
+
+    /// <summary>
+    /// Tipo de endorsement corporativo aplicado.
+    /// </summary>
     public EndorsementType Type { get; set; } = EndorsementType.Helpful;
-    
-    // Metadata corporativa
-    public string? Note { get; set; } // Nota opcional do endorser
-    public bool IsPublic { get; set; } = true; // Visível para outros funcionários
+
+    /// <summary>
+    /// Nota opcional explicando o endorsement.
+    /// </summary>
+    public string? Note { get; set; }
+
+    /// <summary>
+    /// Indica se o endorsement é visível para outros funcionários.
+    /// </summary>
+    public bool IsPublic { get; set; } = true;
+
+    /// <summary>
+    /// Data e hora quando o endorsement foi feito.
+    /// </summary>
     public DateTime EndorsedAt { get; set; } = DateTime.UtcNow;
-    
-    // Para analytics corporativas
-    public string? Context { get; set; } // Contexto: "knowledge_sharing", "problem_solving", etc.
+
+    /// <summary>
+    /// Contexto corporativo do endorsement para analytics.
+    /// </summary>
+    public string? Context { get; set; }
 }
 
 /// <summary>
@@ -32,12 +66,43 @@ public class Endorsement : BaseEntity
 /// </summary>
 public enum EndorsementType
 {
-    Helpful = 0,        // 🔥 Útil - conteúdo resolve problema/dúvida
-    Insightful = 1,     // 💡 Perspicaz - traz nova perspectiva valiosa  
-    Accurate = 2,       // ✅ Preciso - informação correta e confiável
-    Innovative = 3,     // 🚀 Inovador - ideia criativa/solução nova
-    Comprehensive = 4,  // 📚 Abrangente - cobre o tópico completamente
-    WellResearched = 5, // 🔍 Bem Pesquisado - fontes sólidas e dados
-    Actionable = 6,     // ⚡ Aplicável - pode ser implementado facilmente
-    Strategic = 7       // 🎯 Estratégico - alinhado com objetivos corporativos
+    /// <summary>
+    /// Conteúdo útil que resolve problemas ou dúvidas (🔥).
+    /// </summary>
+    Helpful = 0,
+
+    /// <summary>
+    /// Conteúdo perspicaz que traz nova perspectiva valiosa (💡).
+    /// </summary>
+    Insightful = 1,
+
+    /// <summary>
+    /// Informação precisa, correta e confiável (✅).
+    /// </summary>
+    Accurate = 2,
+
+    /// <summary>
+    /// Ideia inovadora ou solução criativa (🚀).
+    /// </summary>
+    Innovative = 3,
+
+    /// <summary>
+    /// Conteúdo abrangente que cobre o tópico completamente (📚).
+    /// </summary>
+    Comprehensive = 4,
+
+    /// <summary>
+    /// Conteúdo bem pesquisado com fontes sólidas (🔍).
+    /// </summary>
+    WellResearched = 5,
+
+    /// <summary>
+    /// Solução aplicável que pode ser implementada facilmente (⚡).
+    /// </summary>
+    Actionable = 6,
+
+    /// <summary>
+    /// Conteúdo estratégico alinhado com objetivos corporativos (🎯).
+    /// </summary>
+    Strategic = 7
 }

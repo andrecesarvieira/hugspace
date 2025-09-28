@@ -9,16 +9,25 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para resolução de comentários do tipo Question ou Concern
+/// <summary>
+/// Handler para resolução de comentários do tipo Question ou Concern.
+/// Gerencia permissões de resolução e marcação de comentários como resolvidos.
+/// </summary>
 public partial class ResolveDiscussionCommentCommandHandler : IRequestHandler<ResolveDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<ResolveDiscussionCommentCommandHandler> _logger;
 
+    /// <summary>
+    /// Inicializa nova instância do handler de resolução de comentários.
+    /// </summary>
+    /// <param name="context">Contexto de acesso a dados.</param>
+    /// <param name="currentUserService">Serviço de usuário atual.</param>
+    /// <param name="logger">Logger para rastreamento de operações.</param>
     public ResolveDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
-        
+
         ICurrentUserService currentUserService,
         ILogger<ResolveDiscussionCommentCommandHandler> logger)
     {
@@ -27,6 +36,12 @@ public partial class ResolveDiscussionCommentCommandHandler : IRequestHandler<Re
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processa resolução de comentário verificando tipo e permissões.
+    /// </summary>
+    /// <param name="request">Command contendo ID do comentário e nota de resolução.</param>
+    /// <param name="cancellationToken">Token de cancelamento.</param>
+    /// <returns>Resultado da operação com comentário resolvido.</returns>
     public async Task<CommentOperationResponse> Handle(ResolveDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogResolvingComment(_logger, request.CommentId);

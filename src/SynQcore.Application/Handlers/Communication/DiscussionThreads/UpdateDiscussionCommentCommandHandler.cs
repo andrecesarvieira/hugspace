@@ -9,16 +9,25 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para atualização de comentários em discussion threads
+/// <summary>
+/// Handler para atualização de comentários em discussion threads.
+/// Gerencia edições de conteúdo e análise de mudanças significativas.
+/// </summary>
 public partial class UpdateDiscussionCommentCommandHandler : IRequestHandler<UpdateDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<UpdateDiscussionCommentCommandHandler> _logger;
 
+    /// <summary>
+    /// Inicializa nova instância do handler de atualização de comentários.
+    /// </summary>
+    /// <param name="context">Contexto de acesso a dados.</param>
+    /// <param name="currentUserService">Serviço de usuário atual.</param>
+    /// <param name="logger">Logger para rastreamento de operações.</param>
     public UpdateDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
-        
+
         ICurrentUserService currentUserService,
         ILogger<UpdateDiscussionCommentCommandHandler> logger)
     {
@@ -27,6 +36,12 @@ public partial class UpdateDiscussionCommentCommandHandler : IRequestHandler<Upd
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processa atualização de comentário com validações de autorização.
+    /// </summary>
+    /// <param name="request">Command contendo ID e novos dados do comentário.</param>
+    /// <param name="cancellationToken">Token de cancelamento.</param>
+    /// <returns>Resultado da operação com comentário atualizado.</returns>
     public async Task<CommentOperationResponse> Handle(UpdateDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogUpdatingComment(_logger, request.CommentId);
