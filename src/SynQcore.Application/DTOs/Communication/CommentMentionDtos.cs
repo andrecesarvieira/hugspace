@@ -1,8 +1,5 @@
 namespace SynQcore.Application.DTOs.Communication;
 
-/// <summary>
-/// DTO para visualização de menção em comentário
-/// </summary>
 public class CommentMentionDto
 {
     public Guid Id { get; set; }
@@ -21,9 +18,6 @@ public class CommentMentionDto
     public DateTime CreatedAt { get; set; }
 }
 
-/// <summary>
-/// DTO para criação de menção em comentário
-/// </summary>
 public class CreateCommentMentionDto
 {
     public Guid MentionedEmployeeId { get; set; }
@@ -34,9 +28,6 @@ public class CreateCommentMentionDto
     public string Urgency { get; set; } = "Normal";
 }
 
-/// <summary>
-/// DTO para notificação de menção
-/// </summary>
 public class MentionNotificationDto
 {
     public Guid Id { get; set; }

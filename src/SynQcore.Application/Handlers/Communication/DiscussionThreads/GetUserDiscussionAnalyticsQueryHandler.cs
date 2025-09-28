@@ -7,7 +7,6 @@ using System.Globalization;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para analytics de participação individual de usuário
 public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<GetUserDiscussionAnalyticsQuery, UserDiscussionAnalyticsDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -111,7 +110,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
         }
     }
 
-    /// Calcula distribuição de comentários por tipo
     private static Dictionary<string, int> CalculateCommentsByType(List<Domain.Entities.Communication.Comment> comments)
     {
         return comments
@@ -119,7 +117,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
             .ToDictionary(g => g.Key, g => g.Count());
     }
 
-    /// Calcula métricas de engagement recebido
     private async Task<(int LikesReceived, int EndorsementsReceived)> CalculateEngagementMetricsAsync(
         List<Domain.Entities.Communication.Comment> comments, 
         CancellationToken cancellationToken)
@@ -137,7 +134,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
         return (likesReceived, endorsementsReceived);
     }
 
-    /// Calcula métricas de menções
     private async Task<(int Received, int Made)> CalculateMentionMetricsAsync(
         Guid userId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken)
     {
@@ -156,7 +152,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
         return (mentionsReceived, mentionsMade);
     }
 
-    /// Calcula métricas de moderação
     private async Task<(int Moderated, int Resolved, int Highlighted)> CalculateModerationMetricsAsync(
         Guid userId, DateTime fromDate, DateTime toDate, CancellationToken cancellationToken)
     {
@@ -183,7 +178,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
         return (moderated, resolved, highlighted);
     }
 
-    /// Calcula score de engajamento baseado em atividade e interações
     private static double CalculateEngagementScore(int totalComments, int likesReceived, int endorsementsReceived)
     {
         if (totalComments == 0) return 0;
@@ -196,7 +190,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
         return Math.Min(normalizedScore * 10, 100);
     }
 
-    /// Calcula atividade diária no período
     private static Dictionary<string, int> CalculateActivityByDay(
         List<Domain.Entities.Communication.Comment> comments, 
         DateTime fromDate, 
@@ -244,7 +237,6 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
     private static partial void LogErrorGeneratingUserAnalytics(ILogger logger, Exception ex, Guid userId);
 }
 
-/// Query para analytics de participação de usuário
 public record GetUserDiscussionAnalyticsQuery(
     Guid UserId,
     DateTime? FromDate = null,

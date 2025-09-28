@@ -6,10 +6,6 @@ using SynQcore.Infrastructure.Identity;
 
 namespace SynQcore.Infrastructure.Services.Auth;
 
-/// <summary>
-/// Serviço responsável por criar o primeiro usuário administrador do sistema
-/// Executado apenas na primeira inicialização quando não há nenhum admin cadastrado
-/// </summary>
 public partial class AdminBootstrapService
 {
     private readonly UserManager<ApplicationUserEntity> _userManager;
@@ -29,10 +25,6 @@ public partial class AdminBootstrapService
         _logger = logger;
     }
 
-    /// <summary>
-    /// Cria o usuário administrador inicial se não existir nenhum admin no sistema
-    /// Deve ser chamado durante a inicialização da aplicação, após a criação das roles
-    /// </summary>
     public async Task CreateDefaultAdminIfNeededAsync()
     {
         // Verificar se já existe algum usuário com role Admin
@@ -109,9 +101,6 @@ public partial class AdminBootstrapService
         }
     }
 
-    /// <summary>
-    /// Método estático para facilitar o uso durante a inicialização da aplicação
-    /// </summary>
     public static async Task InitializeAsync(IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();

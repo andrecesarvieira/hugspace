@@ -9,9 +9,6 @@ using SynQcore.Application.Features.Collaboration.Queries;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para buscar endorsement específico por ID com informações completas
-/// </summary>
 public partial class GetEndorsementByIdQueryHandler : IRequestHandler<GetEndorsementByIdQuery, EndorsementDto>
 {
     private readonly ISynQcoreDbContext _context;

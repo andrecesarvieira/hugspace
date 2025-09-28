@@ -18,6 +18,9 @@ public partial class DiscussionThreadsController : ControllerBase
     private readonly IMediator _mediator;
     private readonly ILogger<DiscussionThreadsController> _logger;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public DiscussionThreadsController(IMediator mediator, ILogger<DiscussionThreadsController> logger)
     {
         _mediator = mediator;

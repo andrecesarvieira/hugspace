@@ -2,9 +2,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Helpers;
 
-/// <summary>
-/// Helper para conversão de tipos de endorsement corporativo em informações de display
-/// </summary>
 public static class EndorsementTypeHelper
 {
     private static readonly Dictionary<EndorsementType, (string DisplayName, string Icon, string Description)> _typeInfo = new()
@@ -19,49 +16,31 @@ public static class EndorsementTypeHelper
         [EndorsementType.Strategic] = ("Estratégico", "🎯", "Alinhado com objetivos corporativos")
     };
 
-    /// <summary>
-    /// Obter nome de exibição do tipo de endorsement
-    /// </summary>
     public static string GetDisplayName(EndorsementType type)
     {
         return _typeInfo.TryGetValue(type, out var info) ? info.DisplayName : type.ToString();
     }
 
-    /// <summary>
-    /// Obter ícone do tipo de endorsement
-    /// </summary>
     public static string GetIcon(EndorsementType type)
     {
         return _typeInfo.TryGetValue(type, out var info) ? info.Icon : "👍";
     }
 
-    /// <summary>
-    /// Obter descrição do tipo de endorsement
-    /// </summary>
     public static string GetDescription(EndorsementType type)
     {
         return _typeInfo.TryGetValue(type, out var info) ? info.Description : string.Empty;
     }
 
-    /// <summary>
-    /// Obter todas as informações do tipo de endorsement
-    /// </summary>
     public static (string DisplayName, string Icon, string Description) GetTypeInfo(EndorsementType type)
     {
         return _typeInfo.TryGetValue(type, out var info) ? info : (type.ToString(), "👍", string.Empty);
     }
 
-    /// <summary>
-    /// Obter todos os tipos de endorsement disponíveis com informações
-    /// </summary>
     public static Dictionary<EndorsementType, (string DisplayName, string Icon, string Description)> GetAllTypes()
     {
         return new Dictionary<EndorsementType, (string DisplayName, string Icon, string Description)>(_typeInfo);
     }
 
-    /// <summary>
-    /// Calcular score de engajamento baseado nos tipos de endorsement
-    /// </summary>
     public static double CalculateEngagementScore(Dictionary<EndorsementType, int> endorsementCounts)
     {
         // Pesos corporativos para cada tipo de endorsement
@@ -93,9 +72,6 @@ public static class EndorsementTypeHelper
         return Math.Round(totalScore, 2);
     }
 
-    /// <summary>
-    /// Obter tipos de endorsement mais valiosos (maior peso)
-    /// </summary>
     public static List<EndorsementType> GetHighValueTypes()
     {
         return new List<EndorsementType>
@@ -107,9 +83,6 @@ public static class EndorsementTypeHelper
         };
     }
 
-    /// <summary>
-    /// Verificar se é um tipo de endorsement de alta qualidade
-    /// </summary>
     public static bool IsHighQualityEndorsement(EndorsementType type)
     {
         var highQualityTypes = new[]

@@ -10,9 +10,6 @@ using SynQcore.Application.Features.Collaboration.Queries;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para obter endorsements dados por um funcionário específico
-/// </summary>
 public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<GetEmployeeEndorsementsGivenQuery, PagedResult<EndorsementDto>>
 {
     private readonly ISynQcoreDbContext _context;
@@ -121,9 +118,6 @@ public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<
     }
 }
 
-/// <summary>
-/// Handler para obter endorsements recebidos por um funcionário específico
-/// </summary>
 public partial class GetEmployeeEndorsementsReceivedQueryHandler : IRequestHandler<GetEmployeeEndorsementsReceivedQuery, PagedResult<EndorsementDto>>
 {
     private readonly ISynQcoreDbContext _context;

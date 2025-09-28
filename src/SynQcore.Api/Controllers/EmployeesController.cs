@@ -24,6 +24,9 @@ public partial class EmployeesController : ControllerBase
     private readonly UserManager<ApplicationUserEntity> _userManager;
     private readonly ILogger<EmployeesController> _logger;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public EmployeesController(IMediator mediator, UserManager<ApplicationUserEntity> userManager, ILogger<EmployeesController> logger)
     {
         _mediator = mediator;

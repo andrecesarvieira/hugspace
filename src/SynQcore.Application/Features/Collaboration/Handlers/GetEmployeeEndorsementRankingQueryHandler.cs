@@ -8,7 +8,6 @@ using SynQcore.Application.Features.Collaboration.Queries;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// Handler simplificado para ranking de funcionários por endorsements
 public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler<GetEmployeeEndorsementRankingQuery, List<EmployeeEndorsementRankingDto>>
 {
     private readonly ISynQcoreDbContext _context;
@@ -149,9 +148,6 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
         }
     }
 
-    /// <summary>
-    /// Calcula score de engagement baseado em métricas corporativas
-    /// </summary>
     private static double CalculateEngagementScore(int totalReceived, int totalGiven, 
         int helpfulReceived, int insightfulReceived, int accurateReceived, int innovativeReceived)
     {
@@ -176,9 +172,6 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
         return Math.Round(receivedScore + givenScore + diversityBonus + premiumBonus, 2);
     }
 
-    /// <summary>
-    /// Aplica ordenação baseada no tipo de ranking solicitado
-    /// </summary>
     private static List<EmployeeEndorsementRankingDto> ApplyRankingOrder(
         List<EmployeeEndorsementRankingDto> rankings, string rankingType)
     {

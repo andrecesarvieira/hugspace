@@ -8,9 +8,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para obter tipos de endorsement em tendência por período corporativo
-/// </summary>
 public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<GetTrendingEndorsementTypesQuery, List<EndorsementTypeTrendDto>>
 {
     private readonly ISynQcoreDbContext _context;

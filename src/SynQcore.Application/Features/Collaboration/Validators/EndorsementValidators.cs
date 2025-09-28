@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Validators;
 
-/// <summary>
-/// Validador para criação de endorsement corporativo
-/// </summary>
 public class CreateEndorsementCommandValidator : AbstractValidator<CreateEndorsementCommand>
 {
     public CreateEndorsementCommandValidator()
@@ -49,9 +46,6 @@ public class CreateEndorsementCommandValidator : AbstractValidator<CreateEndorse
     }
 }
 
-/// <summary>
-/// Validador para atualização de endorsement
-/// </summary>
 public class UpdateEndorsementCommandValidator : AbstractValidator<UpdateEndorsementCommand>
 {
     public UpdateEndorsementCommandValidator()
@@ -83,9 +77,6 @@ public class UpdateEndorsementCommandValidator : AbstractValidator<UpdateEndorse
     }
 }
 
-/// <summary>
-/// Validador para toggle de endorsement
-/// </summary>
 public class ToggleEndorsementCommandValidator : AbstractValidator<ToggleEndorsementCommand>
 {
     public ToggleEndorsementCommandValidator()
@@ -110,9 +101,6 @@ public class ToggleEndorsementCommandValidator : AbstractValidator<ToggleEndorse
     }
 }
 
-/// <summary>
-/// Validador para endorsement em massa
-/// </summary>
 public class BulkEndorsementCommandValidator : AbstractValidator<BulkEndorsementCommand>
 {
     public BulkEndorsementCommandValidator()

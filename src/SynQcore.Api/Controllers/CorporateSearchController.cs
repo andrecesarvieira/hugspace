@@ -11,12 +11,14 @@ using System.ComponentModel.DataAnnotations;
 namespace SynQcore.Api.Controllers;
 
 /// <summary>
-/// Controller para funcionalidades de busca corporativa e analytics
-/// Fase 4.4 - Corporate Search & Analytics System
+/// Controller para funcionalidades de busca corporativa e analytics - Fase 4.4 Corporate Search e Analytics System
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class CorporateSearchController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -43,6 +45,9 @@ public class CorporateSearchController : ControllerBase
         LoggerMessage.Define(LogLevel.Error, new EventId(4499, nameof(LogErroProcessamentoBusca)),
             "Erro no processamento de busca corporativa");
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public CorporateSearchController(IMediator mediator, ILogger<CorporateSearchController> logger)
     {
         _mediator = mediator;
@@ -573,77 +578,172 @@ public class CorporateSearchController : ControllerBase
     }
 }
 
-// Request DTOs complementares para o controller
+// Request DTOs para o controller
 
+/// <summary>
+/// Requisição para busca por categoria
+/// </summary>
 public class SearchByCategoryRequest
 {
+    /// <summary>Categoria para busca</summary>
+    public string Category { get; set; } = string.Empty;
+
+    /// <summary>Subcategoria para busca</summary>
     public string? SubCategory { get; set; }
+
+    /// <summary>Número da página</summary>
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+
+    /// <summary>Tamanho da página</summary>
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Filtros de busca</summary>
     public SearchFiltersDto? Filters { get; set; }
+
+    /// <summary>Configuração de busca</summary>
     public SearchConfigDto? Config { get; set; }
 }
 
+/// <summary>
+/// Requisição para busca por autor
+/// </summary>
 public class SearchByAuthorRequest
 {
+    /// <summary>ID do autor</summary>
+    public Guid AuthorId { get; set; }
+
+    /// <summary>Tipo de conteúdo</summary>
     public string? ContentType { get; set; }
+
+    /// <summary>Número da página</summary>
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+
+    /// <summary>Tamanho da página</summary>
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Filtros de busca</summary>
     public SearchFiltersDto? Filters { get; set; }
+
+    /// <summary>Configuração de busca</summary>
     public SearchConfigDto? Config { get; set; }
 }
 
+/// <summary>
+/// Requisição para busca por departamento
+/// </summary>
 public class SearchByDepartmentRequest
 {
+    /// <summary>ID do departamento</summary>
+    public Guid DepartmentId { get; set; }
+
+    /// <summary>Tipo de conteúdo</summary>
     public string? ContentType { get; set; }
+
+    /// <summary>Número da página</summary>
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+
+    /// <summary>Tamanho da página</summary>
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Filtros de busca</summary>
     public SearchFiltersDto? Filters { get; set; }
+
+    /// <summary>Configuração de busca</summary>
     public SearchConfigDto? Config { get; set; }
 }
 
+/// <summary>
+/// Requisição para busca por tags
+/// </summary>
 public class SearchByTagsRequest
 {
-    [Required]
+    /// <summary>Lista de tags para busca</summary>
     public List<string> Tags { get; set; } = new();
+
+    /// <summary>Buscar por todas as tags</summary>
     public bool AllTags { get; set; }
+
+    /// <summary>Número da página</summary>
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+
+    /// <summary>Tamanho da página</summary>
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Filtros de busca</summary>
     public SearchFiltersDto? Filters { get; set; }
+
+    /// <summary>Configuração de busca</summary>
     public SearchConfigDto? Config { get; set; }
 }
 
+/// <summary>
+/// Requisição para obter conteúdo recente
+/// </summary>
 public class GetRecentContentRequest
 {
+    /// <summary>Horas retroativas para busca</summary>
     public int Hours { get; set; } = 24;
+
+    /// <summary>Tipos de conteúdo</summary>
     public List<string>? ContentTypes { get; set; }
+
+    /// <summary>IDs dos departamentos</summary>
     public List<Guid>? DepartmentIds { get; set; }
+
+    /// <summary>Número da página</summary>
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+
+    /// <summary>Tamanho da página</summary>
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Configuração de busca</summary>
     public SearchConfigDto? Config { get; set; }
 }
 
+/// <summary>
+/// Requisição para obter conteúdo popular
+/// </summary>
 public class GetPopularContentRequest
 {
+    /// <summary>Período para análise</summary>
     public string Period { get; set; } = "week";
+
+    /// <summary>Tipos de conteúdo</summary>
     public List<string>? ContentTypes { get; set; }
+
+    /// <summary>IDs dos departamentos</summary>
     public List<Guid>? DepartmentIds { get; set; }
+
+    /// <summary>Número da página</summary>
     public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 20;
+
+    /// <summary>Tamanho da página</summary>
+    public int PageSize { get; set; } = 10;
+
+    /// <summary>Configuração de busca</summary>
     public SearchConfigDto? Config { get; set; }
-    public string MetricType { get; set; } = "engagement";
+
+    /// <summary>Tipo de métrica</summary>
+    public string MetricType { get; set; } = "views";
 }
 
+/// <summary>
+/// Requisição para registrar clique de busca
+/// </summary>
 public class RecordSearchClickRequest
 {
-    [Required]
+    /// <summary>Termo de busca utilizado</summary>
     public string SearchTerm { get; set; } = string.Empty;
-    [Required]
+
+    /// <summary>ID do resultado clicado</summary>
     public Guid ResultId { get; set; }
-    [Required]
+
+    /// <summary>Tipo do resultado</summary>
     public string ResultType { get; set; } = string.Empty;
-    [Required]
+
+    /// <summary>Título do resultado</summary>
     public string ResultTitle { get; set; } = string.Empty;
+
+    /// <summary>Posição do resultado</summary>
     public int Position { get; set; }
-    public float RelevanceScore { get; set; }
 }

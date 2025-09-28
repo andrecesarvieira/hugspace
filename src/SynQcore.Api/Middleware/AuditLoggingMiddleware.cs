@@ -5,9 +5,6 @@ using System.Text;
 
 namespace SynQcore.Api.Middleware;
 
-/// <summary>
-/// Corporate audit logging middleware for request/response tracking and compliance
-/// </summary>
 public class AuditLoggingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -217,8 +214,6 @@ public class AuditLoggingMiddleware
 
         return context.Connection.RemoteIpAddress?.ToString();
     }
-
-
 
     private static bool ShouldLogDetailedAudit(HttpContext context)
     {

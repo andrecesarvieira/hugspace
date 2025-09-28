@@ -11,10 +11,6 @@ using AspNetCoreRateLimit;
 
 namespace SynQcore.Api.Middleware;
 
-/// <summary>
-/// Middleware that determines client ID based on corporate user role and structure
-/// Must be placed before AspNetCoreRateLimit middlewares in the pipeline
-/// </summary>
 public partial class CorporateRateLimitMiddleware
 {
     private readonly RequestDelegate _next;
@@ -42,12 +38,6 @@ public partial class CorporateRateLimitMiddleware
         await _next(context);
     }
 
-
-
-    /// <summary>
-    /// Determines the client ID based on corporate authentication context
-    /// Maps user roles to appropriate rate limiting tiers
-    /// </summary>
     private static string DetermineClientId(HttpContext context)
     {
         // 1. Check JWT token for role claims (when authentication is implemented)
@@ -119,22 +109,13 @@ public partial class CorporateRateLimitMiddleware
         return "employee-app";
     }
 
-    /// <summary>
-    /// Logs rate limiting context for corporate audit trails
-    /// </summary>
     [LoggerMessage(EventId = 2001, Level = LogLevel.Information, 
         Message = "Rate limit context - Client: {ClientId}, Path: {Path}, IP: {RemoteIP}")]
     private static partial void LogRateLimitContext(ILogger logger, string? clientId, string? path, string? remoteIP);
 }
 
-/// <summary>
-/// Extensions for configuring corporate rate limiting
-/// </summary>
 public static class CorporateRateLimitExtensions
 {
-    /// <summary>
-    /// Adds corporate rate limiting services to the DI container
-    /// </summary>
     public static IServiceCollection AddCorporateRateLimit(this IServiceCollection services, IConfiguration configuration)
     {
         // Configure IP Rate Limiting
@@ -152,9 +133,6 @@ public static class CorporateRateLimitExtensions
         return services;
     }
 
-    /// <summary>
-    /// Uses corporate rate limiting middleware in the pipeline
-    /// </summary>
     public static IApplicationBuilder UseCorporateRateLimit(this IApplicationBuilder app)
     {
         // Corporate client ID middleware (must come before rate limiting)

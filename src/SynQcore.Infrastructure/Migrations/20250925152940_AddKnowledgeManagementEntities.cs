@@ -5,10 +5,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SynQcore.Infrastructure.Migrations
 {
-    /// <inheritdoc />
     public partial class AddKnowledgeManagementEntities : Migration
     {
-        /// <inheritdoc />
+
+        // Campos static readonly para resolver CA1861
+        private static readonly string[] TypeStatusVisibilityArray = { "Type", "Status", "Visibility" };
+
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -309,7 +312,7 @@ namespace SynQcore.Infrastructure.Migrations
                 name: "IX_Posts_Type_Status_Visibility",
                 schema: "Communication",
                 table: "Posts",
-                columns: new[] { "Type", "Status", "Visibility" });
+                columns: TypeStatusVisibilityArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Posts_ViewCount",
@@ -428,7 +431,6 @@ namespace SynQcore.Infrastructure.Migrations
                 onDelete: ReferentialAction.SetNull);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

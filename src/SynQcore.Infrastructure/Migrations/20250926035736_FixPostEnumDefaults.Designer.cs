@@ -15,7 +15,6 @@ namespace SynQcore.Infrastructure.Migrations
     [Migration("20250926035736_FixPostEnumDefaults")]
     partial class FixPostEnumDefaults
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

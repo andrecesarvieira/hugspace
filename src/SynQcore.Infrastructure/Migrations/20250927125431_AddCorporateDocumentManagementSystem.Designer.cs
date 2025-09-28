@@ -15,7 +15,6 @@ namespace SynQcore.Infrastructure.Migrations
     [Migration("20250927125431_AddCorporateDocumentManagementSystem")]
     partial class AddCorporateDocumentManagementSystem
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

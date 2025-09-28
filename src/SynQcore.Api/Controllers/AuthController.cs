@@ -11,10 +11,16 @@ namespace SynQcore.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public AuthController(IMediator mediator)
     {
         _mediator = mediator;

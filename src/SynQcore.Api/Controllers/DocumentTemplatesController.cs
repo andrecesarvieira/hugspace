@@ -17,6 +17,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class DocumentTemplatesController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -43,6 +46,9 @@ public class DocumentTemplatesController : ControllerBase
         LoggerMessage.Define(LogLevel.Error, new EventId(5199, nameof(LogTemplateError)),
             "Erro no processamento de template");
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public DocumentTemplatesController(IMediator mediator, ILogger<DocumentTemplatesController> logger)
     {
         _mediator = mediator;

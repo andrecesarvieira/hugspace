@@ -10,10 +10,6 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// <summary>
-/// Handler para moderação de comentários em discussion threads.
-/// Gerencia status de moderação, transições válidas e ações automatizadas.
-/// </summary>
 public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<ModerateDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
@@ -21,13 +17,6 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<ModerateDiscussionCommentCommandHandler> _logger;
 
-    /// <summary>
-    /// Inicializa nova instância do handler de moderação de comentários.
-    /// </summary>
-    /// <param name="context">Contexto de acesso a dados.</param>
-    /// <param name="threadHelper">Helper para operações de thread.</param>
-    /// <param name="currentUserService">Serviço de usuário atual.</param>
-    /// <param name="logger">Logger para rastreamento de operações.</param>
     public ModerateDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
 
@@ -41,12 +30,6 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
         _logger = logger;
     }
 
-    /// <summary>
-    /// Processa comando de moderação com validações de permissões e transições.
-    /// </summary>
-    /// <param name="request">Command contendo ID do comentário e novo status.</param>
-    /// <param name="cancellationToken">Token de cancelamento.</param>
-    /// <returns>Resultado da operação com comentário moderado.</returns>
     public async Task<CommentOperationResponse> Handle(ModerateDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogModeratingComment(_logger, request.CommentId, request.ModerationStatus);
@@ -140,7 +123,6 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
         }
     }
 
-    /// Verifica se a transição de status de moderação é válida
     private static bool IsValidModerationTransition(ModerationStatus currentStatus, ModerationStatus newStatus)
     {
         // Qualquer status pode ir para UnderReview
@@ -174,7 +156,6 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
         return false;
     }
 
-    /// Aplica ações específicas baseadas no status de moderação
     private async Task ApplyModerationActionsAsync(Comment comment, ModerationStatus newStatus, ModerationStatus previousStatus, CancellationToken cancellationToken)
     {
         switch (newStatus)
@@ -212,7 +193,6 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
         }
     }
 
-    /// Cria notificação para o autor sobre moderação
     private Task CreateModerationNotificationAsync(Comment comment, ModerationStatus status, CancellationToken cancellationToken)
     {
         var message = status switch
@@ -240,7 +220,6 @@ public partial class ModerateDiscussionCommentCommandHandler : IRequestHandler<M
         return Task.CompletedTask;
     }
 
-    /// Retorna mensagem apropriada para o status de moderação
     private static string GetModerationMessage(ModerationStatus status)
     {
         return status switch

@@ -4,10 +4,6 @@ using System.Security.Claims;
 
 namespace SynQcore.Api.Hubs;
 
-/// <summary>
-/// Hub especializado para comunicações executivas e anúncios corporativos
-/// Canais read-only para broadcasts executivos e políticas da empresa
-/// </summary>
 [Authorize]
 public partial class ExecutiveCommunicationHub : Hub
 {
@@ -18,9 +14,6 @@ public partial class ExecutiveCommunicationHub : Hub
         _logger = logger;
     }
 
-    /// <summary>
-    /// Conexão ao hub executivo - verifica permissões corporativas
-    /// </summary>
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -47,9 +40,6 @@ public partial class ExecutiveCommunicationHub : Hub
         await base.OnConnectedAsync();
     }
 
-    /// <summary>
-    /// Desconexão do hub executivo
-    /// </summary>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userEmail = Context.User?.FindFirst(ClaimTypes.Email)?.Value;
@@ -58,9 +48,6 @@ public partial class ExecutiveCommunicationHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    /// <summary>
-    /// Enviar anúncio corporativo - apenas executivos autorizados
-    /// </summary>
     [Authorize(Roles = "Manager,HR,Admin")]
     public async Task SendCompanyAnnouncement(string title, string message, string priority = "Normal")
     {
@@ -93,9 +80,6 @@ public partial class ExecutiveCommunicationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Enviar comunicado executivo - apenas para executivos
-    /// </summary>
     [Authorize(Roles = "Manager,HR,Admin")]
     public async Task SendExecutiveCommunication(string title, string message, string confidentialityLevel = "Internal")
     {
@@ -128,9 +112,6 @@ public partial class ExecutiveCommunicationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Enviar notificação de política corporativa
-    /// </summary>
     [Authorize(Roles = "HR,Admin")]
     public async Task SendPolicyUpdate(string policyTitle, string changeDescription, string effectiveDate, bool requiresAcknowledgment = false)
     {
@@ -164,9 +145,6 @@ public partial class ExecutiveCommunicationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Entrar em canal de departamento para comunicações direcionadas
-    /// </summary>
     public async Task JoinDepartmentCommunications(string departmentId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -180,9 +158,6 @@ public partial class ExecutiveCommunicationHub : Hub
         LogJoinedDepartmentCommunications(_logger, userId, departmentId);
     }
 
-    /// <summary>
-    /// Sair de canal de departamento
-    /// </summary>
     public async Task LeaveDepartmentCommunications(string departmentId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -196,9 +171,6 @@ public partial class ExecutiveCommunicationHub : Hub
         LogLeftDepartmentCommunications(_logger, userId, departmentId);
     }
 
-    /// <summary>
-    /// Enviar comunicado direcionado para departamento específico
-    /// </summary>
     [Authorize(Roles = "Manager,HR,Admin")]
     public async Task SendDepartmentCommunication(string departmentId, string title, string message)
     {

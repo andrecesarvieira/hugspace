@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities;
 
 namespace SynQcore.Infrastructure.Data.Configurations.Documents;
 
-/// <summary>
-/// Configuração EF Core para a entidade DocumentAccessLog
-/// </summary>
 public class DocumentAccessLogConfiguration : IEntityTypeConfiguration<DocumentAccessLog>
 {
     public void Configure(EntityTypeBuilder<DocumentAccessLog> builder)
@@ -78,9 +75,6 @@ public class DocumentAccessLogConfiguration : IEntityTypeConfiguration<DocumentA
     }
 }
 
-/// <summary>
-/// Configuração EF Core para a entidade DocumentTemplate
-/// </summary>
 public class DocumentTemplateConfiguration : IEntityTypeConfiguration<DocumentTemplate>
 {
     public void Configure(EntityTypeBuilder<DocumentTemplate> builder)
@@ -196,9 +190,6 @@ public class DocumentTemplateConfiguration : IEntityTypeConfiguration<DocumentTe
     }
 }
 
-/// <summary>
-/// Configuração EF Core para a entidade MediaAsset
-/// </summary>
 public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
 {
     public void Configure(EntityTypeBuilder<MediaAsset> builder)

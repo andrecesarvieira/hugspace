@@ -7,10 +7,6 @@ using SynQcore.Application.Features.Employees.Commands;
 
 namespace SynQcore.Application.Features.Employees.Handlers;
 
-/// <summary>
-/// Handler para exclusão lógica de funcionários do sistema.
-/// Verifica dependências hierárquicas e remove relacionamentos organizacionais.
-/// </summary>
 public class DeleteEmployeeHandler : IRequestHandler<DeleteEmployeeCommand>
 {
     private readonly ISynQcoreDbContext _context;
@@ -20,22 +16,12 @@ public class DeleteEmployeeHandler : IRequestHandler<DeleteEmployeeCommand>
         LoggerMessage.Define<Guid, string>(LogLevel.Information, new EventId(1, "EmployeeDeleted"),
             "Employee deleted successfully: {EmployeeId} - {EmployeeName}");
 
-    /// <summary>
-    /// Inicializa nova instância do handler de exclusão de funcionários.
-    /// </summary>
-    /// <param name="context">Contexto de acesso a dados.</param>
-    /// <param name="logger">Logger para rastreamento de operações.</param>
     public DeleteEmployeeHandler(ISynQcoreDbContext context, ILogger<DeleteEmployeeHandler> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Processa exclusão lógica de funcionário verificando dependências.
-    /// </summary>
-    /// <param name="request">Command contendo ID do funcionário a excluir.</param>
-    /// <param name="cancellationToken">Token de cancelamento.</param>
     public async Task Handle(DeleteEmployeeCommand request, CancellationToken cancellationToken)
     {
         var employee = await _context.Employees

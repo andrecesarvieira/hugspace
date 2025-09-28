@@ -11,20 +11,11 @@ using SynQcore.Domain.Entities.Organization;
 
 namespace SynQcore.Application.Features.Feed.Handlers;
 
-/// <summary>
-/// Handler para obter feed corporativo personalizado
-/// Implementa algoritmo de relevância baseado em interesses e contexto corporativo
-/// </summary>
 public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQuery, PagedResult<FeedItemDto>>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ILogger<GetCorporateFeedHandler> _logger;
 
-    /// <summary>
-    /// Inicializa uma nova instância do GetCorporateFeedHandler
-    /// </summary>
-    /// <param name="context">Contexto do banco de dados</param>
-    /// <param name="logger">Logger para auditoria</param>
     public GetCorporateFeedHandler(
         ISynQcoreDbContext context,
         ILogger<GetCorporateFeedHandler> logger)
@@ -33,12 +24,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         _logger = logger;
     }
 
-    /// <summary>
-    /// Processa a query para obter feed corporativo personalizado
-    /// </summary>
-    /// <param name="request">Query de feed corporativo</param>
-    /// <param name="cancellationToken">Token de cancelamento</param>
-    /// <returns>Resultado paginado do feed</returns>
     public async Task<PagedResult<FeedItemDto>> Handle(GetCorporateFeedQuery request, CancellationToken cancellationToken)
     {
         LogProcessingFeedRequest(_logger, request.UserId, request.FeedType ?? "mixed", request.PageNumber);
@@ -74,9 +59,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         };
     }
 
-    /// <summary>
-    /// Verifica se o feed precisa ser regenerado
-    /// </summary>
     private async Task<bool> ShouldRegenerateFeed(Guid userId, CancellationToken cancellationToken)
     {
         var lastFeedEntry = await _context.FeedEntries
@@ -89,9 +71,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
                lastFeedEntry.CreatedAt < DateTime.UtcNow.AddHours(-2);
     }
 
-    /// <summary>
-    /// Constrói query base para o feed aplicando filtros
-    /// </summary>
     private IQueryable<FeedEntry> BuildFeedQuery(GetCorporateFeedQuery request)
     {
         var query = _context.FeedEntries
@@ -125,9 +104,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         return query;
     }
 
-    /// <summary>
-    /// Aplica filtros específicos à query
-    /// </summary>
     private static IQueryable<FeedEntry> ApplyFilters(IQueryable<FeedEntry> query, FeedFiltersDto filters)
     {
         if (filters.PostTypes?.Count > 0)
@@ -171,9 +147,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         return query;
     }
 
-    /// <summary>
-    /// Regenera feed para usuário usando algoritmo de relevância
-    /// </summary>
     private async Task RegenerateFeedForUser(Guid userId, CancellationToken cancellationToken)
     {
         LogRegeneratingFeed(_logger, userId);
@@ -228,9 +201,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         LogFeedRegenerated(_logger, userId, newFeedEntries.Count);
     }
 
-    /// <summary>
-    /// Cria entrada de feed com algoritmo de relevância
-    /// </summary>
     private static FeedEntry? CreateFeedEntry(Employee user, Post post, Dictionary<string, double> userInterests)
     {
         // Não inclui posts próprios no feed
@@ -257,9 +227,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         };
     }
 
-    /// <summary>
-    /// Calcula score de relevância baseado em múltiplos fatores
-    /// </summary>
     private static double CalculateRelevanceScore(Employee user, Post post, Dictionary<string, double> userInterests)
     {
         double score = 0.0;
@@ -293,9 +260,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         return Math.Min(score, 1.0); // Máximo 1.0
     }
 
-    /// <summary>
-    /// Determina prioridade baseada no score e tipo de post
-    /// </summary>
     private static FeedPriority CalculatePriority(Post post, double relevanceScore)
     {
         if (post.Type == PostType.Announcement && post.IsOfficial)
@@ -310,9 +274,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         return FeedPriority.Low;
     }
 
-    /// <summary>
-    /// Determina razão da inclusão no feed
-    /// </summary>
     private static FeedReason DetermineReason(Employee user, Post post, Dictionary<string, double> userInterests)
     {
         if (post.IsOfficial)
@@ -328,9 +289,6 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         return FeedReason.Recommended;
     }
 
-    /// <summary>
-    /// Converte FeedEntry para FeedItemDto com informações completas
-    /// </summary>
     private async Task<List<FeedItemDto>> ConvertToFeedItems(
         List<FeedEntry> feedEntries,
         Guid userId,

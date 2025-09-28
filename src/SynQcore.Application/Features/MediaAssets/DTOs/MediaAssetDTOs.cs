@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.MediaAssets.DTOs;
 
-/// <summary>
-/// DTO para transferência de dados de asset de mídia
-/// </summary>
 public class MediaAssetDto
 {
     public Guid Id { get; set; }
@@ -39,9 +36,6 @@ public class MediaAssetDto
     public int DownloadCount { get; set; }
 }
 
-/// <summary>
-/// DTO detalhado para asset de mídia
-/// </summary>
 public class MediaAssetDetailDto : MediaAssetDto
 {
     public DateTime? LastAccessedAt { get; set; }
@@ -49,9 +43,6 @@ public class MediaAssetDetailDto : MediaAssetDto
     public Dictionary<string, string> Metadata { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para acesso a asset de mídia
-/// </summary>
 public class MediaAssetAccessDto
 {
     public Guid Id { get; set; }
@@ -62,9 +53,6 @@ public class MediaAssetAccessDto
     public string? IpAddress { get; set; }
 }
 
-/// <summary>
-/// DTO para estatísticas de asset de mídia
-/// </summary>
 public class MediaAssetStatsDto
 {
     public Guid AssetId { get; set; }
@@ -78,9 +66,6 @@ public class MediaAssetStatsDto
     public Dictionary<DateTime, int> ViewsByDate { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para dados de arquivo de mídia
-/// </summary>
 public class MediaAssetFileDto
 {
     public byte[] FileData { get; set; } = Array.Empty<byte>();
@@ -88,18 +73,12 @@ public class MediaAssetFileDto
     public string ContentType { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// DTO para thumbnail de asset
-/// </summary>
 public class MediaAssetThumbnailDto
 {
     public byte[] FileData { get; set; } = Array.Empty<byte>();
     public string ContentType { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// DTO para item de upload em lote
-/// </summary>
 public class BulkUploadItemDto
 {
     [Required]
@@ -131,9 +110,6 @@ public class BulkUploadItemDto
 
 // Request DTOs
 
-/// <summary>
-/// Request para busca de assets de mídia
-/// </summary>
 public class GetMediaAssetsRequest
 {
     public int Page { get; set; } = 1;
@@ -150,9 +126,6 @@ public class GetMediaAssetsRequest
     public string SortOrder { get; set; } = "desc";
 }
 
-/// <summary>
-/// Request para upload de asset de mídia
-/// </summary>
 public class UploadMediaAssetRequest
 {
     [Required]
@@ -186,9 +159,6 @@ public class UploadMediaAssetRequest
     public int? Duration { get; set; }
 }
 
-/// <summary>
-/// Request para atualização de asset de mídia
-/// </summary>
 public class UpdateMediaAssetRequest
 {
     [StringLength(200)]
@@ -201,9 +171,6 @@ public class UpdateMediaAssetRequest
     public List<Guid>? TagIds { get; set; }
 }
 
-/// <summary>
-/// Request para upload em lote de assets
-/// </summary>
 public class BulkUploadMediaAssetsRequest
 {
     [Required]

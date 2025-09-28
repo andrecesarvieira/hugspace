@@ -15,7 +15,6 @@ namespace SynQcore.Infrastructure.Migrations
     [Migration("20250925152940_AddKnowledgeManagementEntities")]
     partial class AddKnowledgeManagementEntities
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

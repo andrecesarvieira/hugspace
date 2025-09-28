@@ -20,6 +20,9 @@ public partial class CorporateCommunicationController : ControllerBase
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<CorporateCommunicationController> _logger;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public CorporateCommunicationController(
         IHubContext<CorporateCollaborationHub> collaborationHub,
         IHubContext<ExecutiveCommunicationHub> executiveHub,
@@ -37,6 +40,9 @@ public partial class CorporateCommunicationController : ControllerBase
     /// </summary>
     /// <returns>Lista de usuários online</returns>
     [HttpGet("presence/online-users")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetOnlineUsers()
     {
         var currentUserId = _currentUserService.UserId;
@@ -190,6 +196,9 @@ public partial class CorporateCommunicationController : ControllerBase
     /// <param name="pageSize">Itens por página (padrão: 50)</param>
     /// <returns>Histórico de mensagens</returns>
     [HttpGet("teams/{teamId}/messages")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetTeamMessageHistory(string teamId, int page = 1, int pageSize = 50)
     {
         var currentUserId = _currentUserService.UserId;
@@ -224,6 +233,9 @@ public partial class CorporateCommunicationController : ControllerBase
     /// <returns>Estatísticas detalhadas</returns>
     [HttpGet("statistics")]
     [Authorize(Roles = "Manager,HR,Admin")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetCommunicationStatistics()
     {
         var currentUserId = _currentUserService.UserId;
@@ -266,58 +278,75 @@ public partial class CorporateCommunicationController : ControllerBase
     /// <summary>
     /// Dados para notificação corporativa
     /// </summary>
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
     public class CompanyNotificationRequest
     {
         /// <summary>
         /// Título da notificação
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Conteúdo da mensagem
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Prioridade da notificação (Low, Normal, High, Critical)
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Priority { get; set; } = "Normal";
 
         /// <summary>
         /// Tipo de notificação (Announcement, Policy, Emergency, Update)
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Type { get; set; } = "Announcement";
     }
 
     /// <summary>
     /// Dados para mensagem de equipe
     /// </summary>
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
     public class TeamMessageRequest
     {
         /// <summary>
         /// Conteúdo da mensagem
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Message { get; set; } = string.Empty;
     }
 
     /// <summary>
     /// Dados para comunicado departamental
     /// </summary>
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
     public class DepartmentCommunicationRequest
     {
         /// <summary>
         /// Título do comunicado
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Conteúdo da mensagem
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Prioridade do comunicado (Low, Normal, High, Urgent)
         /// </summary>
+    /// <summary>Propriedade do sistema</summary>
         public string Priority { get; set; } = "Normal";
     }
 

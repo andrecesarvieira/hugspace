@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities;
 
 namespace SynQcore.Infrastructure.Data.Configurations.Documents;
 
-/// <summary>
-/// Configuração EF Core para a entidade DocumentAccess
-/// </summary>
 public class DocumentAccessConfiguration : IEntityTypeConfiguration<DocumentAccess>
 {
     public void Configure(EntityTypeBuilder<DocumentAccess> builder)

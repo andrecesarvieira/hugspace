@@ -8,7 +8,6 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para obter thread completa de discussão com analytics
 public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscussionThreadQuery, DiscussionThreadDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -129,7 +128,6 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
         }
     }
 
-    /// Aplica filtros de visibilidade baseados no usuário atual
     private static IQueryable<Domain.Entities.Communication.Comment> ApplyVisibilityFilters(
         IQueryable<Domain.Entities.Communication.Comment> query, Guid currentUserId)
     {
@@ -142,7 +140,6 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
         );
     }
 
-    /// Mapeia Comment para DiscussionCommentDto com dados de engagement
     private static DiscussionCommentDto MapToDiscussionCommentDto(Domain.Entities.Communication.Comment comment, Guid currentUserId)
     {
         var isLikedByCurrentUser = comment.Likes.Any(l => l.EmployeeId == currentUserId);
@@ -185,7 +182,6 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
         };
     }
 
-    /// Organiza comentários em hierarquia para exibição em árvore
     private static List<DiscussionCommentDto> OrganizeCommentsHierarchy(List<DiscussionCommentDto> comments)
     {
         var rootComments = comments.Where(c => !c.ParentCommentId.HasValue).ToList();
@@ -198,7 +194,6 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
         return rootComments;
     }
 
-    /// Popula replies recursivamente
     private static void PopulateReplies(DiscussionCommentDto comment, List<DiscussionCommentDto> allComments)
     {
         var replies = allComments
@@ -214,7 +209,6 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
         }
     }
 
-    /// Calcula analytics básicas da thread
     private static (int TotalComments, int UnresolvedQuestions, int FlaggedComments) CalculateThreadAnalytics(
         List<Domain.Entities.Communication.Comment> comments)
     {

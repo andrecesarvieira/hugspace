@@ -10,9 +10,6 @@ using System.Globalization;
 
 namespace SynQcore.Application.Features.CorporateSearch.Handlers;
 
-/// <summary>
-/// Handler para obter sugestões de busca
-/// </summary>
 public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggestionsQuery, List<SearchSuggestionDto>>
 {
     private readonly ISynQcoreDbContext _context;
@@ -152,9 +149,6 @@ public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggest
     }
 }
 
-/// <summary>
-/// Handler para obter trending topics
-/// </summary>
 public class GetTrendingTopicsQueryHandler : IRequestHandler<GetTrendingTopicsQuery, List<TrendingTopicDto>>
 {
     private readonly ISynQcoreDbContext _context;
@@ -298,9 +292,6 @@ public class GetTrendingTopicsQueryHandler : IRequestHandler<GetTrendingTopicsQu
     }
 }
 
-/// <summary>
-/// Handler para obter estatísticas de conteúdo
-/// </summary>
 public class GetContentStatsQueryHandler : IRequestHandler<GetContentStatsQuery, ContentStatsDto>
 {
     private readonly ISynQcoreDbContext _context;

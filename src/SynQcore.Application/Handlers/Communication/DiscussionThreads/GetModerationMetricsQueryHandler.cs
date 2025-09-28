@@ -7,7 +7,6 @@ using System.Globalization;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para métricas de moderação corporativa
 public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModerationMetricsQuery, ModerationMetricsDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -111,7 +110,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
         }
     }
 
-    /// Calcula tempo médio de resposta da moderação em minutos
     private static int CalculateAverageResponseTime(List<Domain.Entities.Communication.Comment> comments)
     {
         if (comments.Count == 0) return 0;
@@ -125,7 +123,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
         return responseTimes.Count > 0 ? (int)responseTimes.Average() : 0;
     }
 
-    /// Calcula taxa de aprovação (aprovados / total moderado)
     private static double CalculateApprovalRate(List<Domain.Entities.Communication.Comment> comments)
     {
         if (comments.Count == 0) return 0;
@@ -134,7 +131,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
         return (double)approved / comments.Count * 100;
     }
 
-    /// Calcula estatísticas por status de moderação
     private static Dictionary<string, int> CalculateStatusStatistics(List<Domain.Entities.Communication.Comment> comments)
     {
         return comments
@@ -142,7 +138,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
             .ToDictionary(g => g.Key, g => g.Count());
     }
 
-    /// Calcula moderações por dia
     private static Dictionary<string, int> CalculateModerationByDay(
         List<Domain.Entities.Communication.Comment> comments,
         DateTime fromDate,
@@ -174,7 +169,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
         return result;
     }
 
-    /// Calcula moderações por tipo de comentário
     private static Dictionary<string, int> CalculateModerationByType(List<Domain.Entities.Communication.Comment> comments)
     {
         return comments
@@ -182,7 +176,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
             .ToDictionary(g => g.Key, g => g.Count());
     }
 
-    /// Calcula trends de moderação
     private static List<ModerationTrendItem> CalculateModerationTrends(List<Domain.Entities.Communication.Comment> comments)
     {
         return comments
@@ -203,7 +196,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
             .ToList();
     }
 
-    /// Calcula estatísticas dos top moderadores
     private async Task<List<ModeratorStats>> CalculateTopModeratorsAsync(
         DateTime fromDate, 
         DateTime toDate, 
@@ -250,7 +242,6 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
     private static partial void LogErrorGeneratingModerationMetrics(ILogger logger, Exception ex, Guid? moderatorId);
 }
 
-/// Query para métricas de moderação
 public record GetModerationMetricsQuery(
     DateTime? FromDate = null,
     DateTime? ToDate = null,

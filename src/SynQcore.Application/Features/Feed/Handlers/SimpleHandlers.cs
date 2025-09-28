@@ -6,9 +6,6 @@ using SynQcore.Application.Features.Feed.Commands;
 
 namespace SynQcore.Application.Features.Feed.Handlers;
 
-/// <summary>
-/// Handler simples para regenerar feed do usuário
-/// </summary>
 public partial class RegenerateFeedHandler : IRequestHandler<RegenerateFeedCommand>
 {
     private readonly ISynQcoreDbContext _context;
@@ -49,9 +46,6 @@ public partial class RegenerateFeedHandler : IRequestHandler<RegenerateFeedComma
     private static partial void LogFeedRegenerated(ILogger logger, Guid userId);
 }
 
-/// <summary>
-/// Handler simples para atualizar interesses do usuário
-/// </summary>
 public partial class UpdateUserInterestsHandler : IRequestHandler<UpdateUserInterestsCommand>
 {
     private readonly ISynQcoreDbContext _context;
@@ -84,9 +78,6 @@ public partial class UpdateUserInterestsHandler : IRequestHandler<UpdateUserInte
     private static partial void LogInterestsUpdated(ILogger logger, Guid userId);
 }
 
-/// <summary>
-/// Handler simples para processamento em lote
-/// </summary>
 public partial class ProcessBulkFeedUpdateHandler : IRequestHandler<ProcessBulkFeedUpdateCommand>
 {
     private readonly ISynQcoreDbContext _context;

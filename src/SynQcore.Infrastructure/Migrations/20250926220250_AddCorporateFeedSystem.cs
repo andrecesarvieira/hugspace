@@ -5,10 +5,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SynQcore.Infrastructure.Migrations
 {
-    /// <inheritdoc />
     public partial class AddCorporateFeedSystem : Migration
     {
-        /// <inheritdoc />
+
+        // Campos static readonly para resolver CA1861
+        private static readonly bool[] DescendingBool_falsetrue = { false, true };
+        private static readonly bool[] DescendingBool_falsetruetrue = { false, true, true };
+        private static readonly bool[] DescendingBool_falsefalsetrue = { false, false, true };
+
+
+
+        // Campos static readonly para resolver CA1861
+        private static readonly string[] CreatedAtIsReadArray = { "CreatedAt", "IsRead" };
+        private static readonly string[] UserIdCreatedAtArray = { "UserId", "CreatedAt" };
+        private static readonly string[] UserIdPriorityRelevanceScoreArray = { "UserId", "Priority", "RelevanceScore" };
+        private static readonly string[] LastInteractionAtScoreArray = { "LastInteractionAt", "Score" };
+        private static readonly string[] TypeInterestValueScoreArray = { "Type", "InterestValue", "Score" };
+        private static readonly string[] UserIdScoreArray = { "UserId", "Score" };
+        private static readonly string[] UserIdTypeInterestValueArray = { "UserId", "Type", "InterestValue" };
+
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -136,7 +152,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FeedEntries_CreatedAt_IsRead",
                 table: "FeedEntries",
-                columns: new[] { "CreatedAt", "IsRead" });
+                columns: CreatedAtIsReadArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FeedEntries_DepartmentId",
@@ -156,40 +172,39 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FeedEntries_UserId_CreatedAt",
                 table: "FeedEntries",
-                columns: new[] { "UserId", "CreatedAt" },
-                descending: new[] { false, true });
+                columns: UserIdCreatedAtArray,
+                descending: DescendingBool_falsetrue);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FeedEntries_UserId_Priority_Relevance",
                 table: "FeedEntries",
-                columns: new[] { "UserId", "Priority", "RelevanceScore" },
-                descending: new[] { false, true, true });
+                columns: UserIdPriorityRelevanceScoreArray,
+                descending: DescendingBool_falsetruetrue);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInterests_LastInteraction_Score",
                 table: "UserInterests",
-                columns: new[] { "LastInteractionAt", "Score" });
+                columns: LastInteractionAtScoreArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInterests_Type_Value_Score",
                 table: "UserInterests",
-                columns: new[] { "Type", "InterestValue", "Score" },
-                descending: new[] { false, false, true });
+                columns: TypeInterestValueScoreArray,
+                descending: DescendingBool_falsefalsetrue);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInterests_UserId_Score",
                 table: "UserInterests",
-                columns: new[] { "UserId", "Score" },
-                descending: new[] { false, true });
+                columns: UserIdScoreArray,
+                descending: DescendingBool_falsetrue);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserInterests_UserId_Type_Value_Unique",
                 table: "UserInterests",
-                columns: new[] { "UserId", "Type", "InterestValue" },
+                columns: UserIdTypeInterestValueArray,
                 unique: true);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

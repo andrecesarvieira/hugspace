@@ -4,10 +4,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Infrastructure.Data.Configurations.Communication;
 
-/// <summary>
-/// Configuração EF Core para entidade FeedEntry
-/// Otimizada para consultas de feed corporativo
-/// </summary>
 public class FeedEntryConfiguration : IEntityTypeConfiguration<FeedEntry>
 {
     public void Configure(EntityTypeBuilder<FeedEntry> builder)

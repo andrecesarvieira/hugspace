@@ -8,6 +8,9 @@ namespace SynQcore.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class SignalRDocumentationController : ControllerBase
 {
     /// <summary>
@@ -15,6 +18,9 @@ public class SignalRDocumentationController : ControllerBase
     /// </summary>
     /// <returns>Lista de Hubs e seus métodos</returns>
     [HttpGet("hubs")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetAvailableHubs()
     {
         var hubsInfo = new
@@ -54,6 +60,9 @@ public class SignalRDocumentationController : ControllerBase
     /// </summary>
     /// <returns>Código JavaScript de exemplo</returns>
     [HttpGet("examples/javascript")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetJavaScriptExamples()
     {
         var examples = new
@@ -142,6 +151,9 @@ connection.onreconnected((connectionId) => {
     /// <returns>Estatísticas dos Hubs</returns>
     [HttpGet("status")]
     [Authorize(Roles = "Manager,HR,Admin")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetHubStatus()
     {
         // Em implementação real, isso viria do SignalR Hub Context
@@ -188,6 +200,9 @@ connection.onreconnected((connectionId) => {
     /// </summary>
     /// <returns>Guia de implementação</returns>
     [HttpGet("implementation-guide")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public IActionResult GetImplementationGuide()
     {
         var guide = new

@@ -5,9 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.MediaAssets.Commands;
 
-/// <summary>
-/// Command para upload de asset de mídia
-/// </summary>
 public class UploadMediaAssetCommand : IRequest<MediaAssetDto>
 {
     [Required]
@@ -41,9 +38,6 @@ public class UploadMediaAssetCommand : IRequest<MediaAssetDto>
     public int? Duration { get; set; }
 }
 
-/// <summary>
-/// Command para atualizar asset de mídia
-/// </summary>
 public class UpdateMediaAssetCommand : IRequest<MediaAssetDto?>
 {
     [Required]
@@ -59,9 +53,6 @@ public class UpdateMediaAssetCommand : IRequest<MediaAssetDto?>
     public List<Guid>? TagIds { get; set; }
 }
 
-/// <summary>
-/// Command para excluir asset de mídia
-/// </summary>
 public class DeleteMediaAssetCommand : IRequest<bool>
 {
     public Guid AssetId { get; }
@@ -72,9 +63,6 @@ public class DeleteMediaAssetCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para upload em lote de assets
-/// </summary>
 public class BulkUploadMediaAssetsCommand : IRequest<List<MediaAssetDto>>
 {
     [Required]
@@ -85,9 +73,6 @@ public class BulkUploadMediaAssetsCommand : IRequest<List<MediaAssetDto>>
     public List<Guid>? DefaultTagIds { get; set; }
 }
 
-/// <summary>
-/// Command para registrar acesso ao asset
-/// </summary>
 public class RegisterMediaAssetAccessCommand : IRequest<bool>
 {
     [Required]
@@ -102,9 +87,6 @@ public class RegisterMediaAssetAccessCommand : IRequest<bool>
     public string? IpAddress { get; set; }
 }
 
-/// <summary>
-/// Command para gerar thumbnail
-/// </summary>
 public class GenerateThumbnailCommand : IRequest<bool>
 {
     [Required]

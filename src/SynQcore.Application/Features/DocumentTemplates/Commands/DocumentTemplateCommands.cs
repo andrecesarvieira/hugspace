@@ -5,9 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.DocumentTemplates.Commands;
 
-/// <summary>
-/// Command para criar template de documento
-/// </summary>
 public class CreateTemplateCommand : IRequest<DocumentTemplateDto>
 {
     [Required]
@@ -31,9 +28,6 @@ public class CreateTemplateCommand : IRequest<DocumentTemplateDto>
     public bool IsActive { get; set; } = true;
 }
 
-/// <summary>
-/// Command para atualizar template de documento
-/// </summary>
 public class UpdateTemplateCommand : IRequest<DocumentTemplateDto?>
 {
     [Required]
@@ -56,9 +50,6 @@ public class UpdateTemplateCommand : IRequest<DocumentTemplateDto?>
     public bool? IsActive { get; set; }
 }
 
-/// <summary>
-/// Command para excluir template de documento
-/// </summary>
 public class DeleteTemplateCommand : IRequest<bool>
 {
     public Guid TemplateId { get; }
@@ -69,9 +60,6 @@ public class DeleteTemplateCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para criar documento a partir de template
-/// </summary>
 public class CreateDocumentFromTemplateCommand : IRequest<CreateDocumentFromTemplateDto?>
 {
     [Required]
@@ -89,9 +77,6 @@ public class CreateDocumentFromTemplateCommand : IRequest<CreateDocumentFromTemp
     public List<Guid>? TagIds { get; set; }
 }
 
-/// <summary>
-/// Command para duplicar template
-/// </summary>
 public class DuplicateTemplateCommand : IRequest<DocumentTemplateDto?>
 {
     [Required]
@@ -105,9 +90,6 @@ public class DuplicateTemplateCommand : IRequest<DocumentTemplateDto?>
     public string? NewDescription { get; set; }
 }
 
-/// <summary>
-/// Command para alterar status do template
-/// </summary>
 public class ToggleTemplateStatusCommand : IRequest<DocumentTemplateDto?>
 {
     [Required]

@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.DocumentTemplates.DTOs;
 
-/// <summary>
-/// DTO para transferência de dados de template de documento
-/// </summary>
 public class DocumentTemplateDto
 {
     public Guid Id { get; set; }
@@ -28,9 +25,6 @@ public class DocumentTemplateDto
     public DateTime? LastUsedAt { get; set; }
 }
 
-/// <summary>
-/// DTO detalhado para template de documento
-/// </summary>
 public class DocumentTemplateDetailDto : DocumentTemplateDto
 {
     public string Content { get; set; } = string.Empty;
@@ -38,9 +32,6 @@ public class DocumentTemplateDetailDto : DocumentTemplateDto
     public List<TemplateUsageDto> RecentUsages { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para campo de template
-/// </summary>
 public class TemplateFieldDto
 {
     public string Name { get; set; } = string.Empty;
@@ -52,9 +43,6 @@ public class TemplateFieldDto
     public List<string>? Options { get; set; } // Para campos select
 }
 
-/// <summary>
-/// DTO para uso do template
-/// </summary>
 public class TemplateUsageDto
 {
     public Guid DocumentId { get; set; }
@@ -64,9 +52,6 @@ public class TemplateUsageDto
     public DateTime UsedAt { get; set; }
 }
 
-/// <summary>
-/// DTO para estatísticas de uso do template
-/// </summary>
 public class TemplateUsageStatsDto
 {
     public Guid TemplateId { get; set; }
@@ -78,9 +63,6 @@ public class TemplateUsageStatsDto
     public Dictionary<DateTime, int> UsagesByDate { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para resultado de criação de documento a partir de template
-/// </summary>
 public class CreateDocumentFromTemplateDto
 {
     public Guid DocumentId { get; set; }
@@ -91,9 +73,6 @@ public class CreateDocumentFromTemplateDto
 
 // Request DTOs
 
-/// <summary>
-/// Request para busca de templates
-/// </summary>
 public class GetTemplatesRequest
 {
     public int Page { get; set; } = 1;
@@ -106,9 +85,6 @@ public class GetTemplatesRequest
     public string SortOrder { get; set; } = "desc";
 }
 
-/// <summary>
-/// Request para criação de template
-/// </summary>
 public class CreateTemplateRequest
 {
     [Required]
@@ -132,9 +108,6 @@ public class CreateTemplateRequest
     public bool IsActive { get; set; } = true;
 }
 
-/// <summary>
-/// Request para atualização de template
-/// </summary>
 public class UpdateTemplateRequest
 {
     [StringLength(200)]
@@ -154,9 +127,6 @@ public class UpdateTemplateRequest
     public bool? IsActive { get; set; }
 }
 
-/// <summary>
-/// Request para criação de documento a partir de template
-/// </summary>
 public class CreateDocumentFromTemplateRequest
 {
     [Required]
@@ -171,9 +141,6 @@ public class CreateDocumentFromTemplateRequest
     public List<Guid>? TagIds { get; set; }
 }
 
-/// <summary>
-/// Request para duplicação de template
-/// </summary>
 public class DuplicateTemplateRequest
 {
     [Required]
@@ -184,9 +151,6 @@ public class DuplicateTemplateRequest
     public string? NewDescription { get; set; }
 }
 
-/// <summary>
-/// Request para alteração de status do template
-/// </summary>
 public class ToggleTemplateStatusRequest
 {
     public bool IsActive { get; set; }

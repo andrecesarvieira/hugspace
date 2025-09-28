@@ -3,20 +3,10 @@ using SynQcore.Application.Commands.Admin;
 
 namespace SynQcore.Application.Validators.Admin;
 
-/// <summary>
-/// Validator para CreateUserCommand usando FluentValidation.
-/// Define regras de validação rigorosas para criação administrativa de usuários.
-/// </summary>
 public class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
 {
-    /// <summary>
-    /// Papéis válidos no sistema.
-    /// </summary>
     private static readonly string[] ValidRoles = { "Employee", "Manager", "HR", "Admin" };
 
-    /// <summary>
-    /// Inicializa as regras de validação para criação de usuário pelo administrador.
-    /// </summary>
     public CreateUserCommandValidator()
     {
         RuleFor(x => x.UserName)

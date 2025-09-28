@@ -15,10 +15,16 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class AdminController : ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public AdminController(IMediator mediator)
     {
         _mediator = mediator;
@@ -79,6 +85,9 @@ public class AdminController : ControllerBase
     /// </summary>
     /// <returns>Lista de papéis corporativos disponíveis</returns>
     [HttpGet("roles")]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public ActionResult<IEnumerable<string>> GetAvailableRoles()
     {
         var roles = new[] { "Employee", "Manager", "HR", "Admin" };

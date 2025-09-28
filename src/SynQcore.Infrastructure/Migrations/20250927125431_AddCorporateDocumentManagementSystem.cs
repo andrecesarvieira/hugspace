@@ -5,10 +5,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SynQcore.Infrastructure.Migrations
 {
-    /// <inheritdoc />
     public partial class AddCorporateDocumentManagementSystem : Migration
     {
-        /// <inheritdoc />
+
+        // Campos static readonly para resolver CA1861
+        private static readonly string[] StatusAccessLevelArray = { "Status", "AccessLevel" };
+        private static readonly string[] TitleTypeArray = { "Title", "Type" };
+        private static readonly string[] DocumentIdDepartmentIdArray = { "DocumentId", "DepartmentId" };
+        private static readonly string[] DocumentIdEmployeeIdArray = { "DocumentId", "EmployeeId" };
+        private static readonly string[] DocumentIdRoleArray = { "DocumentId", "Role" };
+        private static readonly string[] ActionAccessedAtArray = { "Action", "AccessedAt" };
+        private static readonly string[] DocumentIdEmployeeIdActionAccessedAtArray = { "DocumentId", "EmployeeId", "Action", "AccessedAt" };
+        private static readonly string[] DocumentIdAccessedAtArray = { "DocumentId", "AccessedAt" };
+        private static readonly string[] EmployeeIdAccessedAtArray = { "EmployeeId", "AccessedAt" };
+        private static readonly string[] DocumentTypeIsActiveArray = { "DocumentType", "IsActive" };
+        private static readonly string[] IsDefaultDocumentTypeArray = { "IsDefault", "DocumentType" };
+        private static readonly string[] DocumentTypeIsDefaultArray = { "DocumentType", "IsDefault" };
+        private static readonly string[] CategoryIsApprovedArray = { "Category", "IsApproved" };
+        private static readonly string[] TypeIsApprovedArray = { "Type", "IsApproved" };
+
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -291,7 +307,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateDocuments_Status_AccessLevel",
                 table: "CorporateDocuments",
-                columns: new[] { "Status", "AccessLevel" });
+                columns: StatusAccessLevelArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateDocuments_Title_Search",
@@ -301,7 +317,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateDocuments_Title_Type",
                 table: "CorporateDocuments",
-                columns: new[] { "Title", "Type" });
+                columns: TitleTypeArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateDocuments_Type",
@@ -326,17 +342,17 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccesses_Document_Department",
                 table: "DocumentAccesses",
-                columns: new[] { "DocumentId", "DepartmentId" });
+                columns: DocumentIdDepartmentIdArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccesses_Document_Employee",
                 table: "DocumentAccesses",
-                columns: new[] { "DocumentId", "EmployeeId" });
+                columns: DocumentIdEmployeeIdArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccesses_Document_Role",
                 table: "DocumentAccesses",
-                columns: new[] { "DocumentId", "Role" });
+                columns: DocumentIdRoleArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccesses_DocumentId",
@@ -376,17 +392,17 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccessLogs_Action_AccessedAt",
                 table: "DocumentAccessLogs",
-                columns: new[] { "Action", "AccessedAt" });
+                columns: ActionAccessedAtArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccessLogs_Audit",
                 table: "DocumentAccessLogs",
-                columns: new[] { "DocumentId", "EmployeeId", "Action", "AccessedAt" });
+                columns: DocumentIdEmployeeIdActionAccessedAtArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccessLogs_Document_AccessedAt",
                 table: "DocumentAccessLogs",
-                columns: new[] { "DocumentId", "AccessedAt" });
+                columns: DocumentIdAccessedAtArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccessLogs_DocumentId",
@@ -396,7 +412,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccessLogs_Employee_AccessedAt",
                 table: "DocumentAccessLogs",
-                columns: new[] { "EmployeeId", "AccessedAt" });
+                columns: EmployeeIdAccessedAtArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentAccessLogs_EmployeeId",
@@ -421,7 +437,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTemplates_DocumentType_IsActive",
                 table: "DocumentTemplates",
-                columns: new[] { "DocumentType", "IsActive" });
+                columns: DocumentTypeIsActiveArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTemplates_IsActive",
@@ -436,7 +452,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTemplates_IsDefault_DocumentType",
                 table: "DocumentTemplates",
-                columns: new[] { "IsDefault", "DocumentType" });
+                columns: IsDefaultDocumentTypeArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentTemplates_Name",
@@ -451,7 +467,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "UX_DocumentTemplates_DefaultPerType",
                 table: "DocumentTemplates",
-                columns: new[] { "DocumentType", "IsDefault" },
+                columns: DocumentTypeIsDefaultArray,
                 unique: true,
                 filter: "\"IsDefault\" = true AND \"IsDeleted\" = false");
 
@@ -473,7 +489,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_MediaAssets_Category_IsApproved",
                 table: "MediaAssets",
-                columns: new[] { "Category", "IsApproved" });
+                columns: CategoryIsApprovedArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MediaAssets_IsApproved",
@@ -493,7 +509,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_MediaAssets_Type_IsApproved",
                 table: "MediaAssets",
-                columns: new[] { "Type", "IsApproved" });
+                columns: TypeIsApprovedArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_MediaAssets_UploadedByEmployeeId",
@@ -501,7 +517,6 @@ namespace SynQcore.Infrastructure.Migrations
                 column: "UploadedByEmployeeId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

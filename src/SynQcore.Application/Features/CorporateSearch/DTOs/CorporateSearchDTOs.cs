@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.CorporateSearch.DTOs;
 
-/// <summary>
-/// DTO para resultado de busca corporativa
-/// </summary>
 public class SearchResultDto
 {
     public Guid Id { get; set; }
@@ -37,9 +34,6 @@ public class SearchResultDto
     public int DownloadCount { get; set; }
 }
 
-/// <summary>
-/// DTO para filtros de busca avançada
-/// </summary>
 public class SearchFiltersDto
 {
     public List<string>? ContentTypes { get; set; }
@@ -58,9 +52,6 @@ public class SearchFiltersDto
     public bool? IsActive { get; set; }
 }
 
-/// <summary>
-/// DTO para configurações de busca
-/// </summary>
 public class SearchConfigDto
 {
     public List<string> EnabledContentTypes { get; set; } = new();
@@ -81,9 +72,6 @@ public class SearchConfigDto
     public int CacheTimeout { get; set; } = 300; // 5 minutos
 }
 
-/// <summary>
-/// DTO para sugestões de busca
-/// </summary>
 public class SearchSuggestionDto
 {
     public string Term { get; set; } = string.Empty;
@@ -93,9 +81,6 @@ public class SearchSuggestionDto
     public List<string> RelatedTerms { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para analytics de busca
-/// </summary>
 public class SearchAnalyticsDto
 {
     public DateTime PeriodStart { get; set; }
@@ -112,9 +97,6 @@ public class SearchAnalyticsDto
     public double QueryRefinementRate { get; set; }
 }
 
-/// <summary>
-/// DTO para trending topics corporativos
-/// </summary>
 public class TrendingTopicDto
 {
     public string Topic { get; set; } = string.Empty;
@@ -130,9 +112,6 @@ public class TrendingTopicDto
     public List<Guid> TopContributors { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para estatísticas de conteúdo
-/// </summary>
 public class ContentStatsDto
 {
     public int TotalPosts { get; set; }
@@ -150,9 +129,6 @@ public class ContentStatsDto
     public List<TrendingTopicDto> TrendingTopics { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para exportação de dados de busca
-/// </summary>
 public class SearchExportDto
 {
     public string SearchTerm { get; set; } = string.Empty;
@@ -167,9 +143,6 @@ public class SearchExportDto
 
 // Request DTOs
 
-/// <summary>
-/// Request para busca corporativa
-/// </summary>
 public class CorporateSearchRequest
 {
     [Required]
@@ -183,9 +156,6 @@ public class CorporateSearchRequest
     public SearchConfigDto? Config { get; set; }
 }
 
-/// <summary>
-/// Request para busca avançada
-/// </summary>
 public class AdvancedSearchRequest : CorporateSearchRequest
 {
     [StringLength(500)]
@@ -203,9 +173,6 @@ public class AdvancedSearchRequest : CorporateSearchRequest
     public List<string>? ExcludeWords { get; set; }
 }
 
-/// <summary>
-/// Request para sugestões de busca
-/// </summary>
 public class SearchSuggestionsRequest
 {
     [Required]
@@ -218,9 +185,6 @@ public class SearchSuggestionsRequest
     public bool IncludeRecent { get; set; } = true;
 }
 
-/// <summary>
-/// Request para analytics de busca
-/// </summary>
 public class SearchAnalyticsRequest
 {
     public DateTime? StartDate { get; set; }
@@ -232,9 +196,6 @@ public class SearchAnalyticsRequest
     public string GroupBy { get; set; } = "day"; // day, week, month
 }
 
-/// <summary>
-/// Request para trending topics
-/// </summary>
 public class TrendingTopicsRequest
 {
     public DateTime? StartDate { get; set; }
@@ -246,9 +207,6 @@ public class TrendingTopicsRequest
     public float MinTrendScore { get; set; } = 0.5f;
 }
 
-/// <summary>
-/// Request para estatísticas de conteúdo
-/// </summary>
 public class ContentStatsRequest
 {
     public DateTime? StartDate { get; set; }
@@ -259,9 +217,6 @@ public class ContentStatsRequest
     public bool IncludeDeleted { get; set; }
 }
 
-/// <summary>
-/// DTO para termos de busca populares
-/// </summary>
 public class PopularSearchTermDto
 {
     public string Term { get; set; } = string.Empty;
@@ -269,9 +224,6 @@ public class PopularSearchTermDto
     public string Trend { get; set; } = "stable"; // up, down, stable
 }
 
-/// <summary>
-/// DTO para resultados populares
-/// </summary>
 public class PopularResultDto
 {
     public Guid Id { get; set; }
@@ -281,9 +233,6 @@ public class PopularResultDto
     public string Category { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// DTO para categorias populares
-/// </summary>
 public class PopularCategoryDto
 {
     public string Category { get; set; } = string.Empty;
@@ -291,9 +240,6 @@ public class PopularCategoryDto
     public int ResultCount { get; set; }
 }
 
-/// <summary>
-/// Request para exportação de dados
-/// </summary>
 public class SearchExportRequest : CorporateSearchRequest
 {
     [Required]

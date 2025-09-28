@@ -5,14 +5,8 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Validators.Communication.DiscussionThreads;
 
-/// <summary>
-/// Validator para criação de comentário em discussion thread
-/// </summary>
 public class CreateDiscussionCommentCommandValidator : AbstractValidator<CreateDiscussionCommentCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de criação de comentário em thread.
-    /// </summary>
     public CreateDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.PostId)
@@ -74,14 +68,8 @@ public class CreateDiscussionCommentCommandValidator : AbstractValidator<CreateD
     }
 }
 
-/// <summary>
-/// Validator para atualização de comentário
-/// </summary>
 public class UpdateDiscussionCommentCommandValidator : AbstractValidator<UpdateDiscussionCommentCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de atualização de comentário.
-    /// </summary>
     public UpdateDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.CommentId)
@@ -125,14 +113,8 @@ public class UpdateDiscussionCommentCommandValidator : AbstractValidator<UpdateD
     }
 }
 
-/// <summary>
-/// Validator para moderação de comentário
-/// </summary>
 public class ModerateDiscussionCommentCommandValidator : AbstractValidator<ModerateDiscussionCommentCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de moderação de comentário.
-    /// </summary>
     public ModerateDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.CommentId)
@@ -161,14 +143,8 @@ public class ModerateDiscussionCommentCommandValidator : AbstractValidator<Moder
     }
 }
 
-/// <summary>
-/// Validator para resolução de comentário
-/// </summary>
 public class ResolveDiscussionCommentCommandValidator : AbstractValidator<ResolveDiscussionCommentCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de resolução de comentário.
-    /// </summary>
     public ResolveDiscussionCommentCommandValidator()
     {
         RuleFor(x => x.CommentId)

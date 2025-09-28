@@ -8,9 +8,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para obter estatísticas detalhadas de endorsements de conteúdo
-/// </summary>
 public partial class GetEndorsementStatsQueryHandler : IRequestHandler<GetEndorsementStatsQuery, EndorsementStatsDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -126,9 +123,6 @@ public partial class GetEndorsementStatsQueryHandler : IRequestHandler<GetEndors
         }
     }
 
-    /// <summary>
-    /// Obter ícone para tipo de endorsement
-    /// </summary>
     private static string GetEndorsementTypeIcon(EndorsementType type) => type switch
     {
         EndorsementType.Helpful => "🔥",

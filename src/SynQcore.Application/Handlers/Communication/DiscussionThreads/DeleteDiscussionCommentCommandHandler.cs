@@ -8,10 +8,6 @@ using SynQcore.Application.DTOs.Communication;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// <summary>
-/// Handler para exclusão de comentários em discussion threads.
-/// Gerencia exclusão soft (com replies) e hard (sem replies) preservando estrutura.
-/// </summary>
 public partial class DeleteDiscussionCommentCommandHandler : IRequestHandler<DeleteDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
@@ -19,13 +15,6 @@ public partial class DeleteDiscussionCommentCommandHandler : IRequestHandler<Del
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<DeleteDiscussionCommentCommandHandler> _logger;
 
-    /// <summary>
-    /// Inicializa nova instância do handler de exclusão de comentários.
-    /// </summary>
-    /// <param name="context">Contexto de acesso a dados.</param>
-    /// <param name="threadHelper">Helper para operações de thread.</param>
-    /// <param name="currentUserService">Serviço de usuário atual.</param>
-    /// <param name="logger">Logger para rastreamento de operações.</param>
     public DeleteDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
         DiscussionThreadHelper threadHelper,
@@ -38,12 +27,6 @@ public partial class DeleteDiscussionCommentCommandHandler : IRequestHandler<Del
         _logger = logger;
     }
 
-    /// <summary>
-    /// Processa exclusão de comentário com estratégia baseada em replies.
-    /// </summary>
-    /// <param name="request">Command contendo ID do comentário a excluir.</param>
-    /// <param name="cancellationToken">Token de cancelamento.</param>
-    /// <returns>Resultado da operação de exclusão.</returns>
     public async Task<CommentOperationResponse> Handle(DeleteDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogDeletingComment(_logger, request.CommentId);
@@ -150,7 +133,6 @@ public partial class DeleteDiscussionCommentCommandHandler : IRequestHandler<Del
         }
     }
 
-    /// Verifica se o usuário pode deletar o comentário
     private async Task<bool> CanUserDeleteCommentAsync(Guid userId, Domain.Entities.Communication.Comment comment, CancellationToken cancellationToken)
     {
         // Autor sempre pode deletar próprio comentário

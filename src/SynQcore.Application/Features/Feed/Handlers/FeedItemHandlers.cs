@@ -6,10 +6,6 @@ using SynQcore.Application.Features.Feed.Commands;
 
 namespace SynQcore.Application.Features.Feed.Handlers;
 
-/// <summary>
-/// Handler para marcar item do feed como lido
-/// Atualiza timestamps de visualização e status de leitura
-/// </summary>
 public partial class MarkFeedItemAsReadHandler : IRequestHandler<MarkFeedItemAsReadCommand>
 {
     private readonly ISynQcoreDbContext _context;
@@ -28,7 +24,7 @@ public partial class MarkFeedItemAsReadHandler : IRequestHandler<MarkFeedItemAsR
         LogMarkingItemAsRead(_logger, request.FeedEntryId, request.UserId);
 
         var feedEntry = await _context.FeedEntries
-            .FirstOrDefaultAsync(fe => fe.Id == request.FeedEntryId && 
+            .FirstOrDefaultAsync(fe => fe.Id == request.FeedEntryId &&
                                fe.UserId == request.UserId, cancellationToken);
 
         if (feedEntry == null)
@@ -46,10 +42,10 @@ public partial class MarkFeedItemAsReadHandler : IRequestHandler<MarkFeedItemAsR
             await _context.SaveChangesAsync(cancellationToken);
             LogItemMarkedAsRead(_logger, request.FeedEntryId, request.UserId);
         }
-        
+
         // Sempre atualiza timestamp de visualização
         feedEntry.ViewedAt = DateTime.UtcNow;
-        
+
         await _context.SaveChangesAsync(cancellationToken);
     }
 
@@ -64,9 +60,8 @@ public partial class MarkFeedItemAsReadHandler : IRequestHandler<MarkFeedItemAsR
     [LoggerMessage(EventId = 3412, Level = LogLevel.Information,
         Message = "Feed item {FeedEntryId} marked as read for user {UserId}")]
     private static partial void LogItemMarkedAsRead(ILogger logger, Guid feedEntryId, Guid userId);
-}/// <summary>
-/// Handler para alternar status de bookmark do item no feed
-/// </summary>
+}
+
 public partial class ToggleFeedBookmarkHandler : IRequestHandler<ToggleFeedBookmarkCommand>
 {
     private readonly ISynQcoreDbContext _context;
@@ -85,7 +80,7 @@ public partial class ToggleFeedBookmarkHandler : IRequestHandler<ToggleFeedBookm
         LogTogglingBookmark(_logger, request.FeedEntryId, request.UserId);
 
         var feedEntry = await _context.FeedEntries
-            .FirstOrDefaultAsync(fe => fe.Id == request.FeedEntryId && 
+            .FirstOrDefaultAsync(fe => fe.Id == request.FeedEntryId &&
                                fe.UserId == request.UserId, cancellationToken);
 
         if (feedEntry == null)
@@ -98,7 +93,7 @@ public partial class ToggleFeedBookmarkHandler : IRequestHandler<ToggleFeedBookm
         feedEntry.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
-        
+
         LogBookmarkToggled(_logger, request.FeedEntryId, request.UserId, feedEntry.IsBookmarked);
     }
 
@@ -115,9 +110,6 @@ public partial class ToggleFeedBookmarkHandler : IRequestHandler<ToggleFeedBookm
     private static partial void LogBookmarkToggled(ILogger logger, Guid feedEntryId, Guid userId, bool isBookmarked);
 }
 
-/// <summary>
-/// Handler para ocultar item do feed
-/// </summary>
 public partial class HideFeedItemHandler : IRequestHandler<HideFeedItemCommand>
 {
     private readonly ISynQcoreDbContext _context;
@@ -136,7 +128,7 @@ public partial class HideFeedItemHandler : IRequestHandler<HideFeedItemCommand>
         LogHidingItem(_logger, request.FeedEntryId, request.UserId, request.Reason ?? "No reason");
 
         var feedEntry = await _context.FeedEntries
-            .FirstOrDefaultAsync(fe => fe.Id == request.FeedEntryId && 
+            .FirstOrDefaultAsync(fe => fe.Id == request.FeedEntryId &&
                                fe.UserId == request.UserId, cancellationToken);
 
         if (feedEntry == null)
@@ -149,7 +141,7 @@ public partial class HideFeedItemHandler : IRequestHandler<HideFeedItemCommand>
         feedEntry.UpdatedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
-        
+
         LogItemHidden(_logger, request.FeedEntryId, request.UserId);
     }
 

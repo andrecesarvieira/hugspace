@@ -4,10 +4,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Infrastructure.Data.Configurations.Communication;
 
-/// <summary>
-/// Configuração EF Core para entidade UserInterest
-/// Otimizada para algoritmos de recomendação
-/// </summary>
 public class UserInterestConfiguration : IEntityTypeConfiguration<UserInterest>
 {
     public void Configure(EntityTypeBuilder<UserInterest> builder)

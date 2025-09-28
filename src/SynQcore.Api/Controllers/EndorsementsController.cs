@@ -17,6 +17,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class EndorsementsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -103,6 +106,9 @@ public class EndorsementsController : ControllerBase
         LoggerMessage.Define(LogLevel.Warning, new EventId(4011, nameof(LogInvalidAuthenticatedUser)), 
             "Tentativa de operação sem usuário autenticado válido");
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public EndorsementsController(IMediator mediator, ILogger<EndorsementsController> logger)
     {
         _mediator = mediator;

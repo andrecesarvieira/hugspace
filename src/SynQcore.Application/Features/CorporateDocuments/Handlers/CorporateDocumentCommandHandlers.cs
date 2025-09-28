@@ -42,9 +42,6 @@ internal static partial class LogMessages
     public static partial void LogDocumentRejected(this ILogger logger, Guid documentId);
 }
 
-/// <summary>
-/// Handler para criar documento corporativo
-/// </summary>
 public class CreateCorporateDocumentCommandHandler : IRequestHandler<CreateDocumentCommand, CorporateDocumentDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -113,9 +110,6 @@ public class CreateCorporateDocumentCommandHandler : IRequestHandler<CreateDocum
     }
 }
 
-/// <summary>
-/// Handler para atualizar documento corporativo
-/// </summary>
 public class UpdateCorporateDocumentCommandHandler : IRequestHandler<UpdateDocumentCommand, CorporateDocumentDto?>
 {
     private readonly ISynQcoreDbContext _context;
@@ -195,9 +189,6 @@ public class UpdateCorporateDocumentCommandHandler : IRequestHandler<UpdateDocum
     }
 }
 
-/// <summary>
-/// Handler para excluir documento corporativo
-/// </summary>
 public class DeleteCorporateDocumentCommandHandler : IRequestHandler<DeleteDocumentCommand, bool>
 {
     private readonly ISynQcoreDbContext _context;
@@ -246,9 +237,6 @@ public class DeleteCorporateDocumentCommandHandler : IRequestHandler<DeleteDocum
     }
 }
 
-/// <summary>
-/// Handler para aprovar documento corporativo
-/// </summary>
 public class ApproveCorporateDocumentCommandHandler : IRequestHandler<ApproveDocumentCommand, CorporateDocumentDto?>
 {
     private readonly ISynQcoreDbContext _context;
@@ -307,9 +295,6 @@ public class ApproveCorporateDocumentCommandHandler : IRequestHandler<ApproveDoc
     }
 }
 
-/// <summary>
-/// Handler para rejeitar documento corporativo
-/// </summary>
 public class RejectCorporateDocumentCommandHandler : IRequestHandler<RejectDocumentCommand, CorporateDocumentDto?>
 {
     private readonly ISynQcoreDbContext _context;

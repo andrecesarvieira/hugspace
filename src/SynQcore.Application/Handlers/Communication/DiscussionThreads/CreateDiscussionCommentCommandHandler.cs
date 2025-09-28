@@ -10,10 +10,6 @@ using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// <summary>
-/// Handler para criação de comentários em discussion threads corporativas.
-/// Processa comentários com hierarquia, menções e diferentes tipos corporativos.
-/// </summary>
 public partial class CreateDiscussionCommentCommandHandler : IRequestHandler<CreateDiscussionCommentCommand, CommentOperationResponse>
 {
     private readonly ISynQcoreDbContext _context;
@@ -21,13 +17,6 @@ public partial class CreateDiscussionCommentCommandHandler : IRequestHandler<Cre
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<CreateDiscussionCommentCommandHandler> _logger;
 
-    /// <summary>
-    /// Inicializa o handler com as dependências necessárias.
-    /// </summary>
-    /// <param name="context">Contexto do banco de dados.</param>
-    /// <param name="threadHelper">Helper para operações de thread.</param>
-    /// <param name="currentUserService">Serviço do usuário atual.</param>
-    /// <param name="logger">Logger para eventos do handler.</param>
     public CreateDiscussionCommentCommandHandler(
         ISynQcoreDbContext context,
 
@@ -41,12 +30,6 @@ public partial class CreateDiscussionCommentCommandHandler : IRequestHandler<Cre
         _logger = logger;
     }
 
-    /// <summary>
-    /// Processa o comando de criação de comentário com validações e hierárquia.
-    /// </summary>
-    /// <param name="request">Dados do comentário a ser criado.</param>
-    /// <param name="cancellationToken">Token de cancelamento.</param>
-    /// <returns>Resultado da operação com o comentário criado.</returns>
     public async Task<CommentOperationResponse> Handle(CreateDiscussionCommentCommand request, CancellationToken cancellationToken)
     {
         LogCreatingComment(_logger, request.PostId, request.Type);

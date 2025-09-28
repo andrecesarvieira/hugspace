@@ -17,6 +17,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class CorporateDocumentsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -43,6 +46,9 @@ public class CorporateDocumentsController : ControllerBase
         LoggerMessage.Define(LogLevel.Error, new EventId(5099, nameof(LogDocumentError)),
             "Erro no processamento de documento");
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public CorporateDocumentsController(IMediator mediator, ILogger<CorporateDocumentsController> logger)
     {
         _mediator = mediator;

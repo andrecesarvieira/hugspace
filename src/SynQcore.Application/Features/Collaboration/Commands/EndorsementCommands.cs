@@ -3,18 +3,12 @@ using SynQcore.Application.Features.Collaboration.DTOs;
 
 namespace SynQcore.Application.Features.Collaboration.Commands;
 
-/// <summary>
-/// Command para criar novo endorsement corporativo
-/// </summary>
 public record CreateEndorsementCommand : IRequest<EndorsementDto>
 {
     public CreateEndorsementDto Data { get; set; } = null!;
     public Guid EndorserId { get; set; } // Usuário autenticado
 }
 
-/// <summary>
-/// Command para atualizar endorsement existente
-/// </summary>
 public record UpdateEndorsementCommand : IRequest<EndorsementDto>
 {
     public Guid Id { get; set; }
@@ -22,18 +16,12 @@ public record UpdateEndorsementCommand : IRequest<EndorsementDto>
     public Guid UserId { get; set; } // Para verificação de autorização
 }
 
-/// <summary>
-/// Command para remover endorsement
-/// </summary>
 public record DeleteEndorsementCommand : IRequest
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; } // Para verificação de autorização
 }
 
-/// <summary>
-/// Command para endorsar/desendossar rapidamente (toggle)
-/// </summary>
 public record ToggleEndorsementCommand : IRequest<EndorsementDto?>
 {
     public Guid? PostId { get; set; }
@@ -43,9 +31,6 @@ public record ToggleEndorsementCommand : IRequest<EndorsementDto?>
     public string? Context { get; set; }
 }
 
-/// <summary>
-/// Command para endorsement em massa (múltiplos tipos no mesmo conteúdo)
-/// </summary>
 public record BulkEndorsementCommand : IRequest<List<EndorsementDto>>
 {
     public Guid? PostId { get; set; }

@@ -1,8 +1,5 @@
 namespace SynQcore.Application.DTOs.Communication;
 
-/// <summary>
-/// DTO detalhado para comentários em discussion threads
-/// </summary>
 public class DiscussionCommentDto
 {
     public Guid Id { get; set; }
@@ -54,9 +51,6 @@ public class DiscussionCommentDto
     public DateTime? UpdatedAt { get; set; }
 }
 
-/// <summary>
-/// DTO para criação de comentário em discussion thread
-/// </summary>
 public class CreateDiscussionCommentDto
 {
     public string Content { get; set; } = string.Empty;
@@ -69,9 +63,6 @@ public class CreateDiscussionCommentDto
     public List<CreateCommentMentionDto> Mentions { get; set; } = [];
 }
 
-/// <summary>
-/// DTO para atualização de comentário
-/// </summary>
 public class UpdateDiscussionCommentDto
 {
     public string Content { get; set; } = string.Empty;
@@ -81,26 +72,17 @@ public class UpdateDiscussionCommentDto
     public string Priority { get; set; } = "Normal";
 }
 
-/// <summary>
-/// DTO para resolução de comentário do tipo Question ou Concern
-/// </summary>
 public class ResolveCommentDto
 {
     public string? ResolutionNote { get; set; }
 }
 
-/// <summary>
-/// DTO para moderação de comentário
-/// </summary>
 public class ModerateCommentDto
 {
     public string ModerationStatus { get; set; } = string.Empty;
     public string? ModerationReason { get; set; }
 }
 
-/// <summary>
-/// DTO para thread de discussão completa
-/// </summary>
 public class DiscussionThreadDto
 {
     public Guid PostId { get; set; }
@@ -112,9 +94,6 @@ public class DiscussionThreadDto
     public DateTime LastActivityAt { get; set; }
 }
 
-/// <summary>
-/// Resposta para operações de comentário
-/// </summary>
 public class CommentOperationResponse
 {
     public bool Success { get; set; }

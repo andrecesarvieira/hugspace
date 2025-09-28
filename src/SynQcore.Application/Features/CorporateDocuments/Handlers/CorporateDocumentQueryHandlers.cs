@@ -28,9 +28,6 @@ internal static partial class QueryLogMessages
     public static partial void LogInvalidCategory(this ILogger logger, string category);
 }
 
-/// <summary>
-/// Handler para obter documentos com paginação
-/// </summary>
 public class GetDocumentsQueryHandler : IRequestHandler<GetDocumentsQuery, PagedResult<CorporateDocumentDto>>
 {
     private readonly ISynQcoreDbContext _context;
@@ -144,9 +141,6 @@ public class GetDocumentsQueryHandler : IRequestHandler<GetDocumentsQuery, Paged
     }
 }
 
-/// <summary>
-/// Handler para obter documento por ID
-/// </summary>
 public class GetDocumentByIdQueryHandler : IRequestHandler<GetDocumentByIdQuery, CorporateDocumentDetailDto?>
 {
     private readonly ISynQcoreDbContext _context;
@@ -186,9 +180,6 @@ public class GetDocumentByIdQueryHandler : IRequestHandler<GetDocumentByIdQuery,
     }
 }
 
-/// <summary>
-/// Handler para buscar documentos por categoria
-/// </summary>
 public class GetDocumentsByCategoryQueryHandler : IRequestHandler<GetDocumentsByCategoryQuery, PagedResult<CorporateDocumentDto>>
 {
     private readonly ISynQcoreDbContext _context;

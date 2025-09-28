@@ -10,9 +10,6 @@ using System.Globalization;
 
 namespace SynQcore.Application.Features.MediaAssets.Handlers;
 
-/// <summary>
-/// Handler para buscar assets de mídia com filtros avançados
-/// </summary>
 public class GetMediaAssetsQueryHandler : IRequestHandler<GetMediaAssetsQuery, PagedResult<MediaAssetDto>>
 {
     private readonly ISynQcoreDbContext _context;

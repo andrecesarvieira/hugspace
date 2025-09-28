@@ -9,9 +9,6 @@ using SynQcore.Domain.Entities.Organization;
 
 namespace SynQcore.Application.Features.CorporateSearch.Handlers;
 
-/// <summary>
-/// Handler para obter analytics de busca
-/// </summary>
 public class GetSearchAnalyticsQueryHandler : IRequestHandler<GetSearchAnalyticsQuery, SearchAnalyticsDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -224,9 +221,6 @@ public class GetSearchAnalyticsQueryHandler : IRequestHandler<GetSearchAnalytics
     }
 }
 
-/// <summary>
-/// Handler para configuração de busca
-/// </summary>
 public class GetSearchConfigQueryHandler : IRequestHandler<GetSearchConfigQuery, SearchConfigDto>
 {
     private readonly ILogger<GetSearchConfigQueryHandler> _logger;

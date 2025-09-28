@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Infrastructure.Data.Configurations;
 
-/// <summary>
-/// Configuração EF Core para entidade CommentMention - menções corporativas em comentários
-/// </summary>
 public class CommentMentionConfiguration : IEntityTypeConfiguration<CommentMention>
 {
     public void Configure(EntityTypeBuilder<CommentMention> builder)

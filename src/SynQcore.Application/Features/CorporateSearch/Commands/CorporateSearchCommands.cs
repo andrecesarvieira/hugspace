@@ -5,9 +5,6 @@ using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Features.CorporateSearch.Commands;
 
-/// <summary>
-/// Command para registrar evento de busca para analytics
-/// </summary>
 public class RecordSearchEventCommand : IRequest<bool>
 {
     public string SearchTerm { get; set; } = string.Empty;
@@ -28,9 +25,6 @@ public class RecordSearchEventCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para registrar clique em resultado de busca
-/// </summary>
 public class RecordSearchClickCommand : IRequest<bool>
 {
     public string SearchTerm { get; set; } = string.Empty;
@@ -53,9 +47,6 @@ public class RecordSearchClickCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para criar índice de busca para conteúdo
-/// </summary>
 public class CreateSearchIndexCommand : IRequest<bool>
 {
     public Guid ContentId { get; set; }
@@ -82,9 +73,6 @@ public class CreateSearchIndexCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para atualizar índice de busca
-/// </summary>
 public class UpdateSearchIndexCommand : IRequest<bool>
 {
     public Guid ContentId { get; set; }
@@ -104,9 +92,6 @@ public class UpdateSearchIndexCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para remover item do índice de busca
-/// </summary>
 public class DeleteFromSearchIndexCommand : IRequest<bool>
 {
     public Guid ContentId { get; set; }
@@ -120,9 +105,6 @@ public class DeleteFromSearchIndexCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para reconstruir índice de busca completo
-/// </summary>
 public class RebuildSearchIndexCommand : IRequest<bool>
 {
     public List<string>? ContentTypes { get; set; }
@@ -138,9 +120,6 @@ public class RebuildSearchIndexCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para limpar analytics antigas
-/// </summary>
 public class CleanupSearchAnalyticsCommand : IRequest<int>
 {
     public DateTime OlderThan { get; set; }
@@ -156,9 +135,6 @@ public class CleanupSearchAnalyticsCommand : IRequest<int>
     }
 }
 
-/// <summary>
-/// Command para configurar alertas de trending topics
-/// </summary>
 public class ConfigureTrendingAlertsCommand : IRequest<bool>
 {
     public Guid UserId { get; set; }
@@ -177,9 +153,6 @@ public class ConfigureTrendingAlertsCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para salvar busca favorita
-/// </summary>
 public class SaveFavoriteSearchCommand : IRequest<Guid>
 {
     public Guid UserId { get; set; }
@@ -199,9 +172,6 @@ public class SaveFavoriteSearchCommand : IRequest<Guid>
     }
 }
 
-/// <summary>
-/// Command para executar busca salva
-/// </summary>
 public class ExecuteSavedSearchCommand : IRequest<PagedResult<SearchResultDto>>
 {
     public Guid SavedSearchId { get; set; }
@@ -217,9 +187,6 @@ public class ExecuteSavedSearchCommand : IRequest<PagedResult<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Command para otimizar performance de busca
-/// </summary>
 public class OptimizeSearchPerformanceCommand : IRequest<bool>
 {
     public List<string>? ContentTypes { get; set; }

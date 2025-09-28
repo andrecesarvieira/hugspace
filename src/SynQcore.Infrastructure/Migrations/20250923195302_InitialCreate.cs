@@ -5,10 +5,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SynQcore.Infrastructure.Migrations
 {
-    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
-        /// <inheritdoc />
+
+        // Campos static readonly para resolver CA1861
+        private static readonly string[] RecipientIdIsReadArray = { "RecipientId", "IsRead" };
+        private static readonly string[] ManagerIdSubordinateIdArray = { "ManagerId", "SubordinateId" };
+
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -498,7 +502,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_RecipientId_IsRead",
                 table: "Notifications",
-                columns: new[] { "RecipientId", "IsRead" });
+                columns: RecipientIdIsReadArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_SenderId",
@@ -548,7 +552,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ReportingRelationships_ManagerId_SubordinateId",
                 table: "ReportingRelationships",
-                columns: new[] { "ManagerId", "SubordinateId" },
+                columns: ManagerIdSubordinateIdArray,
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -582,7 +586,6 @@ namespace SynQcore.Infrastructure.Migrations
                 column: "LeaderId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

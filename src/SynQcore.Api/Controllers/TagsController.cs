@@ -14,10 +14,16 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class TagsController : ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public TagsController(IMediator mediator)
     {
         _mediator = mediator;

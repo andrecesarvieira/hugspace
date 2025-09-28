@@ -6,9 +6,6 @@ using Serilog.Context;
 
 namespace SynQcore.Api.Middleware;
 
-/// <summary>
-/// Global exception handler for corporate API with structured logging and audit trails
-/// </summary>
 public class GlobalExceptionHandler : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;

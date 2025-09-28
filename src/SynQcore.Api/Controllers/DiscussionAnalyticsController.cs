@@ -18,6 +18,9 @@ public partial class DiscussionAnalyticsController : ControllerBase
     private readonly IMediator _mediator;
     private readonly ILogger<DiscussionAnalyticsController> _logger;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public DiscussionAnalyticsController(IMediator mediator, ILogger<DiscussionAnalyticsController> logger)
     {
         _mediator = mediator;
@@ -275,6 +278,9 @@ public partial class DiscussionAnalyticsController : ControllerBase
     [HttpGet("export/{reportType}")]
     [Authorize(Roles = "HR,Admin")]
     [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+    /// <summary>
+    /// Método para operação do sistema
+    /// </summary>
     public Task<IActionResult> ExportAnalyticsData(
         string reportType,
         [FromQuery] DateTime fromDate,
@@ -338,31 +344,83 @@ public partial class DiscussionAnalyticsController : ControllerBase
 }
 
 // DTO para relatório executivo consolidado
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class ExecutiveDiscussionReportDto
 {
+    /// <summary>Propriedade do sistema</summary>
     public object ReportPeriod { get; set; } = new();
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public Guid? DepartmentId { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public DateTime GeneratedAt { get; set; }
     
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public int TotalDiscussions { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public int TotalComments { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public int UniqueParticipants { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public double EngagementScore { get; set; }
     
+    /// <summary>Propriedade do sistema</summary>
     public ModerationHealthDto ModerationHealth { get; set; } = new();
     
+    /// <summary>Propriedade do sistema</summary>
     public List<TopContributor> TopContributors { get; set; } = [];
+    /// <summary>Propriedade do sistema</summary>
     public List<ActiveThread> MostActiveThreads { get; set; } = [];
     
+    /// <summary>Propriedade do sistema</summary>
     public List<EngagementDataPoint> EngagementTrend { get; set; } = [];
+    /// <summary>Propriedade do sistema</summary>
     public List<ModerationTrendItem> ModerationTrends { get; set; } = [];
 }
 
 // DTO para saúde da moderação
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class ModerationHealthDto
 {
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public int TotalModerated { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public int AverageResponseTime { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public double ApprovalRate { get; set; }
+    /// <summary>
+    /// Propriedade da requisição
+    /// </summary>
+    /// <summary>Propriedade do sistema</summary>
     public int PendingCount { get; set; }
 }

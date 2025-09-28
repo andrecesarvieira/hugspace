@@ -11,10 +11,6 @@ using SynQcore.Domain.Entities.Relationships;
 
 namespace SynQcore.Application.Features.Employees.Handlers;
 
-/// <summary>
-/// Handler para processamento de criação de novos funcionários.
-/// Gerencia validações, relacionamentos organizacionais e hierarquia.
-/// </summary>
 public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, EmployeeDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -24,23 +20,12 @@ public class CreateEmployeeHandler : IRequestHandler<CreateEmployeeCommand, Empl
         LoggerMessage.Define<Guid, string>(LogLevel.Information, new EventId(1, "EmployeeCreated"),
             "Employee created successfully: {EmployeeId} - {EmployeeName}");
 
-    /// <summary>
-    /// Inicializa nova instância do handler de criação de funcionários.
-    /// </summary>
-    /// <param name="context">Contexto de acesso a dados.</param>
-    /// <param name="logger">Logger para rastreamento de operações.</param>
     public CreateEmployeeHandler(ISynQcoreDbContext context, ILogger<CreateEmployeeHandler> logger)
     {
         _context = context;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Processa comando de criação de funcionário com validações e relacionamentos.
-    /// </summary>
-    /// <param name="request">Command contendo dados do funcionário.</param>
-    /// <param name="cancellationToken">Token de cancelamento.</param>
-    /// <returns>DTO do funcionário criado com relacionamentos.</returns>
     public async Task<EmployeeDto> Handle(CreateEmployeeCommand request, CancellationToken cancellationToken)
     {
         // Validar se email já existe

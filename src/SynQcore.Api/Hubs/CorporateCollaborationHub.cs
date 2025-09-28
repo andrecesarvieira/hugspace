@@ -4,10 +4,6 @@ using System.Security.Claims;
 
 namespace SynQcore.Api.Hubs;
 
-/// <summary>
-/// Hub principal para colaboração corporativa em tempo real
-/// Gerencia comunicação entre funcionários, canais de equipe e notificações
-/// </summary>
 [Authorize]
 public partial class CorporateCollaborationHub : Hub
 {
@@ -18,9 +14,6 @@ public partial class CorporateCollaborationHub : Hub
         _logger = logger;
     }
 
-    /// <summary>
-    /// Evento de conexão de funcionário - registra presença corporativa
-    /// </summary>
     public override async Task OnConnectedAsync()
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -49,9 +42,6 @@ public partial class CorporateCollaborationHub : Hub
         await base.OnConnectedAsync();
     }
 
-    /// <summary>
-    /// Evento de desconexão - atualiza status de presença
-    /// </summary>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -73,9 +63,6 @@ public partial class CorporateCollaborationHub : Hub
         await base.OnDisconnectedAsync(exception);
     }
 
-    /// <summary>
-    /// Entrar em canal de equipe específico
-    /// </summary>
     public async Task JoinTeamChannel(string teamId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -97,9 +84,6 @@ public partial class CorporateCollaborationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Sair de canal de equipe específico
-    /// </summary>
     public async Task LeaveTeamChannel(string teamId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -121,9 +105,6 @@ public partial class CorporateCollaborationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Entrar em canal de projeto específico
-    /// </summary>
     public async Task JoinProjectChannel(string projectId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -145,9 +126,6 @@ public partial class CorporateCollaborationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Sair de canal de projeto específico
-    /// </summary>
     public async Task LeaveProjectChannel(string projectId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -169,9 +147,6 @@ public partial class CorporateCollaborationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Enviar mensagem para canal de equipe
-    /// </summary>
     public async Task SendTeamMessage(string teamId, string message)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -195,9 +170,6 @@ public partial class CorporateCollaborationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Enviar mensagem para canal de projeto
-    /// </summary>
     public async Task SendProjectMessage(string projectId, string message)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -221,9 +193,6 @@ public partial class CorporateCollaborationHub : Hub
         });
     }
 
-    /// <summary>
-    /// Atualizar status de presença do usuário
-    /// </summary>
     public async Task UpdatePresenceStatus(string status)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;

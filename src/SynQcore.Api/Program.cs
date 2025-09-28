@@ -33,16 +33,16 @@ using FluentValidation;
 using SynQcore.Application.Behaviors;
 using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.MediaAssets.Queries;
+using SynQcore.Application.Features.MediaAssets.Commands;
 using SynQcore.Application.Features.MediaAssets.DTOs;
 using SynQcore.Application.Features.MediaAssets.Handlers;
 using SynQcore.Application.Features.DocumentTemplates.Queries;
+using SynQcore.Application.Features.DocumentTemplates.Commands;
 using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.Features.DocumentTemplates.Handlers;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
 using SynQcore.Application.Features.CorporateSearch.Handlers;
-
-
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -68,8 +68,6 @@ Log.Logger = new LoggerConfiguration()
             "| CorrelationId: {CorrelationId} | UserId: {UserId} | IP: {ClientIP} " +
             "| {SourceContext}{NewLine}{Exception}")
     .CreateLogger();
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 // JWT Service
@@ -116,8 +114,6 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("https://opensource.org/licenses/MIT")
         }
     });
-
-
     // Add JWT Bearer authentication to Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -176,8 +172,6 @@ builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole<Guid>>(options 
 })
 .AddEntityFrameworkStores<SynQcoreDbContext>()
 .AddDefaultTokenProviders();
-
-
 // JWT Configuration
 builder.Services.AddAuthentication(options =>
 {
@@ -281,10 +275,46 @@ builder.Services.AddMediatR(cfg =>
 });
 
 // Registrar handlers manualmente para garantir que sejam encontrados
-builder.Services.AddScoped<IRequestHandler<GetMediaAssetsQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsQueryHandler>();
-builder.Services.AddScoped<IRequestHandler<GetTemplatesQuery, PagedResult<DocumentTemplateDto>>, GetTemplatesQueryHandler>();
 
-// Registrar handlers de Corporate Search
+// === MEDIA ASSETS HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetsQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetByIdQuery, MediaAssetDetailDto?>, GetMediaAssetByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetsByTypeQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsByTypeQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDepartmentGalleryQuery, PagedResult<MediaAssetDto>>, GetDepartmentGalleryQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPopularAssetsQuery, List<MediaAssetDto>>, GetPopularAssetsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetRecentAssetsQuery, List<MediaAssetDto>>, GetRecentAssetsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMyAssetsQuery, PagedResult<MediaAssetDto>>, GetMyAssetsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetFileQuery, MediaAssetFileDto?>, GetMediaAssetFileQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetThumbnailQuery, MediaAssetThumbnailDto?>, GetMediaAssetThumbnailQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMediaAssetStatsQuery, MediaAssetStatsDto?>, GetMediaAssetStatsQueryHandler>();
+
+// MediaAssets Command Handlers
+builder.Services.AddScoped<IRequestHandler<UploadMediaAssetCommand, MediaAssetDto>, UploadMediaAssetCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateMediaAssetCommand, MediaAssetDto?>, UpdateMediaAssetCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteMediaAssetCommand, bool>, DeleteMediaAssetCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<BulkUploadMediaAssetsCommand, List<MediaAssetDto>>, BulkUploadMediaAssetsCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<RegisterMediaAssetAccessCommand, bool>, RegisterMediaAssetAccessCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<GenerateThumbnailCommand, bool>, GenerateThumbnailCommandHandler>();
+
+// === DOCUMENT TEMPLATES HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetTemplatesQuery, PagedResult<DocumentTemplateDto>>, GetTemplatesQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTemplateByIdQuery, DocumentTemplateDetailDto?>, GetTemplateByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTemplateUsageStatsQuery, TemplateUsageStatsDto?>, GetTemplateUsageStatsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTemplatesByCategoryQuery, PagedResult<DocumentTemplateDto>>, GetTemplatesByCategoryQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetActiveTemplatesQuery, List<DocumentTemplateDto>>, GetActiveTemplatesQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPopularTemplatesQuery, List<DocumentTemplateDto>>, GetPopularTemplatesQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetMyTemplatesQuery, PagedResult<DocumentTemplateDto>>, GetMyTemplatesQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDepartmentTemplatesQuery, List<DocumentTemplateDto>>, GetDepartmentTemplatesQueryHandler>();
+
+// DocumentTemplates Command Handlers
+builder.Services.AddScoped<IRequestHandler<CreateTemplateCommand, DocumentTemplateDto>, CreateTemplateCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateTemplateCommand, DocumentTemplateDto?>, UpdateTemplateCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteTemplateCommand, bool>, DeleteTemplateCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateDocumentFromTemplateCommand, CreateDocumentFromTemplateDto?>, CreateDocumentFromTemplateCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DuplicateTemplateCommand, DocumentTemplateDto?>, DuplicateTemplateCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<ToggleTemplateStatusCommand, DocumentTemplateDto?>, ToggleTemplateStatusCommandHandler>();
+
+// === CORPORATE SEARCH HANDLERS ===
 builder.Services.AddScoped<IRequestHandler<CorporateSearchQuery, PagedResult<SearchResultDto>>, CorporateSearchQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchSuggestionsQuery, List<SearchSuggestionDto>>, GetSearchSuggestionsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchAnalyticsQuery, SearchAnalyticsDto>, GetSearchAnalyticsQueryHandler>();
@@ -293,8 +323,6 @@ builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto
 builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
 
 // OBRIGATÓRIO: Registro manual dos handlers de notificação (Fase 5.0)
-
-
 // Configure rate limiting with corporate thresholds
 
 // Add FluentValidation

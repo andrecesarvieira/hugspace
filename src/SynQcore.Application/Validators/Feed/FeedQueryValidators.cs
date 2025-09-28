@@ -3,10 +3,6 @@ using SynQcore.Application.Features.Feed.Queries;
 
 namespace SynQcore.Application.Validators.Feed;
 
-/// <summary>
-/// Validator para query de feed corporativo
-/// Valida parâmetros de paginação e filtros
-/// </summary>
 public class GetCorporateFeedQueryValidator : AbstractValidator<GetCorporateFeedQuery>
 {
     private static readonly string[] ValidFeedTypes =
@@ -15,9 +11,6 @@ public class GetCorporateFeedQueryValidator : AbstractValidator<GetCorporateFeed
     private static readonly string[] ValidSortOptions =
         { "relevance", "date", "popularity" };
 
-    /// <summary>
-    /// Inicializa validator para query do feed corporativo.
-    /// </summary>
     public GetCorporateFeedQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -48,14 +41,8 @@ public class GetCorporateFeedQueryValidator : AbstractValidator<GetCorporateFeed
     }
 }
 
-/// <summary>
-/// Validator para query de estatísticas do feed
-/// </summary>
 public class GetFeedStatsQueryValidator : AbstractValidator<GetFeedStatsQuery>
 {
-    /// <summary>
-    /// Inicializa validator para query de estatísticas do feed.
-    /// </summary>
     public GetFeedStatsQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -64,14 +51,8 @@ public class GetFeedStatsQueryValidator : AbstractValidator<GetFeedStatsQuery>
     }
 }
 
-/// <summary>
-/// Validator para query de feed do departamento
-/// </summary>
 public class GetDepartmentFeedQueryValidator : AbstractValidator<GetDepartmentFeedQuery>
 {
-    /// <summary>
-    /// Inicializa uma nova instância do validador de feed departamental
-    /// </summary>
     public GetDepartmentFeedQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -96,14 +77,8 @@ public class GetDepartmentFeedQueryValidator : AbstractValidator<GetDepartmentFe
     }
 }
 
-/// <summary>
-/// Validator para query de conteúdo em alta
-/// </summary>
 public class GetTrendingContentQueryValidator : AbstractValidator<GetTrendingContentQuery>
 {
-    /// <summary>
-    /// Inicializa uma nova instância do validador de conteúdo em alta
-    /// </summary>
     public GetTrendingContentQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -139,14 +114,8 @@ public class GetTrendingContentQueryValidator : AbstractValidator<GetTrendingCon
     }
 }
 
-/// <summary>
-/// Validator para query de conteúdo recomendado
-/// </summary>
 public class GetRecommendedContentQueryValidator : AbstractValidator<GetRecommendedContentQuery>
 {
-    /// <summary>
-    /// Inicializa uma nova instância do validador de conteúdo recomendado
-    /// </summary>
     public GetRecommendedContentQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -171,14 +140,8 @@ public class GetRecommendedContentQueryValidator : AbstractValidator<GetRecommen
     }
 }
 
-/// <summary>
-/// Validator para query de interesses do usuário
-/// </summary>
 public class GetUserInterestsQueryValidator : AbstractValidator<GetUserInterestsQuery>
 {
-    /// <summary>
-    /// Inicializa uma nova instância do validador de interesses do usuário
-    /// </summary>
     public GetUserInterestsQueryValidator()
     {
         RuleFor(x => x.UserId)

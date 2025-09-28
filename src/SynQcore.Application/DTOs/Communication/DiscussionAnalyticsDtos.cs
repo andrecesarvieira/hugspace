@@ -1,8 +1,5 @@
 namespace SynQcore.Application.DTOs.Communication;
 
-/// <summary>
-/// Resposta paginada para comentários
-/// </summary>
 public class PagedCommentsResponse
 {
     public List<DiscussionCommentDto> Comments { get; set; } = [];
@@ -14,9 +11,6 @@ public class PagedCommentsResponse
     public bool HasPreviousPage => Page > 1;
 }
 
-/// <summary>
-/// Resposta paginada para menções
-/// </summary>
 public class PagedMentionsResponse
 {
     public List<MentionNotificationDto> Mentions { get; set; } = [];
@@ -27,9 +21,6 @@ public class PagedMentionsResponse
     public int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
 }
 
-/// <summary>
-/// Analytics detalhado de participação de usuário
-/// </summary>
 public class UserDiscussionAnalyticsDto
 {
     public Guid UserId { get; set; }
@@ -62,9 +53,6 @@ public class UserDiscussionAnalyticsDto
     public Dictionary<string, int> CommentsByType { get; set; } = [];
 }
 
-/// <summary>
-/// Métricas de moderação corporativa
-/// </summary>
 public class ModerationMetricsDto
 {
     public DateTime FromDate { get; set; }
@@ -93,9 +81,6 @@ public class ModerationMetricsDto
     public List<ModeratorStats> TopModerators { get; set; } = [];
 }
 
-/// <summary>
-/// Estatísticas de engajamento por período
-/// </summary>
 public class EngagementStatisticsDto
 {
     public DateTime FromDate { get; set; }
@@ -122,9 +107,6 @@ public class EngagementStatisticsDto
     public Dictionary<string, double> PeakHours { get; set; } = [];
 }
 
-/// <summary>
-/// Resposta para discussões em trending
-/// </summary>
 public class PagedTrendingDiscussionsResponse
 {
     public List<TrendingDiscussionDto> Discussions { get; set; } = [];
@@ -135,9 +117,6 @@ public class PagedTrendingDiscussionsResponse
     public int AnalysisPeriodHours { get; set; }
 }
 
-/// <summary>
-/// DTO para discussão em trending
-/// </summary>
 public class TrendingDiscussionDto
 {
     public Guid PostId { get; set; }

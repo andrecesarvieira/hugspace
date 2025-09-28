@@ -3,15 +3,8 @@ using SynQcore.Application.Features.Feed.Commands;
 
 namespace SynQcore.Application.Validators.Feed;
 
-/// <summary>
-/// Validator para comando de regeneração de feed
-/// Valida parâmetros de entrada e regras corporativas
-/// </summary>
 public class RegenerateFeedCommandValidator : AbstractValidator<RegenerateFeedCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de regeneração de feed.
-    /// </summary>
     public RegenerateFeedCommandValidator()
     {
         RuleFor(x => x.UserId)
@@ -33,14 +26,8 @@ public class RegenerateFeedCommandValidator : AbstractValidator<RegenerateFeedCo
     }
 }
 
-/// <summary>
-/// Validator para comando de marcar item como lido
-/// </summary>
 public class MarkFeedItemAsReadCommandValidator : AbstractValidator<MarkFeedItemAsReadCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de marcação de item como lido.
-    /// </summary>
     public MarkFeedItemAsReadCommandValidator()
     {
         RuleFor(x => x.UserId)
@@ -53,14 +40,8 @@ public class MarkFeedItemAsReadCommandValidator : AbstractValidator<MarkFeedItem
     }
 }
 
-/// <summary>
-/// Validator para comando de bookmark/unbookmark
-/// </summary>
 public class ToggleFeedBookmarkCommandValidator : AbstractValidator<ToggleFeedBookmarkCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de bookmark/unbookmark de feed.
-    /// </summary>
     public ToggleFeedBookmarkCommandValidator()
     {
         RuleFor(x => x.UserId)
@@ -73,14 +54,8 @@ public class ToggleFeedBookmarkCommandValidator : AbstractValidator<ToggleFeedBo
     }
 }
 
-/// <summary>
-/// Validator para comando de ocultar item do feed
-/// </summary>
 public class HideFeedItemCommandValidator : AbstractValidator<HideFeedItemCommand>
 {
-    /// <summary>
-    /// Inicializa validator para comando de ocultar item do feed.
-    /// </summary>
     public HideFeedItemCommandValidator()
     {
         RuleFor(x => x.UserId)
@@ -98,17 +73,11 @@ public class HideFeedItemCommandValidator : AbstractValidator<HideFeedItemComman
     }
 }
 
-/// <summary>
-/// Validator para comando de atualizar interesses do usuário
-/// </summary>
 public class UpdateUserInterestsCommandValidator : AbstractValidator<UpdateUserInterestsCommand>
 {
     private static readonly string[] ValidInteractionTypes =
         { "view", "like", "comment", "share", "bookmark" };
 
-    /// <summary>
-    /// Inicializa validator para comando de atualização de interesses.
-    /// </summary>
     public UpdateUserInterestsCommandValidator()
     {
         RuleFor(x => x.UserId)
@@ -127,17 +96,11 @@ public class UpdateUserInterestsCommandValidator : AbstractValidator<UpdateUserI
     }
 }
 
-/// <summary>
-/// Validator para comando de processamento em lote
-/// </summary>
 public class ProcessBulkFeedUpdateCommandValidator : AbstractValidator<ProcessBulkFeedUpdateCommand>
 {
     private static readonly string[] ValidUpdateTypes =
         { "new_post", "post_updated", "post_deleted" };
 
-    /// <summary>
-    /// Inicializa validator para comando de atualização em lote do feed.
-    /// </summary>
     public ProcessBulkFeedUpdateCommandValidator()
     {
         RuleFor(x => x.PostIds)

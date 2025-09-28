@@ -5,9 +5,6 @@ using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Features.CorporateDocuments.Queries;
 
-/// <summary>
-/// Query para buscar documentos corporativos com filtros
-/// </summary>
 public class GetDocumentsQuery : IRequest<PagedResult<CorporateDocumentDto>>
 {
     public int Page { get; set; } = 1;
@@ -25,9 +22,6 @@ public class GetDocumentsQuery : IRequest<PagedResult<CorporateDocumentDto>>
     public string? SortDirection { get; set; } = "desc";
 }
 
-/// <summary>
-/// Query para buscar documento específico por ID
-/// </summary>
 public class GetDocumentByIdQuery : IRequest<CorporateDocumentDetailDto?>
 {
     public Guid DocumentId { get; }
@@ -38,9 +32,6 @@ public class GetDocumentByIdQuery : IRequest<CorporateDocumentDetailDto?>
     }
 }
 
-/// <summary>
-/// Query para obter arquivo do documento
-/// </summary>
 public class GetDocumentFileQuery : IRequest<DocumentFileDto?>
 {
     public Guid DocumentId { get; }
@@ -51,9 +42,6 @@ public class GetDocumentFileQuery : IRequest<DocumentFileDto?>
     }
 }
 
-/// <summary>
-/// Query para obter histórico de acessos do documento
-/// </summary>
 public class GetDocumentAccessHistoryQuery : IRequest<PagedResult<DocumentAccessDto>>
 {
     public Guid DocumentId { get; set; }
@@ -61,9 +49,6 @@ public class GetDocumentAccessHistoryQuery : IRequest<PagedResult<DocumentAccess
     public int PageSize { get; set; } = 20;
 }
 
-/// <summary>
-/// Query para obter estatísticas de documento
-/// </summary>
 public class GetDocumentStatsQuery : IRequest<DocumentStatsDto?>
 {
     public Guid DocumentId { get; }
@@ -74,9 +59,6 @@ public class GetDocumentStatsQuery : IRequest<DocumentStatsDto?>
     }
 }
 
-/// <summary>
-/// Query para buscar documentos por categoria
-/// </summary>
 public class GetDocumentsByCategoryQuery : IRequest<PagedResult<CorporateDocumentDto>>
 {
     public string Category { get; set; } = string.Empty;
@@ -86,9 +68,6 @@ public class GetDocumentsByCategoryQuery : IRequest<PagedResult<CorporateDocumen
     public Guid? DepartmentId { get; set; }
 }
 
-/// <summary>
-/// Query para buscar documentos pendentes de aprovação
-/// </summary>
 public class GetPendingApprovalsQuery : IRequest<PagedResult<CorporateDocumentDto>>
 {
     public int Page { get; set; } = 1;
@@ -97,9 +76,6 @@ public class GetPendingApprovalsQuery : IRequest<PagedResult<CorporateDocumentDt
     public string? Category { get; set; }
 }
 
-/// <summary>
-/// Query para buscar documentos recentes
-/// </summary>
 public class GetRecentDocumentsQuery : IRequest<List<CorporateDocumentDto>>
 {
     public int Limit { get; set; } = 10;
@@ -107,9 +83,6 @@ public class GetRecentDocumentsQuery : IRequest<List<CorporateDocumentDto>>
     public DocumentAccessLevel? MaxAccessLevel { get; set; }
 }
 
-/// <summary>
-/// Query para buscar documentos populares
-/// </summary>
 public class GetPopularDocumentsQuery : IRequest<List<CorporateDocumentDto>>
 {
     public int Limit { get; set; } = 10;
@@ -118,9 +91,6 @@ public class GetPopularDocumentsQuery : IRequest<List<CorporateDocumentDto>>
     public string? Category { get; set; }
 }
 
-/// <summary>
-/// Query para buscar documentos do usuário
-/// </summary>
 public class GetMyDocumentsQuery : IRequest<PagedResult<CorporateDocumentDto>>
 {
     public Guid UserId { get; set; }
@@ -130,9 +100,6 @@ public class GetMyDocumentsQuery : IRequest<PagedResult<CorporateDocumentDto>>
     public string? Category { get; set; }
 }
 
-/// <summary>
-/// Query para buscar versões de documento
-/// </summary>
 public class GetDocumentVersionsQuery : IRequest<List<DocumentVersionDto>>
 {
     public Guid DocumentId { get; }

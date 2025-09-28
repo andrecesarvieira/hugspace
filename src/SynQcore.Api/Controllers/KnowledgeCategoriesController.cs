@@ -13,10 +13,16 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class KnowledgeCategoriesController : ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public KnowledgeCategoriesController(IMediator mediator)
     {
         _mediator = mediator;

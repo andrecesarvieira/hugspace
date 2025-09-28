@@ -5,9 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.CorporateDocuments.Commands;
 
-/// <summary>
-/// Command para criar documento corporativo
-/// </summary>
 public class CreateDocumentCommand : IRequest<CorporateDocumentDto>
 {
     [Required]
@@ -38,9 +35,6 @@ public class CreateDocumentCommand : IRequest<CorporateDocumentDto>
     public string FileContentType { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Command para atualizar documento corporativo
-/// </summary>
 public class UpdateDocumentCommand : IRequest<CorporateDocumentDto?>
 {
     [Required]
@@ -60,9 +54,6 @@ public class UpdateDocumentCommand : IRequest<CorporateDocumentDto?>
     public List<Guid>? TagIds { get; set; }
 }
 
-/// <summary>
-/// Command para excluir documento corporativo
-/// </summary>
 public class DeleteDocumentCommand : IRequest<bool>
 {
     public Guid DocumentId { get; }
@@ -73,9 +64,6 @@ public class DeleteDocumentCommand : IRequest<bool>
     }
 }
 
-/// <summary>
-/// Command para upload de nova versão do documento
-/// </summary>
 public class UploadDocumentVersionCommand : IRequest<CorporateDocumentDto?>
 {
     [Required]
@@ -96,9 +84,6 @@ public class UploadDocumentVersionCommand : IRequest<CorporateDocumentDto?>
     public string FileContentType { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Command para aprovar documento
-/// </summary>
 public class ApproveDocumentCommand : IRequest<CorporateDocumentDto?>
 {
     [Required]
@@ -108,9 +93,6 @@ public class ApproveDocumentCommand : IRequest<CorporateDocumentDto?>
     public string? ApprovalNotes { get; set; }
 }
 
-/// <summary>
-/// Command para rejeitar documento
-/// </summary>
 public class RejectDocumentCommand : IRequest<CorporateDocumentDto?>
 {
     [Required]
@@ -121,9 +103,6 @@ public class RejectDocumentCommand : IRequest<CorporateDocumentDto?>
     public string RejectionReason { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Command para registrar acesso ao documento
-/// </summary>
 public class RegisterDocumentAccessCommand : IRequest<bool>
 {
     [Required]

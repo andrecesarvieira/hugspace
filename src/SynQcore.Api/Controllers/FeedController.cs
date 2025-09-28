@@ -14,10 +14,16 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class FeedController : ControllerBase
 {
     private readonly IMediator _mediator;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public FeedController(IMediator mediator)
     {
         _mediator = mediator;

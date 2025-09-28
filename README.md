@@ -319,6 +319,8 @@ docker compose logs -f postgres redis pgadmin
 
 ### 🔧 **Desenvolvimento:**
 
+**🐍 PADRÃO ESTABELECIDO: Todos os scripts são feitos em Python**
+
 ```bash
 # Build completo (zero warnings)
 dotnet build
@@ -331,11 +333,33 @@ dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
 
 # Criar nova migração
 dotnet ef migrations add <NomeMigracao> -p src/SynQcore.Infrastructure -s src/SynQcore.Api
+```
 
-# Executar API (porta 5000)
-./start.sh
-# Ou: ./scripts/start-api-5000.sh
-# Ou: dotnet run --project src/SynQcore.Api
+### 🐍 **Scripts Python (Padrão do Projeto):**
+
+```bash
+# Script consolidador (recomendado)
+python3 synqcore help                    # Ver todos os comandos
+python3 synqcore clean                   # Limpeza completa (build/cache)
+python3 synqcore cleanup                 # Limpeza de arquivos desnecessários
+python3 synqcore start-dev               # Ambiente de desenvolvimento
+python3 synqcore start-api               # Iniciar API (porta 5000)
+python3 synqcore test-collab             # Testes automatizados
+
+# Execução direta dos scripts
+python3 scripts/clean-build.py           # Limpeza completa
+python3 scripts/cleanup-project.py       # Remove backups/scripts shell
+python3 scripts/start-dev.py             # Ambiente Docker
+python3 scripts/start-api-5000.py        # API com Swagger
+python3 scripts/test-collaboration-features.py  # Testes
+```
+
+### 🔧 **Scripts Legado (Shell - Sendo Migrados):**
+
+```bash
+# Execução de API (legado)
+./start.sh                              # Link para start-api-5000.sh
+./scripts/start-api-5000.sh             # Script shell original
 ```
 
 ## 🌐 Acesso Local

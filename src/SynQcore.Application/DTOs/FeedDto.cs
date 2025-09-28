@@ -2,10 +2,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.DTOs;
 
-/// <summary>
-/// DTO para item do feed corporativo
-/// Representa uma entrada no timeline personalizado do usuário
-/// </summary>
 public record FeedItemDto
 {
     public Guid Id { get; init; }
@@ -48,9 +44,6 @@ public record FeedItemDto
     public string? Category { get; init; }
 }
 
-/// <summary>
-/// DTO para resposta de feed paginado
-/// </summary>
 public record CorporateFeedResponseDto
 {
     public List<FeedItemDto> Items { get; init; } = [];
@@ -67,9 +60,6 @@ public record CorporateFeedResponseDto
     public string FeedType { get; init; } = "Mixed"; // Mixed, Department, Team, Following
 }
 
-/// <summary>
-/// DTO para filtros de feed
-/// </summary>
 public record FeedFiltersDto
 {
     public List<string>? PostTypes { get; init; }
@@ -84,9 +74,6 @@ public record FeedFiltersDto
     public bool? OnlyBookmarked { get; init; }
 }
 
-/// <summary>
-/// DTO para estatísticas do feed
-/// </summary>
 public record FeedStatsDto
 {
     public int TotalItems { get; init; }
@@ -99,9 +86,6 @@ public record FeedStatsDto
     public DateTime LastUpdated { get; init; }
 }
 
-/// <summary>
-/// Post com maior engajamento no feed
-/// </summary>
 public record TopEngagedPostDto
 {
     public Guid PostId { get; init; }
@@ -110,9 +94,6 @@ public record TopEngagedPostDto
     public double RelevanceScore { get; init; }
 }
 
-/// <summary>
-/// Interação recente do usuário
-/// </summary>
 public record RecentInteractionDto
 {
     public Guid FeedEntryId { get; init; }
@@ -121,9 +102,6 @@ public record RecentInteractionDto
     public DateTime InteractionDate { get; init; }
 }
 
-/// <summary>
-/// Resposta com interesses do usuário
-/// </summary>
 public record UserInterestsResponseDto
 {
     public List<UserInterestDto> TopInterests { get; init; } = [];
@@ -134,9 +112,6 @@ public record UserInterestsResponseDto
     public DateTime LastUpdated { get; init; }
 }
 
-/// <summary>
-/// DTO para interesse do usuário
-/// </summary>
 public record UserInterestDto
 {
     public Guid Id { get; init; }

@@ -10,9 +10,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para toggle de endorsement (adicionar/remover rapidamente)
-/// </summary>
 public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEndorsementCommand, EndorsementDto?>
 {
     private readonly ISynQcoreDbContext _context;

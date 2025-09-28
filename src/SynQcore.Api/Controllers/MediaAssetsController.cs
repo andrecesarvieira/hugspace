@@ -17,6 +17,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class MediaAssetsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -43,6 +46,9 @@ public class MediaAssetsController : ControllerBase
         LoggerMessage.Define(LogLevel.Error, new EventId(5299, nameof(LogMediaError)),
             "Erro no processamento de asset de mídia");
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public MediaAssetsController(IMediator mediator, ILogger<MediaAssetsController> logger)
     {
         _mediator = mediator;

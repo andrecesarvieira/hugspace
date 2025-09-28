@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Common.Helpers;
 
-/// <summary>
-/// Helper para gerenciamento de discussion threads corporativas
-/// </summary>
 public class DiscussionThreadHelper
 {
     private readonly ISynQcoreDbContext _context;
@@ -16,9 +13,6 @@ public class DiscussionThreadHelper
         _context = context;
     }
 
-    /// <summary>
-    /// Calcula o nível e caminho da thread para um novo comentário
-    /// </summary>
     public async Task<(int ThreadLevel, string ThreadPath)> CalculateThreadPositionAsync(
         Guid? parentCommentId,
         CancellationToken cancellationToken = default)
@@ -50,9 +44,6 @@ public class DiscussionThreadHelper
         return (newLevel, newPath);
     }
 
-    /// <summary>
-    /// Atualiza contadores de replies em cascade
-    /// </summary>
     public async Task UpdateReplyCountsAsync(Guid commentId, int delta, CancellationToken cancellationToken = default)
     {
         var comment = await _context.Comments
@@ -79,9 +70,6 @@ public class DiscussionThreadHelper
         }
     }
 
-    /// <summary>
-    /// Processa menções em um comentário
-    /// </summary>
     public static List<CommentMention> ExtractMentions(string content, Guid commentId, Guid authorId)
     {
         var mentions = new List<CommentMention>();
@@ -115,9 +103,6 @@ public class DiscussionThreadHelper
         return mentions;
     }
 
-    /// <summary>
-    /// Valida se o usuário pode moderar o comentário
-    /// </summary>
     public async Task<bool> CanUserModerateCommentAsync(Guid userId, Guid commentId, CancellationToken cancellationToken = default)
     {
         var comment = await _context.Comments
@@ -154,9 +139,6 @@ public class DiscussionThreadHelper
         return false;
     }
 
-    /// <summary>
-    /// Calcula métricas de engagement para um comentário
-    /// </summary>
     public async Task<(int LikeCount, int EndorsementCount)> CalculateEngagementMetricsAsync(
         Guid commentId, 
         CancellationToken cancellationToken = default)

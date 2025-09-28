@@ -10,9 +10,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para criação de endorsement corporativo com validações de negócio
-/// </summary>
 public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEndorsementCommand, EndorsementDto>
 {
     private readonly ISynQcoreDbContext _context;

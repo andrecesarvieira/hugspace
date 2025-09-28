@@ -10,9 +10,6 @@ using System.Globalization;
 
 namespace SynQcore.Application.Features.DocumentTemplates.Handlers;
 
-/// <summary>
-/// Handler para buscar templates de documento com filtros
-/// </summary>
 public class GetTemplatesQueryHandler : IRequestHandler<GetTemplatesQuery, PagedResult<DocumentTemplateDto>>
 {
     private readonly ISynQcoreDbContext _context;

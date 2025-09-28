@@ -4,10 +4,6 @@ using Microsoft.Extensions.Logging;
 
 namespace SynQcore.Infrastructure.Services.Auth;
 
-/// <summary>
-/// Serviço responsável por inicializar as roles corporativas no sistema
-/// Cria as roles Employee, Manager, HR e Admin se elas não existirem
-/// </summary>
 public partial class RoleInitializationService
 {
     private readonly RoleManager<IdentityRole<Guid>> _roleManager;
@@ -21,10 +17,6 @@ public partial class RoleInitializationService
         _logger = logger;
     }
 
-    /// <summary>
-    /// Inicializa todas as roles corporativas necessárias para o sistema
-    /// Deve ser chamado durante a inicialização da aplicação
-    /// </summary>
     public async Task InitializeRolesAsync()
     {
         var roles = new[] { "Employee", "Manager", "HR", "Admin" };
@@ -53,9 +45,6 @@ public partial class RoleInitializationService
         }
     }
 
-    /// <summary>
-    /// Método estático para facilitar o uso durante a inicialização da aplicação
-    /// </summary>
     public static async Task InitializeAsync(IServiceProvider serviceProvider)
     {
         using var scope = serviceProvider.CreateScope();

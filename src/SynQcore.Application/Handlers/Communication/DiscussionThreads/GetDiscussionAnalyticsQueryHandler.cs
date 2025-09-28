@@ -7,7 +7,6 @@ using SynQcore.Application.Queries.Communication.DiscussionThreads;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
-/// Handler para analytics detalhado de discussions
 public partial class GetDiscussionAnalyticsQueryHandler : IRequestHandler<GetDiscussionAnalyticsQuery, DiscussionAnalyticsDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -117,7 +116,6 @@ public partial class GetDiscussionAnalyticsQueryHandler : IRequestHandler<GetDis
         }
     }
 
-    /// Calcula total de menções no período/escopo
     private async Task<int> CalculateTotalMentionsAsync(IQueryable<Domain.Entities.Communication.Comment> commentsQuery, CancellationToken cancellationToken)
     {
         var commentIds = await commentsQuery.Select(c => c.Id).ToListAsync(cancellationToken);
@@ -127,7 +125,6 @@ public partial class GetDiscussionAnalyticsQueryHandler : IRequestHandler<GetDis
             .CountAsync(cancellationToken);
     }
 
-    /// Calcula top contributors com métricas de engajamento
     private async Task<List<TopContributor>> CalculateTopContributorsAsync(
         List<Domain.Entities.Communication.Comment> comments, 
         CancellationToken cancellationToken)
@@ -169,7 +166,6 @@ public partial class GetDiscussionAnalyticsQueryHandler : IRequestHandler<GetDis
         return result;
     }
 
-    /// Calcula threads mais ativas
     private async Task<List<ActiveThread>> CalculateMostActiveThreadsAsync(
         GetDiscussionAnalyticsQuery request, 
         CancellationToken cancellationToken)

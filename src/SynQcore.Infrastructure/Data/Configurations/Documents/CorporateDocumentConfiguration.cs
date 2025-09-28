@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities;
 
 namespace SynQcore.Infrastructure.Data.Configurations.Documents;
 
-/// <summary>
-/// Configuração EF Core para a entidade CorporateDocument
-/// </summary>
 public class CorporateDocumentConfiguration : IEntityTypeConfiguration<CorporateDocument>
 {
     public void Configure(EntityTypeBuilder<CorporateDocument> builder)

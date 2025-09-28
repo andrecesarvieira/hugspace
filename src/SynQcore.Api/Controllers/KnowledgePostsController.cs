@@ -13,6 +13,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
+    /// <summary>
+    /// Classe para operações do sistema
+    /// </summary>
 public class KnowledgePostsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -147,6 +150,9 @@ public class KnowledgePostsController : ControllerBase
         LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1032, nameof(LogDeleteError)), 
             "Erro ao excluir artigo: {ArticleId}");
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public KnowledgePostsController(IMediator mediator, ILogger<KnowledgePostsController> logger)
     {
         _mediator = mediator;

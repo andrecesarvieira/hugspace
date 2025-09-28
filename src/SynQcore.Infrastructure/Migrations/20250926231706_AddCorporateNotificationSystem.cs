@@ -5,10 +5,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SynQcore.Infrastructure.Migrations
 {
-    /// <inheritdoc />
     public partial class AddCorporateNotificationSystem : Migration
     {
-        /// <inheritdoc />
+
+        // Campos static readonly para resolver CA1861
+        private static readonly string[] StatusScheduledForArray = { "Status", "ScheduledFor" };
+        private static readonly string[] EmployeeIdStatusArray = { "EmployeeId", "Status" };
+        private static readonly string[] NotificationIdEmployeeIdArray = { "NotificationId", "EmployeeId" };
+        private static readonly string[] StatusNextAttemptAtArray = { "Status", "NextAttemptAt" };
+        private static readonly string[] CategoryIsActiveArray = { "Category", "IsActive" };
+
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -175,7 +182,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateNotifications_Status_ScheduledFor",
                 table: "CorporateNotifications",
-                columns: new[] { "Status", "ScheduledFor" });
+                columns: StatusScheduledForArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateNotifications_TargetDepartmentId",
@@ -200,7 +207,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_EmployeeId_Status",
                 table: "NotificationDeliveries",
-                columns: new[] { "EmployeeId", "Status" });
+                columns: EmployeeIdStatusArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_NextAttemptAt",
@@ -215,7 +222,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_NotificationId_EmployeeId_Unique",
                 table: "NotificationDeliveries",
-                columns: new[] { "NotificationId", "EmployeeId" },
+                columns: NotificationIdEmployeeIdArray,
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -226,7 +233,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_Status_NextAttemptAt",
                 table: "NotificationDeliveries",
-                columns: new[] { "Status", "NextAttemptAt" });
+                columns: StatusNextAttemptAtArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationTemplates_Category",
@@ -236,7 +243,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationTemplates_Category_IsActive",
                 table: "NotificationTemplates",
-                columns: new[] { "Category", "IsActive" });
+                columns: CategoryIsActiveArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationTemplates_Code_Unique",
@@ -263,7 +270,6 @@ namespace SynQcore.Infrastructure.Migrations
                 principalColumn: "Id");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

@@ -14,10 +14,6 @@ using System.Text.RegularExpressions;
 
 namespace SynQcore.Application.Features.CorporateSearch.Handlers;
 
-/// <summary>
-/// Handler para busca corporativa com performance otimizada usando LoggerMessage
-/// Suporta busca unificada em posts, documentos, funcionários e templates
-/// </summary>
 public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSearchQuery, PagedResult<SearchResultDto>>
 {
     [GeneratedRegex(@"[^\w\s]")]
@@ -122,9 +118,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         };
     }
 
-    /// <summary>
-    /// Processa os termos de busca para otimizar a consulta
-    /// </summary>
     private static List<string> ProcessSearchTerms(string query)
     {
         if (string.IsNullOrWhiteSpace(query))
@@ -141,9 +134,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         return terms;
     }
 
-    /// <summary>
-    /// Busca em posts de discussão
-    /// </summary>
     private async Task<List<SearchResultDto>> SearchPostsAsync(List<string> searchTerms, CorporateSearchQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Posts
@@ -196,9 +186,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         }).ToList();
     }
 
-    /// <summary>
-    /// Busca em documentos corporativos
-    /// </summary>
     private async Task<List<SearchResultDto>> SearchCorporateDocumentsAsync(List<string> searchTerms, CorporateSearchQuery request, CancellationToken cancellationToken)
     {
         var query = _context.CorporateDocuments
@@ -244,9 +231,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         }).ToList();
     }
 
-    /// <summary>
-    /// Busca em assets de mídia
-    /// </summary>
     private async Task<List<SearchResultDto>> SearchMediaAssetsAsync(List<string> searchTerms, CorporateSearchQuery request, CancellationToken cancellationToken)
     {
         var query = _context.MediaAssets
@@ -293,9 +277,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         }).ToList();
     }
 
-    /// <summary>
-    /// Busca em templates de documento
-    /// </summary>
     private async Task<List<SearchResultDto>> SearchDocumentTemplatesAsync(List<string> searchTerms, CorporateSearchQuery request, CancellationToken cancellationToken)
     {
         var query = _context.DocumentTemplates
@@ -340,9 +321,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         }).ToList();
     }
 
-    /// <summary>
-    /// Busca em funcionários
-    /// </summary>
     private async Task<List<SearchResultDto>> SearchEmployeesAsync(List<string> searchTerms, CorporateSearchQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Employees
@@ -552,9 +530,6 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         return results;
     }
 
-    /// <summary>
-    /// Calcula pontuação de relevância baseada nos termos de busca
-    /// </summary>
     private static float CalculateRelevanceScore(SearchResultDto result, List<string> searchTerms)
     {
         if (searchTerms.Count == 0) return 1.0f;

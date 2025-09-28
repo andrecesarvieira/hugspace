@@ -62,6 +62,9 @@ public partial class EndorsementAnalyticsController : ControllerBase
         Message = "Erro ao gerar dashboard executivo de endorsements")]
     private static partial void LogDashboardError(ILogger logger, Exception ex);
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public EndorsementAnalyticsController(IMediator mediator, ILogger<EndorsementAnalyticsController> logger)
     {
         _mediator = mediator;

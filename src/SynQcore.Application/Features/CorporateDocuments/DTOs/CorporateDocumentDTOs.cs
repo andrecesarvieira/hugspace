@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.CorporateDocuments.DTOs;
 
-/// <summary>
-/// DTO para transferência de dados de documento corporativo
-/// </summary>
 public class CorporateDocumentDto
 {
     public Guid Id { get; set; }
@@ -39,9 +36,6 @@ public class CorporateDocumentDto
     public int DownloadCount { get; set; }
 }
 
-/// <summary>
-/// DTO detalhado para documento corporativo
-/// </summary>
 public class CorporateDocumentDetailDto : CorporateDocumentDto
 {
     public string? ApprovalNotes { get; set; }
@@ -51,9 +45,6 @@ public class CorporateDocumentDetailDto : CorporateDocumentDto
     public List<DocumentAccessDto> RecentAccesses { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para versão de documento
-/// </summary>
 public class DocumentVersionDto
 {
     public string Version { get; set; } = string.Empty;
@@ -64,9 +55,6 @@ public class DocumentVersionDto
     public bool IsCurrent { get; set; }
 }
 
-/// <summary>
-/// DTO para acesso a documento
-/// </summary>
 public class DocumentAccessDto
 {
     public Guid Id { get; set; }
@@ -78,9 +66,6 @@ public class DocumentAccessDto
     public string? UserAgent { get; set; }
 }
 
-/// <summary>
-/// DTO para estatísticas de documento
-/// </summary>
 public class DocumentStatsDto
 {
     public Guid DocumentId { get; set; }
@@ -94,9 +79,6 @@ public class DocumentStatsDto
     public Dictionary<DateTime, int> ViewsByDate { get; set; } = new();
 }
 
-/// <summary>
-/// DTO para dados de arquivo
-/// </summary>
 public class DocumentFileDto
 {
     public byte[] FileData { get; set; } = Array.Empty<byte>();
@@ -106,9 +88,6 @@ public class DocumentFileDto
 
 // Request DTOs
 
-/// <summary>
-/// Request para busca de documentos
-/// </summary>
 public class GetDocumentsRequest
 {
     public int Page { get; set; } = 1;
@@ -126,9 +105,6 @@ public class GetDocumentsRequest
     public string SortOrder { get; set; } = "desc";
 }
 
-/// <summary>
-/// Request para criação de documento
-/// </summary>
 public class CreateDocumentRequest
 {
     [Required]
@@ -159,9 +135,6 @@ public class CreateDocumentRequest
     public string FileContentType { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Request para atualização de documento
-/// </summary>
 public class UpdateDocumentRequest
 {
     [StringLength(200)]
@@ -178,9 +151,6 @@ public class UpdateDocumentRequest
     public List<Guid>? TagIds { get; set; }
 }
 
-/// <summary>
-/// Request para upload de nova versão
-/// </summary>
 public class UploadVersionRequest
 {
     [StringLength(500)]
@@ -198,18 +168,12 @@ public class UploadVersionRequest
     public string FileContentType { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Request para aprovação de documento
-/// </summary>
 public class ApproveDocumentRequest
 {
     [StringLength(500)]
     public string? ApprovalNotes { get; set; }
 }
 
-/// <summary>
-/// Request para rejeição de documento
-/// </summary>
 public class RejectDocumentRequest
 {
     [Required]

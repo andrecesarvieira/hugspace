@@ -6,21 +6,16 @@ using SynQcore.Application.Features.MediaAssets.DTOs;
 using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Application.DTOs;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
 using SynQcore.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Common.Extensions;
 
-/// <summary>
-/// Extensions para mapeamento manual de entidades para DTOs - substituição do AutoMapper
-/// Implementação performática sem dependências externas
-/// </summary>
 public static class MappingExtensions
 {
-    /// <summary>
-    /// Mapeia Employee para EmployeeDto
-    /// </summary>
     public static EmployeeDto ToEmployeeDto(this Employee employee)
     {
         ArgumentNullException.ThrowIfNull(employee);
@@ -44,17 +39,11 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de Employee para lista de EmployeeDto
-    /// </summary>
     public static List<EmployeeDto> ToEmployeeDtos(this IEnumerable<Employee> employees)
     {
         return employees.Select(e => e.ToEmployeeDto()).ToList();
     }
 
-    /// <summary>
-    /// Mapeia Comment para DiscussionCommentDto
-    /// </summary>
     public static DiscussionCommentDto ToDiscussionCommentDto(this Comment? comment)
     {
         ArgumentNullException.ThrowIfNull(comment);
@@ -98,9 +87,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia CommentMention para CommentMentionDto
-    /// </summary>
     public static CommentMentionDto ToCommentMentionDto(this CommentMention mention)
     {
         return new CommentMentionDto
@@ -122,9 +108,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia Endorsement para EndorsementDto
-    /// </summary>
     public static EndorsementDto ToEndorsementDto(this Endorsement endorsement)
     {
         ArgumentNullException.ThrowIfNull(endorsement);
@@ -151,17 +134,11 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de Endorsement para lista de EndorsementDto
-    /// </summary>
     public static List<EndorsementDto> ToEndorsementDtos(this IEnumerable<Endorsement> endorsements)
     {
         return endorsements.Select(e => e.ToEndorsementDto()).ToList();
     }
 
-    /// <summary>
-    /// Obtém nome de exibição do tipo de endorsement
-    /// </summary>
     private static string GetEndorsementTypeDisplayName(EndorsementType type)
     {
         return type switch
@@ -178,9 +155,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Obtém ícone do tipo de endorsement
-    /// </summary>
     private static string GetEndorsementTypeIcon(EndorsementType type)
     {
         return type switch
@@ -197,9 +171,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia dados para EmployeeEndorsementRankingDto
-    /// </summary>
     public static EmployeeEndorsementRankingDto ToEmployeeEndorsementRankingDto(
         this Employee employee,
         int totalReceived,
@@ -231,9 +202,6 @@ public static class MappingExtensions
 
     // ===== TAG MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Converte Tag entity para TagDto
-    /// </summary>
     public static TagDto ToTagDto(this Tag tag)
     {
         return new TagDto
@@ -249,9 +217,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Converte lista de Tag entities para lista de TagDto
-    /// </summary>
     public static List<TagDto> ToTagDtos(this IEnumerable<Tag> tags)
     {
         return tags.Select(t => t.ToTagDto()).ToList();
@@ -259,9 +224,6 @@ public static class MappingExtensions
 
     // ===== KNOWLEDGE CATEGORY MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Converte KnowledgeCategory entity para KnowledgeCategoryDto
-    /// </summary>
     public static KnowledgeCategoryDto ToKnowledgeCategoryDto(this KnowledgeCategory category)
     {
         return new KnowledgeCategoryDto
@@ -277,9 +239,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Converte lista de KnowledgeCategory entities para lista de KnowledgeCategoryDto
-    /// </summary>
     public static List<KnowledgeCategoryDto> ToKnowledgeCategoryDtos(this IEnumerable<KnowledgeCategory> categories)
     {
         return categories.Select(c => c.ToKnowledgeCategoryDto()).ToList();
@@ -287,9 +246,6 @@ public static class MappingExtensions
 
     // ===== KNOWLEDGE POST MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Converte Post entity para KnowledgePostDto
-    /// </summary>
     public static KnowledgePostDto ToKnowledgePostDto(this Post post)
     {
         ArgumentNullException.ThrowIfNull(post);
@@ -327,9 +283,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia CorporateDocument para CorporateDocumentDto
-    /// </summary>
     public static CorporateDocumentDto ToCorporateDocumentDto(this CorporateDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
@@ -358,18 +311,12 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de CorporateDocument para lista de CorporateDocumentDto
-    /// </summary>
     public static List<CorporateDocumentDto> ToCorporateDocumentDtos(this IEnumerable<CorporateDocument> documents)
     {
         ArgumentNullException.ThrowIfNull(documents);
         return documents.Select(d => d.ToCorporateDocumentDto()).ToList();
     }
 
-    /// <summary>
-    /// Mapeia CorporateDocument para CorporateDocumentDetailDto
-    /// </summary>
     public static CorporateDocumentDetailDto ToCorporateDocumentDetailDto(this CorporateDocument document)
     {
         ArgumentNullException.ThrowIfNull(document);
@@ -405,9 +352,6 @@ public static class MappingExtensions
 
     // ===== MEDIA ASSETS MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Mapeia MediaAsset para MediaAssetDto
-    /// </summary>
     public static MediaAssetDto ToMediaAssetDto(this MediaAsset asset)
     {
         ArgumentNullException.ThrowIfNull(asset);
@@ -436,20 +380,91 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de MediaAsset para lista de MediaAssetDto
-    /// </summary>
     public static List<MediaAssetDto> ToMediaAssetDtos(this IEnumerable<MediaAsset> assets)
     {
         ArgumentNullException.ThrowIfNull(assets);
         return assets.Select(a => a.ToMediaAssetDto()).ToList();
     }
 
+    public static MediaAssetDetailDto ToMediaAssetDetailDto(this MediaAsset asset)
+    {
+        ArgumentNullException.ThrowIfNull(asset);
+
+        var dto = asset.ToMediaAssetDto();
+        return new MediaAssetDetailDto
+        {
+            Id = dto.Id,
+            Title = dto.Title,
+            Description = dto.Description,
+            AssetType = dto.AssetType,
+            AccessLevel = dto.AccessLevel,
+            FileSizeBytes = dto.FileSizeBytes,
+            FileName = dto.FileName,
+            ContentType = dto.ContentType,
+            ThumbnailPath = dto.ThumbnailPath,
+            CreatedAt = dto.CreatedAt,
+            UpdatedAt = dto.UpdatedAt,
+            Width = dto.Width,
+            Height = dto.Height,
+            Duration = dto.Duration,
+            CreatedById = dto.CreatedById,
+            CreatedByName = dto.CreatedByName,
+            DepartmentId = dto.DepartmentId,
+            DepartmentName = dto.DepartmentName,
+            Tags = dto.Tags,
+            ViewCount = dto.ViewCount,
+            DownloadCount = dto.DownloadCount,
+            RecentAccesses = [],
+            Metadata = new Dictionary<string, string>
+            {
+                ["Type"] = asset.Type.ToString(),
+                ["Category"] = asset.Category.ToString()
+            }
+        };
+    }
+
+    public static MediaAssetFileDto ToMediaAssetFileDto(this MediaAsset asset)
+    {
+        ArgumentNullException.ThrowIfNull(asset);
+
+        return new MediaAssetFileDto
+        {
+            FileData = [], // Em uma implementação real, carregaria do storage
+            FileName = asset.OriginalFileName,
+            ContentType = asset.ContentType
+        };
+    }
+
+    public static MediaAssetThumbnailDto ToMediaAssetThumbnailDto(this MediaAsset asset, string size)
+    {
+        ArgumentNullException.ThrowIfNull(asset);
+
+        return new MediaAssetThumbnailDto
+        {
+            FileData = [], // Em uma implementação real, carregaria o thumbnail
+            ContentType = "image/jpeg"
+        };
+    }
+
+    public static MediaAssetStatsDto ToMediaAssetStatsDto(this MediaAsset asset)
+    {
+        ArgumentNullException.ThrowIfNull(asset);
+
+        return new MediaAssetStatsDto
+        {
+            AssetId = asset.Id,
+            TotalViews = 0, // Em uma implementação real, viria de log de acessos
+            TotalDownloads = asset.DownloadCount,
+            UniqueViewers = 0,
+            UniqueDownloaders = 0,
+            MostActiveUser = null,
+            ViewsByDepartment = new Dictionary<string, int>(),
+            ViewsByDate = new Dictionary<DateTime, int>()
+        };
+    }
+
     // ===== DOCUMENT TEMPLATE MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Mapeia DocumentTemplate para DocumentTemplateDto
-    /// </summary>
     public static DocumentTemplateDto ToDocumentTemplateDto(this DocumentTemplate template)
     {
         ArgumentNullException.ThrowIfNull(template);
@@ -473,20 +488,40 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de DocumentTemplate para lista de DocumentTemplateDto
-    /// </summary>
     public static List<DocumentTemplateDto> ToDocumentTemplateDtos(this IEnumerable<DocumentTemplate> templates)
     {
         ArgumentNullException.ThrowIfNull(templates);
         return templates.Select(t => t.ToDocumentTemplateDto()).ToList();
     }
 
+    public static DocumentTemplateDetailDto ToDocumentTemplateDetailDto(this DocumentTemplate template)
+    {
+        ArgumentNullException.ThrowIfNull(template);
+
+        var dto = template.ToDocumentTemplateDto();
+        return new DocumentTemplateDetailDto
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Description = dto.Description,
+            Category = dto.Category,
+            DefaultAccessLevel = dto.DefaultAccessLevel,
+            RequiresApproval = dto.RequiresApproval,
+            IsActive = dto.IsActive,
+            CreatedAt = dto.CreatedAt,
+            UpdatedAt = dto.UpdatedAt,
+            CreatedById = dto.CreatedById,
+            CreatedByName = dto.CreatedByName,
+            AllowedDepartments = dto.AllowedDepartments,
+            UsageCount = template.UsageCount,
+            LastUsedAt = template.LastUsedAt?.DateTime,
+            Content = "", // Em uma implementação real, carregaria do storage
+            Fields = [] // Será preenchido no handler se necessário
+        };
+    }
+
     // ===== USER INTEREST MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Mapeia UserInterest para UserInterestDto
-    /// </summary>
     public static UserInterestDto ToUserInterestDto(this UserInterest interest)
     {
         ArgumentNullException.ThrowIfNull(interest);
@@ -504,9 +539,6 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de UserInterest para lista de UserInterestDto
-    /// </summary>
     public static List<UserInterestDto> ToUserInterestDtos(this IEnumerable<UserInterest> interests)
     {
         ArgumentNullException.ThrowIfNull(interests);
@@ -515,9 +547,6 @@ public static class MappingExtensions
 
     // ===== FEED MAPPING EXTENSIONS =====
 
-    /// <summary>
-    /// Mapeia FeedEntry para FeedItemDto
-    /// </summary>
     public static FeedItemDto ToFeedItemDto(this FeedEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
@@ -560,12 +589,47 @@ public static class MappingExtensions
         };
     }
 
-    /// <summary>
-    /// Mapeia lista de FeedEntry para lista de FeedItemDto
-    /// </summary>
     public static List<FeedItemDto> ToFeedItemDtos(this IEnumerable<FeedEntry> entries)
     {
         ArgumentNullException.ThrowIfNull(entries);
         return entries.Select(e => e.ToFeedItemDto()).ToList();
+    }
+
+    public static async Task<PagedResult<DocumentTemplateDto>> ToPaginatedResultAsync(
+        this IQueryable<DocumentTemplate> query, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<DocumentTemplateDto>
+        {
+            Items = items.Select(i => i.ToDocumentTemplateDto()).ToList(),
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        };
+    }
+
+    public static async Task<PagedResult<MediaAssetDto>> ToPaginatedResultAsync(
+        this IQueryable<MediaAsset> query, int page, int pageSize, CancellationToken cancellationToken)
+    {
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<MediaAssetDto>
+        {
+            Items = items.Select(i => i.ToMediaAssetDto()).ToList(),
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        };
     }
 }

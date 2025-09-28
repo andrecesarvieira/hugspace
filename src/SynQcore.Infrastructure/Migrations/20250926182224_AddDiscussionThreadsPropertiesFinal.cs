@@ -5,10 +5,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SynQcore.Infrastructure.Migrations
 {
-    /// <inheritdoc />
     public partial class AddDiscussionThreadsPropertiesFinal : Migration
     {
-        /// <inheritdoc />
+
+        // Campos static readonly para resolver CA1861
+        private static readonly string[] PostIdParentCommentIdCreatedAtArray = { "PostId", "ParentCommentId", "CreatedAt" };
+        private static readonly string[] MentionedEmployeeIdHasBeenNotifiedArray = { "MentionedEmployeeId", "HasBeenNotified" };
+        private static readonly string[] MentionedEmployeeIdIsReadArray = { "MentionedEmployeeId", "IsRead" };
+        private static readonly string[] CommentIdEndorserIdArray = { "CommentId", "EndorserId" };
+        private static readonly string[] PostIdEndorserIdArray = { "PostId", "EndorserId" };
+
+
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
@@ -344,7 +351,7 @@ namespace SynQcore.Infrastructure.Migrations
                 name: "IX_Comments_PostId_ParentCommentId_CreatedAt",
                 schema: "Communication",
                 table: "Comments",
-                columns: new[] { "PostId", "ParentCommentId", "CreatedAt" });
+                columns: PostIdParentCommentIdCreatedAtArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_ResolvedById",
@@ -392,19 +399,19 @@ namespace SynQcore.Infrastructure.Migrations
                 name: "IX_CommentMentions_MentionedEmployeeId_HasBeenNotified",
                 schema: "Communication",
                 table: "CommentMentions",
-                columns: new[] { "MentionedEmployeeId", "HasBeenNotified" });
+                columns: MentionedEmployeeIdHasBeenNotifiedArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommentMentions_MentionedEmployeeId_IsRead",
                 schema: "Communication",
                 table: "CommentMentions",
-                columns: new[] { "MentionedEmployeeId", "IsRead" });
+                columns: MentionedEmployeeIdIsReadArray);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Endorsements_Comment_Endorser_Unique",
                 schema: "Communication",
                 table: "Endorsements",
-                columns: new[] { "CommentId", "EndorserId" },
+                columns: CommentIdEndorserIdArray,
                 unique: true,
                 filter: "\"CommentId\" IS NOT NULL");
 
@@ -442,7 +449,7 @@ namespace SynQcore.Infrastructure.Migrations
                 name: "IX_Endorsements_Post_Endorser_Unique",
                 schema: "Communication",
                 table: "Endorsements",
-                columns: new[] { "PostId", "EndorserId" },
+                columns: PostIdEndorserIdArray,
                 unique: true,
                 filter: "\"PostId\" IS NOT NULL");
 
@@ -502,7 +509,6 @@ namespace SynQcore.Infrastructure.Migrations
                 onDelete: ReferentialAction.SetNull);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

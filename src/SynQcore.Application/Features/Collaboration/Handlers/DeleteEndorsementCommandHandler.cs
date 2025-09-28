@@ -6,9 +6,6 @@ using SynQcore.Application.Features.Collaboration.Commands;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para exclusão de endorsement corporativo com controle de autorização
-/// </summary>
 public partial class DeleteEndorsementCommandHandler : IRequestHandler<DeleteEndorsementCommand>
 {
     private readonly ISynQcoreDbContext _context;

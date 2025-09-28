@@ -4,9 +4,6 @@ using SynQcore.Application.Features.CorporateSearch.DTOs;
 
 namespace SynQcore.Application.Features.CorporateSearch.Queries;
 
-/// <summary>
-/// Query para busca corporativa básica
-/// </summary>
 public class CorporateSearchQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public string Query { get; set; } = string.Empty;
@@ -23,9 +20,6 @@ public class CorporateSearchQuery : IRequest<PagedResult<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Query para busca avançada
-/// </summary>
 public class AdvancedSearchQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public string? Query { get; set; }
@@ -42,9 +36,6 @@ public class AdvancedSearchQuery : IRequest<PagedResult<SearchResultDto>>
     public SearchConfigDto? Config { get; set; }
 }
 
-/// <summary>
-/// Query para sugestões de busca
-/// </summary>
 public class GetSearchSuggestionsQuery : IRequest<List<SearchSuggestionDto>>
 {
     public string Partial { get; set; } = string.Empty;
@@ -59,9 +50,6 @@ public class GetSearchSuggestionsQuery : IRequest<List<SearchSuggestionDto>>
     }
 }
 
-/// <summary>
-/// Query para analytics de busca
-/// </summary>
 public class GetSearchAnalyticsQuery : IRequest<SearchAnalyticsDto>
 {
     public DateTime? StartDate { get; set; }
@@ -75,9 +63,6 @@ public class GetSearchAnalyticsQuery : IRequest<SearchAnalyticsDto>
     public string GroupBy { get; set; } = "day";
 }
 
-/// <summary>
-/// Query para trending topics
-/// </summary>
 public class GetTrendingTopicsQuery : IRequest<List<TrendingTopicDto>>
 {
     public DateTime? StartDate { get; set; }
@@ -89,9 +74,6 @@ public class GetTrendingTopicsQuery : IRequest<List<TrendingTopicDto>>
     public float MinTrendScore { get; set; } = 0.5f;
 }
 
-/// <summary>
-/// Query para estatísticas de conteúdo
-/// </summary>
 public class GetContentStatsQuery : IRequest<ContentStatsDto>
 {
     public DateTime? StartDate { get; set; }
@@ -102,9 +84,6 @@ public class GetContentStatsQuery : IRequest<ContentStatsDto>
     public bool IncludeDeleted { get; set; }
 }
 
-/// <summary>
-/// Query para buscar conteúdo similar
-/// </summary>
 public class GetSimilarContentQuery : IRequest<List<SearchResultDto>>
 {
     public Guid ContentId { get; set; }
@@ -120,9 +99,6 @@ public class GetSimilarContentQuery : IRequest<List<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Query para buscar por categoria
-/// </summary>
 public class SearchByCategoryQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public string Category { get; set; } = string.Empty;
@@ -138,9 +114,6 @@ public class SearchByCategoryQuery : IRequest<PagedResult<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Query para buscar por autor
-/// </summary>
 public class SearchByAuthorQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public Guid AuthorId { get; set; }
@@ -156,9 +129,6 @@ public class SearchByAuthorQuery : IRequest<PagedResult<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Query para buscar por departamento
-/// </summary>
 public class SearchByDepartmentQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public Guid DepartmentId { get; set; }
@@ -174,9 +144,6 @@ public class SearchByDepartmentQuery : IRequest<PagedResult<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Query para buscar por tags
-/// </summary>
 public class SearchByTagsQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public List<string> Tags { get; set; } = new();
@@ -192,9 +159,6 @@ public class SearchByTagsQuery : IRequest<PagedResult<SearchResultDto>>
     }
 }
 
-/// <summary>
-/// Query para busca de conteúdo recente
-/// </summary>
 public class GetRecentContentQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public int Hours { get; set; } = 24;
@@ -205,9 +169,6 @@ public class GetRecentContentQuery : IRequest<PagedResult<SearchResultDto>>
     public SearchConfigDto? Config { get; set; }
 }
 
-/// <summary>
-/// Query para busca de conteúdo popular
-/// </summary>
 public class GetPopularContentQuery : IRequest<PagedResult<SearchResultDto>>
 {
     public string Period { get; set; } = "week"; // day, week, month
@@ -219,9 +180,6 @@ public class GetPopularContentQuery : IRequest<PagedResult<SearchResultDto>>
     public string MetricType { get; set; } = "engagement"; // views, likes, comments, engagement
 }
 
-/// <summary>
-/// Query para exportação de dados de busca
-/// </summary>
 public class ExportSearchDataQuery : IRequest<SearchExportDto>
 {
     public string Query { get; set; } = string.Empty;
@@ -239,9 +197,6 @@ public class ExportSearchDataQuery : IRequest<SearchExportDto>
     }
 }
 
-/// <summary>
-/// Query para obter configuração de busca
-/// </summary>
 public class GetSearchConfigQuery : IRequest<SearchConfigDto>
 {
     // Query simples sem parâmetros - retorna configuração atual

@@ -8,9 +8,6 @@ using SynQcore.Application.Features.Feed.Queries;
 
 namespace SynQcore.Application.Features.Feed.Handlers;
 
-/// <summary>
-/// Handler para obter estatísticas do feed
-/// </summary>
 public partial class GetFeedStatsHandler : IRequestHandler<GetFeedStatsQuery, FeedStatsDto>
 {
     private readonly ISynQcoreDbContext _context;
@@ -53,9 +50,6 @@ public partial class GetFeedStatsHandler : IRequestHandler<GetFeedStatsQuery, Fe
     private static partial void LogGettingFeedStats(ILogger logger, Guid userId);
 }
 
-/// <summary>
-/// Handler para obter interesses do usuário
-/// </summary>
 public partial class GetUserInterestsHandler : IRequestHandler<GetUserInterestsQuery, UserInterestsResponseDto>
 {
     private readonly ISynQcoreDbContext _context;

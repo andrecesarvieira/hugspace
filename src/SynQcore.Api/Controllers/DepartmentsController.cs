@@ -19,6 +19,9 @@ public partial class DepartmentsController : ControllerBase
     private readonly IMediator _mediator;
     private readonly ILogger<DepartmentsController> _logger;
 
+    /// <summary>
+    /// Construtor da classe
+    /// </summary>
     public DepartmentsController(IMediator mediator, ILogger<DepartmentsController> logger)
     {
         _mediator = mediator;

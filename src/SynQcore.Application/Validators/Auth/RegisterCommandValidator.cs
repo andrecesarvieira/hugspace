@@ -3,15 +3,8 @@ using SynQcore.Application.Commands.Auth;
 
 namespace SynQcore.Application.Validators.Auth;
 
-/// <summary>
-/// Validator para RegisterCommand usando FluentValidation.
-/// Define regras de validação para registro de novos usuários.
-/// </summary>
 public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
 {
-    /// <summary>
-    /// Inicializa as regras de validação para registro de usuário.
-    /// </summary>
     public RegisterCommandValidator()
     {
         RuleFor(x => x.Email)

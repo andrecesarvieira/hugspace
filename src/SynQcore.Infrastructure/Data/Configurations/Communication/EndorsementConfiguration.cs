@@ -4,9 +4,6 @@ using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Infrastructure.Data.Configurations.Communication;
 
-/// <summary>
-/// Configuração EF Core para sistema de endorsements corporativos
-/// </summary>
 public class EndorsementConfiguration : IEntityTypeConfiguration<Endorsement>
 {
     public void Configure(EntityTypeBuilder<Endorsement> builder)

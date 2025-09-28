@@ -9,9 +9,6 @@ using SynQcore.Application.Features.Collaboration.Helpers;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
-/// <summary>
-/// Handler para atualização de endorsement corporativo com controle de autorização
-/// </summary>
 public partial class UpdateEndorsementCommandHandler : IRequestHandler<UpdateEndorsementCommand, EndorsementDto>
 {
     private readonly ISynQcoreDbContext _context;
