@@ -16,7 +16,7 @@ namespace SynQcore.Api.Controllers;
 /// Fornece endpoints para consulta, criação e manutenção de perfis de funcionários
 /// </summary>
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/[controller]")]
 [Authorize]
 public partial class EmployeesController : ControllerBase
 {
@@ -197,7 +197,7 @@ public partial class EmployeesController : ControllerBase
 
             // Bloquear acesso indefinidamente
             await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
-            
+
             // Forçar logout de todas as sessões ativas
             await _userManager.UpdateSecurityStampAsync(user);
 

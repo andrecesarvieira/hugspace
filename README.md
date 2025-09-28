@@ -33,7 +33,7 @@
 - 🔒 **Segurança em Primeiro Lugar** - JWT + Identity + Corporate roles funcionais
 - 🌍 **Open Source** - Licença MIT + comunidade colaborativa
 - 🚀 **Docker Preparado** - Ambiente completo containerizado e testado
-- 🧪 **Testes Preparados** - Estrutura para testes unitários e integração
+- 🧪 **Testes Implementados** - 27 testes (14 unitários + 13 integração) 100% funcionais
 
 ## 🏆 **Descoberta de Mercado: PIONEIRISMO BRASILEIRO**
 
@@ -228,17 +228,17 @@ src/
 ### 🔐 **Autenticação (Fase 2.2)**
 
 ```http
-POST /api/v1/auth/register    - Registrar novo funcionário
-POST /api/v1/auth/login      - Login e obtenção de token JWT
-GET  /api/v1/auth/test       - Testar token (requer autenticação)
+POST /api/auth/register    - Registrar novo funcionário
+POST /api/auth/login      - Login e obtenção de token JWT
+GET  /api/auth/test       - Testar token (requer autenticação)
 ```
 
 #### 👑 **Usuário Administrador Padrão**
 
 O sistema cria automaticamente um usuário administrador no primeiro boot:
 
-- **Email**: `admin@dev.synqcore.com`
-- **Senha**: `DevAdmin@123!`
+- **Email**: `admin@synqcore.com`
+- **Senha**: `SynQcore@Admin123!`
 - **Papel**: Admin (acesso completo ao sistema)
 
 #### 👤 **Papel Padrão para Novos Usuários**
@@ -254,14 +254,14 @@ Quando um usuário se registra via `/auth/register`:
 ### 👥 **Employee Management (Fase 2.5)**
 
 ```http
-POST   /api/v1/employees           - Criar funcionário
-GET    /api/v1/employees/{id}      - Obter funcionário por ID
-PUT    /api/v1/employees/{id}      - Atualizar funcionário
-DELETE /api/v1/employees/{id}      - Desligar funcionário (soft delete + bloqueio de acesso)
-GET    /api/v1/employees           - Listar funcionários (paginação + filtros)
-GET    /api/v1/employees/search    - Buscar funcionários (nome/email)
-GET    /api/v1/employees/{id}/hierarchy - Ver hierarquia organizacional
-POST   /api/v1/employees/{id}/avatar   - Upload de avatar (5MB max)
+POST   /api/employees           - Criar funcionário
+GET    /api/employees/{id}      - Obter funcionário por ID
+PUT    /api/employees/{id}      - Atualizar funcionário
+DELETE /api/employees/{id}      - Desligar funcionário (soft delete + bloqueio de acesso)
+GET    /api/employees           - Listar funcionários (paginação + filtros)
+GET    /api/employees/search    - Buscar funcionários (nome/email)
+GET    /api/employees/{id}/hierarchy - Ver hierarquia organizacional
+POST   /api/employees/{id}/avatar   - Upload de avatar (5MB max)
 ```
 
 ### 👑 **Admin User Management (Fase 2.6)**
@@ -325,8 +325,14 @@ docker compose logs -f postgres redis pgadmin
 # Build completo (zero warnings)
 dotnet build
 
-# Executar testes (quando implementados)
+# Executar todos os testes (27 testes implementados)
 dotnet test
+
+# Executar apenas testes unitários (14 testes)
+dotnet test tests/SynQcore.UnitTests/
+
+# Executar apenas testes de integração (13 testes)
+dotnet test tests/SynQcore.IntegrationTests/
 
 # Aplicar migrações
 dotnet ef database update -p src/SynQcore.Infrastructure -s src/SynQcore.Api
@@ -366,7 +372,7 @@ python3 scripts/test-collaboration-features.py  # Testes
 
 | Serviço              | URL                           | Status         | Credenciais                                       |
 | -------------------- | ----------------------------- | -------------- | ------------------------------------------------- |
-| **API**              | http://localhost:5000         | ✅ Funcionando | **Admin**: admin@dev.synqcore.com / DevAdmin@123! |
+| **API**              | http://localhost:5000         | ✅ Funcionando | **Admin**: admin@synqcore.com / SynQcore@Admin123! |
 | **Swagger UI**       | http://localhost:5000/swagger | ✅ Funcionando | Use o admin acima para testar endpoints           |
 | **Aplicação Blazor** | http://localhost:5001         | 🚧 Fase 5      | -                                                 |
 | **pgAdmin**          | http://localhost:8080         | ✅ Funcionando | admin@synqcore.dev / admin123                     |

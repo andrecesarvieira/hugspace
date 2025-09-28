@@ -250,10 +250,18 @@ builder.Services.AddApiVersioning().AddMvc().AddApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-// Add Health Checks
-builder.Services.AddHealthChecks()
-    .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!, name: "postgresql")
-    .AddRedis(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379", name: "redis");
+// Add Health Checks - Skip external dependencies in Testing environment
+if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddHealthChecks()
+        .AddNpgSql(builder.Configuration.GetConnectionString("DefaultConnection")!, name: "postgresql")
+        .AddRedis(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379", name: "redis");
+}
+else
+{
+    // Simple health checks for testing
+    builder.Services.AddHealthChecks();
+}
 
 // Register corporate middleware services
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -262,8 +270,11 @@ builder.Services.AddProblemDetails();
 // Add memory cache (required for rate limiting)
 builder.Services.AddMemoryCache();
 
-// Add corporate rate limiting
-builder.Services.AddCorporateRateLimit(builder.Configuration);
+// Add corporate rate limiting - Skip in Testing environment
+if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddCorporateRateLimit(builder.Configuration);
+}
 
 // Add MediatR - Registrar handlers da Application layer
 builder.Services.AddMediatR(cfg =>
@@ -342,7 +353,7 @@ builder.Services.AddSignalR(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker" || app.Environment.EnvironmentName == "Testing")
 {
     app.UseSwagger();
     app.UseSwaggerUI(options =>
@@ -363,8 +374,11 @@ if (app.Environment.IsProduction())
 // Corporate middleware pipeline
 app.UseExceptionHandler(); // Global exception handler
 
-// Rate limiting middleware (com bypass inteligente)
-app.UseCorporateRateLimit(); // Corporate rate limiting com bypass
+// Rate limiting middleware (com bypass inteligente) - Skip in Testing environment
+if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+{
+    app.UseCorporateRateLimit(); // Corporate rate limiting com bypass
+}
 
 app.UseMiddleware<AuditLoggingMiddleware>(); // Corporate audit logging
 
@@ -417,12 +431,15 @@ try
 {
     Log.Information("Starting SynQcore Corporate API");
 
-    // Inicializar roles corporativas
-    using (var scope = app.Services.CreateScope())
+    // Inicializar roles corporativas - Skip em ambiente de Testing
+    if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
     {
-        await RoleInitializationService.InitializeAsync(scope.ServiceProvider);
-        // Criar administrador padrão se não existir nenhum
-        await AdminBootstrapService.InitializeAsync(scope.ServiceProvider);
+        using (var scope = app.Services.CreateScope())
+        {
+            await RoleInitializationService.InitializeAsync(scope.ServiceProvider);
+            // Criar administrador padrão se não existir nenhum
+            await AdminBootstrapService.InitializeAsync(scope.ServiceProvider);
+        }
     }
 
     // Abrir Swagger automaticamente no navegador padrão em desenvolvimento
@@ -474,3 +491,8 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+/// <summary>
+/// Classe Program explícita para permitir acesso em testes de integração
+/// </summary>
+public partial class Program { }
