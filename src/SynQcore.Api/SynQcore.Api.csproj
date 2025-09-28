@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    
+
     <!-- Package Metadata -->
     <AssemblyTitle>SynQcore Corporate API</AssemblyTitle>
     <Product>SynQcore - Corporate Social Network API</Product>
@@ -13,7 +13,7 @@
     <Copyright>Copyright (c) 2025 André César Vieira</Copyright>
     <Authors>André César Vieira</Authors>
     <Company>André César Vieira</Company>
-    
+
     <!-- Repository Information -->
     <RepositoryUrl>https://github.com/andrecesarvieira/synqcore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -22,7 +22,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>corporate;social-network;api;dotnet;postgresql;clean-architecture;enterprise</PackageTags>
-    
+
     <!-- Version Information -->
     <Version>2.1.0</Version>
     <AssemblyVersion>2.1.0.0</AssemblyVersion>

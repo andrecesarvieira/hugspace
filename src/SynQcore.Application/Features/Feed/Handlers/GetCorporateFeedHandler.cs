@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Feed.Queries;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
@@ -14,11 +15,16 @@ namespace SynQcore.Application.Features.Feed.Handlers;
 /// Handler para obter feed corporativo personalizado
 /// Implementa algoritmo de relevância baseado em interesses e contexto corporativo
 /// </summary>
-public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQuery, CorporateFeedResponseDto>
+public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQuery, PagedResult<FeedItemDto>>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ILogger<GetCorporateFeedHandler> _logger;
 
+    /// <summary>
+    /// Inicializa uma nova instância do GetCorporateFeedHandler
+    /// </summary>
+    /// <param name="context">Contexto do banco de dados</param>
+    /// <param name="logger">Logger para auditoria</param>
     public GetCorporateFeedHandler(
         ISynQcoreDbContext context,
         ILogger<GetCorporateFeedHandler> logger)
@@ -27,7 +33,13 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         _logger = logger;
     }
 
-    public async Task<CorporateFeedResponseDto> Handle(GetCorporateFeedQuery request, CancellationToken cancellationToken)
+    /// <summary>
+    /// Processa a query para obter feed corporativo personalizado
+    /// </summary>
+    /// <param name="request">Query de feed corporativo</param>
+    /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>Resultado paginado do feed</returns>
+    public async Task<PagedResult<FeedItemDto>> Handle(GetCorporateFeedQuery request, CancellationToken cancellationToken)
     {
         LogProcessingFeedRequest(_logger, request.UserId, request.FeedType ?? "mixed", request.PageNumber);
 
@@ -39,9 +51,9 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
 
         // Busca itens do feed com paginação
         var feedQuery = BuildFeedQuery(request);
-        
+
         var totalCount = await feedQuery.CountAsync(cancellationToken);
-        
+
         var feedEntries = await feedQuery
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
@@ -52,21 +64,13 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         // Converte para DTOs
         var feedItems = await ConvertToFeedItems(feedEntries, request.UserId, cancellationToken);
 
-        // Conta itens não lidos
-        var unreadCount = await _context.FeedEntries
-            .Where(fe => fe.UserId == request.UserId && !fe.IsRead)
-            .CountAsync(cancellationToken);
-
-        return new CorporateFeedResponseDto
+        return new PagedResult<FeedItemDto>
         {
             Items = feedItems,
             TotalCount = totalCount,
-            PageNumber = request.PageNumber,
+            Page = request.PageNumber,
             PageSize = request.PageSize,
-            HasNextPage = (request.PageNumber * request.PageSize) < totalCount,
-            HasPreviousPage = request.PageNumber > 1,
-            UnreadCount = unreadCount,
-            FeedType = request.FeedType ?? "Mixed"
+            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
         };
     }
 
@@ -81,7 +85,7 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
             .FirstOrDefaultAsync(cancellationToken);
 
         // Regenera se não há entradas ou se a última é muito antiga (>2 horas)
-        return lastFeedEntry == null || 
+        return lastFeedEntry == null ||
                lastFeedEntry.CreatedAt < DateTime.UtcNow.AddHours(-2);
     }
 
@@ -102,10 +106,11 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
             .Where(fe => fe.UserId == request.UserId && !fe.IsHidden);
 
         // Aplica filtros se especificados
-        if (request.Filters != null)
-        {
-            query = ApplyFilters(query, request.Filters);
-        }
+        // TODO: Implementar filtros adequadamente
+        // if (request.Filters != null)
+        // {
+        //     query = ApplyFilters(query, request.Filters);
+        // }
 
         // Aplica ordenação
         query = request.SortBy?.ToLowerInvariant() switch
@@ -184,7 +189,7 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
             .Include(p => p.Department)
             .Include(p => p.PostTags)
                 .ThenInclude(pt => pt.Tag)
-            .Where(p => p.Status == PostStatus.Published && 
+            .Where(p => p.Status == PostStatus.Published &&
                        p.CreatedAt > DateTime.UtcNow.AddDays(-30))
             .ToListAsync(cancellationToken);
 
@@ -295,13 +300,13 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
     {
         if (post.Type == PostType.Announcement && post.IsOfficial)
             return FeedPriority.Executive;
-        
+
         if (post.IsPinned || relevanceScore > 0.8)
             return FeedPriority.High;
-        
+
         if (relevanceScore > 0.5)
             return FeedPriority.Normal;
-        
+
         return FeedPriority.Low;
     }
 
@@ -327,12 +332,12 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
     /// Converte FeedEntry para FeedItemDto com informações completas
     /// </summary>
     private async Task<List<FeedItemDto>> ConvertToFeedItems(
-        List<FeedEntry> feedEntries, 
-        Guid userId, 
+        List<FeedEntry> feedEntries,
+        Guid userId,
         CancellationToken cancellationToken)
     {
         var postIds = feedEntries.Select(fe => fe.PostId).ToList();
-        
+
         // Busca informações de interação do usuário (comentários)
         var userComments = await _context.Comments
             .Where(c => c.AuthorId == userId && postIds.Contains(c.PostId))

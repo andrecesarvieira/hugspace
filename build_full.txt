@@ -1,0 +1,19 @@
+  SynQcore.Common -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.Common/bin/Debug/net9.0/SynQcore.Common.dll
+  SynQcore.Domain -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.Domain/bin/Debug/net9.0/SynQcore.Domain.dll
+  SynQcore.Application -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/bin/Debug/net9.0/SynQcore.Application.dll
+  SynQcore.Infrastructure -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.Infrastructure/bin/Debug/net9.0/SynQcore.Infrastructure.dll
+  SynQcore.BlazorApp.Client -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.BlazorApp/SynQcore.BlazorApp.Client/bin/Debug/net9.0/SynQcore.BlazorApp.Client.dll
+  SynQcore.BlazorApp.Client (Blazor output) -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.BlazorApp/SynQcore.BlazorApp.Client/bin/Debug/net9.0/wwwroot
+  SynQcore.UnitTests -> /mnt/Dados/Projetos/SynQcore/tests/SynQcore.UnitTests/bin/Debug/net9.0/SynQcore.UnitTests.dll
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/Controllers/CorporateSearchController.cs(15,33): warning CS1570: O comentário XML tem XML com formação incorreta -- "Espaço em branco não é permitido neste local." [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/SynQcore.Api.csproj]
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/Controllers/FeedController.cs(85,23): error CS0029: Não é possível converter implicitamente tipo "SynQcore.Application.DTOs.FeedFiltersDto" em "System.Collections.Generic.Dictionary<string, object>" [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/SynQcore.Api.csproj]
+  SynQcore.BlazorApp -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.BlazorApp/SynQcore.BlazorApp/bin/Debug/net9.0/SynQcore.BlazorApp.dll
+
+FALHA da compilação.
+
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/Controllers/CorporateSearchController.cs(15,33): warning CS1570: O comentário XML tem XML com formação incorreta -- "Espaço em branco não é permitido neste local." [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/SynQcore.Api.csproj]
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/Controllers/FeedController.cs(85,23): error CS0029: Não é possível converter implicitamente tipo "SynQcore.Application.DTOs.FeedFiltersDto" em "System.Collections.Generic.Dictionary<string, object>" [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Api/SynQcore.Api.csproj]
+    1 Aviso(s)
+    1 Erro(s)
+
+Tempo Decorrido 00:00:02.00

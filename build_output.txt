@@ -1,0 +1,17 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  SynQcore.Common -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.Common/bin/Debug/net9.0/SynQcore.Common.dll
+  SynQcore.Domain -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.Domain/bin/Debug/net9.0/SynQcore.Domain.dll
+  SynQcore.BlazorApp.Client -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.BlazorApp/SynQcore.BlazorApp.Client/bin/Debug/net9.0/SynQcore.BlazorApp.Client.dll
+  SynQcore.BlazorApp.Client (Blazor output) -> /mnt/Dados/Projetos/SynQcore/src/SynQcore.BlazorApp/SynQcore.BlazorApp.Client/bin/Debug/net9.0/wwwroot
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/Validators/Feed/FeedQueryValidators.cs(120,26): error CS1061: ‘string’ não contém uma definição para "TotalDays" e não foi possível encontrar nenhum método de extensão "TotalDays" que aceite um primeiro argumento do tipo ‘string’ (você está se esquecendo de usar uma diretiva ou uma referência de assembly?) [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/SynQcore.Application.csproj]
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/Validators/Feed/FeedQueryValidators.cs(120,46): error CS1061: ‘string’ não contém uma definição para "TotalDays" e não foi possível encontrar nenhum método de extensão "TotalDays" que aceite um primeiro argumento do tipo ‘string’ (você está se esquecendo de usar uma diretiva ou uma referência de assembly?) [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/SynQcore.Application.csproj]
+
+FALHA da compilação.
+
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/Validators/Feed/FeedQueryValidators.cs(120,26): error CS1061: ‘string’ não contém uma definição para "TotalDays" e não foi possível encontrar nenhum método de extensão "TotalDays" que aceite um primeiro argumento do tipo ‘string’ (você está se esquecendo de usar uma diretiva ou uma referência de assembly?) [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/SynQcore.Application.csproj]
+/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/Validators/Feed/FeedQueryValidators.cs(120,46): error CS1061: ‘string’ não contém uma definição para "TotalDays" e não foi possível encontrar nenhum método de extensão "TotalDays" que aceite um primeiro argumento do tipo ‘string’ (você está se esquecendo de usar uma diretiva ou uma referência de assembly?) [/mnt/Dados/Projetos/SynQcore/src/SynQcore.Application/SynQcore.Application.csproj]
+    0 Aviso(s)
+    2 Erro(s)
+
+Tempo Decorrido 00:00:02.52

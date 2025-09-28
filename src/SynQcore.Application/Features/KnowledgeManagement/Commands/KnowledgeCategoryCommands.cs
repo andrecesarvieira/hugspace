@@ -7,21 +7,44 @@ using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Commands;
 
-public class UpdateKnowledgeCategoryCommand : IRequest<KnowledgeCategoryDto>
+/// <summary>
+/// Command para atualizar uma categoria de conhecimento existente
+/// </summary>
+public record UpdateKnowledgeCategoryCommand : IRequest<KnowledgeCategoryDto>
 {
-    public Guid Id { get; set; }
-    public UpdateKnowledgeCategoryDto Data { get; set; } = null!;
+    /// <summary>
+    /// ID da categoria a ser atualizada
+    /// </summary>
+    public Guid Id { get; init; }
+
+    /// <summary>
+    /// Dados atualizados da categoria
+    /// </summary>
+    public UpdateKnowledgeCategoryDto Data { get; init; } = default!;
 }
 
+/// <summary>
+/// Handler para processar comando de atualização de categoria de conhecimento
+/// </summary>
 public class UpdateKnowledgeCategoryCommandHandler : IRequestHandler<UpdateKnowledgeCategoryCommand, KnowledgeCategoryDto>
 {
     private readonly ISynQcoreDbContext _context;
 
+    /// <summary>
+    /// Inicializa uma nova instância do UpdateKnowledgeCategoryCommandHandler
+    /// </summary>
+    /// <param name="context">Contexto do banco de dados</param>
     public UpdateKnowledgeCategoryCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
     }
 
+    /// <summary>
+    /// Processa o comando de atualização de categoria de conhecimento
+    /// </summary>
+    /// <param name="request">Comando de atualização</param>
+    /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>DTO da categoria atualizada</returns>
     public async Task<KnowledgeCategoryDto> Handle(UpdateKnowledgeCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await _context.KnowledgeCategories
@@ -79,21 +102,40 @@ public class UpdateKnowledgeCategoryCommandHandler : IRequestHandler<UpdateKnowl
     }
 }
 
-public class DeleteKnowledgeCategoryCommand : IRequest
+/// <summary>
+/// Command para excluir uma categoria de conhecimento
+/// </summary>
+public record DeleteKnowledgeCategoryCommand : IRequest<bool>
 {
-    public Guid Id { get; set; }
+    /// <summary>
+    /// ID da categoria a ser excluída
+    /// </summary>
+    public Guid Id { get; init; }
 }
 
-public class DeleteKnowledgeCategoryCommandHandler : IRequestHandler<DeleteKnowledgeCategoryCommand>
+/// <summary>
+/// Handler para processar comando de exclusão de categoria de conhecimento
+/// </summary>
+public class DeleteKnowledgeCategoryCommandHandler : IRequestHandler<DeleteKnowledgeCategoryCommand, bool>
 {
     private readonly ISynQcoreDbContext _context;
 
+    /// <summary>
+    /// Inicializa uma nova instância do DeleteKnowledgeCategoryCommandHandler
+    /// </summary>
+    /// <param name="context">Contexto do banco de dados</param>
     public DeleteKnowledgeCategoryCommandHandler(ISynQcoreDbContext context)
     {
         _context = context;
     }
 
-    public async Task Handle(DeleteKnowledgeCategoryCommand request, CancellationToken cancellationToken)
+    /// <summary>
+    /// Processa o comando de exclusão de categoria de conhecimento
+    /// </summary>
+    /// <param name="request">Comando de exclusão</param>
+    /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>True se a exclusão foi bem-sucedida</returns>
+    public async Task<bool> Handle(DeleteKnowledgeCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await _context.KnowledgeCategories
             .Include(c => c.Posts)
@@ -115,5 +157,7 @@ public class DeleteKnowledgeCategoryCommandHandler : IRequestHandler<DeleteKnowl
         category.DeletedAt = DateTime.UtcNow;
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        return true;
     }
 }

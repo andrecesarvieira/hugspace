@@ -69,6 +69,9 @@ public class GetFeedStatsQueryValidator : AbstractValidator<GetFeedStatsQuery>
 /// </summary>
 public class GetDepartmentFeedQueryValidator : AbstractValidator<GetDepartmentFeedQuery>
 {
+    /// <summary>
+    /// Inicializa uma nova instância do validador de feed departamental
+    /// </summary>
     public GetDepartmentFeedQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -98,6 +101,9 @@ public class GetDepartmentFeedQueryValidator : AbstractValidator<GetDepartmentFe
 /// </summary>
 public class GetTrendingContentQueryValidator : AbstractValidator<GetTrendingContentQuery>
 {
+    /// <summary>
+    /// Inicializa uma nova instância do validador de conteúdo em alta
+    /// </summary>
     public GetTrendingContentQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -117,13 +123,19 @@ public class GetTrendingContentQueryValidator : AbstractValidator<GetTrendingCon
             .WithMessage("Tamanho da página não pode exceder 50 itens para conteúdo em alta");
 
         RuleFor(x => x.TimeWindow)
-            .Must(x => x.TotalDays >= 1 && x.TotalDays <= 90)
-            .WithMessage("Janela de tempo deve estar entre 1 e 90 dias");
+            .Must(timeWindow => IsValidTimeWindow(timeWindow))
+            .WithMessage("Janela de tempo deve ser '24h', '7d' ou '30d'");
 
         RuleFor(x => x.Department)
             .MaximumLength(100)
             .WithMessage("Nome do departamento não pode exceder 100 caracteres")
             .When(x => !string.IsNullOrEmpty(x.Department));
+    }
+
+    private static bool IsValidTimeWindow(string? timeWindow)
+    {
+        if (string.IsNullOrEmpty(timeWindow)) return true;
+        return timeWindow is "24h" or "7d" or "30d";
     }
 }
 
@@ -132,6 +144,9 @@ public class GetTrendingContentQueryValidator : AbstractValidator<GetTrendingCon
 /// </summary>
 public class GetRecommendedContentQueryValidator : AbstractValidator<GetRecommendedContentQuery>
 {
+    /// <summary>
+    /// Inicializa uma nova instância do validador de conteúdo recomendado
+    /// </summary>
     public GetRecommendedContentQueryValidator()
     {
         RuleFor(x => x.UserId)
@@ -161,6 +176,9 @@ public class GetRecommendedContentQueryValidator : AbstractValidator<GetRecommen
 /// </summary>
 public class GetUserInterestsQueryValidator : AbstractValidator<GetUserInterestsQuery>
 {
+    /// <summary>
+    /// Inicializa uma nova instância do validador de interesses do usuário
+    /// </summary>
     public GetUserInterestsQueryValidator()
     {
         RuleFor(x => x.UserId)
