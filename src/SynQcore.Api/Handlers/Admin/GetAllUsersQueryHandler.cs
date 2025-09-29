@@ -25,9 +25,9 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, UsersLi
         // Aplicar filtro de busca se fornecido
         if (!string.IsNullOrWhiteSpace(request.SearchTerm))
         {
-            query = query.Where(u => 
-                u.Email!.Contains(request.SearchTerm, StringComparison.OrdinalIgnoreCase) ||
-                u.UserName!.Contains(request.SearchTerm, StringComparison.OrdinalIgnoreCase));
+            query = query.Where(u =>
+                u.Email!.Contains(request.SearchTerm) ||
+                u.UserName!.Contains(request.SearchTerm));
         }
 
         // Contar total de registros

@@ -370,14 +370,14 @@ python3 scripts/test-collaboration-features.py  # Testes
 
 ## 🌐 Acesso Local
 
-| Serviço              | URL                           | Status         | Credenciais                                       |
-| -------------------- | ----------------------------- | -------------- | ------------------------------------------------- |
+| Serviço              | URL                           | Status         | Credenciais                                        |
+| -------------------- | ----------------------------- | -------------- | -------------------------------------------------- |
 | **API**              | http://localhost:5000         | ✅ Funcionando | **Admin**: admin@synqcore.com / SynQcore@Admin123! |
-| **Swagger UI**       | http://localhost:5000/swagger | ✅ Funcionando | Use o admin acima para testar endpoints           |
-| **Aplicação Blazor** | http://localhost:5001         | 🚧 Fase 5      | -                                                 |
-| **pgAdmin**          | http://localhost:8080         | ✅ Funcionando | admin@synqcore.dev / admin123                     |
-| **PostgreSQL**       | localhost:5432                | ✅ Funcionando | synqcore_user / synqcore_dev_password             |
-| **Redis**            | localhost:6379                | ✅ Funcionando | -                                                 |
+| **Swagger UI**       | http://localhost:5000/swagger | ✅ Funcionando | Use o admin acima para testar endpoints            |
+| **Aplicação Blazor** | http://localhost:5001         | 🚧 Fase 5      | -                                                  |
+| **pgAdmin**          | http://localhost:8080         | ✅ Funcionando | admin@synqcore.dev / admin123                      |
+| **PostgreSQL**       | localhost:5432                | ✅ Funcionando | synqcore_user / synqcore_dev_password              |
+| **Redis**            | localhost:6379                | ✅ Funcionando | -                                                  |
 
 ### 🗄️ **Banco de Dados Atual:**
 

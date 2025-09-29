@@ -1,0 +1,135 @@
+{
+  "summary": {
+    "total_tests": 12,
+    "successful_tests": 0,
+    "failed_tests": 12,
+    "success_rate": 0.0,
+    "average_response_time": 2.96,
+    "status_codes": {
+      "404": 12
+    },
+    "timestamp": "2025-09-28T16:13:10.657956"
+  },
+  "detailed_results": [
+    {
+      "test_name": "GET /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.75,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 3.17,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication/drafts",
+      "endpoint": "/api/corporate-communication/drafts",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 4.2,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication/published",
+      "endpoint": "/api/corporate-communication/published",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.73,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 2.59,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 3.92,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication/analytics",
+      "endpoint": "/api/corporate-communication/analytics",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.29,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 3.23,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.74,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 3.04,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/corporate-communication",
+      "endpoint": "/api/corporate-communication",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 2.87,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/corporate-communication/00000000-0000-0000-0000-000000000000",
+      "endpoint": "/api/corporate-communication/00000000-0000-0000-0000-000000000000",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.05,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    }
+  ]
+}

@@ -46,7 +46,7 @@ public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggest
             // Sugestões de títulos de Posts
             var postSuggestions = await _context.Posts
                 .Where(p => !p.IsDeleted && p.Status == PostStatus.Published)
-                .Where(p => p.Title.ToLower(CultureInfo.InvariantCulture).Contains(partial, StringComparison.OrdinalIgnoreCase))
+                .Where(p => p.Title.Contains(partial))
                 .Select(p => new { Term = p.Title, Category = "Posts" })
                 .Distinct()
                 .Take(request.MaxSuggestions / 4)
@@ -63,7 +63,7 @@ public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggest
             // Sugestões de documentos corporativos
             var docSuggestions = await _context.CorporateDocuments
                 .Where(d => !d.IsDeleted)
-                .Where(d => d.Title.ToLower(CultureInfo.InvariantCulture).Contains(partial, StringComparison.OrdinalIgnoreCase))
+                .Where(d => d.Title.Contains(partial))
                 .Select(d => new { Term = d.Title, Category = "Documentos" })
                 .Distinct()
                 .Take(request.MaxSuggestions / 4)
@@ -80,7 +80,7 @@ public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggest
             // Sugestões de funcionários
             var employeeSuggestions = await _context.Employees
                 .Where(e => e.IsActive && !e.IsDeleted)
-                .Where(e => e.FirstName.ToLower(CultureInfo.InvariantCulture).Contains(partial, StringComparison.OrdinalIgnoreCase) || e.LastName.ToLower(CultureInfo.InvariantCulture).Contains(partial, StringComparison.OrdinalIgnoreCase))
+                .Where(e => e.FirstName.Contains(partial) || e.LastName.Contains(partial))
                 .Select(e => new { Term = e.FullName, Category = "Pessoas" })
                 .Distinct()
                 .Take(request.MaxSuggestions / 4)
@@ -97,7 +97,7 @@ public class GetSearchSuggestionsQueryHandler : IRequestHandler<GetSearchSuggest
             // Sugestões de departamentos
             var deptSuggestions = await _context.Departments
                 .Where(d => d.IsActive)
-                .Where(d => d.Name.ToLower(CultureInfo.InvariantCulture).Contains(partial, StringComparison.OrdinalIgnoreCase))
+                .Where(d => d.Name.Contains(partial))
                 .Select(d => new { Term = d.Name, Category = "Departamentos" })
                 .Distinct()
                 .Take(request.MaxSuggestions / 4)

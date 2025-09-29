@@ -148,9 +148,9 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         if (searchTerms.Count > 0)
         {
             query = query.Where(p =>
-                searchTerms.Any(t => p.Title.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => p.Content.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => p.Summary != null && p.Summary.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)));
+                searchTerms.Any(t => p.Title.Contains(t)) ||
+                searchTerms.Any(t => p.Content.Contains(t)) ||
+                searchTerms.Any(t => p.Summary != null && p.Summary.Contains(t)));
         }
 
         // Aplicar filtros específicos
@@ -195,8 +195,8 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         if (searchTerms.Count > 0)
         {
             query = query.Where(d =>
-                searchTerms.Any(t => d.Title.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => d.Description != null && d.Description.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)));
+                searchTerms.Any(t => d.Title.Contains(t)) ||
+                searchTerms.Any(t => d.Description != null && d.Description.Contains(t)));
         }
 
         // Aplicar filtros específicos
@@ -240,8 +240,8 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         if (searchTerms.Count > 0)
         {
             query = query.Where(m =>
-                searchTerms.Any(t => m.Name.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => m.Description != null && m.Description.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)));
+                searchTerms.Any(t => m.Name.Contains(t)) ||
+                searchTerms.Any(t => m.Description != null && m.Description.Contains(t)));
         }
 
         // Aplicar filtros específicos
@@ -286,8 +286,8 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         if (searchTerms.Count > 0)
         {
             query = query.Where(t =>
-                searchTerms.Any(term => t.Name.ToLower(CultureInfo.InvariantCulture).Contains(term, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(term => t.Description != null && t.Description.ToLower(CultureInfo.InvariantCulture).Contains(term, StringComparison.OrdinalIgnoreCase)));
+                searchTerms.Any(term => t.Name.Contains(term)) ||
+                searchTerms.Any(term => t.Description != null && t.Description.Contains(term)));
         }
 
         // Aplicar filtros específicos
@@ -332,10 +332,10 @@ public partial class CorporateSearchQueryHandler : IRequestHandler<CorporateSear
         if (searchTerms.Count > 0)
         {
             query = query.Where(e =>
-                searchTerms.Any(t => e.FirstName.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => e.LastName.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => e.Email.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)) ||
-                searchTerms.Any(t => e.Position != null && e.Position.ToLower(CultureInfo.InvariantCulture).Contains(t, StringComparison.OrdinalIgnoreCase)));
+                searchTerms.Any(t => e.FirstName.Contains(t)) ||
+                searchTerms.Any(t => e.LastName.Contains(t)) ||
+                searchTerms.Any(t => e.Email.Contains(t)) ||
+                searchTerms.Any(t => e.Position != null && e.Position.Contains(t)));
         }
 
         var employees = await query.Take(100).ToListAsync(cancellationToken);

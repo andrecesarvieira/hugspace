@@ -1,0 +1,96 @@
+{
+  "summary": {
+    "total_tests": 8,
+    "successful_tests": 4,
+    "failed_tests": 4,
+    "success_rate": 50.0,
+    "average_response_time": 16.64,
+    "status_codes": {
+      "200": 4,
+      "400": 4
+    },
+    "timestamp": "2025-09-28T16:11:43.539372"
+  },
+  "detailed_results": [
+    {
+      "test_name": "GET /api/admin/roles",
+      "endpoint": "/api/admin/roles",
+      "method": "GET",
+      "status_code": 200,
+      "response_time": 8.34,
+      "success": true,
+      "error_message": null,
+      "response_preview": "['Employee', 'Manager', 'HR', 'Admin']"
+    },
+    {
+      "test_name": "GET /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "GET",
+      "status_code": 200,
+      "response_time": 43.87,
+      "success": true,
+      "error_message": null,
+      "response_preview": "{'users': [{'id': '01998cd9-9c20-7f14-972f-39a582a3ece1', 'userName': 'admin', 'email': 'admin@synqcore.com', 'emailConfirmed': True, 'phoneNumber': None, 'phoneNumberConfirmed': False, 'twoFactorEnabled': False, 'lockoutEnabled': True, 'lockoutEnd': None, 'accessFailedCount': 0, 'roles': ['Admin']}], 'totalCount': 1, 'page': 1, 'pageSize': 10, 'totalPages': 1, 'hasPrevious': False, 'hasNext': False}"
+    },
+    {
+      "test_name": "GET /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "GET",
+      "status_code": 200,
+      "response_time": 40.55,
+      "success": true,
+      "error_message": null,
+      "response_preview": "{'users': [{'id': '01998cd9-9c20-7f14-972f-39a582a3ece1', 'userName': 'admin', 'email': 'admin@synqcore.com', 'emailConfirmed': True, 'phoneNumber': None, 'phoneNumberConfirmed': False, 'twoFactorEnabled': False, 'lockoutEnabled': True, 'lockoutEnd': None, 'accessFailedCount': 0, 'roles': ['Admin']}], 'totalCount': 1, 'page': 1, 'pageSize': 10, 'totalPages': 1, 'hasPrevious': False, 'hasNext': False}"
+    },
+    {
+      "test_name": "POST /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "POST",
+      "status_code": 400,
+      "response_time": 15.17,
+      "success": false,
+      "error_message": "HTTP 400: {\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"Role\":[\"Papel é obrigatório\"],\"UserName\":[\"Nome de usuário é obri",
+      "response_preview": "{'type': 'https://tools.ietf.org/html/rfc9110#section-15.5.1', 'title': 'One or more validation errors occurred.', 'status': 400, 'errors': {'Role': ['Papel é obrigatório'], 'UserName': ['Nome de usuário é obrigatório', 'Nome deve ter entre 3 e 50 caracteres']}, 'traceId': '00-94ae22f74b02423e62421436c2cfe29e-23a73803ef1b2914-00'}"
+    },
+    {
+      "test_name": "POST /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "POST",
+      "status_code": 400,
+      "response_time": 5.24,
+      "success": false,
+      "error_message": "HTTP 400: {\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"Role\":[\"Papel é obrigatório\"],\"UserName\":[\"Nome de usuário é obri",
+      "response_preview": "{'type': 'https://tools.ietf.org/html/rfc9110#section-15.5.1', 'title': 'One or more validation errors occurred.', 'status': 400, 'errors': {'Role': ['Papel é obrigatório'], 'UserName': ['Nome de usuário é obrigatório', 'Nome deve ter entre 3 e 50 caracteres']}, 'traceId': '00-4d4f2d24b92dac0d7b3f221db790cafd-28cee8dc69dccda2-00'}"
+    },
+    {
+      "test_name": "POST /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "POST",
+      "status_code": 400,
+      "response_time": 5.18,
+      "success": false,
+      "error_message": "HTTP 400: {\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"Role\":[\"Papel é obrigatório\"],\"Email\":[\"Email deve ter formato vá",
+      "response_preview": "{'type': 'https://tools.ietf.org/html/rfc9110#section-15.5.1', 'title': 'One or more validation errors occurred.', 'status': 400, 'errors': {'Role': ['Papel é obrigatório'], 'Email': ['Email deve ter formato válido'], 'Password': ['Senha deve ter no mínimo 8 caracteres'], 'UserName': ['Nome de usuário é obrigatório', 'Nome deve ter entre 3 e 50 caracteres']}, 'traceId': '00-0f02f4e2708bb74b7c20c04a312f0bf2-f8a16652b320643d-00'}"
+    },
+    {
+      "test_name": "POST /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "POST",
+      "status_code": 400,
+      "response_time": 3.71,
+      "success": false,
+      "error_message": "HTTP 400: {\"type\":\"https://tools.ietf.org/html/rfc9110#section-15.5.1\",\"title\":\"One or more validation errors occurred.\",\"status\":400,\"errors\":{\"Role\":[\"Papel é obrigatório\"],\"UserName\":[\"Nome de usuário é obri",
+      "response_preview": "{'type': 'https://tools.ietf.org/html/rfc9110#section-15.5.1', 'title': 'One or more validation errors occurred.', 'status': 400, 'errors': {'Role': ['Papel é obrigatório'], 'UserName': ['Nome de usuário é obrigatório', 'Nome deve ter entre 3 e 50 caracteres']}, 'traceId': '00-c4fd3ed700f72a2f48d2e236a442d627-432a9c70abdf547f-00'}"
+    },
+    {
+      "test_name": "GET /api/admin/users",
+      "endpoint": "/api/admin/users",
+      "method": "GET",
+      "status_code": 200,
+      "response_time": 11.09,
+      "success": true,
+      "error_message": null,
+      "response_preview": "{'users': [], 'totalCount': 0, 'page': 1, 'pageSize': 5, 'totalPages': 0, 'hasPrevious': False, 'hasNext': False}"
+    }
+  ]
+}

@@ -57,11 +57,11 @@ public class GetDocumentsQueryHandler : IRequestHandler<GetDocumentsQuery, Paged
         // Aplicar filtros
         if (!string.IsNullOrEmpty(request.SearchTerm))
         {
-            var searchTerm = request.SearchTerm.ToLowerInvariant();
+            var searchTerm = request.SearchTerm;
             query = query.Where(d =>
-                d.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                (d.Description != null && d.Description.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                (d.Tags != null && d.Tags.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+                d.Title.Contains(searchTerm) ||
+                (d.Description != null && d.Description.Contains(searchTerm)) ||
+                (d.Tags != null && d.Tags.Contains(searchTerm)));
         }
         if (!string.IsNullOrEmpty(request.Category))
         {

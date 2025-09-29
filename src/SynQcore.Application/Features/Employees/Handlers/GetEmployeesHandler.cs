@@ -32,11 +32,11 @@ public class GetEmployeesHandler : IRequestHandler<GetEmployeesQuery, PagedResul
         // Aplicar filtros
         if (!string.IsNullOrEmpty(request.Request.SearchTerm))
         {
-            var searchTerm = request.Request.SearchTerm.ToLower(CultureInfo.InvariantCulture);
-            query = query.Where(e => 
-                e.FirstName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                e.LastName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                e.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            var searchTerm = request.Request.SearchTerm;
+            query = query.Where(e =>
+                e.FirstName.Contains(searchTerm) ||
+                e.LastName.Contains(searchTerm) ||
+                e.Email.Contains(searchTerm));
         }
 
         if (request.Request.DepartmentId.HasValue)

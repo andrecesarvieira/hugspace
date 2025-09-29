@@ -1,0 +1,155 @@
+{
+  "summary": {
+    "total_tests": 14,
+    "successful_tests": 0,
+    "failed_tests": 14,
+    "success_rate": 0.0,
+    "average_response_time": 3.21,
+    "status_codes": {
+      "404": 14
+    },
+    "timestamp": "2025-09-28T16:13:24.792063"
+  },
+  "detailed_results": [
+    {
+      "test_name": "GET /api/media-assets",
+      "endpoint": "/api/media-assets",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 4.91,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/media-assets/upload",
+      "endpoint": "/api/media-assets/upload",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 2.65,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/media-assets/upload",
+      "endpoint": "/api/media-assets/upload",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 4.11,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/media-assets/upload",
+      "endpoint": "/api/media-assets/upload",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 2.96,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/media-assets/upload",
+      "endpoint": "/api/media-assets/upload",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 3.82,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets/search",
+      "endpoint": "/api/media-assets/search",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.44,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets",
+      "endpoint": "/api/media-assets",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 4.02,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets",
+      "endpoint": "/api/media-assets",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.65,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets/analytics",
+      "endpoint": "/api/media-assets/analytics",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.27,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets",
+      "endpoint": "/api/media-assets",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 3.15,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "POST /api/media-assets/upload",
+      "endpoint": "/api/media-assets/upload",
+      "method": "POST",
+      "status_code": 404,
+      "response_time": 2.85,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets/00000000-0000-0000-0000-000000000000",
+      "endpoint": "/api/media-assets/00000000-0000-0000-0000-000000000000",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 3.78,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets/00000000-0000-0000-0000-000000000000/download",
+      "endpoint": "/api/media-assets/00000000-0000-0000-0000-000000000000/download",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 2.15,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    },
+    {
+      "test_name": "GET /api/media-assets/search",
+      "endpoint": "/api/media-assets/search",
+      "method": "GET",
+      "status_code": 404,
+      "response_time": 3.21,
+      "success": false,
+      "error_message": "HTTP 404: ",
+      "response_preview": null
+    }
+  ]
+}
