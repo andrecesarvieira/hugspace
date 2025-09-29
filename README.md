@@ -2,10 +2,57 @@
 
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
-[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
+[![Blazor](https://img.shields.io### 📞 **Corporate Notification System (Fase 4### 💡 **Recursos Corporativos\*\*
+
+- ✅ **Rate Limiting** atualizado (Employee: 500/min, Manager: 1000/min, HR: 1500/min, Admin: 2000/min)
+- ✅ **Multi-Channel Delivery** (7 canais: InApp, Email, Push, SMS, Webhook, Teams, Slack)
+- ✅ **Workflow de Aprovação** (10 status corporativos)
+- ✅ **Sistema de Templates** reutilizáveis com placeholders
+- ✅ **Corporate Search** com full-text search em todo conteúdo
+- ✅ **Expert Finder** - "Who knows about...?" baseado em skills
+- ✅ **Advanced Search** com filtros complexos (título, conteúdo, autor)
+- ✅ **Search Analytics** + Trending Topics + Content Statistics
+- ✅ **AI-powered Recommendations** baseadas em role/department
+- ✅ **Autorização baseada em roles** (HR/Admin para modificações)
+- ✅ **Soft Delete** com auditoria completa
+- ✅ **Validação corporativa** (FluentValidation + business rules)
+- ✅ **Performance Logging** (60+ LoggerMessage delegates)
+- ✅ **Swagger UI** completo em http://localhost:5000/swagger
+- ✅ **Health Checks** em /health, /health/ready, /health/livetp
+  POST /api/notifications - Criar notificação (Admin/HR/Manager)
+  GET /api/notifications/my-notifications - Minhas notificações
+  GET /api/notifications - Todas as notificações (Admin)
+  GET /api/notifications/{id} - Detalhes da notificação
+  POST /api/notifications/{id}/approve - Aprovar/rejeitar notificação
+  POST /api/notifications/{id}/send - Enviar notificação aprovada
+  POST /api/notifications/{id}/mark-read - Marcar como lida
+  PUT /api/notifications/{id} - Atualizar rascunho
+  POST /api/notifications/{id}/cancel - Cancelar notificação
+
+````
+
+### 🔍 **Corporate Search e Knowledge Discovery (Fase 4.4)**
+
+```http
+GET    /api/corporatesearch                     - Busca corporativa básica
+POST   /api/corporatesearch/advanced            - Busca avançada (título, conteúdo, autor)
+GET    /api/corporatesearch/suggestions         - Sugestões de busca
+GET    /api/corporatesearch/category/{category} - Buscar por categoria
+GET    /api/corporatesearch/author/{authorId}   - Buscar por autor
+GET    /api/corporatesearch/department/{deptId} - Buscar por departamento
+POST   /api/corporatesearch/tags               - Buscar por tags
+GET    /api/corporatesearch/similar/{contentId} - Conteúdo similar
+GET    /api/corporatesearch/recent             - Conteúdo recente
+GET    /api/corporatesearch/popular            - Conteúdo popular
+GET    /api/corporatesearch/analytics          - Analytics de busca
+GET    /api/corporatesearch/trending           - Trending topics
+GET    /api/corporatesearch/stats              - Estatísticas de conteúdo
+POST   /api/corporatesearch/export             - Exportar resultados
+POST   /api/corporatesearch/click              - Registrar clique (analytics)
+```-Híbrido-green)](https://blazor.net/)
 [![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
 [![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
-[![Fase](https://img.shields.io/badge/Fase-4.1--4.2%20Completa-success)](docs/ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-4.4%20Completa-success)](docs/ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 
 ## 🏆 **PIONEIRO NO BRASIL**
@@ -73,7 +120,7 @@
 ./chatmode.sh
 # ou
 ./cm
-```
+````
 
 **Todos os 10 modos** (desenvolvimento, arquitetura, debugging, testing, documentação, deployment, segurança, performance, blazor, api) estão **sempre ativos simultaneamente** para máxima qualidade e consistência.
 
@@ -137,7 +184,7 @@ src/
 
 ## 📊 Status do Desenvolvimento
 
-> **🎯 Fase 4.2 CONCLUÍDA!** _(26/09/2025)_ - Corporate Notification System completo com multi-channel delivery!
+> **🎯 Fase 4.4 CONCLUÍDA!** _(29/09/2025)_ - Corporate Search e Knowledge Discovery System completo com busca full-text em todo conteúdo corporativo!
 
 📋 **[📈 ROADMAP DETALHADO →](docs/ROADMAP.md)** - Acompanhe todo o progresso e planejamento das 8 fases!
 
@@ -146,11 +193,10 @@ src/
 | **Fase 1**       | ✅ **CONCLUÍDO** | Modelo Corporativo + Database Schema                                     | Set/2025 |
 | **Fase 2**       | ✅ **CONCLUÍDO** | API Core + JWT Auth + CQRS + Rate Limiting + Employee + Admin Management | Set/2025 |
 | **Fase 3**       | ✅ **CONCLUÍDO** | Core Corporativo + Knowledge Management + Collaboration + Feed           | Set/2025 |
-| **Fase 4.1-4.2** | ✅ **CONCLUÍDO** | SignalR + Corporate Notification System Multi-Channel                    | Set/2025 |
-| **Fase 4.3**     | ✅ **CONCLUÍDO** | Corporate Media + Document Management                                    | Set/2025 |
-| **Fase 5**       | ⏳ Planejado     | Interface Blazor + PWA                                                   | Nov/2025 |
+| **Fase 4.1-4.4** | ✅ **CONCLUÍDO** | SignalR + Notifications + Media Management + Corporate Search            | Set/2025 |
+| **Fase 5**       | ⏳ Planejado     | Interface Blazor + PWA + Design System                                   | Nov/2025 |
 
-### 🎊 Conquistas das Fases 1-4.3:
+### 🎊 Conquistas das Fases 1-4.4:
 
 ```
 ✅ Fase 1 - Infraestrutura:
@@ -195,6 +241,16 @@ src/
    • File Management (upload, versioning, access control)
    • Corporate Asset Library (logos, templates, policies)
    • Authorization role-based + Performance logging
+
+✅ Fase 4.4 - Corporate Search e Knowledge Discovery:
+   • Corporate Search Controller (15+ endpoints + analytics)
+   • Full-text search em todo conteúdo (Posts, Documents, Media, Employees)
+   • Advanced Search (busca avançada com filtros complexos)
+   • Expert Finder ("Who knows about...?" baseado em skills)
+   • Search Analytics + Trending Topics + Content Stats
+   • AI-powered recommendations baseadas em role/department
+   • Skills-based search e expertise location
+   • Performance otimizada (LoggerMessage delegates + manual mapping)
 ```
 
 ## 🛠️ Stack Tecnológica
