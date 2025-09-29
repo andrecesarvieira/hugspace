@@ -327,6 +327,7 @@ builder.Services.AddScoped<IRequestHandler<ToggleTemplateStatusCommand, Document
 
 // === CORPORATE SEARCH HANDLERS ===
 builder.Services.AddScoped<IRequestHandler<CorporateSearchQuery, PagedResult<SearchResultDto>>, CorporateSearchQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<AdvancedSearchQuery, PagedResult<SearchResultDto>>, AdvancedSearchQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchSuggestionsQuery, List<SearchSuggestionDto>>, GetSearchSuggestionsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchAnalyticsQuery, SearchAnalyticsDto>, GetSearchAnalyticsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<TrendingTopicDto>>, GetTrendingTopicsQueryHandler>();

@@ -7,6 +7,13 @@ namespace SynQcore.Infrastructure.Migrations
     /// <inheritdoc />
     public partial class NewComputerSetup : Migration
     {
+        // Arrays estáticos para evitar CA1861 warnings
+        private static readonly string[] NotificationTemplatesCategoryIsActiveColumns = { "Category", "IsActive" };
+        private static readonly string[] NotificationDeliveriesEmployeeIdStatusColumns = { "EmployeeId", "Status" };
+        private static readonly string[] NotificationDeliveriesNotificationIdEmployeeIdColumns = { "NotificationId", "EmployeeId" };
+        private static readonly string[] NotificationDeliveriesStatusNextAttemptAtColumns = { "Status", "NextAttemptAt" };
+        private static readonly string[] CorporateNotificationsStatusScheduledForColumns = { "Status", "ScheduledFor" };
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -470,7 +477,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationTemplates_Category_IsActive",
                 table: "NotificationTemplates",
-                columns: new[] { "Category", "IsActive" });
+                columns: NotificationTemplatesCategoryIsActiveColumns);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationTemplates_Code_Unique",
@@ -496,7 +503,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_EmployeeId_Status",
                 table: "NotificationDeliveries",
-                columns: new[] { "EmployeeId", "Status" });
+                columns: NotificationDeliveriesEmployeeIdStatusColumns);
 
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_NextAttemptAt",
@@ -506,7 +513,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_NotificationId_EmployeeId_Unique",
                 table: "NotificationDeliveries",
-                columns: new[] { "NotificationId", "EmployeeId" },
+                columns: NotificationDeliveriesNotificationIdEmployeeIdColumns,
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -517,7 +524,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_NotificationDeliveries_Status_NextAttemptAt",
                 table: "NotificationDeliveries",
-                columns: new[] { "Status", "NextAttemptAt" });
+                columns: NotificationDeliveriesStatusNextAttemptAtColumns);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateNotifications_ExpiresAt",
@@ -542,7 +549,7 @@ namespace SynQcore.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateNotifications_Status_ScheduledFor",
                 table: "CorporateNotifications",
-                columns: new[] { "Status", "ScheduledFor" });
+                columns: CorporateNotificationsStatusScheduledForColumns);
 
             migrationBuilder.CreateIndex(
                 name: "IX_CorporateNotifications_Type",
