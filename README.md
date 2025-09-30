@@ -1,7 +1,5 @@
 # 🚀 SynQcore - Rede Social Corporativa# 🚀 SynQcore - API de Rede Social Corporativa
 
-
-
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)[![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https:/## 🚀 Início Rápido
 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
@@ -16,17 +14,15 @@
 
 python3 scripts/start-full.py
 
-> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**  
+> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
 
-> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  # Abre automaticamente:
+> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. # Abre automaticamente:
 
 > [**Pesquisa de mercado**](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) comprovou **zero concorrentes nacionais** - oportunidade única de market leadership.# - Swagger UI: http://localhost:5000/swagger
 
 # - Blazor App: http://localhost:5226
 
 ## ✨ Características Principais```
-
-
 
 - 🏛️ **Clean Architecture** - Arquitetura empresarial com .NET 9 + CQRS + MediatR### 🎯 **Chat Modes Sempre Ativos**
 
@@ -74,19 +70,20 @@ python3 scripts/start-full.py
 
 1. **Clone e configure**- ✅ **Autorização baseada em roles** (HR/Admin para modificações)
 
-   ```bash- ✅ **Soft Delete** com auditoria completa
+   ````bash- ✅ **Soft Delete** com auditoria completa
 
    git clone https://github.com/andrecesarvieira/synqcore- ✅ **Validação corporativa** (FluentValidation + business rules)
 
    cd synqcore- ✅ **Performance Logging** (60+ LoggerMessage delegates)
 
    ```- ✅ **Swagger UI** completo em http://localhost:5000/swagger
+   ````
 
 - ✅ **Health Checks** em /health, /health/ready, /health/livetp
 
-2. **Inicie o ambiente completo**  POST /api/notifications - Criar notificação (Admin/HR/Manager)
+2. **Inicie o ambiente completo** POST /api/notifications - Criar notificação (Admin/HR/Manager)
 
-   ```bash  GET /api/notifications/my-notifications - Minhas notificações
+   ````bash GET /api/notifications/my-notifications - Minhas notificações
 
    # ⭐ RECOMENDADO: Aplicação completa (API + Blazor)  GET /api/notifications - Todas as notificações (Admin)
 
@@ -102,7 +99,7 @@ python3 scripts/start-full.py
 
    ```  POST /api/notifications/{id}/cancel - Cancelar notificação
 
-
+   ````
 
 3. **Credenciais de teste**````
 
@@ -110,13 +107,11 @@ python3 scripts/start-full.py
 
    - **Senha**: `SynQcore@Admin123!`### 🔍 **Corporate Search e Knowledge Discovery (Fase 4.4)**
 
-
-
 ### Scripts Alternativos```http
 
-GET    /api/corporatesearch                     - Busca corporativa básica
+GET /api/corporatesearch - Busca corporativa básica
 
-```bashPOST   /api/corporatesearch/advanced            - Busca avançada (título, conteúdo, autor)
+````bashPOST /api/corporatesearch/advanced            - Busca avançada (título, conteúdo, autor)
 
 python3 scripts/start-api-5000.py    # Apenas APIGET    /api/corporatesearch/suggestions         - Sugestões de busca
 
@@ -212,13 +207,13 @@ POST /api/auth/register    # Registrar funcionário
 
 POST /api/auth/login       # Login JWT## 🏆 **Descoberta de Mercado: PIONEIRISMO BRASILEIRO**
 
-```
+````
 
 ### 🇧🇷 **PRIMEIRA Rede Social Corporativa Open Source 100% Brasileira**
 
 ### Gestão de Funcionários
 
-```http**Pesquisa de mercado realizada em setembro/2025** comprovou que:
+````http**Pesquisa de mercado realizada em setembro/2025** comprovou que:
 
 GET    /api/employees           # Listar funcionários
 
@@ -244,7 +239,7 @@ GET    /api/corporatesearch/suggestions        # Sugestões- **Resultado**: Apen
 
 GET    /api/corporatesearch/analytics          # Analytics- **Conclusão**: **SynQcore é ÚNICO no segmento**
 
-```
+````
 
 #### 🎯 **Posicionamento Estratégico**
 
@@ -743,3 +738,4 @@ Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICEN
 <sub>🤝 **Contribuições bem-vindas** - Faça parte da evolução do software corporativo nacional</sub>
 
 </p>
+````
