@@ -1,0 +1,663 @@
+@page "/design-system"
+@inject ThemeService ThemeService
+
+<PageTitle>SynQcore - Design System</PageTitle>
+
+<div class="synq-container synq-section synq-fade-in-up">
+    <div class="synq-flex synq-justify-between synq-items-center" style="margin-bottom: var(--synq-space-8);">
+        <div class="synq-stagger-item">
+            <h1 class="synq-gradient-text synq-slide-in-down">SynQcore Design System</h1>
+            <p>Biblioteca de componentes corporativos reutilizáveis</p>
+        </div>
+
+        <div class="synq-stagger-item">
+            <SynQButton
+                Text="@ThemeService.GetThemeDisplayName()"
+                Icon="@ThemeService.GetThemeToggleIcon()"
+                Variant="SynQButtonVariant.Outline"
+                OnClick="ToggleTheme" />
+        </div>
+    </div>
+
+    <!-- Playground Interativo -->
+    <SynQCard Title="🎮 Playground Interativo" Variant="SynQCardVariant.Elevated" class="synq-section synq-stagger-item">
+        <ContentTemplate>
+            <div class="playground-container synq-slide-in-up">
+                <div class="playground-controls">
+                    <h4>Teste os Componentes Interativamente</h4>
+                    <div class="control-group synq-fade-in">
+                        <label>Tipo de Componente:</label>
+                        <select @bind="selectedComponent" @bind:event="onchange" class="synq-select">
+                            <option value="button">Botão</option>
+                            <option value="card">Card</option>
+                            <option value="badge">Badge</option>
+                        </select>
+                    </div>
+
+                    @if (selectedComponent == "button")
+                    {
+                        <div class="control-group">
+                            <label>Variante:</label>
+                            <select @bind="buttonVariant" class="synq-select">
+                                <option value="Primary">Primário</option>
+                                <option value="Secondary">Secundário</option>
+                                <option value="Outline">Outline</option>
+                                <option value="Ghost">Ghost</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Tamanho:</label>
+                            <select @bind="buttonSize" class="synq-select">
+                                <option value="Small">Pequeno</option>
+                                <option value="Medium">Médio</option>
+                                <option value="Large">Grande</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>
+                                <input type="checkbox" @bind="buttonLoading" /> Loading
+                            </label>
+                        </div>
+                        <div class="control-group">
+                            <label>
+                                <input type="checkbox" @bind="buttonDisabled" /> Desabilitado
+                            </label>
+                        </div>
+                    }
+
+                    @if (selectedComponent == "badge")
+                    {
+                        <div class="control-group">
+                            <label>Variante:</label>
+                            <select @bind="badgeVariant" class="synq-select">
+                                <option value="Primary">Primário</option>
+                                <option value="Success">Sucesso</option>
+                                <option value="Warning">Aviso</option>
+                                <option value="Error">Erro</option>
+                                <option value="Info">Info</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>
+                                <input type="checkbox" @bind="badgePulsing" /> Pulsando
+                            </label>
+                        </div>
+                    }
+                </div>
+
+                <div class="playground-preview">
+                    <h4>Preview</h4>
+                    <div class="preview-area">
+                        @if (selectedComponent == "button")
+                        {
+                            <SynQButton
+                                Text="Botão de Teste"
+                                Icon="🎯"
+                                Variant="GetButtonVariant()"
+                                Size="GetButtonSize()"
+                                IsLoading="buttonLoading"
+                                IsDisabled="buttonDisabled" />
+                        }
+                        @if (selectedComponent == "card")
+                        {
+                            <SynQCard
+                                Title="Card de Teste"
+                                Description="Este é um card para demonstração"
+                                Variant="SynQCardVariant.Elevated"
+                                IsClickable="true">
+                                <ContentTemplate>
+                                    <p>Conteúdo do card interativo para testes.</p>
+                                </ContentTemplate>
+                                <FooterContent>
+                                    <SynQButton Text="Ação" Size="SynQButtonSize.Small" />
+                                </FooterContent>
+                            </SynQCard>
+                        }
+                        @if (selectedComponent == "badge")
+                        {
+                            <SynQBadge
+                                Text="Badge de Teste"
+                                Icon="🏷️"
+                                Variant="GetBadgeVariant()"
+                                IsPulsing="badgePulsing" />
+                        }
+                    </div>
+
+                    <div class="code-preview">
+                        <h5>Código:</h5>
+                        <div class="code-block">
+                            <button class="copy-button" @onclick="CopyCode">📋 Copiar</button>
+                            <code class="language-html">@GetComponentCode()</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+
+    <!-- Seção de Cores -->
+    <SynQCard Title="🎨 Cores do Sistema" class="synq-section">
+        <ContentTemplate>
+            <div class="color-palette">
+                <div class="color-group">
+                    <h4>Cores Primárias</h4>
+                    <div class="color-swatches">
+                        <div class="color-swatch" style="background-color: var(--synq-primary-500);">
+                            <span>Primary 500</span>
+                        </div>
+                        <div class="color-swatch" style="background-color: var(--synq-primary-700);">
+                            <span>Primary 700</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="color-group">
+                    <h4>Cores de Status</h4>
+                    <div class="color-swatches">
+                        <div class="color-swatch" style="background-color: var(--synq-success-500);">
+                            <span>Success</span>
+                        </div>
+                        <div class="color-swatch" style="background-color: var(--synq-warning-500);">
+                            <span>Warning</span>
+                        </div>
+                        <div class="color-swatch" style="background-color: var(--synq-error-500);">
+                            <span>Error</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+
+    <!-- Seção de Botões -->
+    <SynQCard Title="🔘 Botões" class="synq-section">
+        <ContentTemplate>
+            <div class="component-showcase">
+                <div class="component-group">
+                    <h4>Variantes</h4>
+                    <div class="synq-flex synq-gap-4" style="flex-wrap: wrap;">
+                        <SynQButton Text="Primário" Variant="SynQButtonVariant.Primary" />
+                        <SynQButton Text="Secundário" Variant="SynQButtonVariant.Secondary" />
+                        <SynQButton Text="Outline" Variant="SynQButtonVariant.Outline" />
+                        <SynQButton Text="Ghost" Variant="SynQButtonVariant.Ghost" />
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Tamanhos</h4>
+                    <div class="synq-flex synq-gap-4 synq-items-center">
+                        <SynQButton Text="Pequeno" Size="SynQButtonSize.Small" />
+                        <SynQButton Text="Médio" Size="SynQButtonSize.Medium" />
+                        <SynQButton Text="Grande" Size="SynQButtonSize.Large" />
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Estados</h4>
+                    <div class="synq-flex synq-gap-4">
+                        <SynQButton Text="Normal" />
+                        <SynQButton Text="Carregando" IsLoading="true" />
+                        <SynQButton Text="Desabilitado" IsDisabled="true" />
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Com Ícones</h4>
+                    <div class="synq-flex synq-gap-4">
+                        <SynQButton Text="Salvar" Icon="💾" />
+                        <SynQButton Text="Compartilhar" Icon="📤" Variant="SynQButtonVariant.Outline" />
+                        <SynQButton Icon="⚙️" Variant="SynQButtonVariant.Ghost" />
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+
+    <!-- Seção de Cards -->
+    <SynQCard Title="📄 Cards" class="synq-section">
+        <ContentTemplate>
+            <div class="synq-grid synq-grid-cols-3">
+                <SynQCard
+                    Title="Card Padrão"
+                    Description="Card básico com conteúdo"
+                    Variant="SynQCardVariant.Default">
+                    <ContentTemplate>
+                        <p>Este é um card padrão com conteúdo corporativo.</p>
+                    </ContentTemplate>
+                    <FooterContent>
+                        <SynQButton Text="Ação" Size="SynQButtonSize.Small" />
+                    </FooterContent>
+                </SynQCard>
+
+                <SynQCard
+                    Title="Card Elevado"
+                    Description="Card com sombra"
+                    Variant="SynQCardVariant.Elevated"
+                    IsClickable="true">
+                    <ContentTemplate>
+                        <p>Card com elevação e efeito hover.</p>
+                    </ContentTemplate>
+                </SynQCard>
+
+                <SynQCard
+                    Title="Card Outlined"
+                    Description="Card com borda"
+                    Variant="SynQCardVariant.Outlined">
+                    <ContentTemplate>
+                        <p>Card com borda destacada.</p>
+                    </ContentTemplate>
+                </SynQCard>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+
+    <!-- Seção de Avatares -->
+    <SynQCard Title="👤 Avatares" class="synq-section">
+        <ContentTemplate>
+            <div class="component-showcase">
+                <div class="component-group">
+                    <h4>Tamanhos</h4>
+                    <div class="synq-flex synq-gap-4 synq-items-center">
+                        <SynQAvatar Initials="XS" Size="SynQAvatarSize.ExtraSmall" />
+                        <SynQAvatar Initials="SM" Size="SynQAvatarSize.Small" />
+                        <SynQAvatar Initials="MD" Size="SynQAvatarSize.Medium" />
+                        <SynQAvatar Initials="LG" Size="SynQAvatarSize.Large" />
+                        <SynQAvatar Initials="XL" Size="SynQAvatarSize.ExtraLarge" />
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Tipos</h4>
+                    <div class="synq-flex synq-gap-4 synq-items-center">
+                        <SynQAvatar Initials="AC" AltText="André Costa" />
+                        <SynQAvatar Icon="👨‍💼" AltText="Gerente" />
+                        <SynQAvatar
+                            ImageUrl="https://via.placeholder.com/150"
+                            Initials="FB"
+                            AltText="Foto do usuário" />
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Status Online</h4>
+                    <div class="synq-flex synq-gap-4 synq-items-center">
+                        <SynQAvatar
+                            Initials="ON"
+                            ShowOnlineStatus="true"
+                            IsOnline="true"
+                            AltText="Usuário online" />
+                        <SynQAvatar
+                            Initials="OF"
+                            ShowOnlineStatus="true"
+                            IsOnline="false"
+                            AltText="Usuário offline" />
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+
+    <!-- Seção de Badges -->
+    <SynQCard Title="🏷️ Badges" class="synq-section">
+        <ContentTemplate>
+            <div class="component-showcase">
+                <div class="component-group">
+                    <h4>Variantes</h4>
+                    <div class="synq-flex synq-gap-4 synq-items-center" style="flex-wrap: wrap;">
+                        <SynQBadge Text="Primário" Variant="SynQBadgeVariant.Primary" />
+                        <SynQBadge Text="Secundário" Variant="SynQBadgeVariant.Secondary" />
+                        <SynQBadge Text="Sucesso" Variant="SynQBadgeVariant.Success" />
+                        <SynQBadge Text="Aviso" Variant="SynQBadgeVariant.Warning" />
+                        <SynQBadge Text="Erro" Variant="SynQBadgeVariant.Error" />
+                        <SynQBadge Text="Info" Variant="SynQBadgeVariant.Info" />
+                    </div>
+                </div>
+
+                <div class="component-group">
+                    <h4>Com Ícones e Contadores</h4>
+                    <div class="synq-flex synq-gap-4 synq-items-center">
+                        <SynQBadge Text="Notificações" Icon="🔔" ShowCount="true" Count="5" />
+                        <SynQBadge Text="Mensagens" Icon="💬" ShowCount="true" Count="150" />
+                        <SynQBadge Text="Ativo" Icon="✅" IsPulsing="true" Variant="SynQBadgeVariant.Success" />
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+
+    <!-- Seção de Loading -->
+    <SynQCard Title="⏳ Estados de Loading" class="synq-section">
+        <ContentTemplate>
+            <div class="component-showcase">
+                <div class="component-group">
+                    <h4>Spinner</h4>
+                    <SynQLoading
+                        Type="SynQLoading.SynQLoadingType.Spinner"
+                        Position="SynQLoadingPosition.Inline"
+                        Message="Carregando dados..." />
+                </div>
+
+                <div class="component-group">
+                    <h4>Dots</h4>
+                    <SynQLoading
+                        Type="SynQLoading.SynQLoadingType.Dots"
+                        Position="SynQLoadingPosition.Inline"
+                        Message="Processando..." />
+                </div>
+
+                <div class="component-group">
+                    <h4>Skeleton</h4>
+                    <SynQLoading
+                        Type="SynQLoading.SynQLoadingType.Skeleton"
+                        Position="SynQLoadingPosition.Inline"
+                        SkeletonLines="3" />
+                </div>
+
+                <div class="component-group">
+                    <h4>Barra de Progresso</h4>
+                    <SynQLoading
+                        Type="SynQLoading.SynQLoadingType.Progress"
+                        Position="SynQLoadingPosition.Inline"
+                        Progress="65"
+                        ShowPercentage="true"
+                        Message="Upload em progresso..." />
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+</div>
+
+@code {
+    // Playground variables
+    private string selectedComponent = "button";
+    private string buttonVariant = "Primary";
+    private string buttonSize = "Medium";
+    private bool buttonLoading = false;
+    private bool buttonDisabled = false;
+    private string badgeVariant = "Primary";
+    private bool badgePulsing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+    }
+
+    private async Task ToggleTheme()
+    {
+        await ThemeService.ToggleThemeAsync();
+    }
+
+    private SynQButtonVariant GetButtonVariant()
+    {
+        return buttonVariant switch
+        {
+            "Primary" => SynQButtonVariant.Primary,
+            "Secondary" => SynQButtonVariant.Secondary,
+            "Outline" => SynQButtonVariant.Outline,
+            "Ghost" => SynQButtonVariant.Ghost,
+            _ => SynQButtonVariant.Primary
+        };
+    }
+
+    private SynQButtonSize GetButtonSize()
+    {
+        return buttonSize switch
+        {
+            "Small" => SynQButtonSize.Small,
+            "Medium" => SynQButtonSize.Medium,
+            "Large" => SynQButtonSize.Large,
+            _ => SynQButtonSize.Medium
+        };
+    }
+
+    private SynQBadgeVariant GetBadgeVariant()
+    {
+        return badgeVariant switch
+        {
+            "Primary" => SynQBadgeVariant.Primary,
+            "Success" => SynQBadgeVariant.Success,
+            "Warning" => SynQBadgeVariant.Warning,
+            "Error" => SynQBadgeVariant.Error,
+            "Info" => SynQBadgeVariant.Info,
+            _ => SynQBadgeVariant.Primary
+        };
+    }
+
+    private string GetComponentCode()
+    {
+        return selectedComponent switch
+        {
+            "button" => $@"<SynQButton
+    Text=""Botão de Teste""
+    Icon=""🎯""
+    Variant=""SynQButtonVariant.{buttonVariant}""
+    Size=""SynQButtonSize.{buttonSize}""
+    IsLoading=""{buttonLoading.ToString().ToLower()}""
+    IsDisabled=""{buttonDisabled.ToString().ToLower()}"" />",
+            "card" => @"<SynQCard
+    Title=""Card de Teste""
+    Description=""Este é um card para demonstração""
+    Variant=""SynQCardVariant.Elevated""
+    IsClickable=""true"">
+    <ContentTemplate>
+        <p>Conteúdo do card interativo para testes.</p>
+    </ContentTemplate>
+    <FooterContent>
+        <SynQButton Text=""Ação"" Size=""SynQButtonSize.Small"" />
+    </FooterContent>
+</SynQCard>",
+            "badge" => $@"<SynQBadge
+    Text=""Badge de Teste""
+    Icon=""🏷️""
+    Variant=""SynQBadgeVariant.{badgeVariant}""
+    IsPulsing=""{badgePulsing.ToString().ToLower()}"" />",
+            _ => "// Código do componente"
+        };
+    }
+
+    private void CopyCode()
+    {
+        // TODO: Implementar cópia para clipboard via JavaScript
+        // Por enquanto, apenas mostra feedback visual
+        StateHasChanged();
+    }
+}
+
+<style>
+    /* Playground styles */
+    .playground-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--synq-space-8);
+        margin-top: var(--synq-space-6);
+    }
+
+    .playground-controls {
+        background: var(--synq-gray-50);
+        padding: var(--synq-space-6);
+        border-radius: var(--synq-radius-lg);
+        border: 1px solid var(--synq-border);
+    }
+
+    .playground-preview {
+        background: var(--synq-surface);
+        padding: var(--synq-space-6);
+        border-radius: var(--synq-radius-lg);
+        border: 1px solid var(--synq-border);
+    }
+
+    .control-group {
+        margin-bottom: var(--synq-space-4);
+    }
+
+    .control-group label {
+        display: block;
+        margin-bottom: var(--synq-space-2);
+        font-weight: var(--synq-font-medium);
+        color: var(--synq-text-primary);
+    }
+
+    .synq-select {
+        width: 100%;
+        padding: var(--synq-space-3);
+        border: 1px solid var(--synq-border);
+        border-radius: var(--synq-radius-md);
+        background: white;
+        font-size: var(--synq-text-sm);
+        transition: border-color 0.2s ease;
+    }
+
+    .synq-select:focus {
+        outline: none;
+        border-color: var(--synq-primary);
+        box-shadow: 0 0 0 2px rgba(var(--synq-primary-rgb), 0.2);
+    }
+
+    .preview-area {
+        background: var(--synq-gray-25);
+        padding: var(--synq-space-8);
+        border-radius: var(--synq-radius-md);
+        border: 2px dashed var(--synq-border);
+        margin: var(--synq-space-4) 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 120px;
+        transition: all 0.3s ease;
+    }
+
+    .preview-area:hover {
+        border-color: var(--synq-primary);
+        background: var(--synq-primary-25);
+    }
+
+    .code-preview {
+        margin-top: var(--synq-space-6);
+    }
+
+    .code-block {
+        position: relative;
+        background: var(--synq-gray-900);
+        color: var(--synq-gray-100);
+        padding: var(--synq-space-4);
+        border-radius: var(--synq-radius-md);
+        font-family: 'Monaco', 'Consolas', monospace;
+        font-size: var(--synq-text-sm);
+        overflow-x: auto;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .copy-button {
+        position: absolute;
+        top: var(--synq-space-2);
+        right: var(--synq-space-2);
+        background: var(--synq-primary);
+        color: white;
+        border: none;
+        padding: var(--synq-space-2) var(--synq-space-3);
+        border-radius: var(--synq-radius-sm);
+        font-size: var(--synq-text-xs);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .copy-button:hover {
+        background: var(--synq-primary-dark);
+        transform: scale(1.05);
+    }
+
+    .copy-button:active {
+        transform: scale(0.95);
+    }
+
+    /* Original styles */
+    .color-palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--synq-space-6);
+    }
+
+    .color-group h4 {
+        margin-bottom: var(--synq-space-3);
+        color: var(--synq-gray-700);
+    }
+
+    .color-swatches {
+        display: flex;
+        flex-direction: column;
+        gap: var(--synq-space-2);
+    }
+
+    .color-swatch {
+        padding: var(--synq-space-4);
+        border-radius: var(--synq-border-radius-md);
+        color: white;
+        font-weight: var(--synq-font-medium);
+        font-size: var(--synq-text-sm);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease;
+    }
+
+    .color-swatch:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+
+    .component-showcase {
+        display: flex;
+        flex-direction: column;
+        gap: var(--synq-space-6);
+    }
+
+    .component-group h4 {
+        margin-bottom: var(--synq-space-3);
+        color: var(--synq-gray-700);
+        font-size: var(--synq-text-base);
+    }
+
+    /* Responsividade */
+    .playground-responsive {
+        grid-template-columns: 1fr;
+    }
+
+    .synq-grid-responsive-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .synq-flex-responsive {
+        flex-direction: column;
+    }
+
+    .preview-area-mobile {
+        min-height: 80px;
+        padding: var(--synq-space-4);
+    }
+
+    /* Tema escuro */
+    [data-theme="dark"] .playground-controls {
+        background: var(--synq-gray-800);
+        border-color: var(--synq-gray-600);
+    }
+
+    [data-theme="dark"] .playground-preview {
+        background: var(--synq-gray-800);
+        border-color: var(--synq-gray-600);
+    }
+
+    [data-theme="dark"] .synq-select {
+        background: var(--synq-gray-700);
+        color: var(--synq-gray-100);
+        border-color: var(--synq-gray-600);
+    }
+
+    [data-theme="dark"] .preview-area {
+        background: var(--synq-gray-900);
+        border-color: var(--synq-gray-600);
+    }
+
+    [data-theme="dark"] .preview-area:hover {
+        border-color: var(--synq-primary);
+        background: var(--synq-gray-800);
+    }
+</style>

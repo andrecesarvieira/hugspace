@@ -1,0 +1,153 @@
+@page "/"
+
+<PageTitle>SynQcore - Rede Social Corporativa</PageTitle>
+
+<div class="synq-container synq-section synq-fade-in-up">
+    <div class="text-center">
+        <h1 class="synq-text-4xl synq-font-bold synq-gradient-text synq-slide-in-down" style="margin-bottom: var(--synq-space-6);">
+            🚀 SynQcore
+        </h1>
+        <p class="synq-text-xl synq-text-gray-600" style="margin-bottom: var(--synq-space-8);">
+            Rede Social Corporativa Open Source - Interface Blazor
+        </p>
+
+        <div class="synq-flex synq-justify-center synq-gap-4" style="margin-bottom: var(--synq-space-12);">
+            <SynQButton Text="Ver Design System" Icon="🎨" Variant="SynQButtonVariant.Primary"
+                Size="SynQButtonSize.Large" OnClick="NavigateToDesignSystem" />
+
+            <SynQButton Text="Documentação" Icon="📚" Variant="SynQButtonVariant.Outline"
+                Size="SynQButtonSize.Large" OnClick="NavigateToDocumentation" />
+        </div>
+    </div>
+
+    <div class="synq-grid synq-grid-cols-3 synq-responsive-grid-3" style="margin-bottom: var(--synq-space-12);">
+        <div class="synq-stagger-item">
+            <SynQCard Title="🔧 Clean Architecture" Description="Arquitetura limpa e escalável"
+                Variant="SynQCardVariant.Default">
+                <ContentTemplate>
+                    <p>Implementado com .NET 9, CQRS, MediatR e Entity Framework Core.</p>
+                </ContentTemplate>
+            </SynQCard>
+        </div>
+
+        <div class="synq-stagger-item">
+            <SynQCard Title="🎨 Design System" Description="Componentes reutilizáveis"
+                Variant="SynQCardVariant.Elevated">
+                <ContentTemplate>
+                    <p>Sistema de design corporativo com temas claro/escuro e responsividade.</p>
+                </ContentTemplate>
+            </SynQCard>
+        </div>
+
+        <div class="synq-stagger-item">
+            <SynQCard Title="⚡ Performance" Description="Otimizado para produção"
+                Variant="SynQCardVariant.Outlined">
+                <ContentTemplate>
+                    <p>Blazor WebAssembly com PWA, lazy loading e virtual scrolling.</p>
+                </ContentTemplate>
+            </SynQCard>
+        </div>
+    </div>
+
+    <SynQCard Title="📊 Status do Projeto" Variant="SynQCardVariant.Filled">
+        <ContentTemplate>
+            <div class="synq-grid synq-grid-cols-2" style="gap: var(--synq-space-6);">
+                <div>
+                    <h4>✅ Funcionalidades Implementadas:</h4>
+                    <div class="synq-flex synq-flex-col synq-gap-2" style="margin-top: var(--synq-space-3);">
+                        <SynQBadge Text="API REST Completa" Icon="🔌" Variant="SynQBadgeVariant.Success" />
+                        <SynQBadge Text="Autenticação JWT" Icon="🔐" Variant="SynQBadgeVariant.Success" />
+                        <SynQBadge Text="Corporate Search" Icon="🔍" Variant="SynQBadgeVariant.Success" />
+                        <SynQBadge Text="Design System" Icon="🎨" Variant="SynQBadgeVariant.Success" />
+                    </div>
+                </div>
+
+                <div>
+                    <h4>🚧 Em Desenvolvimento:</h4>
+                    <div class="synq-flex synq-flex-col synq-gap-2" style="margin-top: var(--synq-space-3);">
+                        <SynQBadge Text="Interface Blazor" Icon="⚡" Variant="SynQBadgeVariant.Warning"
+                            IsPulsing="true" />
+                        <SynQBadge Text="PWA Features" Icon="📱" Variant="SynQBadgeVariant.Info" />
+                        <SynQBadge Text="Real-time Chat" Icon="💬" Variant="SynQBadgeVariant.Info" />
+                        <SynQBadge Text="Analytics Dashboard" Icon="📈" Variant="SynQBadgeVariant.Info" />
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </SynQCard>
+</div>
+
+@code {
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    private void NavigateToDesignSystem()
+    {
+        Navigation.NavigateTo("/design-system");
+    }
+
+    private void NavigateToDocumentation()
+    {
+        // TODO: Implementar navegação para documentação
+        Navigation.NavigateTo("/docs");
+    }
+}
+
+<style>
+    .text-center {
+        text-align: center;
+    }
+
+    .synq-text-4xl {
+        font-size: var(--synq-text-4xl);
+    }
+
+    .synq-text-xl {
+        font-size: var(--synq-text-xl);
+    }
+
+    .synq-font-bold {
+        font-weight: var(--synq-font-bold);
+    }
+
+    .synq-text-gray-600 {
+        color: var(--synq-gray-600);
+    }
+
+    /* Grid responsivo melhorado */
+    .synq-grid-cols-3 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--synq-space-6);
+    }
+
+    .synq-grid-cols-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: var(--synq-space-6);
+    }
+
+    /* Flexbox utilities */
+    .synq-flex {
+        display: flex;
+    }
+
+    .synq-justify-center {
+        justify-content: center;
+    }
+
+    .synq-flex-col {
+        flex-direction: column;
+    }
+
+    .synq-gap-2 {
+        gap: var(--synq-space-2);
+    }
+
+    .synq-gap-4 {
+        gap: var(--synq-space-4);
+    }
+
+    .synq-gap-6 {
+        gap: var(--synq-space-6);
+    }
+</style>

@@ -1,0 +1,257 @@
+@namespace SynQcore.BlazorApp.Client.Shared.Components
+
+@*
+  Componente de Avatar Corporativo SynQcore
+  Suporte a imagens, iniciais e diferentes tamanhos
+*@
+
+<div class="@GetAvatarClasses()"
+     title="@AltText"
+     @attributes="AdditionalAttributes"
+     @onclick="OnClick">
+
+    @if (!string.IsNullOrEmpty(ImageUrl))
+    {
+        <img src="@ImageUrl"
+             alt="@AltText"
+             loading="lazy"
+             @onerror="HandleImageError" />
+    }
+    else if (!string.IsNullOrEmpty(Initials))
+    {
+        <span class="synq-avatar-initials">@Initials.ToUpper()</span>
+    }
+    else if (!string.IsNullOrEmpty(Icon))
+    {
+        <span class="synq-avatar-icon" aria-hidden="true">@Icon</span>
+    }
+    else
+    {
+        <span class="synq-avatar-icon" aria-hidden="true">👤</span>
+    }
+
+    @if (ShowOnlineStatus)
+    {
+        <div class="synq-avatar-status @GetStatusClass()"></div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// URL da imagem do avatar
+    /// </summary>
+    [Parameter] public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Iniciais do usuário (fallback se imagem falhar)
+    /// </summary>
+    [Parameter] public string? Initials { get; set; }
+
+    /// <summary>
+    /// Ícone do avatar (emoji ou caractere)
+    /// </summary>
+    [Parameter] public string? Icon { get; set; }
+
+    /// <summary>
+    /// Texto alternativo para acessibilidade
+    /// </summary>
+    [Parameter] public string AltText { get; set; } = "Avatar do usuário";
+
+    /// <summary>
+    /// Tamanho do avatar
+    /// </summary>
+    [Parameter] public SynQAvatarSize Size { get; set; } = SynQAvatarSize.Medium;
+
+    /// <summary>
+    /// Se deve mostrar status online
+    /// </summary>
+    [Parameter] public bool ShowOnlineStatus { get; set; } = false;
+
+    /// <summary>
+    /// Status online do usuário
+    /// </summary>
+    [Parameter] public bool IsOnline { get; set; } = false;
+
+    /// <summary>
+    /// Se o avatar é clicável
+    /// </summary>
+    [Parameter] public bool IsClickable { get; set; } = false;
+
+    /// <summary>
+    /// Callback para evento de click
+    /// </summary>
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Atributos HTML adicionais
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool _imageError = false;
+
+    /// <summary>
+    /// Gera as classes CSS do avatar baseado nos parâmetros
+    /// </summary>
+    private string GetAvatarClasses()
+    {
+        var classes = new List<string> { "synq-avatar" };
+
+        // Tamanho
+        classes.Add(Size switch
+        {
+            SynQAvatarSize.ExtraSmall => "synq-avatar-xs",
+            SynQAvatarSize.Small => "synq-avatar-sm",
+            SynQAvatarSize.Medium => "synq-avatar-md",
+            SynQAvatarSize.Large => "synq-avatar-lg",
+            SynQAvatarSize.ExtraLarge => "synq-avatar-xl",
+            _ => "synq-avatar-md"
+        });
+
+        // Interatividade
+        if (IsClickable || OnClick.HasDelegate)
+        {
+            classes.Add("synq-avatar-clickable");
+        }
+
+        // Se tem imagem válida
+        if (!string.IsNullOrEmpty(ImageUrl) && !_imageError)
+        {
+            classes.Add("synq-avatar-image");
+        }
+
+        // Classes adicionais do usuário
+        if (AdditionalAttributes?.ContainsKey("class") == true)
+            classes.Add(AdditionalAttributes["class"].ToString()!);
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+
+    /// <summary>
+    /// Gera a classe CSS para o status online
+    /// </summary>
+    private string GetStatusClass()
+    {
+        return IsOnline ? "synq-avatar-status-online" : "synq-avatar-status-offline";
+    }
+
+    /// <summary>
+    /// Manipula erro de carregamento da imagem
+    /// </summary>
+    private void HandleImageError()
+    {
+        _imageError = true;
+        StateHasChanged();
+    }
+}
+
+@* Estilos específicos do componente *@
+<style>
+    .synq-avatar {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .synq-avatar-xs {
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: var(--synq-text-xs);
+    }
+
+    .synq-avatar-sm {
+        width: 2rem;
+        height: 2rem;
+        font-size: var(--synq-text-xs);
+    }
+
+    .synq-avatar-md {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: var(--synq-text-sm);
+    }
+
+    .synq-avatar-lg {
+        width: 3rem;
+        height: 3rem;
+        font-size: var(--synq-text-base);
+    }
+
+    .synq-avatar-xl {
+        width: 4rem;
+        height: 4rem;
+        font-size: var(--synq-text-lg);
+    }
+
+    .synq-avatar-clickable {
+        cursor: pointer;
+        transition: var(--synq-transition-fast);
+    }
+
+    .synq-avatar-clickable:hover {
+        transform: scale(1.05);
+        box-shadow: var(--synq-shadow-md);
+    }
+
+    .synq-avatar-initials,
+    .synq-avatar-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        font-weight: var(--synq-font-medium);
+        color: var(--synq-gray-700);
+        background-color: var(--synq-gray-200);
+        border-radius: var(--synq-border-radius-full);
+        user-select: none;
+    }
+
+    .synq-avatar-status {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 25%;
+        height: 25%;
+        min-width: 8px;
+        min-height: 8px;
+        border: 2px solid var(--synq-gray-50);
+        border-radius: var(--synq-border-radius-full);
+    }
+
+    .synq-avatar-status-online {
+        background-color: var(--synq-success-500);
+    }
+
+    .synq-avatar-status-offline {
+        background-color: var(--synq-gray-400);
+    }
+
+    /* Cores de fundo baseadas em hash do nome */
+    .synq-avatar:nth-child(4n+1) .synq-avatar-initials,
+    .synq-avatar:nth-child(4n+1) .synq-avatar-icon {
+        background-color: var(--synq-primary-100);
+        color: var(--synq-primary-800);
+    }
+
+    .synq-avatar:nth-child(4n+2) .synq-avatar-initials,
+    .synq-avatar:nth-child(4n+2) .synq-avatar-icon {
+        background-color: var(--synq-secondary-100);
+        color: var(--synq-secondary-800);
+    }
+
+    .synq-avatar:nth-child(4n+3) .synq-avatar-initials,
+    .synq-avatar:nth-child(4n+3) .synq-avatar-icon {
+        background-color: var(--synq-success-50);
+        color: var(--synq-success-700);
+    }
+
+    .synq-avatar:nth-child(4n+4) .synq-avatar-initials,
+    .synq-avatar:nth-child(4n+4) .synq-avatar-icon {
+        background-color: var(--synq-warning-50);
+        color: var(--synq-warning-700);
+    }
+
+    [data-theme="dark"] .synq-avatar-status {
+        border-color: var(--synq-gray-100);
+    }
+</style>

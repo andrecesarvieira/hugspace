@@ -1,0 +1,330 @@
+/* SynQcore - Animations & Micro-interactions */
+
+/* Animações principais */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    left: 100%;
+  }
+}
+
+/* Classes de animação */
+.synq-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.synq-slide-in-down {
+  animation: slideInDown 0.8s ease-out;
+}
+
+.synq-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.synq-loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.synq-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.synq-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* Transições e hover effects */
+.synq-hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.synq-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.synq-button-enhanced {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.synq-button-enhanced:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.synq-button-enhanced:active {
+  transform: translateY(0);
+}
+
+/* Ripple effect */
+.synq-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.synq-ripple::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.synq-ripple:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Gradient text effect */
+.synq-gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--synq-primary),
+    var(--synq-secondary)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Focus states melhorados */
+.synq-focus-enhanced:focus {
+  outline: 2px solid var(--synq-primary);
+  outline-offset: 2px;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Responsividade aprimorada */
+@media (max-width: 768px) {
+  .synq-responsive-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .synq-responsive-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .synq-responsive-flex {
+    flex-direction: column !important;
+  }
+}
+
+/* Estados de carregamento */
+.synq-loading-state {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.synq-loading-overlay {
+  position: relative;
+}
+
+.synq-loading-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+/* Micro-interações para cards */
+.synq-card-interactive {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.synq-card-interactive:hover {
+  transform: scale(1.02);
+  box-shadow: var(--synq-shadow-lg);
+}
+
+.synq-card-interactive:active {
+  transform: scale(0.98);
+}
+
+/* Badge animations */
+.synq-badge-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Playground animations */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.synq-slide-in-up {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.synq-fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  53%,
+  80%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%,
+  43% {
+    transform: translate3d(0, -8px, 0);
+  }
+  70% {
+    transform: translate3d(0, -4px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+/* Badge animations */
+@keyframes countAppear {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+}
+
+.synq-badge-count-appear {
+  animation: countAppear 0.3s ease-out;
+}
+
+/* Card animations */
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.synq-card-slide-in {
+  animation: cardSlideIn 0.6s ease-out;
+}
+
+/* Efeitos de entrada staggered */
+.synq-stagger-item {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.synq-stagger-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.synq-stagger-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.synq-stagger-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.synq-stagger-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.synq-stagger-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.synq-stagger-item:nth-child(6) {
+  animation-delay: 0.6s;
+}

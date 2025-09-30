@@ -443,6 +443,9 @@ try
         }
     }
 
+    // REMOVIDO: Abertura automática do Swagger (agora controlada pelo script start-full.py)
+    // Para abrir manualmente: http://localhost:5000/swagger
+    /*
     // Abrir Swagger automaticamente no navegador padrão em desenvolvimento
     if (app.Environment.IsDevelopment())
     {
@@ -481,6 +484,7 @@ try
             }
         });
     }
+    */
 
     app.Run();
 }

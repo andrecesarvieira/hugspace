@@ -423,9 +423,9 @@ public partial class AdvancedSearchQueryHandler : IRequestHandler<AdvancedSearch
         // Boost para busca exata
         if (request.ExactPhrase)
         {
-            if (!string.IsNullOrEmpty(request.Title) && titleLower.Contains(request.Title.ToLower(CultureInfo.InvariantCulture)))
+            if (!string.IsNullOrEmpty(request.Title) && titleLower.Contains(request.Title.ToLower(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
                 score += 8.0f;
-            if (!string.IsNullOrEmpty(request.Content) && contentLower.Contains(request.Content.ToLower(CultureInfo.InvariantCulture)))
+            if (!string.IsNullOrEmpty(request.Content) && contentLower.Contains(request.Content.ToLower(CultureInfo.InvariantCulture), StringComparison.OrdinalIgnoreCase))
                 score += 6.0f;
         }
 

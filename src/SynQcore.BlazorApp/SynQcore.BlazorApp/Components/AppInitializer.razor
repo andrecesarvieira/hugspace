@@ -1,0 +1,43 @@
+@using Fluxor
+@using SynQcore.BlazorApp.Services
+@inject IStateInitializationService StateInitialization
+@inject IDispatcher Dispatcher
+@implements IAsyncDisposable
+
+@* Renderiza sempre o conteúdo - sem loading state *@
+@ChildContent
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private bool hasRendered = false;
+
+    protected override void OnInitialized()
+    {
+        // Inicialização básica sem JavaScript interop
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !hasRendered)
+        {
+            hasRendered = true;
+
+            try
+            {
+                // Agora é seguro usar JavaScript interop
+                await StateInitialization.InitializeAfterRenderAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[AppInitializer] Erro na inicialização: {ex.Message}");
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        // Cleanup se necessário
+        await Task.CompletedTask;
+    }
+}

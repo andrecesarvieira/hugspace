@@ -1,0 +1,298 @@
+@namespace SynQcore.BlazorApp.Client.Shared.Components
+
+@*
+  Componente de Badge Corporativo SynQcore
+  Indicadores visuais para status, contadores e categorias
+*@
+
+<span class="@GetBadgeClasses()"
+      @attributes="AdditionalAttributes"
+      @onclick="OnClick">
+
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <span class="synq-badge-icon" aria-hidden="true">@Icon</span>
+    }
+
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        <span>@Text</span>
+    }
+    else if (ChildContent != null)
+    {
+        @ChildContent
+    }
+
+    @if (ShowCount && Count > 0)
+    {
+        <span class="synq-badge-count">@FormatCount(Count)</span>
+    }
+</span>
+
+@code {
+    /// <summary>
+    /// Texto do badge
+    /// </summary>
+    [Parameter] public string? Text { get; set; }
+
+    /// <summary>
+    /// Ícone do badge (emoji ou texto)
+    /// </summary>
+    [Parameter] public string? Icon { get; set; }
+
+    /// <summary>
+    /// Variante visual do badge
+    /// </summary>
+    [Parameter] public SynQBadgeVariant Variant { get; set; } = SynQBadgeVariant.Primary;
+
+    /// <summary>
+    /// Se deve mostrar contador
+    /// </summary>
+    [Parameter] public bool ShowCount { get; set; } = false;
+
+    /// <summary>
+    /// Valor do contador
+    /// </summary>
+    [Parameter] public int Count { get; set; } = 0;
+
+    /// <summary>
+    /// Valor máximo do contador antes de mostrar "+"
+    /// </summary>
+    [Parameter] public int MaxCount { get; set; } = 99;
+
+    /// <summary>
+    /// Se o badge é clicável
+    /// </summary>
+    [Parameter] public bool IsClickable { get; set; } = false;
+
+    /// <summary>
+    /// Se o badge deve piscar (para notificações)
+    /// </summary>
+    [Parameter] public bool IsPulsing { get; set; } = false;
+
+    /// <summary>
+    /// Callback para evento de click
+    /// </summary>
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Conteúdo personalizado do badge
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Atributos HTML adicionais
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Gera as classes CSS do badge baseado nos parâmetros
+    /// </summary>
+    private string GetBadgeClasses()
+    {
+        var classes = new List<string> { "synq-badge", "synq-focus-enhanced" };
+
+        // Variante
+        classes.Add(Variant switch
+        {
+            SynQBadgeVariant.Primary => "synq-badge-primary",
+            SynQBadgeVariant.Secondary => "synq-badge-secondary",
+            SynQBadgeVariant.Success => "synq-badge-success",
+            SynQBadgeVariant.Warning => "synq-badge-warning",
+            SynQBadgeVariant.Error => "synq-badge-error",
+            SynQBadgeVariant.Info => "synq-badge-info",
+            _ => "synq-badge-primary"
+        });
+
+        // Interatividade
+        if (IsClickable || OnClick.HasDelegate)
+        {
+            classes.Add("synq-badge-clickable");
+            classes.Add("synq-button-enhanced");
+        }
+
+        // Animação
+        if (IsPulsing)
+        {
+            classes.Add("synq-pulse");
+            classes.Add("synq-badge-bounce");
+        }
+
+        // Classes adicionais do usuário
+        if (AdditionalAttributes?.ContainsKey("class") == true)
+            classes.Add(AdditionalAttributes["class"].ToString()!);
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+
+    /// <summary>
+    /// Formata o contador para exibição
+    /// </summary>
+    private string FormatCount(int count)
+    {
+        if (count <= MaxCount)
+            return count.ToString();
+
+        return $"{MaxCount}+";
+    }
+}
+
+@* Estilos específicos do componente *@
+<style>
+    .synq-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--synq-space-1);
+        vertical-align: middle;
+        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .synq-badge-clickable {
+        cursor: pointer;
+    }
+
+    .synq-badge-clickable:hover {
+        transform: scale(1.05) translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .synq-badge-clickable:active {
+        transform: scale(1.02);
+    }
+
+    .synq-badge-icon {
+        font-size: 0.9em;
+        transition: transform 0.2s ease;
+    }
+
+    .synq-badge:hover .synq-badge-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .synq-badge-count {
+        font-size: 0.8em;
+        font-weight: var(--synq-font-bold);
+        opacity: 0.8;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        padding: 2px 6px;
+        margin-left: 4px;
+    }
+
+    /* Variantes específicas com gradientes */
+    .synq-badge-info {
+        background: linear-gradient(135deg, var(--synq-info-50), var(--synq-info-100));
+        color: var(--synq-info-700);
+        border: 1px solid var(--synq-info-200);
+    }
+
+    .synq-badge-success {
+        background: linear-gradient(135deg, var(--synq-success-50), var(--synq-success-100));
+        color: var(--synq-success-700);
+        border: 1px solid var(--synq-success-200);
+    }
+
+    .synq-badge-warning {
+        background: linear-gradient(135deg, var(--synq-warning-50), var(--synq-warning-100));
+        color: var(--synq-warning-700);
+        border: 1px solid var(--synq-warning-200);
+    }
+
+    .synq-badge-error {
+        background: linear-gradient(135deg, var(--synq-error-50), var(--synq-error-100));
+        color: var(--synq-error-700);
+        border: 1px solid var(--synq-error-200);
+    }
+
+    .synq-badge-primary {
+        background: linear-gradient(135deg, var(--synq-primary-50), var(--synq-primary-100));
+        color: var(--synq-primary-700);
+        border: 1px solid var(--synq-primary-200);
+    }
+
+    .synq-badge-secondary {
+        background: linear-gradient(135deg, var(--synq-gray-50), var(--synq-gray-100));
+        color: var(--synq-gray-700);
+        border: 1px solid var(--synq-gray-200);
+    }
+
+    /* Efeito shimmer para badges pulsing */
+    .synq-badge.synq-pulse::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    /* Estados de hover específicos por variante */
+    .synq-badge-success:hover {
+        background: linear-gradient(135deg, var(--synq-success-100), var(--synq-success-200));
+        color: var(--synq-success-800);
+    }
+
+    .synq-badge-warning:hover {
+        background: linear-gradient(135deg, var(--synq-warning-100), var(--synq-warning-200));
+        color: var(--synq-warning-800);
+    }
+
+    .synq-badge-error:hover {
+        background: linear-gradient(135deg, var(--synq-error-100), var(--synq-error-200));
+        color: var(--synq-error-800);
+    }
+
+    .synq-badge-info:hover {
+        background: linear-gradient(135deg, var(--synq-info-100), var(--synq-info-200));
+        color: var(--synq-info-800);
+    }
+
+    /* Tema escuro */
+    [data-theme="dark"] .synq-badge-primary {
+        background: linear-gradient(135deg, var(--synq-primary-800), var(--synq-primary-700));
+        color: var(--synq-primary-100);
+        border-color: var(--synq-primary-600);
+    }
+
+    [data-theme="dark"] .synq-badge-secondary {
+        background: linear-gradient(135deg, var(--synq-gray-700), var(--synq-gray-600));
+        color: var(--synq-gray-100);
+        border-color: var(--synq-gray-500);
+    }
+
+    [data-theme="dark"] .synq-badge-success {
+        background: linear-gradient(135deg, var(--synq-success-800), var(--synq-success-700));
+        color: var(--synq-success-100);
+        border-color: var(--synq-success-600);
+    }
+
+    [data-theme="dark"] .synq-badge-warning {
+        background: linear-gradient(135deg, var(--synq-warning-800), var(--synq-warning-700));
+        color: var(--synq-warning-100);
+        border-color: var(--synq-warning-600);
+    }
+
+    [data-theme="dark"] .synq-badge-error {
+        background: linear-gradient(135deg, var(--synq-error-800), var(--synq-error-700));
+        color: var(--synq-error-100);
+        border-color: var(--synq-error-600);
+    }
+
+    [data-theme="dark"] .synq-badge-info {
+        background: linear-gradient(135deg, var(--synq-info-800), var(--synq-info-700));
+        color: var(--synq-info-100);
+        border-color: var(--synq-info-600);
+    }
+
+    /* Focus states */
+    .synq-badge:focus {
+        outline: 2px solid var(--synq-primary);
+        outline-offset: 2px;
+    }
+</style>

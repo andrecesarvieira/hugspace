@@ -21,11 +21,17 @@ python3 scripts/stop-dev.py
 python3 scripts/clean-build.py
 ```
 
-#### Inicialização da API
+#### Aplicações
 
 ```bash
-# Iniciar API na porta 5000 (completo)
+# 🚀 Iniciar aplicação completa (API + Blazor)
+python3 scripts/start-full.py
+
+# 🔗 Iniciar apenas API na porta 5000
 python3 scripts/start-api-5000.py
+
+# 🌐 Iniciar apenas Blazor App na porta 5226
+python3 scripts/start-blazor.py
 
 # Testes automatizados de colaboração
 python3 scripts/test-collaboration-features.py

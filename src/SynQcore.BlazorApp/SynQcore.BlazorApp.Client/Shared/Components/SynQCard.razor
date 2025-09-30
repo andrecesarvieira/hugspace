@@ -1,0 +1,311 @@
+@namespace SynQcore.BlazorApp.Client.Shared.Components
+
+@*
+  Componente de Card Corporativo SynQcore
+  Suporte a diferentes variantes e estrutura flexível
+*@
+
+<div class="@GetCardClasses()"
+     @attributes="AdditionalAttributes"
+     @onclick="OnClick"
+     @onclick:stopPropagation="StopPropagation">
+
+    @if (HasHeader)
+    {
+        <div class="synq-card-header">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <h3 class="synq-card-title">@Title</h3>
+            }
+
+            @if (!string.IsNullOrEmpty(Description))
+            {
+                <p class="synq-card-description">@Description</p>
+            }
+
+            @HeaderContent
+
+            @if (Actions != null)
+            {
+                <div class="synq-card-actions">
+                    @Actions
+                </div>
+            }
+        </div>
+    }
+
+    @if (ContentTemplate != null || ChildContent != null)
+    {
+        <div class="synq-card-content">
+            @if (ContentTemplate != null)
+            {
+                @ContentTemplate
+            }
+            else
+            {
+                @ChildContent
+            }
+        </div>
+    }
+
+    @if (FooterContent != null)
+    {
+        <div class="synq-card-footer">
+            @FooterContent
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Título do card
+    /// </summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>
+    /// Descrição do card
+    /// </summary>
+    [Parameter] public string? Description { get; set; }
+
+    /// <summary>
+    /// Variante visual do card
+    /// </summary>
+    [Parameter] public SynQCardVariant Variant { get; set; } = SynQCardVariant.Default;
+
+    /// <summary>
+    /// Se o card é clicável
+    /// </summary>
+    [Parameter] public bool IsClickable { get; set; } = false;
+
+    /// <summary>
+    /// Se deve parar a propagação do evento de click
+    /// </summary>
+    [Parameter] public bool StopPropagation { get; set; } = false;
+
+    /// <summary>
+    /// Callback para evento de click
+    /// </summary>
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Conteúdo do header (além de título e descrição)
+    /// </summary>
+    [Parameter] public RenderFragment? HeaderContent { get; set; }
+
+    /// <summary>
+    /// Conteúdo principal do card
+    /// </summary>
+    [Parameter] public RenderFragment? ContentTemplate { get; set; }
+
+    /// <summary>
+    /// Conteúdo principal do card (alternativo)
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Conteúdo do footer
+    /// </summary>
+    [Parameter] public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
+    /// Ações do card (botões, etc.)
+    /// </summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    /// <summary>
+    /// Atributos HTML adicionais
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Verifica se o card tem header
+    /// </summary>
+    private bool HasHeader => !string.IsNullOrEmpty(Title) ||
+                             !string.IsNullOrEmpty(Description) ||
+                             HeaderContent != null ||
+                             Actions != null;
+
+    /// <summary>
+    /// Gera as classes CSS do card baseado nos parâmetros
+    /// </summary>
+    private string GetCardClasses()
+    {
+        var classes = new List<string> { "synq-card", "synq-hover-lift", "synq-focus-enhanced", "synq-card-slide-in" };
+
+        // Variante
+        classes.Add(Variant switch
+        {
+            SynQCardVariant.Elevated => "synq-card-elevated",
+            SynQCardVariant.Outlined => "synq-card-outlined",
+            SynQCardVariant.Filled => "synq-card-filled",
+            _ => "synq-card-default"
+        });
+
+        // Interatividade
+        if (IsClickable || OnClick.HasDelegate)
+        {
+            classes.Add("synq-card-clickable");
+            classes.Add("synq-card-interactive");
+        }
+
+        // Classes adicionais do usuário
+        if (AdditionalAttributes?.ContainsKey("class") == true)
+            classes.Add(AdditionalAttributes["class"].ToString()!);
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+}
+
+@* Estilos específicos do componente *@
+<style>
+    .synq-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .synq-card-clickable {
+        cursor: pointer;
+    }
+
+    .synq-card-interactive:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .synq-card-interactive:active {
+        transform: translateY(-2px) scale(0.99);
+    }
+
+    .synq-card-elevated {
+        box-shadow: var(--synq-shadow-md);
+    }
+
+    .synq-card-elevated:hover {
+        box-shadow: var(--synq-shadow-xl);
+    }
+
+    .synq-card-outlined {
+        border: var(--synq-border-width-medium) solid var(--synq-primary-200);
+        background-color: transparent;
+        position: relative;
+    }
+
+    .synq-card-outlined::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, var(--synq-primary-50), var(--synq-secondary-50));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+    }
+
+    .synq-card-outlined:hover::before {
+        opacity: 0.5;
+    }
+
+    .synq-card-filled {
+        background-color: var(--synq-primary-50);
+        border: var(--synq-border-width-thin) solid var(--synq-primary-100);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .synq-card-filled::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transform: rotate(45deg);
+        transition: transform 0.6s ease;
+        pointer-events: none;
+    }
+
+    .synq-card-filled:hover::after {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+
+    .synq-card-actions {
+        margin-top: var(--synq-space-3);
+        display: flex;
+        gap: var(--synq-space-2);
+        align-items: center;
+    }
+
+    .synq-card-default {
+        background-color: var(--synq-gray-50);
+        position: relative;
+    }
+
+    .synq-card-title {
+        transition: color 0.3s ease;
+    }
+
+    .synq-card:hover .synq-card-title {
+        color: var(--synq-primary);
+    }
+
+    .synq-card-description {
+        transition: transform 0.3s ease;
+    }
+
+    .synq-card:hover .synq-card-description {
+        transform: translateX(4px);
+    }
+
+    /* Estados de loading */
+    .synq-card.synq-loading-state {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .synq-card.synq-loading-state::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        animation: shimmer 1.5s infinite;
+        z-index: 1;
+    }
+
+    /* Tema escuro */
+    [data-theme="dark"] .synq-card-default {
+        background-color: var(--synq-gray-100);
+        border-color: var(--synq-gray-300);
+    }
+
+    [data-theme="dark"] .synq-card-filled {
+        background-color: var(--synq-primary-900);
+        border-color: var(--synq-primary-800);
+    }
+
+    [data-theme="dark"] .synq-card-outlined {
+        border-color: var(--synq-primary-600);
+    }
+
+    /* Focus states melhorados */
+    .synq-card:focus {
+        outline: 2px solid var(--synq-primary);
+        outline-offset: 2px;
+    }
+
+    /* Efeito de profundidade */
+    .synq-card-elevated {
+        background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    }
+
+    [data-theme="dark"] .synq-card-elevated {
+        background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+    }
+</style>

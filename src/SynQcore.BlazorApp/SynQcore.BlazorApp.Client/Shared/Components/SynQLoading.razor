@@ -1,0 +1,365 @@
+@namespace SynQcore.BlazorApp.Client.Shared.Components
+
+@*
+  Componente de Loading Corporativo SynQcore
+  Estados de carregamento com skeleton screens e spinners
+*@
+
+@if (IsVisible)
+{
+    <div class="@GetLoadingClasses()" @attributes="AdditionalAttributes">
+        @if (Type == SynQLoadingType.Spinner)
+        {
+            <div class="synq-loading-spinner-container">
+                <div class="synq-loading-spinner"></div>
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <p class="synq-loading-message">@Message</p>
+                }
+            </div>
+        }
+        else if (Type == SynQLoadingType.Skeleton)
+        {
+            <div class="synq-loading-skeleton-container">
+                @for (int i = 0; i < SkeletonLines; i++)
+                {
+                    <div class="synq-loading-skeleton-line"
+                         style="width: @GetSkeletonWidth(i)"></div>
+                }
+            </div>
+        }
+        else if (Type == SynQLoadingType.Dots)
+        {
+            <div class="synq-loading-dots-container">
+                <div class="synq-loading-dots">
+                    <div class="synq-loading-dot"></div>
+                    <div class="synq-loading-dot"></div>
+                    <div class="synq-loading-dot"></div>
+                </div>
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <p class="synq-loading-message">@Message</p>
+                }
+            </div>
+        }
+        else if (Type == SynQLoadingType.Progress)
+        {
+            <div class="synq-loading-progress-container">
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <p class="synq-loading-message">@Message</p>
+                }
+                <div class="synq-loading-progress-bar">
+                    <div class="synq-loading-progress-fill"
+                         style="width: @(Progress)%"></div>
+                </div>
+                @if (ShowPercentage)
+                {
+                    <span class="synq-loading-percentage">@Progress%</span>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// Se o loading está visível
+    /// </summary>
+    [Parameter] public bool IsVisible { get; set; } = true;
+
+    /// <summary>
+    /// Tipo de loading
+    /// </summary>
+    [Parameter] public SynQLoadingType Type { get; set; } = SynQLoadingType.Spinner;
+
+    /// <summary>
+    /// Posição do loading
+    /// </summary>
+    [Parameter] public SynQLoadingPosition Position { get; set; } = SynQLoadingPosition.Center;
+
+    /// <summary>
+    /// Mensagem de loading
+    /// </summary>
+    [Parameter] public string? Message { get; set; }
+
+    /// <summary>
+    /// Número de linhas do skeleton
+    /// </summary>
+    [Parameter] public int SkeletonLines { get; set; } = 3;
+
+    /// <summary>
+    /// Progresso (0-100) para barra de progresso
+    /// </summary>
+    [Parameter] public int Progress { get; set; } = 0;
+
+    /// <summary>
+    /// Se deve mostrar porcentagem na barra de progresso
+    /// </summary>
+    [Parameter] public bool ShowPercentage { get; set; } = false;
+
+    /// <summary>
+    /// Se deve mostrar overlay de fundo
+    /// </summary>
+    [Parameter] public bool ShowOverlay { get; set; } = false;
+
+    /// <summary>
+    /// Tamanho do loading
+    /// </summary>
+    [Parameter] public SynQLoadingSize Size { get; set; } = SynQLoadingSize.Medium;
+
+    /// <summary>
+    /// Atributos HTML adicionais
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Gera as classes CSS do loading baseado nos parâmetros
+    /// </summary>
+    private string GetLoadingClasses()
+    {
+        var classes = new List<string> { "synq-loading" };
+
+        // Posição
+        classes.Add(Position switch
+        {
+            SynQLoadingPosition.Center => "synq-loading-center",
+            SynQLoadingPosition.Top => "synq-loading-top",
+            SynQLoadingPosition.Inline => "synq-loading-inline",
+            _ => "synq-loading-center"
+        });
+
+        // Tamanho
+        classes.Add(Size switch
+        {
+            SynQLoadingSize.Small => "synq-loading-small",
+            SynQLoadingSize.Large => "synq-loading-large",
+            _ => "synq-loading-medium"
+        });
+
+        // Overlay
+        if (ShowOverlay)
+        {
+            classes.Add("synq-loading-overlay");
+        }
+
+        // Classes adicionais do usuário
+        if (AdditionalAttributes?.ContainsKey("class") == true)
+            classes.Add(AdditionalAttributes["class"].ToString()!);
+
+        return string.Join(" ", classes.Where(c => !string.IsNullOrEmpty(c)));
+    }
+
+    /// <summary>
+    /// Gera largura dinâmica para linhas do skeleton
+    /// </summary>
+    private string GetSkeletonWidth(int index)
+    {
+        var widths = new[] { "100%", "85%", "60%" };
+        return widths[index % widths.Length];
+    }
+}
+
+@* Tipos de loading *@
+@code {
+    public enum SynQLoadingType
+    {
+        Spinner,
+        Skeleton,
+        Dots,
+        Progress
+    }
+
+    public enum SynQLoadingSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+}
+
+@* Estilos específicos do componente *@
+<style>
+    .synq-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--synq-gray-600);
+    }
+
+    .synq-loading-center {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: var(--synq-z-modal);
+    }
+
+    .synq-loading-top {
+        position: fixed;
+        top: var(--synq-space-4);
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: var(--synq-z-toast);
+    }
+
+    .synq-loading-inline {
+        position: relative;
+        display: inline-flex;
+    }
+
+    .synq-loading-overlay {
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(2px);
+        width: 100vw;
+        height: 100vh;
+    }
+
+    [data-theme="dark"] .synq-loading-overlay {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    /* Spinner */
+    .synq-loading-spinner-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--synq-space-3);
+    }
+
+    .synq-loading-spinner {
+        border: 3px solid var(--synq-gray-200);
+        border-top: 3px solid var(--synq-primary-600);
+        border-radius: var(--synq-border-radius-full);
+        animation: synq-spin 1s linear infinite;
+    }
+
+    .synq-loading-small .synq-loading-spinner {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-width: 2px;
+    }
+
+    .synq-loading-medium .synq-loading-spinner {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .synq-loading-large .synq-loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border-width: 4px;
+    }
+
+    /* Skeleton */
+    .synq-loading-skeleton-container {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .synq-loading-skeleton-line {
+        height: 1rem;
+        margin-bottom: var(--synq-space-2);
+        background: linear-gradient(90deg, var(--synq-gray-200) 25%, var(--synq-gray-100) 50%, var(--synq-gray-200) 75%);
+        background-size: 200% 100%;
+        animation: synq-skeleton-loading 1.5s infinite;
+        border-radius: var(--synq-border-radius-sm);
+    }
+
+    .synq-loading-small .synq-loading-skeleton-line {
+        height: 0.75rem;
+    }
+
+    .synq-loading-large .synq-loading-skeleton-line {
+        height: 1.25rem;
+    }
+
+    /* Dots */
+    .synq-loading-dots-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--synq-space-3);
+    }
+
+    .synq-loading-dots {
+        display: flex;
+        gap: var(--synq-space-2);
+    }
+
+    .synq-loading-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        background-color: var(--synq-primary-600);
+        border-radius: var(--synq-border-radius-full);
+        animation: synq-dots-bounce 1.4s ease-in-out infinite both;
+    }
+
+    .synq-loading-dot:nth-child(1) { animation-delay: -0.32s; }
+    .synq-loading-dot:nth-child(2) { animation-delay: -0.16s; }
+    .synq-loading-dot:nth-child(3) { animation-delay: 0s; }
+
+    .synq-loading-small .synq-loading-dot {
+        width: 0.375rem;
+        height: 0.375rem;
+    }
+
+    .synq-loading-large .synq-loading-dot {
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+
+    /* Progress */
+    .synq-loading-progress-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--synq-space-2);
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .synq-loading-progress-bar {
+        width: 100%;
+        height: 0.5rem;
+        background-color: var(--synq-gray-200);
+        border-radius: var(--synq-border-radius-full);
+        overflow: hidden;
+    }
+
+    .synq-loading-progress-fill {
+        height: 100%;
+        background-color: var(--synq-primary-600);
+        border-radius: var(--synq-border-radius-full);
+        transition: width var(--synq-transition-base);
+    }
+
+    .synq-loading-large .synq-loading-progress-bar {
+        height: 0.75rem;
+    }
+
+    /* Message */
+    .synq-loading-message {
+        margin: 0;
+        font-size: var(--synq-text-sm);
+        color: var(--synq-gray-600);
+        text-align: center;
+    }
+
+    .synq-loading-percentage {
+        font-size: var(--synq-text-xs);
+        color: var(--synq-gray-500);
+        font-weight: var(--synq-font-medium);
+    }
+
+    /* Animations */
+    @@keyframes synq-dots-bounce {
+        0%, 80%, 100% {
+            transform: scale(0);
+        }
+        40% {
+            transform: scale(1);
+        }
+    }
+</style>

@@ -1,7 +1,26 @@
-﻿@page "/"
+﻿@page "/server-home"
+@using SynQcore.BlazorApp.Components
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>SynQcore - Home Server</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>🏠 SynQcore - Página Principal (Server)</h1>
 
-Welcome to your new app.
+<p>Bem-vindo à página renderizada no servidor com estado global Fluxor!</p>
+
+<StateDemo />
+
+<ApiTestPanel />
+
+<div style="margin-top: 2rem;">
+    <p><strong>Esta página demonstra:</strong></p>
+    <ul>
+        <li>✅ Renderização server-side</li>
+        <li>✅ Estado global com Fluxor</li>
+        <li>✅ Componentes SynQ Design System</li>
+        <li>✅ Gerenciamento de notificações</li>
+        <li>✅ Persistência de estado no localStorage</li>
+        <li>✅ Comunicação com API via HttpClient</li>
+        <li>✅ Interceptors de autenticação automática</li>
+    </ul>
+</div>

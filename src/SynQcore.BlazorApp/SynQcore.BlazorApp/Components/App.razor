@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="utf-8" />
@@ -8,12 +8,17 @@
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["SynQcore.BlazorApp.styles.css"]" />
+    <!-- SynQcore Design System -->
+    <link rel="stylesheet" href="_content/SynQcore.BlazorApp.Client/css/design-tokens.css" />
+    <link rel="stylesheet" href="_content/SynQcore.BlazorApp.Client/css/synqcore.css" />
+    <link rel="stylesheet" href="_content/SynQcore.BlazorApp.Client/css/animations.css" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
 
 <body>
+    <Fluxor.Blazor.Web.StoreInitializer />
     <Routes />
     <script src="_framework/blazor.web.js"></script>
 </body>
