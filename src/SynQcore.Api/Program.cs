@@ -49,6 +49,41 @@ using SynQcore.Application.Features.DocumentTemplates.Handlers;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
 using SynQcore.Application.Features.CorporateSearch.Handlers;
+using SynQcore.Application.Features.Moderation.DTOs;
+using SynQcore.Application.Features.Moderation.Queries;
+using SynQcore.Application.Features.Moderation.Commands;
+using SynQcore.Application.Features.Moderation.Handlers;
+using SynQcore.Application.Features.Collaboration.DTOs;
+using SynQcore.Application.Features.Collaboration.Queries;
+using SynQcore.Application.Features.Collaboration.Commands;
+using SynQcore.Application.Features.Collaboration.Handlers;
+using SynQcore.Application.Features.Feed.Queries;
+using SynQcore.Application.Features.Feed.Commands;
+using SynQcore.Application.Features.Feed.Handlers;
+using SynQcore.Application.DTOs;
+using SynQcore.Application.Features.CorporateDocuments.DTOs;
+using SynQcore.Application.Features.CorporateDocuments.Queries;
+using SynQcore.Application.Features.CorporateDocuments.Commands;
+using SynQcore.Application.Features.CorporateDocuments.Handlers;
+using SynQcore.Application.Features.Employees.DTOs;
+using SynQcore.Application.Features.Employees.Queries;
+using SynQcore.Application.Features.Employees.Commands;
+using SynQcore.Application.Features.Employees.Handlers;
+using SynQcore.Application.Commands.Communication.DiscussionThreads;
+using SynQcore.Application.Queries.Communication.DiscussionThreads;
+using SynQcore.Application.DTOs.Communication;
+using SynQcore.Application.Handlers.Communication.DiscussionThreads;
+
+// KNOWLEDGE MANAGEMENT IMPORTS
+using SynQcore.Application.Features.KnowledgeManagement.DTOs;
+using SynQcore.Application.Features.KnowledgeManagement.Queries;
+using SynQcore.Application.Features.KnowledgeManagement.Commands;
+
+// DEPARTMENTS IMPORTS
+using SynQcore.Application.Features.Departments.DTOs;
+using SynQcore.Application.Features.Departments.Queries;
+using SynQcore.Application.Features.Departments.Commands;
+using SynQcore.Application.Features.Departments.Handlers;
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -351,6 +386,80 @@ builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<Trending
 builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto>, GetContentStatsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
 
+// === MODERATION HANDLERS ===
+// Moderation Query Handlers
+builder.Services.AddScoped<IRequestHandler<GetModerationQueueQuery, PagedResult<ModerationDto>>, ModerationQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationStatsQuery, ModerationStatsDto>, ModerationQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationCategoriesQuery, List<string>>, ModerationQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationSeveritiesQuery, List<string>>, ModerationQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationActionsQuery, List<string>>, ModerationQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationByIdQuery, ModerationDto?>, ModerationQueryHandler>();
+
+// Moderation Command Handlers
+builder.Services.AddScoped<IRequestHandler<ProcessModerationCommand, ModerationDto>, ProcessModerationCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateModerationCommand, ModerationDto?>, UpdateModerationCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<EscalateModerationCommand, ModerationDto?>, EscalateModerationCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateModerationRequestCommand, ModerationDto>, CreateModerationRequestCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<BulkModerationCommand, List<ModerationDto>>, BulkModerationCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<ArchiveOldModerationsCommand, int>, ArchiveOldModerationsCommandHandler>();
+
+// === COLLABORATION HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetEndorsementsQuery, PagedResult<EndorsementDto>>, GetEndorsementsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetEndorsementByIdQuery, EndorsementDto>, GetEndorsementByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetEndorsementStatsQuery, EndorsementStatsDto>, GetEndorsementStatsQueryHandler>();
+
+// COLLABORATION - ENDORSEMENT ANALYTICS HANDLERS
+builder.Services.AddScoped<IRequestHandler<GetEmployeeEndorsementRankingQuery, List<EmployeeEndorsementRankingDto>>, GetEmployeeEndorsementRankingQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTrendingEndorsementTypesQuery, List<EndorsementTypeTrendDto>>, GetTrendingEndorsementTypesQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetEmployeeEndorsementsGivenQuery, PagedResult<EndorsementDto>>, GetEmployeeEndorsementsGivenQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetEmployeeEndorsementsReceivedQuery, PagedResult<EndorsementDto>>, GetEmployeeEndorsementsReceivedQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CheckUserEndorsementQuery, EndorsementDto?>, CheckUserEndorsementQueryHandler>();
+
+// COLLABORATION - ENDORSEMENT COMMAND HANDLERS
+builder.Services.AddScoped<IRequestHandler<CreateEndorsementCommand, EndorsementDto>, CreateEndorsementCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateEndorsementCommand, EndorsementDto>, UpdateEndorsementCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteEndorsementCommand>, DeleteEndorsementCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<ToggleEndorsementCommand, EndorsementDto?>, ToggleEndorsementCommandHandler>();
+
+// === FEED HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetCorporateFeedQuery, PagedResult<FeedItemDto>>, GetCorporateFeedHandler>();
+builder.Services.AddScoped<IRequestHandler<GetFeedStatsQuery, FeedStatsDto>, GetFeedStatsHandler>();
+builder.Services.AddScoped<IRequestHandler<GetUserInterestsQuery, UserInterestsResponseDto>, GetUserInterestsHandler>();
+builder.Services.AddScoped<IRequestHandler<RegenerateFeedCommand>, RegenerateFeedHandler>();
+
+// === CORPORATE DOCUMENTS HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetDocumentsQuery, PagedResult<CorporateDocumentDto>>, GetDocumentsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDocumentByIdQuery, CorporateDocumentDetailDto?>, GetDocumentByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDocumentsByCategoryQuery, PagedResult<CorporateDocumentDto>>, GetDocumentsByCategoryQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateDocumentCommand, CorporateDocumentDto>, CreateCorporateDocumentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateDocumentCommand, CorporateDocumentDto?>, UpdateCorporateDocumentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteDocumentCommand, bool>, DeleteCorporateDocumentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<ApproveDocumentCommand, CorporateDocumentDto?>, ApproveCorporateDocumentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<RejectDocumentCommand, CorporateDocumentDto?>, RejectCorporateDocumentCommandHandler>();
+
+// === EMPLOYEES HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetEmployeesQuery, PagedResult<EmployeeDto>>, GetEmployeesHandler>();
+builder.Services.AddScoped<IRequestHandler<GetEmployeeByIdQuery, EmployeeDto>, GetEmployeeByIdHandler>();
+builder.Services.AddScoped<IRequestHandler<GetEmployeeHierarchyQuery, EmployeeHierarchyDto>, GetEmployeeHierarchyHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateEmployeeCommand, EmployeeDto>, CreateEmployeeHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateEmployeeCommand, EmployeeDto>, UpdateEmployeeHandler>();
+builder.Services.AddScoped<IRequestHandler<UploadEmployeeAvatarCommand, string>, UploadEmployeeAvatarHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteEmployeeCommand>, DeleteEmployeeHandler>();
+builder.Services.AddScoped<IRequestHandler<SearchEmployeesQuery, List<EmployeeDto>>, SearchEmployeesHandler>();
+
+// === DISCUSSION THREADS HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetDiscussionThreadQuery, DiscussionThreadDto>, GetDiscussionThreadQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateDiscussionCommentCommand, CommentOperationResponse>, CreateDiscussionCommentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateDiscussionCommentCommand, CommentOperationResponse>, UpdateDiscussionCommentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteDiscussionCommentCommand, CommentOperationResponse>, DeleteDiscussionCommentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<ResolveDiscussionCommentCommand, CommentOperationResponse>, ResolveDiscussionCommentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<ModerateDiscussionCommentCommand, CommentOperationResponse>, ModerateDiscussionCommentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<HighlightDiscussionCommentCommand, CommentOperationResponse>, HighlightDiscussionCommentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<MarkMentionAsReadCommand, bool>, MarkMentionAsReadCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationMetricsQuery, ModerationMetricsDto>, GetModerationMetricsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetUserDiscussionAnalyticsQuery, UserDiscussionAnalyticsDto>, GetUserDiscussionAnalyticsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDiscussionAnalyticsQuery, DiscussionAnalyticsDto>, GetDiscussionAnalyticsQueryHandler>();
+
 // === PRIVACY & LGPD HANDLERS ===
 // Privacy Query Handlers
 builder.Services.AddScoped<IRequestHandler<GetPersonalDataCategoriesQuery, PagedResult<PersonalDataCategoryDto>>, PrivacyQueryHandler>();
@@ -369,6 +478,40 @@ builder.Services.AddScoped<IRequestHandler<UpdatePersonalDataCategoryCommand, Pe
 builder.Services.AddScoped<IRequestHandler<UpdateConsentRecordCommand, ConsentRecordDto?>, PrivacyUpdateHandlers>();
 
 // OBRIGATÓRIO: Registro manual dos handlers de notificação (Fase 5.0)
+
+// === KNOWLEDGE MANAGEMENT HANDLERS ===
+// Knowledge Categories Handlers
+builder.Services.AddScoped<IRequestHandler<GetKnowledgeCategoriesQuery, List<KnowledgeCategoryDto>>, GetKnowledgeCategoriesQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetKnowledgeCategoryByIdQuery, KnowledgeCategoryDto>, GetKnowledgeCategoryByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateKnowledgeCategoryCommand, KnowledgeCategoryDto>, CreateKnowledgeCategoryCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateKnowledgeCategoryCommand, KnowledgeCategoryDto>, UpdateKnowledgeCategoryCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteKnowledgeCategoryCommand, bool>, DeleteKnowledgeCategoryCommandHandler>();
+
+// Knowledge Posts Handlers
+builder.Services.AddScoped<IRequestHandler<GetKnowledgePostsQuery, PagedResult<KnowledgePostDto>>, GetKnowledgePostsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetKnowledgePostByIdQuery, KnowledgePostDto>, GetKnowledgePostByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetKnowledgePostVersionsQuery, List<KnowledgePostDto>>, GetKnowledgePostVersionsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetKnowledgePostsByCategoryQuery, PagedResult<KnowledgePostDto>>, GetKnowledgePostsByCategoryQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateKnowledgePostCommand, KnowledgePostDto>, CreateKnowledgePostCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateKnowledgePostCommand, KnowledgePostDto>, UpdateKnowledgePostCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteKnowledgePostCommand>, DeleteKnowledgePostCommandHandler>();
+
+// Tags Handlers
+builder.Services.AddScoped<IRequestHandler<GetTagsQuery, List<TagDto>>, GetTagsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetTagByIdQuery, TagDto>, GetTagByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPopularTagsQuery, List<TagDto>>, GetPopularTagsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateTagCommand, TagDto>, CreateTagCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateTagCommand, TagDto>, UpdateTagCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteTagCommand>, DeleteTagCommandHandler>();
+
+// === DEPARTMENTS HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetDepartmentsQuery, PagedResult<DepartmentDto>>, GetDepartmentsQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDepartmentByIdQuery, DepartmentDto>, GetDepartmentByIdQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetDepartmentHierarchyQuery, DepartmentHierarchyDto>, GetDepartmentHierarchyQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateDepartmentCommand, DepartmentDto>, CreateDepartmentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateDepartmentCommand, DepartmentDto>, UpdateDepartmentCommandHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteDepartmentCommand, Unit>, DeleteDepartmentHandler>();
+
 // Configure rate limiting with corporate thresholds
 
 // Add FluentValidation
