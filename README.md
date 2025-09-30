@@ -1,198 +1,392 @@
-# 🚀 SynQcore - Rede Social Corporativa# 🚀 SynQcore - API de Rede Social Corporativa
+# 🚀 SynQcore - Rede Social Corporativa# 🚀 SynQcore - Rede Social Corporativa# 🚀 SynQcore - API de Rede Social Corporativa
 
-[![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)[![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https:/## 🚀 Início Rápido
+
+
+[![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)[![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https://dotnet.microsoft.com/download/dotnet/9.0)[![.NET 9](https://img.shields.io/badge/.NET-9.0-purple)](https:/## 🚀 Início Rápido
 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 
-[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)### 🎯 **Aplicação Completa com Um Comando**
+[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 
 [![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
 
-[![Fase](https://img.shields.io/badge/Fase-5%20Completa-success)](docs/ROADMAP.md)```bash
+[![Fase](https://img.shields.io/badge/Fase-5%20Completa-success)](docs/ROADMAP.md)[![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)### 🎯 **Aplicação Completa com Um Comando**
+
+[![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
+
+[![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
+
+> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**  
+
+> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  [![Fase](https://img.shields.io/badge/Fase-5%20Completa-success)](docs/ROADMAP.md)```bash
+
+> [**Pesquisa de mercado**](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) comprovou **zero concorrentes nacionais** - oportunidade única de market leadership.
 
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)# 🚀 NOVO: Iniciar aplicação completa (API + Blazor)
 
+## ✨ Características Principais
+
 python3 scripts/start-full.py
 
-> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
+- 🏛️ **Clean Architecture** - Arquitetura empresarial com .NET 9 + CQRS + MediatR
 
-> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. # Abre automaticamente:
+- 🔐 **Autenticação Completa** - JWT + Identity + Sistema de papéis corporativos> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
 
-> [**Pesquisa de mercado**](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) comprovou **zero concorrentes nacionais** - oportunidade única de market leadership.# - Swagger UI: http://localhost:5000/swagger
+- 🌐 **Interface Moderna** - Blazor Híbrido + Design System + PWA Ready
 
-# - Blazor App: http://localhost:5226
+- 📊 **Sistema Corporativo** - 15+ entidades para rede social empresarial completa> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional. # Abre automaticamente:
 
-## ✨ Características Principais```
+- ⚡ **Performance Otimizada** - Mapeamento manual + LoggerMessage + Rate Limiting
 
-- 🏛️ **Clean Architecture** - Arquitetura empresarial com .NET 9 + CQRS + MediatR### 🎯 **Chat Modes Sempre Ativos**
+- 🔍 **Busca Inteligente** - Full-text search + Expert Finder + AI Recommendations> [**Pesquisa de mercado**](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) comprovou **zero concorrentes nacionais** - oportunidade única de market leadership.# - Swagger UI: http://localhost:5000/swagger
 
-- 🔐 **Autenticação Completa** - JWT + Identity + Sistema de papéis corporativos
+- 📱 **Tempo Real** - SignalR + Notificações + Presença corporativa
 
-- 🌐 **Interface Moderna** - Blazor Híbrido + Design System + PWA Ready```bash
-
-- 📊 **Sistema Corporativo** - 15+ entidades para rede social empresarial completa# Ver status e instruções de todos os modos sempre ativos
-
-- ⚡ **Performance Otimizada** - Mapeamento manual + LoggerMessage + Rate Limiting./chatmode.sh
-
-- 🔍 **Busca Inteligente** - Full-text search + Expert Finder + AI Recommendations# ou
-
-- 📱 **Tempo Real** - SignalR + Notificações + Presença corporativa./cm
-
-- 🗄️ **Banco Robusto** - PostgreSQL + Redis + Migrações + Schema corporativo```
+- 🗄️ **Banco Robusto** - PostgreSQL + Redis + Migrações + Schema corporativo# - Blazor App: http://localhost:5226
 
 - 🐳 **Docker Ready** - Ambiente completo containerizado
 
-- 🧪 **Testado** - 27 testes (unitários + integração) funcionais**Todos os 10 modos** (desenvolvimento, arquitetura, debugging, testing, documentação, deployment, segurança, performance, blazor, api) estão **sempre ativos simultaneamente** para máxima qualidade e consistência.osoft.com/download/dotnet/9.0)
+- 🧪 **Testado** - 27 testes (unitários + integração) funcionais## ✨ Características Principais```
 
-- 🚀 **Open Source** - MIT License + 100% brasileiro[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
+- 🚀 **Open Source** - MIT License + 100% brasileiro
 
-[![Blazor](https://img.shields.io### 📞 **Corporate Notification System (Fase 4### 💡 **Recursos Corporativos\*\*
+- 🏛️ **Clean Architecture** - Arquitetura empresarial com .NET 9 + CQRS + MediatR### 🎯 **Chat Modes Sempre Ativos**
 
 ## 🚀 Início Rápido
 
+- 🔐 **Autenticação Completa** - JWT + Identity + Sistema de papéis corporativos
+
+### Pré-requisitos
+
+- 🌐 **Interface Moderna** - Blazor Híbrido + Design System + PWA Ready```bash
+
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+
+- [Docker](https://docker.com/) e Docker Compose- 📊 **Sistema Corporativo** - 15+ entidades para rede social empresarial completa# Ver status e instruções de todos os modos sempre ativos
+
+- [Python 3](https://python.org/) (para scripts de desenvolvimento)
+
+- ⚡ **Performance Otimizada** - Mapeamento manual + LoggerMessage + Rate Limiting./chatmode.sh
+
+### Executando Localmente
+
+- 🔍 **Busca Inteligente** - Full-text search + Expert Finder + AI Recommendations# ou
+
+1. **Clone e configure**
+
+   ```bash- 📱 **Tempo Real** - SignalR + Notificações + Presença corporativa./cm
+
+   git clone https://github.com/andrecesarvieira/synqcore
+
+   cd synqcore- 🗄️ **Banco Robusto** - PostgreSQL + Redis + Migrações + Schema corporativo```
+
+   ```
+
+- 🐳 **Docker Ready** - Ambiente completo containerizado
+
+2. **Inicie o ambiente completo**
+
+   ```bash- 🧪 **Testado** - 27 testes (unitários + integração) funcionais**Todos os 10 modos** (desenvolvimento, arquitetura, debugging, testing, documentação, deployment, segurança, performance, blazor, api) estão **sempre ativos simultaneamente** para máxima qualidade e consistência.osoft.com/download/dotnet/9.0)
+
+   # ⭐ RECOMENDADO: Aplicação completa (API + Blazor)
+
+   python3 scripts/start-full.py- 🚀 **Open Source** - MIT License + 100% brasileiro[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
+
+   
+
+   # Abre automaticamente:[![Blazor](https://img.shields.io### 📞 **Corporate Notification System (Fase 4### 💡 **Recursos Corporativos\*\*
+
+   # - API + Swagger: http://localhost:5000/swagger
+
+   # - Blazor App: http://localhost:5226## 🚀 Início Rápido
+
+   ```
+
 - ✅ **Rate Limiting** atualizado (Employee: 500/min, Manager: 1000/min, HR: 1500/min, Admin: 2000/min)
 
-### Pré-requisitos- ✅ **Multi-Channel Delivery** (7 canais: InApp, Email, Push, SMS, Webhook, Teams, Slack)
+3. **Credenciais de teste**
+
+   - **Email**: `admin@synqcore.com`### Pré-requisitos- ✅ **Multi-Channel Delivery** (7 canais: InApp, Email, Push, SMS, Webhook, Teams, Slack)
+
+   - **Senha**: `SynQcore@Admin123!`
 
 - ✅ **Workflow de Aprovação** (10 status corporativos)
 
+### Scripts Alternativos
+
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)- ✅ **Sistema de Templates** reutilizáveis com placeholders
 
-- [Docker](https://docker.com/) e Docker Compose- ✅ **Corporate Search** com full-text search em todo conteúdo
+```bash
 
-- [Python 3](https://python.org/) (para scripts de desenvolvimento)- ✅ **Expert Finder** - "Who knows about...?" baseado em skills
+python3 scripts/start-api-5000.py    # Apenas API- [Docker](https://docker.com/) e Docker Compose- ✅ **Corporate Search** com full-text search em todo conteúdo
+
+python3 scripts/start-blazor.py      # Apenas Blazor
+
+python3 scripts/start-dev.py         # Apenas Docker (BD + Redis)- [Python 3](https://python.org/) (para scripts de desenvolvimento)- ✅ **Expert Finder** - "Who knows about...?" baseado em skills
+
+```
 
 - ✅ **Advanced Search** com filtros complexos (título, conteúdo, autor)
 
+## 🏗️ Arquitetura
+
 ### Executando Localmente- ✅ **Search Analytics** + Trending Topics + Content Statistics
 
-- ✅ **AI-powered Recommendations** baseadas em role/department
+```
 
-1. **Clone e configure**- ✅ **Autorização baseada em roles** (HR/Admin para modificações)
+src/- ✅ **AI-powered Recommendations** baseadas em role/department
 
-   ````bash- ✅ **Soft Delete** com auditoria completa
+├── SynQcore.Domain/        # Entidades e regras de negócio
 
-   git clone https://github.com/andrecesarvieira/synqcore- ✅ **Validação corporativa** (FluentValidation + business rules)
+├── SynQcore.Application/   # Casos de uso (CQRS + MediatR)1. **Clone e configure**- ✅ **Autorização baseada em roles** (HR/Admin para modificações)
+
+├── SynQcore.Infrastructure/# Implementações (EF Core, Redis)
+
+├── SynQcore.Api/          # Web API + Controllers   ````bash- ✅ **Soft Delete** com auditoria completa
+
+├── SynQcore.BlazorApp/    # Frontend Blazor Híbrido
+
+└── SynQcore.Common/       # Utilitários compartilhados   git clone https://github.com/andrecesarvieira/synqcore- ✅ **Validação corporativa** (FluentValidation + business rules)
+
+```
 
    cd synqcore- ✅ **Performance Logging** (60+ LoggerMessage delegates)
 
+## 🌐 URLs de Acesso
+
    ```- ✅ **Swagger UI** completo em http://localhost:5000/swagger
-   ````
 
-- ✅ **Health Checks** em /health, /health/ready, /health/livetp
-
-2. **Inicie o ambiente completo** POST /api/notifications - Criar notificação (Admin/HR/Manager)
-
-   ````bash GET /api/notifications/my-notifications - Minhas notificações
-
-   # ⭐ RECOMENDADO: Aplicação completa (API + Blazor)  GET /api/notifications - Todas as notificações (Admin)
-
-   python3 scripts/start-full.py  GET /api/notifications/{id} - Detalhes da notificação
-
-     POST /api/notifications/{id}/approve - Aprovar/rejeitar notificação
-
-   # Abre automaticamente:  POST /api/notifications/{id}/send - Enviar notificação aprovada
-
-   # - API + Swagger: http://localhost:5000/swagger  POST /api/notifications/{id}/mark-read - Marcar como lida
-
-   # - Blazor App: http://localhost:5226  PUT /api/notifications/{id} - Atualizar rascunho
-
-   ```  POST /api/notifications/{id}/cancel - Cancelar notificação
-
-   ````
-
-3. **Credenciais de teste**````
-
-   - **Email**: `admin@synqcore.com`
-
-   - **Senha**: `SynQcore@Admin123!`### 🔍 **Corporate Search e Knowledge Discovery (Fase 4.4)**
-
-### Scripts Alternativos```http
-
-GET /api/corporatesearch - Busca corporativa básica
-
-````bashPOST /api/corporatesearch/advanced            - Busca avançada (título, conteúdo, autor)
-
-python3 scripts/start-api-5000.py    # Apenas APIGET    /api/corporatesearch/suggestions         - Sugestões de busca
-
-python3 scripts/start-blazor.py      # Apenas BlazorGET    /api/corporatesearch/category/{category} - Buscar por categoria
-
-python3 scripts/start-dev.py         # Apenas Docker (BD + Redis)GET    /api/corporatesearch/author/{authorId}   - Buscar por autor
-
-```GET    /api/corporatesearch/department/{deptId} - Buscar por departamento
-
-POST   /api/corporatesearch/tags               - Buscar por tags
-
-## 🏗️ ArquiteturaGET    /api/corporatesearch/similar/{contentId} - Conteúdo similar
-
-GET    /api/corporatesearch/recent             - Conteúdo recente
-
-```GET    /api/corporatesearch/popular            - Conteúdo popular
-
-src/GET    /api/corporatesearch/analytics          - Analytics de busca
-
-├── SynQcore.Domain/        # Entidades e regras de negócioGET    /api/corporatesearch/trending           - Trending topics
-
-├── SynQcore.Application/   # Casos de uso (CQRS + MediatR)GET    /api/corporatesearch/stats              - Estatísticas de conteúdo
-
-├── SynQcore.Infrastructure/# Implementações (EF Core, Redis)POST   /api/corporatesearch/export             - Exportar resultados
-
-├── SynQcore.Api/          # Web API + ControllersPOST   /api/corporatesearch/click              - Registrar clique (analytics)
-
-├── SynQcore.BlazorApp/    # Frontend Blazor Híbrido```-Híbrido-green)](https://blazor.net/)
-
-└── SynQcore.Common/       # Utilitários compartilhados[![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
-
-```[![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
-
-[![Fase](https://img.shields.io/badge/Fase-4.4%20Completa-success)](docs/ROADMAP.md)
-
-## 🌐 URLs de Acesso[![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
-
-
-
-| Serviço | URL | Descrição |## 🏆 **PIONEIRO NO BRASIL**
+| Serviço | URL | Descrição |   ````
 
 |---------|-----|-----------|
 
-| **API** | http://localhost:5000 | API RESTful completa |> **🇧🇷 PRIMEIRA rede social corporativa open source 100% brasileira em C#/.NET** > **Pesquisa de mercado comprovada**: [Zero concorrentes nacionais identificados](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) > **Oportunidade única**: Market leader por pioneirismo no segmento
+| **API** | http://localhost:5000 | API RESTful completa |- ✅ **Health Checks** em /health, /health/ready, /health/livetp
 
 | **Swagger** | http://localhost:5000/swagger | Documentação interativa |
 
-| **Blazor App** | http://localhost:5226 | Interface moderna |---
+| **Blazor App** | http://localhost:5226 | Interface moderna |2. **Inicie o ambiente completo** POST /api/notifications - Criar notificação (Admin/HR/Manager)
 
 | **Design System** | http://localhost:5226/design-system | Biblioteca de componentes |
 
-| **pgAdmin** | http://localhost:8080 | Administração do banco |> **API de Rede Social Corporativa Open Source** para ambientes empresariais
-
-> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.
-
-## 📊 Status do Projeto> Arquitetura empresarial com .NET 9, Clean Architecture e performance otimizada.
+| **pgAdmin** | http://localhost:8080 | Administração do banco |   ````bash GET /api/notifications/my-notifications - Minhas notificações
 
 
 
-**Fase 5 CONCLUÍDA** _(29/09/2025)_ - Interface Blazor + Design System + Scripts Python## ✨ Características
+## 📊 Status do Projeto   # ⭐ RECOMENDADO: Aplicação completa (API + Blazor)  GET /api/notifications - Todas as notificações (Admin)
 
 
 
-| Fase | Status | Descrição |- 🏛️ **Clean Architecture** - 9 projetos organizados com dependências corretas
+**Fase 5 CONCLUÍDA** _(29/09/2025)_ - Interface Blazor + Design System + Scripts Python   python3 scripts/start-full.py  GET /api/notifications/{id} - Detalhes da notificação
 
-|------|--------|-----------|- 🔐 **Autenticação JWT** - Identity + ApplicationUserEntity + Database integrado
 
-| **Fase 1-2** | ✅ **COMPLETO** | Infraestrutura + API Core + Autenticação |- 📊 **Modelo Corporativo** - 12 entidades para rede social empresarial completa
 
-| **Fase 3** | ✅ **COMPLETO** | Core Corporativo + Knowledge Management |- ⚡ **Performance Otimizada** - Sistema de mapeamento manual sem reflection
+| Fase | Status | Descrição |     POST /api/notifications/{id}/approve - Aprovar/rejeitar notificação
 
-| **Fase 4** | ✅ **COMPLETO** | SignalR + Notificações + Busca + Media |- 🎯 **Zero Dependências Comerciais** - 100% open-source sem AutoMapper
+|------|--------|-----------|
 
-| **Fase 5** | ✅ **COMPLETO** | Interface Blazor + Design System |- 🗄️ **Banco Pronto** - Schema corporativo com 13 tabelas + Identity
+| **Fase 1-2** | ✅ **COMPLETO** | Infraestrutura + API Core + Autenticação |   # Abre automaticamente:  POST /api/notifications/{id}/send - Enviar notificação aprovada
 
-| **Fase 6-8** | 🎯 **PLANEJADO** | Recursos Avançados + Performance + Deploy |- 🎯 **CQRS Preparado** - Commands/Queries/Handlers estruturados
+| **Fase 3** | ✅ **COMPLETO** | Core Corporativo + Knowledge Management |
 
-- 📝 **API Corporativa** - Swagger UI + Rate Limiting + Health Checks
+| **Fase 4** | ✅ **COMPLETO** | SignalR + Notificações + Busca + Media |   # - API + Swagger: http://localhost:5000/swagger  POST /api/notifications/{id}/mark-read - Marcar como lida
 
-> 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.- 🌐 **Tempo Real Preparado** - Estrutura preparada para SignalR
+| **Fase 5** | ✅ **COMPLETO** | Interface Blazor + Design System |
 
+| **Fase 6-8** | 🎯 **PLANEJADO** | Recursos Avançados + Performance + Deploy |   # - Blazor App: http://localhost:5226  PUT /api/notifications/{id} - Atualizar rascunho
+
+
+
+> 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.   ```  POST /api/notifications/{id}/cancel - Cancelar notificação
+
+
+
+## 🔌 Principais Endpoints   ````
+
+
+
+### Autenticação3. **Credenciais de teste**````
+
+```http
+
+POST /api/auth/register    # Registrar funcionário   - **Email**: `admin@synqcore.com`
+
+POST /api/auth/login       # Login JWT
+
+```   - **Senha**: `SynQcore@Admin123!`### 🔍 **Corporate Search e Knowledge Discovery (Fase 4.4)**
+
+
+
+### Gestão de Funcionários### Scripts Alternativos```http
+
+```http
+
+GET    /api/employees           # Listar funcionáriosGET /api/corporatesearch - Busca corporativa básica
+
+POST   /api/employees           # Criar funcionário
+
+GET    /api/employees/{id}      # Detalhes do funcionário````bashPOST /api/corporatesearch/advanced            - Busca avançada (título, conteúdo, autor)
+
+PUT    /api/employees/{id}      # Atualizar funcionário
+
+```python3 scripts/start-api-5000.py    # Apenas APIGET    /api/corporatesearch/suggestions         - Sugestões de busca
+
+
+
+### Busca Corporativapython3 scripts/start-blazor.py      # Apenas BlazorGET    /api/corporatesearch/category/{category} - Buscar por categoria
+
+```http
+
+GET    /api/corporatesearch                    # Busca básicapython3 scripts/start-dev.py         # Apenas Docker (BD + Redis)GET    /api/corporatesearch/author/{authorId}   - Buscar por autor
+
+POST   /api/corporatesearch/advanced           # Busca avançada
+
+GET    /api/corporatesearch/suggestions        # Sugestões```GET    /api/corporatesearch/department/{deptId} - Buscar por departamento
+
+GET    /api/corporatesearch/analytics          # Analytics
+
+```POST   /api/corporatesearch/tags               - Buscar por tags
+
+
+
+### Notificações## 🏗️ ArquiteturaGET    /api/corporatesearch/similar/{contentId} - Conteúdo similar
+
+```http
+
+POST   /api/notifications                      # Criar notificaçãoGET    /api/corporatesearch/recent             - Conteúdo recente
+
+GET    /api/notifications/my-notifications     # Minhas notificações
+
+POST   /api/notifications/{id}/approve         # Aprovar notificação```GET    /api/corporatesearch/popular            - Conteúdo popular
+
+```
+
+src/GET    /api/corporatesearch/analytics          - Analytics de busca
+
+> 📚 **[Ver todos os 100+ endpoints no Swagger →](http://localhost:5000/swagger)**
+
+├── SynQcore.Domain/        # Entidades e regras de negócioGET    /api/corporatesearch/trending           - Trending topics
+
+## 🛠️ Stack Tecnológica
+
+├── SynQcore.Application/   # Casos de uso (CQRS + MediatR)GET    /api/corporatesearch/stats              - Estatísticas de conteúdo
+
+| Categoria | Tecnologia | Status |
+
+|-----------|------------|--------|├── SynQcore.Infrastructure/# Implementações (EF Core, Redis)POST   /api/corporatesearch/export             - Exportar resultados
+
+| **Backend** | .NET 9, ASP.NET Core, EF Core | ✅ Produção |
+
+| **Frontend** | Blazor Server + WebAssembly | ✅ Funcional |├── SynQcore.Api/          # Web API + ControllersPOST   /api/corporatesearch/click              - Registrar clique (analytics)
+
+| **Banco** | PostgreSQL 16 + Redis 7 | ✅ Schema Completo |
+
+| **Tempo Real** | SignalR | ✅ Implementado |├── SynQcore.BlazorApp/    # Frontend Blazor Híbrido```-Híbrido-green)](https://blazor.net/)
+
+| **Arquitetura** | Clean Architecture + CQRS | ✅ Implementado |
+
+| **DevOps** | Docker Compose + Scripts Python | ✅ Automação |└── SynQcore.Common/       # Utilitários compartilhados[![Status Build](https://img.shields.io/badge/Build-Aprovado-brightgreen)](https://github.com/andrecesarvieira/synqcore)
+
+
+
+## 📚 Documentação```[![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
+
+
+
+- 🗺️ **[ROADMAP.md](docs/ROADMAP.md)** - Planejamento detalhado e progresso[![Fase](https://img.shields.io/badge/Fase-4.4%20Completa-success)](docs/ROADMAP.md)
+
+- 🏛️ **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitetura técnica
+
+- 🎨 **[DIAGRAMS.md](docs/DIAGRAMS.md)** - Diagramas visuais## 🌐 URLs de Acesso[![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
+
+- 📊 **[PESQUISA-MERCADO](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)** - Análise de mercado
+
+- 🧪 **[Testing](docs/testing/)** - Estratégias e relatórios de teste
+
+- 🤝 **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** - Guia de contribuição
+
+| Serviço | URL | Descrição |## 🏆 **PIONEIRO NO BRASIL**
+
+## 🏆 Diferenciais Competitivos
+
+|---------|-----|-----------|
+
+### 🇧🇷 **Pioneirismo Nacional**
+
+- **ÚNICA** solução nacional em C#/.NET| **API** | http://localhost:5000 | API RESTful completa |> **🇧🇷 PRIMEIRA rede social corporativa open source 100% brasileira em C#/.NET** > **Pesquisa de mercado comprovada**: [Zero concorrentes nacionais identificados](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) > **Oportunidade única**: Market leader por pioneirismo no segmento
+
+- **Zero concorrentes** diretos identificados
+
+- **Market leadership** por pioneirismo comprovado| **Swagger** | http://localhost:5000/swagger | Documentação interativa |
+
+
+
+### 🔧 **Excelência Técnica**| **Blazor App** | http://localhost:5226 | Interface moderna |---
+
+- **Clean Architecture** empresarial
+
+- **Zero dependências comerciais** (AutoMapper, etc.)| **Design System** | http://localhost:5226/design-system | Biblioteca de componentes |
+
+- **Performance otimizada** (mapeamento manual + LoggerMessage)
+
+- **100% Open Source** com MIT License| **pgAdmin** | http://localhost:8080 | Administração do banco |> **API de Rede Social Corporativa Open Source** para ambientes empresariais
+
+
+
+### 🏢 **Foco Corporativo**> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.
+
+- **Compliance LGPD** nativo
+
+- **Hierarquia organizacional** completa## 📊 Status do Projeto> Arquitetura empresarial com .NET 9, Clean Architecture e performance otimizada.
+
+- **Workflow de aprovação** corporativo
+
+- **Multi-channel notifications** integradas
+
+
+
+## 🤝 Contribuindo**Fase 5 CONCLUÍDA** _(29/09/2025)_ - Interface Blazor + Design System + Scripts Python## ✨ Características
+
+
+
+1. Fork o projeto
+
+2. Crie uma branch (`git checkout -b feature/AmazingFeature`)
+
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)| Fase | Status | Descrição |- 🏛️ **Clean Architecture** - 9 projetos organizados com dependências corretas
+
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+
+5. Abra um Pull Request|------|--------|-----------|- 🔐 **Autenticação JWT** - Identity + ApplicationUserEntity + Database integrado
+
+
+
+> 📝 **[Guia completo de contribuição →](docs/CONTRIBUTING.md)**| **Fase 1-2** | ✅ **COMPLETO** | Infraestrutura + API Core + Autenticação |- 📊 **Modelo Corporativo** - 12 entidades para rede social empresarial completa
+
+
+
+## 📄 Licença| **Fase 3** | ✅ **COMPLETO** | Core Corporativo + Knowledge Management |- ⚡ **Performance Otimizada** - Sistema de mapeamento manual sem reflection
+
+
+
+Este projeto está licenciado sob a MIT License - veja o arquivo [LICENSE](LICENSE) para detalhes.| **Fase 4** | ✅ **COMPLETO** | SignalR + Notificações + Busca + Media |- 🎯 **Zero Dependências Comerciais** - 100% open-source sem AutoMapper
+
+
+
+---| **Fase 5** | ✅ **COMPLETO** | Interface Blazor + Design System |- 🗄️ **Banco Pronto** - Schema corporativo com 13 tabelas + Identity
+
+
+
+<p align="center">| **Fase 6-8** | 🎯 **PLANEJADO** | Recursos Avançados + Performance + Deploy |- 🎯 **CQRS Preparado** - Commands/Queries/Handlers estruturados
+
+  <strong>🏆 PIONEIRO BRASILEIRO</strong><br>
+
+  <em>Primeira rede social corporativa open source nacional em C#/.NET</em><br><br>- 📝 **API Corporativa** - Swagger UI + Rate Limiting + Health Checks
+
+  <sub>⭐ <strong>Marque com estrela</strong> se acredita no futuro das soluções corporativas brasileiras!</sub><br>
+
+  <sub>🤝 <strong>Contribuições bem-vindas</strong> - Faça parte da evolução do software corporativo nacional</sub>> 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.- 🌐 **Tempo Real Preparado** - Estrutura preparada para SignalR
+
+</p>
 - 📱 **PWA Preparado** - Base Blazor Híbrido configurada
 
 ## 🔌 Principais Endpoints- 🔒 **Segurança em Primeiro Lugar** - JWT + Identity + Corporate roles funcionais
