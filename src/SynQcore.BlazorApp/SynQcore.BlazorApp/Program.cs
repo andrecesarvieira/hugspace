@@ -52,6 +52,13 @@ builder.Services.AddScoped<IStateInitializationService, StateInitializationServi
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ILocalAuthService, LocalAuthService>(); // Backup auth service
+builder.Services.AddScoped<IModerationService, ModerationService>(); // Serviço de moderação
+builder.Services.AddScoped<IUserPermissionService, UserPermissionService>(); // Serviço de permissões
+builder.Services.AddScoped<IPlatformStatsService, PlatformStatsService>(); // Serviço de estatísticas
+builder.Services.AddScoped<IEmployeeService, EmployeeService>(); // Serviço de funcionários
+builder.Services.AddScoped<IEndorsementService, EndorsementService>(); // Serviço de endorsements
+builder.Services.AddScoped<IKnowledgeService, KnowledgeService>(); // Serviço de gestão de conhecimento
+builder.Services.AddScoped<IDiscussionThreadService, DiscussionThreadService>(); // Serviço de discussion threads
 
 // HttpClient com interceptor de autenticação
 builder.Services.AddScoped<AuthenticationHandler>();
