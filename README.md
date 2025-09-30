@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
-[![Fase](https://img.shields.io/badge/Fase-6.1%20Completa-success)](docs/ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-6.3%20Completa-success)](docs/ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 
 > **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
@@ -90,7 +90,7 @@ src/
 
 ## 📊 Status do Projeto
 
-**Fase 6.1 CONCLUÍDA** _(30/09/2025)_ - Privacy/LGPD Compliance System Completo
+**Fase 6.3 CONCLUÍDA** _(30/09/2025)_ - Sistema de Moderação Corporativa + Blazor UI Corrigida
 
 | Fase         | Status           | Descrição                                 |
 | ------------ | ---------------- | ----------------------------------------- |
@@ -99,7 +99,9 @@ src/
 | **Fase 4**   | ✅ **COMPLETO**  | SignalR + Notificações + Busca + Media    |
 | **Fase 5**   | ✅ **COMPLETO**  | Interface Blazor + Design System          |
 | **Fase 6.1** | ✅ **COMPLETO**  | Sistema Privacy/LGPD Compliance           |
-| **Fase 6-8** | 🎯 **PLANEJADO** | Segurança Avançada + Performance + Deploy |
+| **Fase 6.2** | ✅ **COMPLETO**  | Segurança Avançada Corporativa            |
+| **Fase 6.3** | ✅ **COMPLETO**  | Sistema de Moderação + Blazor Corrigida   |
+| **Fase 7-8** | 🎯 **PLANEJADO** | Performance + UX/UI Avançado + Deploy     |
 
 > 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.
 
