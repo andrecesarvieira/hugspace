@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
-[![Fase](https://img.shields.io/badge/Fase-5%20Completa-success)](docs/ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-6.1%20Completa-success)](docs/ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 
 > **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
@@ -15,6 +15,7 @@
 
 - 🏛️ **Clean Architecture** - Arquitetura empresarial com .NET 9 + CQRS + MediatR
 - 🔐 **Autenticação Completa** - JWT + Identity + Sistema de papéis corporativos
+- 🛡️ **Privacy/LGPD Compliant** - Sistema completo de conformidade com LGPD/GDPR
 - 🌐 **Interface Moderna** - Blazor Híbrido + Design System + PWA Ready
 - 📊 **Sistema Corporativo** - 15+ entidades para rede social empresarial completa
 - ⚡ **Performance Otimizada** - Mapeamento manual + LoggerMessage + Rate Limiting
@@ -89,7 +90,7 @@ src/
 
 ## 📊 Status do Projeto
 
-**Fase 5 CONCLUÍDA** _(29/09/2025)_ - Interface Blazor + Design System + Scripts Python
+**Fase 6.1 CONCLUÍDA** _(30/09/2025)_ - Privacy/LGPD Compliance System Completo
 
 | Fase         | Status           | Descrição                                 |
 | ------------ | ---------------- | ----------------------------------------- |
@@ -97,7 +98,8 @@ src/
 | **Fase 3**   | ✅ **COMPLETO**  | Core Corporativo + Knowledge Management   |
 | **Fase 4**   | ✅ **COMPLETO**  | SignalR + Notificações + Busca + Media    |
 | **Fase 5**   | ✅ **COMPLETO**  | Interface Blazor + Design System          |
-| **Fase 6-8** | 🎯 **PLANEJADO** | Recursos Avançados + Performance + Deploy |
+| **Fase 6.1** | ✅ **COMPLETO**  | Sistema Privacy/LGPD Compliance           |
+| **Fase 6-8** | 🎯 **PLANEJADO** | Segurança Avançada + Performance + Deploy |
 
 > 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.
 
@@ -134,6 +136,15 @@ GET    /api/corporatesearch/analytics          # Analytics
 POST   /api/notifications                      # Criar notificação
 GET    /api/notifications/my-notifications     # Minhas notificações
 POST   /api/notifications/{id}/approve         # Aprovar notificação
+```
+
+### Privacy/LGPD Compliance
+
+```http
+GET    /api/privacy/data-categories            # Categorias de dados pessoais
+POST   /api/privacy/data-categories            # Criar categoria
+GET    /api/privacy/processing-activities      # Atividades de processamento
+POST   /api/privacy/consent-records            # Registros de consentimento
 ```
 
 > 📚 **[Ver todos os 100+ endpoints no Swagger →](http://localhost:5000/swagger)**
@@ -175,7 +186,7 @@ POST   /api/notifications/{id}/approve         # Aprovar notificação
 
 ### 🏢 **Foco Corporativo**
 
-- **Compliance LGPD** nativo
+- **Compliance LGPD** nativo com sistema completo
 - **Hierarquia organizacional** completa
 - **Workflow de aprovação** corporativo
 - **Multi-channel notifications** integradas
