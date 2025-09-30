@@ -24,6 +24,8 @@ using SynQcore.Infrastructure.Data;
 using SynQcore.Api.Middleware;
 using AspNetCoreRateLimit;
 using SynQcore.Infrastructure.Services.Auth;
+using SynQcore.Application.Services;
+using SynQcore.Infrastructure.Services;
 using SynQcore.Common;
 using SynQcore.Infrastructure.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -288,6 +290,11 @@ if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.Ordi
 
 // Add security headers configuration
 builder.Services.AddSecurityHeaders(builder.Configuration);
+
+// Security Services (comentado temporariamente até resolver conflitos)
+// builder.Services.AddScoped<IInputSanitizationService, InputSanitizationService>();
+// builder.Services.AddScoped<ISecurityMonitoringService, SecurityMonitoringService>();
+// builder.Services.AddScoped<IAdvancedRateLimitingService, AdvancedRateLimitingService>();
 
 // Add MediatR - Registrar handlers da Application layer
 builder.Services.AddMediatR(cfg =>

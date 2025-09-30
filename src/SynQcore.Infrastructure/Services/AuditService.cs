@@ -349,4 +349,74 @@ public partial class AuditService : IAuditService
             throw;
         }
     }
+
+    // Métodos específicos para operações críticas de segurança
+    public async Task LogSecurityEventAsync(string securityEvent, string details, Guid? userId = null, AuditSeverity severity = AuditSeverity.Warning, CancellationToken cancellationToken = default)
+    {
+        await LogAsync(
+            AuditActionType.SecurityViolation,
+            "Security",
+            securityEvent,
+            userId,
+            details,
+            severity,
+            null,
+            cancellationToken);
+    }
+
+    public async Task LogPrivacyOperationAsync(string operation, string dataCategory, Guid? userId, string details, CancellationToken cancellationToken = default)
+    {
+        var metadata = JsonSerializer.Serialize(new { operation, dataCategory });
+        await LogAsync(
+            AuditActionType.DataRequested,
+            "Privacy",
+            dataCategory,
+            userId,
+            details,
+            AuditSeverity.Information,
+            metadata,
+            cancellationToken);
+    }
+
+    public async Task LogRateLimitViolationAsync(string ipAddress, string endpoint, string? userId = null, CancellationToken cancellationToken = default)
+    {
+        var metadata = JsonSerializer.Serialize(new { ipAddress, endpoint, timestamp = DateTime.UtcNow });
+        await LogAsync(
+            AuditActionType.RateLimitExceeded,
+            "RateLimit",
+            endpoint,
+            userId != null ? Guid.Parse(userId) : null,
+            $"Rate limit exceeded for IP {ipAddress} on endpoint {endpoint}",
+            AuditSeverity.Warning,
+            metadata,
+            cancellationToken);
+    }
+
+    public async Task LogInputSanitizationAsync(string inputType, string threatType, string ipAddress, string? userId = null, CancellationToken cancellationToken = default)
+    {
+        var metadata = JsonSerializer.Serialize(new { inputType, threatType, ipAddress, timestamp = DateTime.UtcNow });
+        await LogAsync(
+            AuditActionType.SecurityViolation,
+            "InputSanitization",
+            threatType,
+            userId != null ? Guid.Parse(userId) : null,
+            $"Security threat detected: {threatType} in {inputType} from IP {ipAddress}",
+            AuditSeverity.Warning,
+            metadata,
+            cancellationToken);
+    }
+
+    public async Task LogSuspiciousActivityAsync(string activityType, string details, string ipAddress, Guid? userId = null, CancellationToken cancellationToken = default)
+    {
+        var metadata = JsonSerializer.Serialize(new { activityType, ipAddress, timestamp = DateTime.UtcNow });
+        await LogAsync(
+            AuditActionType.SuspiciousActivity,
+            "SuspiciousActivity",
+            activityType,
+            userId,
+            details,
+            AuditSeverity.Warning,
+            metadata,
+            cancellationToken);
+    }
 }

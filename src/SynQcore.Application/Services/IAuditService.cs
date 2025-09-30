@@ -113,4 +113,11 @@ public interface IAuditService
     /// Remove logs antigos conforme política de retenção
     /// </summary>
     Task CleanupOldLogsAsync(CancellationToken cancellationToken = default);
+
+    // Métodos específicos para operações críticas de segurança
+    Task LogSecurityEventAsync(string securityEvent, string details, Guid? userId = null, AuditSeverity severity = AuditSeverity.Warning, CancellationToken cancellationToken = default);
+    Task LogPrivacyOperationAsync(string operation, string dataCategory, Guid? userId, string details, CancellationToken cancellationToken = default);
+    Task LogRateLimitViolationAsync(string ipAddress, string endpoint, string? userId = null, CancellationToken cancellationToken = default);
+    Task LogInputSanitizationAsync(string inputType, string threatType, string ipAddress, string? userId = null, CancellationToken cancellationToken = default);
+    Task LogSuspiciousActivityAsync(string activityType, string details, string ipAddress, Guid? userId = null, CancellationToken cancellationToken = default);
 }
