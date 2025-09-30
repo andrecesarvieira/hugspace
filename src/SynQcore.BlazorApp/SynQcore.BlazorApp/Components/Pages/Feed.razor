@@ -7,6 +7,7 @@
 @inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject IUserPermissionService UserPermissionService
 
 <div class="feed-container">
     <!-- Header Principal -->
@@ -86,6 +87,21 @@
                                     <i class="fas fa-cog"></i>
                                     Configurações
                                 </a>
+                                <a href="/employees" class="menu-item">
+                                    <i class="fas fa-users"></i>
+                                    Funcionários
+                                </a>
+                                <a href="/endorsements" class="menu-item">
+                                    <i class="fas fa-award"></i>
+                                    Endorsements
+                                </a>
+                                @if (canModerate)
+                                {
+                                    <a href="/moderation" class="menu-item">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Moderação
+                                    </a>
+                                }
                                 <a href="/ajuda" class="menu-item">
                                     <i class="fas fa-question-circle"></i>
                                     Ajuda
@@ -1189,11 +1205,13 @@
     private UserInfo? currentUser;
     private bool isLocalAuthenticated = false;
     private List<PostModel> posts = new();
+    // Estado do componente
     private bool isLoading = true;
     private bool showCreatePostModal = false;
     private bool isCreatingPost = false;
     private string newPostContent = string.Empty;
     private string newPostTags = string.Empty;
+    private bool canModerate = false;
 
     // Navegação
     private string activeTab = "feed";
@@ -1227,6 +1245,9 @@
 
         // Verificar autenticação
         isLocalAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
+
+        // Verificar permissões de moderação
+        canModerate = await IsUserModerator();
 
         Console.WriteLine($"[FEED] Status de autenticação verificado - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
 
@@ -1511,4 +1532,17 @@
     private void OnFilterAll() => SetSearchFilter("all");
     private void OnFilterPosts() => SetSearchFilter("posts");
     private void OnFilterPeople() => SetSearchFilter("people");
+
+    // Método para verificar permissões de moderação
+    private async Task<bool> IsUserModerator()
+    {
+        try
+        {
+            return await UserPermissionService.CanModerateAsync();
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

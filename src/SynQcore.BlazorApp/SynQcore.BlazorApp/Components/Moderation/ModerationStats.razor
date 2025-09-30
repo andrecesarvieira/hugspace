@@ -1,0 +1,279 @@
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models.Moderation
+@inject IModerationService ModerationService
+
+<div class="moderation-stats">
+    <div class="stats-header">
+        <h3>
+            <i class="fas fa-chart-bar"></i>
+            Estatísticas Detalhadas
+        </h3>
+        <div class="refresh-controls">
+            <button @onclick="RefreshStats" class="btn-refresh-stats" disabled="@isLoading">
+                <i class="fas fa-sync-alt @(isLoading ? "spinning" : "")"></i>
+                Atualizar
+            </button>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="stats-loading">
+            <div class="spinner-small"></div>
+            <span>Carregando estatísticas...</span>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="stats-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>@errorMessage</span>
+        </div>
+    }
+    else if (stats != null)
+    {
+        <!-- Cards de estatísticas principais -->
+        <div class="primary-stats">
+            <div class="stat-card-detailed pending">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>@stats.PendingItems</h4>
+                    <p>Itens Pendentes</p>
+                    <small class="stat-trend">Requer atenção</small>
+                </div>
+            </div>
+
+            <div class="stat-card-detailed processed">
+                <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>@stats.ProcessedToday</h4>
+                    <p>Processados Hoje</p>
+                    <small class="stat-trend">@stats.ApprovedToday aprovados, @stats.RejectedToday rejeitados</small>
+                </div>
+            </div>
+
+            <div class="stat-card-detailed approval">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>@stats.ApprovalRate.ToString("P1")</h4>
+                    <p>Taxa de Aprovação</p>
+                    <small class="stat-trend @GetApprovalTrendClass(stats.ApprovalRate)">
+                        @GetApprovalTrendText(stats.ApprovalRate)
+                    </small>
+                </div>
+            </div>
+
+            <div class="stat-card-detailed timing">
+                <div class="stat-icon">
+                    <i class="fas fa-stopwatch"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>@stats.AverageProcessingTimeHours.ToString("F1")h</h4>
+                    <p>Tempo Médio de Processamento</p>
+                    <small class="stat-trend">@stats.TotalModeratorsActive moderadores ativos</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Breakdown por tipo de conteúdo -->
+        @if (stats.ContentTypeBreakdown?.Any() == true)
+        {
+            <div class="content-breakdown">
+                <h4>
+                    <i class="fas fa-list"></i>
+                    Distribuição por Tipo de Conteúdo
+                </h4>
+                <div class="breakdown-grid">
+                    @foreach (var contentType in stats.ContentTypeBreakdown)
+                    {
+                        <div class="breakdown-item">
+                            <div class="breakdown-label">@contentType.Key</div>
+                            <div class="breakdown-value">@contentType.Value</div>
+                            <div class="breakdown-bar">
+                                <div class="breakdown-fill" style="width: @GetPercentage(contentType.Value, stats.ContentTypeBreakdown.Values.Sum())%"></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Breakdown por prioridade -->
+        @if (stats.PriorityBreakdown?.Any() == true)
+        {
+            <div class="priority-breakdown">
+                <h4>
+                    <i class="fas fa-exclamation"></i>
+                    Distribuição por Prioridade
+                </h4>
+                <div class="priority-grid">
+                    @foreach (var priority in stats.PriorityBreakdown)
+                    {
+                        <div class="priority-item @GetPriorityClass(priority.Key)">
+                            <div class="priority-icon">
+                                <i class="fas @GetPriorityIcon(priority.Key)"></i>
+                            </div>
+                            <div class="priority-content">
+                                <span class="priority-label">@priority.Key</span>
+                                <span class="priority-count">@priority.Value itens</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Analytics Avançados -->
+        @if (analytics != null)
+        {
+            <div class="advanced-analytics">
+                <h4>
+                    <i class="fas fa-chart-line"></i>
+                    Analytics Avançados (Últimos 7 dias)
+                </h4>
+
+                <div class="analytics-summary">
+                    <div class="analytics-item">
+                        <span class="analytics-label">Total Processado:</span>
+                        <span class="analytics-value">@analytics.TotalProcessed</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="analytics-label">Taxa de Aprovação:</span>
+                        <span class="analytics-value">@analytics.ApprovalRate.ToString("P1")</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="analytics-label">Taxa de Rejeição:</span>
+                        <span class="analytics-value">@analytics.RejectionRate.ToString("P1")</span>
+                    </div>
+                </div>
+
+                @if (analytics.ModeratorPerformance?.Any() == true)
+                {
+                    <div class="moderator-performance">
+                        <h5>Performance dos Moderadores</h5>
+                        <div class="moderator-list">
+                            @foreach (var moderator in analytics.ModeratorPerformance.Take(5))
+                            {
+                                <div class="moderator-item">
+                                    <div class="moderator-info">
+                                        <strong>@moderator.ModeratorName</strong>
+                                        <small>@moderator.ItemsProcessed itens processados</small>
+                                    </div>
+                                    <div class="moderator-rate">
+                                        @moderator.ApprovalRate.ToString("P0")
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback OnStatsUpdated { get; set; }
+
+    private bool isLoading = true;
+    private string? errorMessage;
+    private ModerationStatsDto? stats;
+    private ModerationAnalyticsDto? analytics;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStats();
+    }
+
+    private async Task LoadStats()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            StateHasChanged();
+
+            // Carregar estatísticas básicas
+            stats = await ModerationService.GetModerationStatsAsync();
+
+            // Carregar analytics dos últimos 7 dias
+            var endDate = DateTime.Now;
+            var startDate = endDate.AddDays(-7);
+            analytics = await ModerationService.GetModerationAnalyticsAsync(startDate, endDate);
+
+            if (stats == null)
+            {
+                errorMessage = "Não foi possível carregar as estatísticas.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar estatísticas: {ex.Message}";
+            Console.WriteLine($"[ModerationStats] Erro: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshStats()
+    {
+        await LoadStats();
+        await OnStatsUpdated.InvokeAsync();
+    }
+
+    private double GetPercentage(int value, int total)
+    {
+        return total > 0 ? (double)value / total * 100 : 0;
+    }
+
+    private string GetApprovalTrendClass(decimal approvalRate)
+    {
+        return approvalRate switch
+        {
+            >= 0.8m => "trend-good",
+            >= 0.6m => "trend-medium",
+            _ => "trend-poor"
+        };
+    }
+
+    private string GetApprovalTrendText(decimal approvalRate)
+    {
+        return approvalRate switch
+        {
+            >= 0.8m => "Excelente",
+            >= 0.6m => "Bom",
+            _ => "Atenção necessária"
+        };
+    }
+
+    private string GetPriorityClass(string priority)
+    {
+        return priority.ToLower() switch
+        {
+            "high" => "priority-high",
+            "medium" => "priority-medium",
+            "low" => "priority-low",
+            _ => ""
+        };
+    }
+
+    private string GetPriorityIcon(string priority)
+    {
+        return priority.ToLower() switch
+        {
+            "high" => "fa-exclamation-triangle",
+            "medium" => "fa-exclamation-circle",
+            "low" => "fa-info-circle",
+            _ => "fa-circle"
+        };
+    }
+}

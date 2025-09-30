@@ -1,0 +1,319 @@
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models.Moderation
+@inject IModerationService ModerationService
+
+<div class="moderation-queue">
+    <div class="queue-header">
+        <h2>
+            <i class="fas fa-list-ul"></i>
+            Fila de Moderação
+        </h2>
+
+        <div class="queue-filters">
+            <select @onchange="OnContentTypeChanged" class="filter-select">
+                <option value="">Todos os tipos</option>
+                <option value="Post">Posts</option>
+                <option value="Comment">Comentários</option>
+                <option value="Media">Mídia</option>
+            </select>
+
+            <select @onchange="OnPriorityChanged" class="filter-select">
+                <option value="">Todas as prioridades</option>
+                <option value="High">Alta</option>
+                <option value="Medium">Média</option>
+                <option value="Low">Baixa</option>
+            </select>
+
+            <button @onclick="RefreshQueue" class="btn-refresh">
+                <i class="fas fa-sync-alt @(isRefreshing ? "spinning" : "")"></i>
+                Atualizar
+            </button>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Carregando fila de moderação...</p>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="error-container">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>@errorMessage</p>
+            <button @onclick="RefreshQueue" class="btn-retry">Tentar Novamente</button>
+        </div>
+    }
+    else if (moderationQueue?.Items?.Any() == true)
+    {
+        <div class="queue-content">
+            <div class="queue-summary">
+                <span class="total-items">
+                    <strong>@moderationQueue.TotalItems</strong> itens na fila
+                </span>
+                <span class="page-info">
+                    Página @moderationQueue.Page de @moderationQueue.TotalPages
+                </span>
+            </div>
+
+            <div class="queue-items">
+                @foreach (var item in moderationQueue.Items)
+                {
+                    <div class="queue-item @GetPriorityClass(item.Priority)">
+                        <div class="item-header">
+                            <span class="content-type">@item.ContentType</span>
+                            <span class="priority">@item.Priority</span>
+                            <span class="created-date">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+
+                        <div class="item-content">
+                            <div class="author-info">
+                                <strong>@item.AuthorName</strong>
+                                <span class="department">@item.Department</span>
+                            </div>
+
+                            <div class="content-preview">
+                                @if (item.ContentText.Length > 200)
+                                {
+                                    <p>@(item.ContentText[..200])...</p>
+                                }
+                                else
+                                {
+                                    <p>@item.ContentText</p>
+                                }
+                            </div>
+
+                            @if (item.Flags?.Any() == true)
+                            {
+                                <div class="flags">
+                                    @foreach (var flag in item.Flags)
+                                    {
+                                        <span class="flag">@flag</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="item-actions">
+                            <button @onclick="() => ApproveItem(item.Id)"
+                                    class="btn-approve"
+                                    disabled="@(processingItems.Contains(item.Id))">
+                                <i class="fas fa-check"></i>
+                                Aprovar
+                            </button>
+
+                            <button @onclick="() => ShowRejectModal(item)"
+                                    class="btn-reject"
+                                    disabled="@(processingItems.Contains(item.Id))">
+                                <i class="fas fa-times"></i>
+                                Rejeitar
+                            </button>
+
+                            <button @onclick="() => ViewDetails(item.Id)"
+                                    class="btn-details">
+                                <i class="fas fa-eye"></i>
+                                Detalhes
+                            </button>
+                        </div>
+
+                        @if (processingItems.Contains(item.Id))
+                        {
+                            <div class="processing-overlay">
+                                <div class="spinner-small"></div>
+                                Processando...
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Paginação -->
+            @if (moderationQueue.TotalPages > 1)
+            {
+                <div class="pagination">
+                    <button @onclick="() => GoToPage(1)"
+                            disabled="@(currentPage == 1)"
+                            class="btn-page">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+
+                    <button @onclick="() => GoToPage(currentPage - 1)"
+                            disabled="@(currentPage == 1)"
+                            class="btn-page">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+
+                    <span class="page-numbers">
+                        @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(moderationQueue.TotalPages, currentPage + 2); i++)
+                        {
+                            <button @onclick="() => GoToPage(i)"
+                                    class="btn-page @(i == currentPage ? "active" : "")">
+                                @i
+                            </button>
+                        }
+                    </span>
+
+                    <button @onclick="() => GoToPage(currentPage + 1)"
+                            disabled="@(currentPage == moderationQueue.TotalPages)"
+                            class="btn-page">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+
+                    <button @onclick="() => GoToPage(moderationQueue.TotalPages)"
+                            disabled="@(currentPage == moderationQueue.TotalPages)"
+                            class="btn-page">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-queue">
+            <i class="fas fa-check-circle"></i>
+            <h3>Fila vazia!</h3>
+            <p>Não há itens pendentes de moderação no momento.</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public EventCallback<int> OnItemProcessed { get; set; }
+
+    private bool isLoading = true;
+    private bool isRefreshing = false;
+    private string? errorMessage;
+    private ModerationQueueDto? moderationQueue;
+    private string selectedContentType = "";
+    private string selectedPriority = "";
+    private int currentPage = 1;
+    private const int pageSize = 20;
+    private HashSet<int> processingItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadModerationQueue();
+    }
+
+    private async Task LoadModerationQueue()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            StateHasChanged();
+
+            var contentTypeFilter = string.IsNullOrEmpty(selectedContentType) ? null : selectedContentType;
+            moderationQueue = await ModerationService.GetModerationQueueAsync(
+                contentTypeFilter, currentPage, pageSize);
+
+            if (moderationQueue == null)
+            {
+                errorMessage = "Não foi possível carregar a fila de moderação.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar fila: {ex.Message}";
+            Console.WriteLine($"[ModerationQueue] Erro: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshQueue()
+    {
+        isRefreshing = true;
+        StateHasChanged();
+
+        await LoadModerationQueue();
+
+        isRefreshing = false;
+        StateHasChanged();
+    }
+
+    private async Task OnContentTypeChanged(ChangeEventArgs e)
+    {
+        selectedContentType = e.Value?.ToString() ?? "";
+        currentPage = 1;
+        await LoadModerationQueue();
+    }
+
+    private async Task OnPriorityChanged(ChangeEventArgs e)
+    {
+        selectedPriority = e.Value?.ToString() ?? "";
+        currentPage = 1;
+        await LoadModerationQueue();
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (page < 1 || page > (moderationQueue?.TotalPages ?? 1) || page == currentPage)
+            return;
+
+        currentPage = page;
+        await LoadModerationQueue();
+    }
+
+    private async Task ApproveItem(int itemId)
+    {
+        if (processingItems.Contains(itemId))
+            return;
+
+        try
+        {
+            processingItems.Add(itemId);
+            StateHasChanged();
+
+            var success = await ModerationService.ApproveContentAsync(itemId);
+
+            if (success)
+            {
+                await OnItemProcessed.InvokeAsync(itemId);
+                await RefreshQueue();
+            }
+            else
+            {
+                errorMessage = "Erro ao aprovar item.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao aprovar item: {ex.Message}";
+        }
+        finally
+        {
+            processingItems.Remove(itemId);
+            StateHasChanged();
+        }
+    }
+
+    private void ShowRejectModal(ModerationItemDto item)
+    {
+        // TODO: Implementar modal de rejeição
+        Console.WriteLine($"Mostrar modal de rejeição para item {item.Id}");
+    }
+
+    private void ViewDetails(int itemId)
+    {
+        // TODO: Implementar visualização de detalhes
+        Console.WriteLine($"Visualizar detalhes do item {itemId}");
+    }
+
+    private string GetPriorityClass(string priority)
+    {
+        return priority.ToLower() switch
+        {
+            "high" => "priority-high",
+            "medium" => "priority-medium",
+            "low" => "priority-low",
+            _ => ""
+        };
+    }
+}

@@ -1,0 +1,654 @@
+@*
+ * SynQcore - Corporate Social Network
+ *
+ * Página de Criação de Endorsement
+ * Formulário para criar novos endorsements corporativos
+ *
+ * Author: André César Vieira <andrecesarvieira@hotmail.com>
+*@
+
+@page "/endorsements/create"
+@using SynQcore.Domain.Entities.Communication
+@using SynQcore.BlazorApp.Services
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Web
+@inject IEndorsementService EndorsementService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<HeadContent>
+    <title>Criar Endorsement - SynQcore</title>
+</HeadContent>
+
+<div class="create-endorsement-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="create-card">
+                <!-- Header -->
+                <div class="card-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="card-title">
+                                <i class="bi bi-award-fill text-primary"></i>
+                                Criar Endorsement
+                            </h3>
+                            <p class="card-subtitle">Endosse conteúdo valioso e ajude a validar conhecimento</p>
+                        </div>
+                        <button class="btn btn-outline-secondary" @onclick="GoBack">
+                            <i class="bi bi-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulário -->
+                <div class="card-body">
+                    <EditForm Model="createRequest" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger mb-3" />
+
+                        <!-- Tipo de Endorsement -->
+                        <div class="mb-4">
+                            <label class="form-label required">Tipo de Endorsement</label>
+                            <div class="endorsement-types-grid">
+                                @foreach (var type in Enum.GetValues<EndorsementType>())
+                                {
+                                    <div class="endorsement-type-option @(createRequest.Type == type ? "selected" : "")"
+                                         @onclick="() => SelectEndorsementType(type)">
+                                        <div class="type-icon">@GetEndorsementTypeIcon(type)</div>
+                                        <div class="type-info">
+                                            <div class="type-name">@GetEndorsementTypeDisplay(type)</div>
+                                            <div class="type-description">@GetEndorsementTypeDescription(type)</div>
+                                        </div>
+                                        @if (createRequest.Type == type)
+                                        {
+                                            <i class="bi bi-check-circle-fill selected-icon"></i>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <ValidationMessage For="@(() => createRequest.Type)" class="text-danger" />
+                        </div>
+
+                        <!-- Selecionar Conteúdo -->
+                        <div class="mb-4">
+                            <label class="form-label">Conteúdo a Endossar</label>
+                            <div class="content-selection">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contentType"
+                                           checked="@(contentType == "post")" @onchange="@(() => SetContentType("post"))" />
+                                    <label class="form-check-label">
+                                        <i class="bi bi-file-text"></i>
+                                        Post
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contentType"
+                                           checked="@(contentType == "comment")" @onchange="@(() => SetContentType("comment"))" />
+                                    <label class="form-check-label">
+                                        <i class="bi bi-chat"></i>
+                                        Comentário
+                                    </label>
+                                </div>
+                            </div>
+
+                            @if (contentType == "post")
+                            {
+                                <div class="mt-3">
+                                    <label class="form-label">ID do Post</label>
+                                    <input type="text" class="form-control" @bind="postIdString"
+                                           placeholder="Ex: 123e4567-e89b-12d3-a456-426614174000" />
+                                    <div class="form-text">
+                                        Cole o ID do post que deseja endossar
+                                    </div>
+                                </div>
+                            }
+                            else if (contentType == "comment")
+                            {
+                                <div class="mt-3">
+                                    <label class="form-label">ID do Comentário</label>
+                                    <input type="text" class="form-control" @bind="commentIdString"
+                                           placeholder="Ex: 123e4567-e89b-12d3-a456-426614174000" />
+                                    <div class="form-text">
+                                        Cole o ID do comentário que deseja endossar
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Nota do Endorsement -->
+                        <div class="mb-4">
+                            <label class="form-label">Nota (Opcional)</label>
+                            <textarea class="form-control" rows="4" @bind="createRequest.Note"
+                                      placeholder="Adicione uma nota explicando por que está endossando este conteúdo..."
+                                      maxlength="1000"></textarea>
+                            <div class="form-text">
+                                @(createRequest.Note?.Length ?? 0)/1000 caracteres
+                            </div>
+                            <ValidationMessage For="@(() => createRequest.Note)" class="text-danger" />
+                        </div>
+
+                        <!-- Contexto -->
+                        <div class="mb-4">
+                            <label class="form-label">Contexto (Opcional)</label>
+                            <input type="text" class="form-control" @bind="createRequest.Context"
+                                   placeholder="Ex: Reunião de equipe, Treinamento, Projeto X..."
+                                   maxlength="500" />
+                            <div class="form-text">
+                                Contexto onde este endorsement se aplica
+                            </div>
+                            <ValidationMessage For="@(() => createRequest.Context)" class="text-danger" />
+                        </div>
+
+                        <!-- Visibilidade -->
+                        <div class="mb-4">
+                            <label class="form-label">Visibilidade</label>
+                            <div class="visibility-options">
+                                <div class="form-check visibility-option @(createRequest.IsPublic ? "selected" : "")"
+                                     @onclick="() => createRequest.IsPublic = true">
+                                    <input class="form-check-input" type="radio" name="visibility"
+                                           checked="@createRequest.IsPublic" @onchange="() => createRequest.IsPublic = true" />
+                                    <label class="form-check-label">
+                                        <i class="bi bi-globe text-success"></i>
+                                        <div class="visibility-info">
+                                            <div class="visibility-title">Público</div>
+                                            <div class="visibility-description">Visível para todos os funcionários</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="form-check visibility-option @(!createRequest.IsPublic ? "selected" : "")"
+                                     @onclick="() => createRequest.IsPublic = false">
+                                    <input class="form-check-input" type="radio" name="visibility"
+                                           checked="@(!createRequest.IsPublic)" @onchange="() => createRequest.IsPublic = false" />
+                                    <label class="form-check-label">
+                                        <i class="bi bi-lock text-warning"></i>
+                                        <div class="visibility-info">
+                                            <div class="visibility-title">Privado</div>
+                                            <div class="visibility-description">Visível apenas para você e o autor</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Preview do Endorsement -->
+                        <div class="mb-4">
+                            <label class="form-label">Preview</label>
+                            <div class="endorsement-preview">
+                                <div class="preview-header">
+                                    <span class="preview-type">
+                                        @GetEndorsementTypeIcon(createRequest.Type) @GetEndorsementTypeDisplay(createRequest.Type)
+                                    </span>
+                                    <span class="preview-visibility">
+                                        @if (createRequest.IsPublic)
+                                        {
+                                            <i class="bi bi-globe text-success"></i>
+                                            <span>Público</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-lock text-warning"></i>
+                                            <span>Privado</span>
+                                        }
+                                    </span>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(createRequest.Note))
+                                {
+                                    <div class="preview-note">
+                                        "@createRequest.Note"
+                                    </div>
+                                }
+
+                                @if (!string.IsNullOrEmpty(createRequest.Context))
+                                {
+                                    <div class="preview-context">
+                                        <i class="bi bi-tag"></i>
+                                        @createRequest.Context
+                                    </div>
+                                }
+
+                                <div class="preview-author">
+                                    <div class="author-avatar">U</div>
+                                    <div class="author-info">
+                                        <div class="author-name">Você</div>
+                                        <div class="author-time">Agora</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botões de Ação -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="GoBack">
+                                <i class="bi bi-x-lg"></i>
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary" disabled="@isSubmitting">
+                                @if (isSubmitting)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Criando...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-check-lg"></i>
+                                    <span>Criar Endorsement</span>
+                                }
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private CreateEndorsementRequest createRequest = new() { IsPublic = true };
+    private string contentType = "post";
+    private string postIdString = "";
+    private string commentIdString = "";
+    private bool isSubmitting = false;
+
+    private void SelectEndorsementType(EndorsementType type)
+    {
+        createRequest.Type = type;
+    }
+
+    private void SetContentType(string type)
+    {
+        contentType = type;
+        createRequest.PostId = null;
+        createRequest.CommentId = null;
+        postIdString = "";
+        commentIdString = "";
+    }
+
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        StateHasChanged();
+
+        try
+        {
+            // Processar IDs
+            if (contentType == "post" && !string.IsNullOrEmpty(postIdString))
+            {
+                if (Guid.TryParse(postIdString, out Guid postId))
+                {
+                    createRequest.PostId = postId;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "ID do post inválido. Use o formato correto de GUID.");
+                    return;
+                }
+            }
+            else if (contentType == "comment" && !string.IsNullOrEmpty(commentIdString))
+            {
+                if (Guid.TryParse(commentIdString, out Guid commentId))
+                {
+                    createRequest.CommentId = commentId;
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "ID do comentário inválido. Use o formato correto de GUID.");
+                    return;
+                }
+            }
+
+            // Validar se pelo menos um conteúdo foi selecionado
+            if (createRequest.PostId == null && createRequest.CommentId == null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "É necessário informar o ID de um post ou comentário para endossar.");
+                return;
+            }
+
+            var result = await EndorsementService.CreateEndorsementAsync(createRequest);
+
+            await JSRuntime.InvokeVoidAsync("alert", "Endorsement criado com sucesso!");
+            Navigation.NavigateTo("/endorsements");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Erro ao criar endorsement: {ex.Message}");
+        }
+        finally
+        {
+            isSubmitting = false;
+            StateHasChanged();
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/endorsements");
+    }
+
+    private static string GetEndorsementTypeDisplay(EndorsementType type)
+    {
+        return type switch
+        {
+            EndorsementType.Helpful => "Útil",
+            EndorsementType.Insightful => "Perspicaz",
+            EndorsementType.Accurate => "Preciso",
+            EndorsementType.Innovative => "Inovador",
+            EndorsementType.Comprehensive => "Abrangente",
+            EndorsementType.WellResearched => "Bem Pesquisado",
+            EndorsementType.Actionable => "Acionável",
+            EndorsementType.Strategic => "Estratégico",
+            _ => type.ToString()
+        };
+    }
+
+    private static string GetEndorsementTypeIcon(EndorsementType type)
+    {
+        return type switch
+        {
+            EndorsementType.Helpful => "👍",
+            EndorsementType.Insightful => "💡",
+            EndorsementType.Accurate => "🎯",
+            EndorsementType.Innovative => "✨",
+            EndorsementType.Comprehensive => "📊",
+            EndorsementType.WellResearched => "🔍",
+            EndorsementType.Actionable => "⚙️",
+            EndorsementType.Strategic => "�",
+            _ => "👍"
+        };
+    }
+
+    private static string GetEndorsementTypeDescription(EndorsementType type)
+    {
+        return type switch
+        {
+            EndorsementType.Helpful => "Conteúdo que ajuda a resolver problemas",
+            EndorsementType.Insightful => "Oferece perspectivas valiosas",
+            EndorsementType.Accurate => "Informação precisa e confiável",
+            EndorsementType.Innovative => "Ideias criativas e inovadoras",
+            EndorsementType.Comprehensive => "Análise completa e detalhada",
+            EndorsementType.WellResearched => "Bem fundamentado e pesquisado",
+            EndorsementType.Actionable => "Pode ser aplicado na prática",
+            EndorsementType.Strategic => "Relevante para objetivos estratégicos",
+            _ => "Endorsement corporativo"
+        };
+    }
+}
+
+<style>
+    .create-endorsement-container {
+        padding: 2rem;
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+
+    .create-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border: none;
+    }
+
+    .card-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-subtitle {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #e53e3e;
+    }
+
+    .endorsement-types-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
+
+    .endorsement-type-option {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: relative;
+        background: white;
+    }
+
+    .endorsement-type-option:hover {
+        border-color: #cbd5e0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .endorsement-type-option.selected {
+        border-color: #667eea;
+        background: #f7faff;
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+    }
+
+    .type-icon {
+        font-size: 2rem;
+        min-width: 3rem;
+        text-align: center;
+    }
+
+    .type-name {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .type-description {
+        font-size: 0.875rem;
+        color: #718096;
+        line-height: 1.4;
+    }
+
+    .selected-icon {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        color: #667eea;
+        font-size: 1.25rem;
+    }
+
+    .content-selection {
+        display: flex;
+        gap: 2rem;
+        margin-top: 0.75rem;
+    }
+
+    .form-check-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: #4a5568;
+        cursor: pointer;
+    }
+
+    .visibility-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 0.75rem;
+    }
+
+    .visibility-option {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .visibility-option:hover {
+        border-color: #cbd5e0;
+    }
+
+    .visibility-option.selected {
+        border-color: #667eea;
+        background: #f7faff;
+    }
+
+    .visibility-option .form-check-label {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0;
+    }
+
+    .visibility-option .form-check-input {
+        margin: 0;
+    }
+
+    .visibility-info {
+        flex-grow: 1;
+    }
+
+    .visibility-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .visibility-description {
+        font-size: 0.875rem;
+        color: #718096;
+    }
+
+    .endorsement-preview {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        background: #f8fafc;
+        margin-top: 0.75rem;
+    }
+
+    .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .preview-type {
+        font-weight: 600;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .preview-visibility {
+        font-size: 0.875rem;
+        color: #718096;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .preview-note {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        font-style: italic;
+        color: #4a5568;
+        margin-bottom: 1rem;
+        border-left: 4px solid #667eea;
+    }
+
+    .preview-context {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: #e2e8f0;
+        color: #2d3748;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    .preview-author {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .author-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+    }
+
+    .author-name {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.125rem;
+    }
+
+    .author-time {
+        font-size: 0.75rem;
+        color: #718096;
+    }
+
+    @@media (max-width: 768px) {
+        .create-endorsement-container {
+            padding: 1rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .endorsement-types-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .content-selection {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .d-flex.gap-3.justify-content-end {
+            flex-direction: column;
+        }
+    }
+</style>

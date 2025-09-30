@@ -1,0 +1,1178 @@
+@*
+ * SynQcore - Corporate Social Network
+ *
+ * Página de Visualização de Artigo de Conhecimento
+ * Interface para visualizar um artigo específico da base de conhecimento
+ *
+ * Author: André César Vieira <andrecesarvieira@hotmail.com>
+*@
+
+@page "/knowledge/view/{PostId:guid}"
+@using SynQcore.Domain.Entities.Communication
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models
+@using Microsoft.AspNetCore.Components.Web
+@inject IKnowledgeService KnowledgeService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<HeadContent>
+    <title>@(post?.Title ?? "Artigo") - SynQcore</title>
+</HeadContent>
+
+<div class="knowledge-view-container">
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
+                <p class="mt-2 text-muted">Carregando artigo...</p>
+            </div>
+        </div>
+    }
+    else if (post != null)
+    {
+    <article>
+        <!-- Header do Artigo -->
+        <div class="article-header">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <!-- Navegação -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="/knowledge" class="text-decoration-none">
+                                        <i class="bi bi-book"></i>
+                                        Base de Conhecimento
+                                    </a>
+                                </li>
+                                @if (!string.IsNullOrEmpty(post.CategoryName))
+                                {
+                                    <li class="breadcrumb-item">
+                                        <a href="/knowledge?category=@post.CategoryId" class="text-decoration-none">
+                                            @post.CategoryName
+                                        </a>
+                                    </li>
+                                }
+                                <li class="breadcrumb-item active" aria-current="page">@post.Title</li>
+                            </ol>
+                        </nav>
+
+                        <!-- Título e Meta -->
+                        <div class="article-title-section">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="article-badges">
+                                    <span class="type-badge @GetPostTypeClass(post.Type)">
+                                        <i class="@GetPostTypeIcon(post.Type)"></i>
+                                        @GetPostTypeDisplay(post.Type)
+                                    </span>
+                                    <span class="status-badge @GetPostStatusClass(post.Status)">
+                                        @GetPostStatusDisplay(post.Status)
+                                    </span>
+                                </div>
+
+                                <div class="article-actions">
+                                    <button class="btn btn-outline-secondary btn-sm" @onclick="ShareArticle">
+                                        <i class="bi bi-share"></i>
+                                        Compartilhar
+                                    </button>
+                                    <button class="btn btn-outline-primary btn-sm" @onclick="PrintArticle">
+                                        <i class="bi bi-printer"></i>
+                                        Imprimir
+                                    </button>
+                                    <button class="btn btn-primary btn-sm" @onclick="EditArticle">
+                                        <i class="bi bi-pencil"></i>
+                                        Editar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <h1 class="article-title">@post.Title</h1>
+
+                            @if (!string.IsNullOrEmpty(post.Summary))
+                            {
+                                <p class="article-summary">@post.Summary</p>
+                            }
+
+                            <!-- Meta informações do autor -->
+                            <div class="article-meta">
+                                <div class="author-info">
+                                    <div class="author-avatar">
+                                        @post.AuthorName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <div class="author-details">
+                                        <div class="author-name">@post.AuthorName</div>
+                                        <div class="publish-info">
+                                            Publicado em @post.CreatedAt.ToString("dd 'de' MMMM 'de' yyyy 'às' HH:mm", new System.Globalization.CultureInfo("pt-BR"))
+                                            @if (post.UpdatedAt != post.CreatedAt)
+                                            {
+                                                <span class="text-muted"> • Atualizado em @post.UpdatedAt.ToString("dd/MM/yyyy")</span>
+                                            }
+                                            @if (!string.IsNullOrEmpty(post.Version) && post.Version != "1")
+                                            {
+                                                <span class="version-info">
+                                                    • <a href="/knowledge/versions/@post.Id" class="text-decoration-none">Versão @post.Version</a>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="article-stats">
+                                    <div class="stat-item">
+                                        <i class="bi bi-eye"></i>
+                                        <span>@post.ViewCount.ToString("N0") visualizações</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <button class="btn btn-link p-0 like-button @(isLiked ? "liked" : "")" @onclick="ToggleLike">
+                                            <i class="bi @(isLiked ? "bi-heart-fill" : "bi-heart")"></i>
+                                            <span>@post.LikeCount.ToString("N0")</span>
+                                        </button>
+                                    </div>
+                                    <div class="stat-item">
+                                        <a href="#comments" class="text-decoration-none">
+                                            <i class="bi bi-chat"></i>
+                                            <span>@post.CommentCount.ToString("N0") comentários</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tags -->
+                            @if (post.Tags?.Count > 0)
+                            {
+                                <div class="article-tags">
+                                    @foreach (var tag in post.Tags)
+                                    {
+                                        <a href="/knowledge?tag=@tag.Name" class="tag-link" style="background-color: @tag.Color;">
+                                            #@tag.Name
+                                        </a>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Imagem de Capa -->
+        @if (!string.IsNullOrEmpty(post.ImageUrl))
+        {
+            <div class="article-cover">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-10 mx-auto">
+                            <img src="@post.ImageUrl" alt="@post.Title" class="cover-image" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Conteúdo Principal -->
+        <div class="article-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="content-wrapper">
+                            <!-- Sumário (se o conteúdo for longo) -->
+                            @if (contentSections?.Count > 1)
+                            {
+                                <div class="table-of-contents">
+                                    <h6>
+                                        <i class="bi bi-list-ul"></i>
+                                        Sumário
+                                    </h6>
+                                    <ul>
+                                        @foreach (var section in contentSections)
+                                        {
+                                            <li>
+                                                <a href="#@(section.Id)">@(section.Title)</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+
+                            <!-- Conteúdo do Artigo -->
+                            <div class="article-body">
+                                @((MarkupString)ConvertMarkdownToHtml(post.Content ?? ""))
+                            </div>
+
+                            <!-- Informações Adicionais -->
+                            <div class="article-footer">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        @if (!string.IsNullOrEmpty(post.CategoryName))
+                                        {
+                                            <div class="category-info">
+                                                <strong>Categoria:</strong>
+                                                <a href="/knowledge?category=@post.CategoryId" class="category-link"
+                                                   style="color: @(categories?.FirstOrDefault(c => c.Id == post.CategoryId)?.Color ?? "#007ACC");">
+                                                    @post.CategoryName
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="visibility-info">
+                                            <strong>Visibilidade:</strong>
+                                            <span class="visibility-badge @GetPostVisibilityClass(post.Visibility)">
+                                                <i class="@GetPostVisibilityIcon(post.Visibility)"></i>
+                                                @GetPostVisibilityDisplay(post.Visibility)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Artigos Relacionados -->
+        @if (relatedPosts?.Count > 0)
+        {
+            <div class="related-articles">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-10 mx-auto">
+                            <h4 class="section-title">
+                                <i class="bi bi-collection"></i>
+                                Artigos Relacionados
+                            </h4>
+                            <div class="row">
+                                @foreach (var relatedPost in relatedPosts.Take(3))
+                                {
+                                    <div class="col-md-4 mb-4">
+                                        <div class="related-post-card">
+                                            @if (!string.IsNullOrEmpty(relatedPost.ImageUrl))
+                                            {
+                                                <div class="related-post-image">
+                                                    <img src="@relatedPost.ImageUrl" alt="@relatedPost.Title" />
+                                                </div>
+                                            }
+                                            <div class="related-post-content">
+                                                <div class="related-post-type">
+                                                    <i class="@GetPostTypeIcon(relatedPost.Type)"></i>
+                                                    @GetPostTypeDisplay(relatedPost.Type)
+                                                </div>
+                                                <h6 class="related-post-title">
+                                                    <a href="/knowledge/view/@relatedPost.Id">@relatedPost.Title</a>
+                                                </h6>
+                                                @if (!string.IsNullOrEmpty(relatedPost.Summary))
+                                                {
+                                                    <p class="related-post-summary">@relatedPost.Summary</p>
+                                                }
+                                                <div class="related-post-meta">
+                                                    <span class="related-post-author">@relatedPost.AuthorName</span>
+                                                    <span class="related-post-date">@relatedPost.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </article>
+}
+else
+{
+    <!-- Estado de Erro -->
+    <div class="error-state">
+        <div class="text-center py-5">
+            <i class="bi bi-exclamation-triangle display-1 text-warning"></i>
+            <h3 class="mt-3">Artigo não encontrado</h3>
+            <p class="text-muted">O artigo que você está procurando não existe ou foi removido.</p>
+            <button class="btn btn-primary" @onclick="GoToKnowledge">
+                <i class="bi bi-arrow-left"></i>
+                Voltar à Base de Conhecimento
+            </button>
+        </div>
+    </div>
+}
+</div>
+
+@code {
+    [Parameter] public Guid PostId { get; set; }
+
+    private KnowledgePostDto? post;
+    private List<KnowledgeCategoryDto>? categories;
+    private List<KnowledgePostDto>? relatedPosts;
+    private List<CommentDto>? comments;
+    private List<ContentSection>? contentSections;
+    private string newComment = "";
+    private bool isLoading = true;
+    private bool isLiked = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPost();
+        await LoadCategories();
+        await LoadRelatedPosts();
+        await LoadComments();
+    }
+
+    private async Task LoadPost()
+    {
+        try
+        {
+            post = await KnowledgeService.GetKnowledgePostByIdAsync(PostId);
+
+            if (post != null)
+            {
+                // Gerar seções do conteúdo para sumário
+                GenerateContentSections();
+
+                // Simular se o usuário curtiu (em produção viria da API)
+                isLiked = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao carregar post:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        try
+        {
+            categories = await KnowledgeService.GetCategoriesAsync(includeInactive: false, includeHierarchy: false);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao carregar categorias:", ex.Message);
+        }
+    }
+
+    private async Task LoadRelatedPosts()
+    {
+        if (post?.CategoryId == null) return;
+
+        try
+        {
+            var relatedResult = await KnowledgeService.GetKnowledgePostsByCategoryAsync(
+                post.CategoryId.Value,
+                1,
+                4,
+                "CreatedAt",
+                true);
+
+            relatedPosts = relatedResult.Items.Where(p => p.Id != PostId).ToList();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao carregar posts relacionados:", ex.Message);
+        }
+    }
+
+    private async Task LoadComments()
+    {
+        try
+        {
+            // Simular comentários (em produção viria da API)
+            comments = new List<CommentDto>
+            {
+                new CommentDto
+                {
+                    Id = Guid.NewGuid(),
+                    Content = "Artigo muito útil! Obrigado por compartilhar.",
+                    AuthorName = "João Silva",
+                    CreatedAt = DateTime.Now.AddHours(-2),
+                    LikeCount = 3
+                },
+                new CommentDto
+                {
+                    Id = Guid.NewGuid(),
+                    Content = "Gostaria de ver mais exemplos práticos sobre este tópico.",
+                    AuthorName = "Maria Santos",
+                    CreatedAt = DateTime.Now.AddHours(-1),
+                    LikeCount = 1
+                }
+            };
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao carregar comentários:", ex.Message);
+        }
+    }
+
+    private void GenerateContentSections()
+    {
+        if (string.IsNullOrEmpty(post?.Content)) return;
+
+        contentSections = new List<ContentSection>();
+        var lines = post.Content.Split('\n');
+
+        foreach (var line in lines)
+        {
+            if (line.StartsWith("# ") || line.StartsWith("## ") || line.StartsWith("### "))
+            {
+                var title = line.TrimStart('#', ' ');
+                var id = title.ToLower().Replace(" ", "-").Replace(".", "");
+
+                contentSections.Add(new ContentSection
+                {
+                    Id = id,
+                    Title = title,
+                    Level = line.TakeWhile(c => c == '#').Count()
+                });
+            }
+        }
+    }
+
+    private async Task ToggleLike()
+    {
+        try
+        {
+            if (isLiked)
+            {
+                post!.LikeCount = Math.Max(0, post.LikeCount - 1);
+            }
+            else
+            {
+                post!.LikeCount++;
+            }
+
+            isLiked = !isLiked;
+            StateHasChanged();
+
+            // Em produção, chamar API para salvar o like
+            // await KnowledgeService.ToggleLikeAsync(PostId);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao curtir post:", ex.Message);
+        }
+    }
+
+    private async Task AddComment()
+    {
+        if (string.IsNullOrWhiteSpace(newComment)) return;
+
+        try
+        {
+            var comment = new CommentDto
+            {
+                Id = Guid.NewGuid(),
+                Content = newComment,
+                AuthorName = "Usuário Atual", // Em produção viria do contexto
+                CreatedAt = DateTime.Now,
+                LikeCount = 0
+            };
+
+            comments ??= new List<CommentDto>();
+            comments.Insert(0, comment);
+
+            post!.CommentCount++;
+            newComment = "";
+
+            StateHasChanged();
+
+            // Em produção, chamar API para salvar comentário
+            // await KnowledgeService.AddCommentAsync(PostId, newComment);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Erro ao adicionar comentário: {ex.Message}");
+        }
+    }
+
+    private void EditArticle()
+    {
+        Navigation.NavigateTo($"/knowledge/edit/{PostId}");
+    }
+
+    private async Task ShareArticle()
+    {
+        var url = Navigation.Uri;
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", url);
+        await JSRuntime.InvokeVoidAsync("alert", "Link copiado para a área de transferência!");
+    }
+
+    private async Task PrintArticle()
+    {
+        await JSRuntime.InvokeVoidAsync("window.print");
+    }
+
+    private void GoToKnowledge()
+    {
+        Navigation.NavigateTo("/knowledge");
+    }
+
+    #region Helper Methods
+
+    private static string ConvertMarkdownToHtml(string markdown)
+    {
+        if (string.IsNullOrEmpty(markdown)) return "";
+
+        // Conversão básica de Markdown para HTML
+        var html = markdown
+            .Replace("### ", "<h3 id=\"")
+            .Replace("## ", "<h2 id=\"")
+            .Replace("# ", "<h1 id=\"")
+            .Replace("\n\n", "</p><p>")
+            .Replace("\n", "<br />")
+            .Replace("**", "<strong>")
+            .Replace("*", "<em>")
+            .Replace("`", "<code>")
+            .Replace("- ", "<li>");
+
+        // Adicionar IDs aos cabeçalhos
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html,
+            @"<h([1-6]) id=""([^""]*)"">([^<]+)",
+            m => $"<h{m.Groups[1].Value} id=\"{m.Groups[3].Value.ToLower().Replace(" ", "-")}\">{m.Groups[3].Value}</h{m.Groups[1].Value}>");
+
+        return $"<div class=\"markdown-content\">{html}</div>";
+    }
+
+    private static string GetPostTypeDisplay(PostType type) => type switch
+    {
+        PostType.Article => "Artigo",
+        PostType.HowTo => "Como Fazer",
+        PostType.Policy => "Política",
+        PostType.FAQ => "FAQ",
+        PostType.Announcement => "Anúncio",
+        PostType.News => "Notícia",
+        PostType.Post => "Post",
+        _ => type.ToString()
+    };
+
+    private static string GetPostTypeIcon(PostType type) => type switch
+    {
+        PostType.Article => "bi bi-file-text",
+        PostType.HowTo => "bi bi-tools",
+        PostType.Policy => "bi bi-shield-check",
+        PostType.FAQ => "bi bi-question-circle",
+        PostType.Announcement => "bi bi-megaphone",
+        PostType.News => "bi bi-newspaper",
+        PostType.Post => "bi bi-chat",
+        _ => "bi bi-file-text"
+    };
+
+    private static string GetPostTypeClass(PostType type) => type switch
+    {
+        PostType.Article => "type-article",
+        PostType.HowTo => "type-howto",
+        PostType.Policy => "type-policy",
+        PostType.FAQ => "type-faq",
+        PostType.Announcement => "type-announcement",
+        PostType.News => "type-news",
+        PostType.Post => "type-post",
+        _ => "type-default"
+    };
+
+    private static string GetPostStatusDisplay(PostStatus status) => status switch
+    {
+        PostStatus.Draft => "Rascunho",
+        PostStatus.PendingApproval => "Pendente",
+        PostStatus.Published => "Publicado",
+        PostStatus.Archived => "Arquivado",
+        PostStatus.Rejected => "Rejeitado",
+        _ => status.ToString()
+    };
+
+    private static string GetPostStatusClass(PostStatus status) => status switch
+    {
+        PostStatus.Draft => "status-draft",
+        PostStatus.PendingApproval => "status-pending",
+        PostStatus.Published => "status-published",
+        PostStatus.Archived => "status-archived",
+        PostStatus.Rejected => "status-rejected",
+        _ => "status-default"
+    };
+
+    private static string GetPostVisibilityDisplay(PostVisibility visibility) => visibility switch
+    {
+        PostVisibility.Public => "Público",
+        PostVisibility.Company => "Empresa",
+        PostVisibility.Department => "Departamento",
+        PostVisibility.Team => "Equipe",
+        _ => visibility.ToString()
+    };
+
+    private static string GetPostVisibilityIcon(PostVisibility visibility) => visibility switch
+    {
+        PostVisibility.Public => "bi bi-globe",
+        PostVisibility.Company => "bi bi-building",
+        PostVisibility.Department => "bi bi-diagram-3",
+        PostVisibility.Team => "bi bi-people",
+        _ => "bi bi-eye"
+    };
+
+    private static string GetPostVisibilityClass(PostVisibility visibility) => visibility switch
+    {
+        PostVisibility.Public => "visibility-public",
+        PostVisibility.Company => "visibility-company",
+        PostVisibility.Department => "visibility-department",
+        PostVisibility.Team => "visibility-team",
+        _ => "visibility-default"
+    };
+
+    #endregion
+
+    #region DTOs
+
+    private class ContentSection
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public int Level { get; set; }
+    }
+
+    private class CommentDto
+    {
+        public Guid Id { get; set; }
+        public string Content { get; set; } = "";
+        public string AuthorName { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+    }
+
+    #endregion
+}
+
+<style>
+    .knowledge-view-container {
+        min-height: 100vh;
+        background: #f8fafc;
+    }
+
+    .loading-container,
+    .error-state {
+        min-height: 50vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .article-header {
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 2rem 0;
+    }
+
+    .breadcrumb {
+        background: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-item a {
+        color: #667eea;
+    }
+
+    .article-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .type-badge,
+    .status-badge,
+    .featured-badge,
+    .visibility-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .type-article { background: #e6f3ff; color: #1a365d; }
+    .type-howto { background: #f0fff4; color: #1a202c; }
+    .type-policy { background: #fef5e7; color: #744210; }
+    .type-faq { background: #e9d8fd; color: #553c9a; }
+    .type-announcement { background: #fed7d7; color: #9b2c2c; }
+    .type-news { background: #bee3f8; color: #2c5282; }
+    .type-post { background: #f7fafc; color: #2d3748; }
+
+    .status-draft { background: #f7fafc; color: #4a5568; }
+    .status-pending { background: #fef5e7; color: #744210; }
+    .status-published { background: #f0fff4; color: #22543d; }
+    .status-archived { background: #e2e8f0; color: #4a5568; }
+    .status-rejected { background: #fed7d7; color: #9b2c2c; }
+
+    .featured-badge {
+        background: linear-gradient(135deg, #ffd700, #ffed4e);
+        color: #744210;
+    }
+
+    .visibility-public { background: #e6fffa; color: #234e52; }
+    .visibility-company { background: #e6f3ff; color: #1a365d; }
+    .visibility-department { background: #fef5e7; color: #744210; }
+    .visibility-team { background: #f0fff4; color: #1a202c; }
+
+    .article-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .article-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1a365d;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+
+    .article-summary {
+        font-size: 1.2rem;
+        color: #4a5568;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 0;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+    }
+
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .author-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .author-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .publish-info {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .version-info a {
+        color: #667eea;
+    }
+
+    .article-stats {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .like-button {
+        color: #718096 !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }
+
+    .like-button.liked {
+        color: #e53e3e !important;
+    }
+
+    .like-button:hover {
+        color: #e53e3e !important;
+    }
+
+    .article-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .tag-link {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: white !important;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+    }
+
+    .tag-link:hover {
+        opacity: 0.8;
+        transform: translateY(-1px);
+    }
+
+    .article-cover {
+        margin-bottom: 2rem;
+    }
+
+    .cover-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+
+    .article-content {
+        background: white;
+        padding: 3rem 0;
+    }
+
+    .content-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .table-of-contents {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .table-of-contents h6 {
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .table-of-contents ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .table-of-contents li {
+        margin-bottom: 0.5rem;
+    }
+
+    .table-of-contents a {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+    .table-of-contents a:hover {
+        text-decoration: underline;
+    }
+
+    .article-body {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #2d3748;
+    }
+
+    .markdown-content h1,
+    .markdown-content h2,
+    .markdown-content h3 {
+        color: #1a365d;
+        font-weight: 600;
+        margin: 2rem 0 1rem 0;
+        line-height: 1.3;
+    }
+
+    .markdown-content h1 {
+        font-size: 2rem;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+    }
+
+    .markdown-content h2 {
+        font-size: 1.6rem;
+    }
+
+    .markdown-content h3 {
+        font-size: 1.3rem;
+    }
+
+    .markdown-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .markdown-content code {
+        background: #f7fafc;
+        padding: 0.125rem 0.25rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #2d3748;
+    }
+
+    .markdown-content strong {
+        font-weight: 600;
+        color: #1a365d;
+    }
+
+    .markdown-content li {
+        margin-bottom: 0.5rem;
+        list-style: disc;
+        margin-left: 1.5rem;
+    }
+
+    .article-footer {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .category-info,
+    .visibility-info {
+        margin-bottom: 1rem;
+    }
+
+    .category-link {
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .related-articles {
+        background: #f8fafc;
+        padding: 3rem 0;
+    }
+
+    .section-title {
+        color: #1a365d;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .related-post-card {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+        height: 100%;
+    }
+
+    .related-post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .related-post-image {
+        height: 150px;
+        overflow: hidden;
+    }
+
+    .related-post-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .related-post-content {
+        padding: 1.25rem;
+    }
+
+    .related-post-type {
+        font-size: 0.8rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .related-post-title {
+        margin-bottom: 0.75rem;
+    }
+
+    .related-post-title a {
+        color: #2d3748;
+        text-decoration: none;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .related-post-title a:hover {
+        color: #667eea;
+    }
+
+    .related-post-summary {
+        color: #4a5568;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .related-post-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #718096;
+    }
+
+    .comments-section {
+        background: white;
+        padding: 3rem 0;
+    }
+
+    .comment-form {
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .comment-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .comment-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .comments-list {
+        margin-top: 2rem;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .comment-item:last-child {
+        border-bottom: none;
+    }
+
+    .comment-content {
+        flex-grow: 1;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-author {
+        color: #2d3748;
+        font-size: 0.9rem;
+    }
+
+    .comment-date {
+        color: #718096;
+        font-size: 0.8rem;
+    }
+
+    .comment-text {
+        color: #4a5568;
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+    }
+
+    .comment-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .comment-actions .btn-link {
+        color: #718096;
+        font-size: 0.8rem;
+    }
+
+    .comment-actions .btn-link:hover {
+        color: #667eea;
+    }
+
+    .empty-comments {
+        text-align: center;
+        padding: 3rem 0;
+    }
+
+    @@media (max-width: 768px) {
+        .article-title {
+            font-size: 1.8rem;
+        }
+
+        .article-summary {
+            font-size: 1rem;
+        }
+
+        .article-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .article-stats {
+            align-self: flex-end;
+        }
+
+        .article-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .article-actions .btn {
+            width: 100%;
+        }
+
+        .comment-form .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>

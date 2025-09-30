@@ -1,0 +1,241 @@
+@page "/moderation"
+@using Microsoft.AspNetCore.Authorization
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models.Moderation
+@using SynQcore.BlazorApp.Components.Moderation
+@using SynQcore.BlazorApp.Components.Shared
+@attribute [Authorize]
+@inject IJSRuntime JSRuntime
+@inject IModerationService ModerationService
+@inject IUserPermissionService UserPermissionService
+@inject NavigationManager Navigation
+
+<div class="moderation-dashboard">
+    @if (hasAccessDenied)
+    {
+        <div class="access-denied">
+            <div class="access-denied-content">
+                <i class="fas fa-shield-alt"></i>
+                <h2>Acesso Negado</h2>
+                <p>Você não possui permissões suficientes para acessar o sistema de moderação.</p>
+                <p>Entre em contato com um administrador se você acredita que isso é um erro.</p>
+                <button @onclick='() => Navigation.NavigateTo("/")' class="btn-primary">
+                    <i class="fas fa-home"></i>
+                    Voltar ao Feed
+                </button>
+            </div>
+        </div>
+    }
+    else if (isLoadingPermissions)
+    {
+        <div class="loading-permissions">
+            <div class="spinner-large"></div>
+            <p>Verificando permissões...</p>
+        </div>
+    }
+    else
+    {
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">
+            <i class="fas fa-shield-alt"></i>
+            Dashboard de Moderação Corporativa
+        </h1>
+        <p class="dashboard-subtitle">
+            Sistema de moderação e compliance para rede social corporativa
+        </p>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Carregando dados de moderação...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Estatísticas detalhadas -->
+        <div class="detailed-stats-section">
+            <SynQcore.BlazorApp.Components.Moderation.ModerationStats OnStatsUpdated="OnStatsUpdated" />
+        </div>
+
+        <!-- Fila de moderação -->
+        <div class="queue-section">
+            <SynQcore.BlazorApp.Components.Moderation.ModerationQueue OnItemProcessed="OnItemProcessed" />
+        </div>
+
+        <!-- Ações rápidas de moderação -->
+        <div class="actions-section">
+            <SynQcore.BlazorApp.Components.Moderation.ModerationActions
+                OnActionCompleted="OnActionCompleted"
+                OnSuccessAction="ShowSuccessNotification"
+                OnErrorAction="ShowErrorNotification"
+                OnInfoAction="ShowInfoNotification" />
+        </div>
+    }
+}
+</div>
+
+<!-- Sistema de notificações toast -->
+<ToastNotifications @ref="toastComponent" />
+
+@code {
+    private bool isLoading = true;
+    private bool isLoadingPermissions = true;
+    private bool hasAccessDenied = false;
+    private ModerationStatsDto? moderationStats;
+    private string? errorMessage;
+    private ToastNotifications toastComponent = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckPermissionsAndLoadData();
+    }
+
+    private async Task CheckPermissionsAndLoadData()
+    {
+        try
+        {
+            isLoadingPermissions = true;
+            StateHasChanged();
+
+            // Verificar se o usuário tem permissão para moderar
+            var canModerate = await UserPermissionService.CanModerateAsync();
+
+            if (!canModerate)
+            {
+                hasAccessDenied = true;
+                isLoadingPermissions = false;
+                StateHasChanged();
+                return;
+            }
+
+            // Se tem permissão, carregar dados do dashboard
+            await LoadDashboardData();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ModerationDashboard] Erro ao verificar permissões: {ex.Message}");
+            hasAccessDenied = true;
+        }
+        finally
+        {
+            isLoadingPermissions = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadDashboardData()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            // Carregar estatísticas básicas
+            moderationStats = await ModerationService.GetModerationStatsAsync();
+
+            if (moderationStats == null)
+            {
+                errorMessage = "Não foi possível carregar as estatísticas de moderação.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar dados: {ex.Message}";
+            Console.WriteLine($"[ModerationDashboard] Erro: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnItemProcessed(int itemId)
+    {
+        Console.WriteLine($"[ModerationDashboard] Item {itemId} processado");
+        // Recarregar estatísticas quando um item for processado
+        await LoadDashboardData();
+    }
+
+    private async Task OnStatsUpdated()
+    {
+        Console.WriteLine("[ModerationDashboard] Estatísticas atualizadas");
+        // Sincronizar com outros componentes quando as estatísticas forem atualizadas
+        await LoadDashboardData();
+    }
+
+    private async Task OnActionCompleted(string actionType)
+    {
+        Console.WriteLine($"[ModerationDashboard] Ação completada: {actionType}");
+
+        // Exibir notificação baseada no tipo de ação
+        switch (actionType.ToLower())
+        {
+            case "approve":
+            case "aprovação":
+                ShowSuccessNotification("Conteúdo aprovado com sucesso!");
+                break;
+            case "reject":
+            case "rejeição":
+                ShowInfoNotification("Conteúdo rejeitado.");
+                break;
+            case "bulk":
+            case "ação em lote":
+                ShowSuccessNotification("Ação em lote executada com sucesso!");
+                break;
+            default:
+                ShowInfoNotification($"Ação '{actionType}' completada.");
+                break;
+        }
+
+        // Recarregar dados quando uma ação for completada
+        await LoadDashboardData();
+    }
+
+    // Métodos para notificações
+    private void ShowSuccessNotification(string message)
+    {
+        toastComponent?.ShowSuccess(message);
+    }
+
+    private void ShowErrorNotification(string message)
+    {
+        toastComponent?.ShowError(message);
+    }
+
+    private void ShowWarningNotification(string message)
+    {
+        toastComponent?.ShowWarning(message);
+    }
+
+    private void ShowInfoNotification(string message)
+    {
+        toastComponent?.ShowInfo(message);
+    }
+
+    // Handlers específicos para eventos dos componentes
+    private void OnContentApproved(string contentId)
+    {
+        ShowSuccessNotification($"Conteúdo {contentId} aprovado!");
+        _ = Task.Run(LoadDashboardData); // Atualiza estatísticas
+    }
+
+    private void OnContentRejected(string contentId)
+    {
+        ShowInfoNotification($"Conteúdo {contentId} rejeitado.");
+        _ = Task.Run(LoadDashboardData); // Atualiza estatísticas
+    }
+
+    private void OnBulkActionCompleted(string action, int count)
+    {
+        ShowSuccessNotification($"Ação '{action}' executada em {count} itens.");
+        _ = Task.Run(LoadDashboardData); // Atualiza estatísticas
+    }
+
+    private void OnActionError(string error)
+    {
+        ShowErrorNotification($"Erro na operação: {error}");
+    }
+}

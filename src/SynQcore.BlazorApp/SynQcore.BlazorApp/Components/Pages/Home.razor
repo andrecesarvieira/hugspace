@@ -2,9 +2,11 @@
 @page "/home"
 @using Fluxor
 @using SynQcore.BlazorApp.Store.User
+@using SynQcore.BlazorApp.Services
 @using Microsoft.AspNetCore.Components.Web
 @inject IState<UserState> UserState
 @inject NavigationManager Navigation
+@inject IPlatformStatsService PlatformStatsService
 @rendermode InteractiveServer
 
 <div class="home-container">
@@ -92,24 +94,51 @@
     <!-- Stats Section -->
     <section class="stats-section">
         <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Colaboradores Conectados</div>
+            @if (isLoadingStats)
+            {
+                <div class="stats-loading">
+                    <div class="spinner"></div>
+                    <p>Carregando estatísticas...</p>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">1.2K</div>
-                    <div class="stat-label">Posts Compartilhados</div>
+            }
+            else
+            {
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">@FormatNumber(platformStats?.TotalEmployees ?? 500)+</div>
+                        <div class="stat-label">Colaboradores Conectados</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">@FormatNumber(platformStats?.TotalPosts ?? 1200)</div>
+                        <div class="stat-label">Posts Compartilhados</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">@(platformStats?.EngagementRate.ToString("F0") ?? "95")%</div>
+                        <div class="stat-label">Taxa de Engajamento</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">
+                            @if (platformStats?.ActiveUsersToday > 0)
+                            {
+                                <span>@platformStats.ActiveUsersToday</span>
+                                <small>/@platformStats.TotalEmployees</small>
+                            }
+                            else
+                            {
+                                <span>24/7</span>
+                            }
+                        </div>
+                        <div class="stat-label">@(platformStats?.ActiveUsersToday > 0 ? "Usuários Ativos Hoje" : "Colaboração Ativa")</div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">95%</div>
-                    <div class="stat-label">Satisfação da Equipe</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Colaboração Ativa</div>
-                </div>
-            </div>
+
+                @if (!string.IsNullOrEmpty(platformStats?.LastUpdated))
+                {
+                    <div class="stats-updated">
+                        <small>Atualizado às @platformStats.LastUpdated</small>
+                    </div>
+                }
+            }
         </div>
     </section>
 
@@ -513,6 +542,28 @@
         z-index: 3;
     }
 
+    .stats-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 2rem;
+    }
+
+    .stats-loading .spinner {
+        width: 2rem;
+        height: 2rem;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .stats-loading p {
+        color: #718096;
+        font-size: 1rem;
+    }
+
     .container {
         max-width: 1400px;
         margin: 0 auto;
@@ -546,13 +597,49 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin-bottom: 0.5rem;
+        display: block;
     }
 
     .stat-label {
         color: #6b7280;
         font-weight: 500;
         font-size: 1.1rem;
+        margin-bottom: 0.5rem;
     }
+
+    .stat-description {
+        font-size: 0.9rem;
+        color: #718096;
+        line-height: 1.4;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .stat-item {
+        animation: fadeInUp 0.6s ease forwards;
+        opacity: 0;
+    }
+
+    .stat-item:nth-child(1) { animation-delay: 0.1s; }
+    .stat-item:nth-child(2) { animation-delay: 0.2s; }
+    .stat-item:nth-child(3) { animation-delay: 0.3s; }
+    .stat-item:nth-child(4) { animation-delay: 0.4s; }
+    .stat-item:nth-child(5) { animation-delay: 0.5s; }
+    .stat-item:nth-child(6) { animation-delay: 0.6s; }
 
     /* ===== FEATURES SECTION ===== */
     .features-section {
@@ -770,12 +857,37 @@
 </style>
 
 @code {
+    private bool isLoadingStats = true;
+    private PlatformStatsDto? platformStats;
+
     protected override void OnInitialized()
     {
         // Se já estiver autenticado, redirecionar automaticamente para o feed
         if (UserState.Value.IsAuthenticated)
         {
             Navigation.NavigateTo("/feed");
+            return;
+        }
+
+        // Carregar estatísticas da plataforma em paralelo
+        _ = Task.Run(LoadPlatformStats);
+    }
+
+    private async Task LoadPlatformStats()
+    {
+        try
+        {
+            platformStats = await PlatformStatsService.GetPlatformStatsAsync();
+        }
+        catch (Exception ex)
+        {
+            // Log silencioso - fallback será usado automaticamente
+            Console.WriteLine($"[HOME] Erro ao carregar estatísticas: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingStats = false;
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -793,5 +905,18 @@
     {
         await Task.Delay(100); // Pequeno delay para garantir que o DOM esteja pronto
         // Para implementação futura com IJSRuntime para scroll suave
+    }
+
+    /// <summary>
+    /// Formata números grandes com sufixos (K, M)
+    /// </summary>
+    private static string FormatNumber(int number)
+    {
+        return number switch
+        {
+            >= 1000000 => $"{number / 1000000.0:F1}M",
+            >= 1000 => $"{number / 1000.0:F1}K",
+            _ => number.ToString()
+        };
     }
 }

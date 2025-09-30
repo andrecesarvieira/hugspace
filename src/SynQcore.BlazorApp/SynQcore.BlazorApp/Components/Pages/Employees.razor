@@ -1,0 +1,807 @@
+@page "/employees"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Web
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models
+@attribute [Authorize]
+@inject IEmployeeService EmployeeService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Gestão de Funcionários - SynQcore</PageTitle>
+
+<div class="employees-container">
+    <div class="page-header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="page-title">
+                    <i class="fas fa-users"></i>
+                    Gestão de Funcionários
+                </h1>
+                <p class="page-subtitle">Gerencie funcionários, perfis e hierarquia organizacional</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" @onclick="CreateEmployee">
+                    <i class="fas fa-plus"></i>
+                    Novo Funcionário
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros e Busca -->
+    <div class="filters-section">
+        <div class="search-box">
+            <div class="search-input-group">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text"
+                       class="search-input"
+                       placeholder="Buscar por nome, email ou departamento..."
+                       @bind="searchRequest.SearchTerm"
+                       @onkeypress="OnSearchKeyPress" />
+                <button class="search-btn" @onclick="SearchEmployees">
+                    Buscar
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label>Status:</label>
+                <select @bind="searchRequest.IsActive" @bind:after="OnFilterChanged">
+                    <option value="">Todos</option>
+                    <option value="true">Ativos</option>
+                    <option value="false">Inativos</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Ordenação:</label>
+                <select @bind="searchRequest.SortBy" @bind:after="OnFilterChanged">
+                    <option value="FirstName">Nome</option>
+                    <option value="Email">Email</option>
+                    <option value="HireDate">Data de Admissão</option>
+                    <option value="LastName">Sobrenome</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" @bind="searchRequest.SortDescending" @bind:after="OnFilterChanged" />
+                    Decrescente
+                </label>
+            </div>
+
+            <button class="btn btn-secondary" @onclick="ClearFilters">
+                <i class="fas fa-times"></i>
+                Limpar Filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- Lista de Funcionários -->
+    <div class="employees-content">
+        @if (isLoading)
+        {
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>Carregando funcionários...</p>
+            </div>
+        }
+        else if (employees?.Items.Any() == true)
+        {
+            <div class="employees-grid">
+                @foreach (var employee in employees.Items)
+                {
+                    <div class="employee-card" @onclick="() => ViewEmployee(employee.Id)">
+                        <div class="employee-avatar">
+                            @if (!string.IsNullOrEmpty(employee.Avatar))
+                            {
+                                <img src="@employee.Avatar" alt="@employee.FullName" />
+                            }
+                            else
+                            {
+                                <div class="avatar-placeholder">
+                                    @GetInitials(employee.FullName)
+                                </div>
+                            }
+                        </div>
+
+                        <div class="employee-info">
+                            <h3 class="employee-name">@employee.FullName</h3>
+                            <p class="employee-email">@employee.Email</p>
+
+                            @if (employee.Departments.Any())
+                            {
+                                <div class="employee-departments">
+                                    @foreach (var dept in employee.Departments.Take(2))
+                                    {
+                                        <span class="department-tag">@dept.Name</span>
+                                    }
+                                    @if (employee.Departments.Count > 2)
+                                    {
+                                        <span class="department-tag more">+@(employee.Departments.Count - 2)</span>
+                                    }
+                                </div>
+                            }
+
+                            <div class="employee-details">
+                                <span class="hire-date">
+                                    <i class="fas fa-calendar"></i>
+                                    Admitido em @employee.HireDate.ToString("dd/MM/yyyy")
+                                </span>
+
+                                @if (!string.IsNullOrEmpty(employee.ManagerName))
+                                {
+                                    <span class="manager">
+                                        <i class="fas fa-user-tie"></i>
+                                        Gerente: @employee.ManagerName
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="employee-status">
+                                @if (employee.IsActive)
+                                {
+                                    <span class="status-badge active">
+                                        <i class="fas fa-check-circle"></i>
+                                        Ativo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge inactive">
+                                        <i class="fas fa-times-circle"></i>
+                                        Inativo
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="employee-actions">
+                            <button class="btn-icon" @onclick:stopPropagation @onclick="() => EditEmployee(employee.Id)" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon" @onclick:stopPropagation @onclick="() => ViewHierarchy(employee.Id)" title="Hierarquia">
+                                <i class="fas fa-sitemap"></i>
+                            </button>
+                            <button class="btn-icon danger" @onclick:stopPropagation @onclick="() => DeleteEmployee(employee.Id)" title="Remover">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Paginação -->
+            @if (employees.TotalPages > 1)
+            {
+                <div class="pagination-container">
+                    <div class="pagination-info">
+                        Mostrando @((employees.Page - 1) * employees.PageSize + 1) a @Math.Min(employees.Page * employees.PageSize, employees.TotalCount)
+                        de @employees.TotalCount funcionários
+                    </div>
+
+                    <div class="pagination-controls">
+                        <button class="btn btn-outline"
+                                disabled="@(!employees.HasPreviousPage)"
+                                @onclick="() => ChangePage(employees.Page - 1)">
+                            <i class="fas fa-chevron-left"></i>
+                            Anterior
+                        </button>
+
+                        @for (int i = Math.Max(1, employees.Page - 2); i <= Math.Min(employees.TotalPages, employees.Page + 2); i++)
+                        {
+                            <button class="btn @(i == employees.Page ? "btn-primary" : "btn-outline")"
+                                    @onclick="() => ChangePage(i)">
+                                @i
+                            </button>
+                        }
+
+                        <button class="btn btn-outline"
+                                disabled="@(!employees.HasNextPage)"
+                                @onclick="() => ChangePage(employees.Page + 1)">
+                            Próxima
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Nenhum funcionário encontrado</h3>
+                <p>@(string.IsNullOrEmpty(searchRequest.SearchTerm) ? "Não há funcionários cadastrados ainda." : "Tente ajustar os filtros ou termo de busca.")</p>
+                <button class="btn btn-primary" @onclick="CreateEmployee">
+                    <i class="fas fa-plus"></i>
+                    Cadastrar Primeiro Funcionário
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private PagedResult<EmployeeDto>? employees;
+    private EmployeeSearchRequest searchRequest = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEmployees();
+    }
+
+    private async Task LoadEmployees()
+    {
+        try
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            employees = await EmployeeService.GetEmployeesAsync(searchRequest);
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao carregar funcionários", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SearchEmployees()
+    {
+        searchRequest.Page = 1; // Reset para primeira página
+        await LoadEmployees();
+    }
+
+    private async Task OnFilterChanged()
+    {
+        searchRequest.Page = 1; // Reset para primeira página
+        await LoadEmployees();
+    }
+
+    private async Task OnSearchKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchEmployees();
+        }
+    }
+
+    private async Task ChangePage(int page)
+    {
+        searchRequest.Page = page;
+        await LoadEmployees();
+    }
+
+    private async Task ClearFilters()
+    {
+        searchRequest = new EmployeeSearchRequest();
+        await LoadEmployees();
+    }
+
+    private void CreateEmployee()
+    {
+        Navigation.NavigateTo("/employees/create");
+    }
+
+    private void ViewEmployee(Guid id)
+    {
+        Navigation.NavigateTo($"/employees/{id}");
+    }
+
+    private void EditEmployee(Guid id)
+    {
+        Navigation.NavigateTo($"/employees/{id}/edit");
+    }
+
+    private void ViewHierarchy(Guid id)
+    {
+        Navigation.NavigateTo($"/employees/{id}/hierarchy");
+    }
+
+    private async Task DeleteEmployee(Guid id)
+    {
+        var employee = employees?.Items.FirstOrDefault(e => e.Id == id);
+        if (employee == null) return;
+
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm",
+            $"Tem certeza que deseja remover o funcionário {employee.FullName}? Esta ação não pode ser desfeita.");
+
+        if (confirmed)
+        {
+            try
+            {
+                var success = await EmployeeService.DeleteEmployeeAsync(id);
+                if (success)
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Funcionário removido com sucesso!");
+                    await LoadEmployees(); // Recarregar lista
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Erro ao remover funcionário. Tente novamente.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Erro ao remover funcionário: {ex.Message}");
+            }
+        }
+    }
+
+    private static string GetInitials(string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName)) return "?";
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0].Substring(0, Math.Min(2, parts[0].Length)).ToUpper();
+
+        return (parts[0].Substring(0, 1) + parts[^1].Substring(0, 1)).ToUpper();
+    }
+}
+
+<style>
+    .employees-container {
+        padding: 2rem;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f8f9ff 0%, #e8efff 100%);
+    }
+
+    .page-header {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .page-title i {
+        color: #667eea;
+    }
+
+    .page-subtitle {
+        color: #718096;
+        margin: 0.5rem 0 0 0;
+        font-size: 1rem;
+    }
+
+    .filters-section {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-box {
+        margin-bottom: 1.5rem;
+    }
+
+    .search-input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+        max-width: 500px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        color: #a0aec0;
+        z-index: 1;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px 0 0 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .search-btn {
+        padding: 0.75rem 1.5rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 0 8px 8px 0;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .search-btn:hover {
+        background: #5a6fd8;
+    }
+
+    .filter-controls {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .filter-group label {
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+    }
+
+    .filter-group select {
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        min-width: 150px;
+    }
+
+    .filter-group select:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-weight: 600;
+        color: #4a5568;
+        margin-top: 1.5rem;
+    }
+
+    .employees-content {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 4rem 2rem;
+    }
+
+    .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 4px solid #e2e8f0;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .employees-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .employee-card {
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .employee-card:hover {
+        border-color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+
+    .employee-avatar {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1rem;
+    }
+
+    .employee-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .avatar-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .employee-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .employee-email {
+        color: #718096;
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+    }
+
+    .employee-departments {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .department-tag {
+        background: #e6fffa;
+        color: #234e52;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .department-tag.more {
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .employee-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: #718096;
+    }
+
+    .employee-details span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .employee-details i {
+        width: 12px;
+        color: #a0aec0;
+    }
+
+    .employee-status {
+        margin-bottom: 1rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background: #f0fff4;
+        color: #22543d;
+    }
+
+    .status-badge.inactive {
+        background: #fed7d7;
+        color: #742a2a;
+    }
+
+    .employee-actions {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        gap: 0.5rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .employee-card:hover .employee-actions {
+        opacity: 1;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .btn-icon:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-icon.danger:hover {
+        background: #e53e3e;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #718096;
+        margin-bottom: 2rem;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .pagination-info {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .pagination-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5a6fd8;
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-outline:hover:not(:disabled) {
+        border-color: #667eea;
+        color: #667eea;
+    }
+
+    .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsividade */
+    @@media (max-width: 768px) {
+        .employees-container {
+            padding: 1rem;
+        }
+
+        .header-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            align-items: stretch;
+        }
+
+        .filter-group select {
+            min-width: auto;
+        }
+
+        .employees-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .pagination-container {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
