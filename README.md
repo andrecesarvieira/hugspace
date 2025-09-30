@@ -92,16 +92,16 @@ src/
 
 **Fase 6.3 CONCLUÍDA** _(30/09/2025)_ - Sistema de Moderação Corporativa + Blazor UI Corrigida
 
-| Fase         | Status           | Descrição                                 |
-| ------------ | ---------------- | ----------------------------------------- |
-| **Fase 1-2** | ✅ **COMPLETO**  | Infraestrutura + API Core + Autenticação  |
-| **Fase 3**   | ✅ **COMPLETO**  | Core Corporativo + Knowledge Management   |
-| **Fase 4**   | ✅ **COMPLETO**  | SignalR + Notificações + Busca + Media    |
-| **Fase 5**   | ✅ **COMPLETO**  | Interface Blazor + Design System          |
-| **Fase 6.1** | ✅ **COMPLETO**  | Sistema Privacy/LGPD Compliance           |
-| **Fase 6.2** | ✅ **COMPLETO**  | Segurança Avançada Corporativa            |
-| **Fase 6.3** | ✅ **COMPLETO**  | Sistema de Moderação + Blazor Corrigida   |
-| **Fase 7-8** | 🎯 **PLANEJADO** | Performance + UX/UI Avançado + Deploy     |
+| Fase         | Status           | Descrição                                |
+| ------------ | ---------------- | ---------------------------------------- |
+| **Fase 1-2** | ✅ **COMPLETO**  | Infraestrutura + API Core + Autenticação |
+| **Fase 3**   | ✅ **COMPLETO**  | Core Corporativo + Knowledge Management  |
+| **Fase 4**   | ✅ **COMPLETO**  | SignalR + Notificações + Busca + Media   |
+| **Fase 5**   | ✅ **COMPLETO**  | Interface Blazor + Design System         |
+| **Fase 6.1** | ✅ **COMPLETO**  | Sistema Privacy/LGPD Compliance          |
+| **Fase 6.2** | ✅ **COMPLETO**  | Segurança Avançada Corporativa           |
+| **Fase 6.3** | ✅ **COMPLETO**  | Sistema de Moderação + Blazor Corrigida  |
+| **Fase 7-8** | 🎯 **PLANEJADO** | Performance + UX/UI Avançado + Deploy    |
 
 > 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.
 
