@@ -7,8 +7,8 @@
 [![Fase](https://img.shields.io/badge/Fase-5%20Completa-success)](docs/ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 
-> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**  
-> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.  
+> **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
+> Plataforma completa para conectar funcionários, facilitar colaboração e preservar conhecimento organizacional.
 > [**Pesquisa de mercado**](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md) comprovou **zero concorrentes nacionais** - oportunidade única de market leadership.
 
 ## ✨ Características Principais
@@ -36,16 +36,18 @@
 ### Executando Localmente
 
 1. **Clone e configure**
+
    ```bash
    git clone https://github.com/andrecesarvieira/synqcore
    cd synqcore
    ```
 
 2. **Inicie o ambiente completo**
+
    ```bash
    # ⭐ RECOMENDADO: Aplicação completa (API + Blazor)
    python3 scripts/start-full.py
-   
+
    # Abre automaticamente:
    # - API + Swagger: http://localhost:5000/swagger
    # - Blazor App: http://localhost:5226
@@ -77,24 +79,24 @@ src/
 
 ## 🌐 URLs de Acesso
 
-| Serviço | URL | Descrição |
-|---------|-----|-----------|
-| **API** | http://localhost:5000 | API RESTful completa |
-| **Swagger** | http://localhost:5000/swagger | Documentação interativa |
-| **Blazor App** | http://localhost:5226 | Interface moderna |
+| Serviço           | URL                                 | Descrição                 |
+| ----------------- | ----------------------------------- | ------------------------- |
+| **API**           | http://localhost:5000               | API RESTful completa      |
+| **Swagger**       | http://localhost:5000/swagger       | Documentação interativa   |
+| **Blazor App**    | http://localhost:5226               | Interface moderna         |
 | **Design System** | http://localhost:5226/design-system | Biblioteca de componentes |
-| **pgAdmin** | http://localhost:8080 | Administração do banco |
+| **pgAdmin**       | http://localhost:8080               | Administração do banco    |
 
 ## 📊 Status do Projeto
 
 **Fase 5 CONCLUÍDA** _(29/09/2025)_ - Interface Blazor + Design System + Scripts Python
 
-| Fase | Status | Descrição |
-|------|--------|-----------|
-| **Fase 1-2** | ✅ **COMPLETO** | Infraestrutura + API Core + Autenticação |
-| **Fase 3** | ✅ **COMPLETO** | Core Corporativo + Knowledge Management |
-| **Fase 4** | ✅ **COMPLETO** | SignalR + Notificações + Busca + Media |
-| **Fase 5** | ✅ **COMPLETO** | Interface Blazor + Design System |
+| Fase         | Status           | Descrição                                 |
+| ------------ | ---------------- | ----------------------------------------- |
+| **Fase 1-2** | ✅ **COMPLETO**  | Infraestrutura + API Core + Autenticação  |
+| **Fase 3**   | ✅ **COMPLETO**  | Core Corporativo + Knowledge Management   |
+| **Fase 4**   | ✅ **COMPLETO**  | SignalR + Notificações + Busca + Media    |
+| **Fase 5**   | ✅ **COMPLETO**  | Interface Blazor + Design System          |
 | **Fase 6-8** | 🎯 **PLANEJADO** | Recursos Avançados + Performance + Deploy |
 
 > 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.
@@ -102,12 +104,14 @@ src/
 ## 🔌 Principais Endpoints
 
 ### Autenticação
+
 ```http
 POST /api/auth/register    # Registrar funcionário
 POST /api/auth/login       # Login JWT
 ```
 
 ### Gestão de Funcionários
+
 ```http
 GET    /api/employees           # Listar funcionários
 POST   /api/employees           # Criar funcionário
@@ -116,6 +120,7 @@ PUT    /api/employees/{id}      # Atualizar funcionário
 ```
 
 ### Busca Corporativa
+
 ```http
 GET    /api/corporatesearch                    # Busca básica
 POST   /api/corporatesearch/advanced           # Busca avançada
@@ -124,6 +129,7 @@ GET    /api/corporatesearch/analytics          # Analytics
 ```
 
 ### Notificações
+
 ```http
 POST   /api/notifications                      # Criar notificação
 GET    /api/notifications/my-notifications     # Minhas notificações
@@ -134,14 +140,14 @@ POST   /api/notifications/{id}/approve         # Aprovar notificação
 
 ## 🛠️ Stack Tecnológica
 
-| Categoria | Tecnologia | Status |
-|-----------|------------|--------|
-| **Backend** | .NET 9, ASP.NET Core, EF Core | ✅ Produção |
-| **Frontend** | Blazor Server + WebAssembly | ✅ Funcional |
-| **Banco** | PostgreSQL 16 + Redis 7 | ✅ Schema Completo |
-| **Tempo Real** | SignalR | ✅ Implementado |
-| **Arquitetura** | Clean Architecture + CQRS | ✅ Implementado |
-| **DevOps** | Docker Compose + Scripts Python | ✅ Automação |
+| Categoria       | Tecnologia                      | Status             |
+| --------------- | ------------------------------- | ------------------ |
+| **Backend**     | .NET 9, ASP.NET Core, EF Core   | ✅ Produção        |
+| **Frontend**    | Blazor Server + WebAssembly     | ✅ Funcional       |
+| **Banco**       | PostgreSQL 16 + Redis 7         | ✅ Schema Completo |
+| **Tempo Real**  | SignalR                         | ✅ Implementado    |
+| **Arquitetura** | Clean Architecture + CQRS       | ✅ Implementado    |
+| **DevOps**      | Docker Compose + Scripts Python | ✅ Automação       |
 
 ## 📚 Documentação
 
@@ -155,17 +161,20 @@ POST   /api/notifications/{id}/approve         # Aprovar notificação
 ## 🏆 Diferenciais Competitivos
 
 ### 🇧🇷 **Pioneirismo Nacional**
+
 - **ÚNICA** solução nacional em C#/.NET
 - **Zero concorrentes** diretos identificados
 - **Market leadership** por pioneirismo comprovado
 
 ### 🔧 **Excelência Técnica**
+
 - **Clean Architecture** empresarial
 - **Zero dependências comerciais** (AutoMapper, etc.)
 - **Performance otimizada** (mapeamento manual + LoggerMessage)
 - **100% Open Source** com MIT License
 
 ### 🏢 **Foco Corporativo**
+
 - **Compliance LGPD** nativo
 - **Hierarquia organizacional** completa
 - **Workflow de aprovação** corporativo
