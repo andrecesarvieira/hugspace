@@ -14,7 +14,7 @@ public interface ISynQcoreDbContext
     DbSet<Team> Teams { get; }
     DbSet<Position> Positions { get; }
 
-    // Communication entities  
+    // Communication entities
     DbSet<Post> Posts { get; }
     DbSet<Comment> Comments { get; }
     DbSet<CommentLike> CommentLikes { get; }
@@ -43,6 +43,15 @@ public interface ISynQcoreDbContext
     DbSet<DocumentAccessLog> DocumentAccessLogs { get; }
     DbSet<DocumentTemplate> DocumentTemplates { get; }
     DbSet<MediaAsset> MediaAssets { get; }
+
+    // Security & Audit entities (Fase 6)
+    DbSet<AuditLogEntity> AuditLogs { get; }
+
+    // Privacy & LGPD Compliance entities (Fase 5)
+    DbSet<ConsentRecord> ConsentRecords { get; }
+    DbSet<DataExportRequest> DataExportRequests { get; }
+    DbSet<DataDeletionRequest> DataDeletionRequests { get; }
+    DbSet<PersonalDataCategory> PersonalDataCategories { get; }
 
     // Relationship entities
     DbSet<EmployeeDepartment> EmployeeDepartments { get; }

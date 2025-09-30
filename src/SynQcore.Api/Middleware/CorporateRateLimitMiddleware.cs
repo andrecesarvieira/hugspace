@@ -1,8 +1,8 @@
 /*
  * SynQcore - Corporate Social Network API
- * 
+ *
  * Corporate Rate Limit Middleware - Determines client ID based on corporate structure
- * 
+ *
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
@@ -46,17 +46,17 @@ public partial class CorporateRateLimitMiddleware
         {
             // TODO: Parse JWT and extract role claims when authentication is implemented
             // For now, simulate role detection based on API patterns
-            
+
             var endpoint = context.Request.Path.Value?.ToLowerInvariant() ?? "";
-            
+
             // Admin endpoints
             if (endpoint.Contains("/admin/") || endpoint.Contains("/system/"))
                 return "admin-app";
-                
-            // HR endpoints  
+
+            // HR endpoints
             if (endpoint.Contains("/hr/") || endpoint.Contains("/employees/bulk") || endpoint.Contains("/departments/"))
                 return "hr-app";
-                
+
             // Manager endpoints
             if (endpoint.Contains("/manager/") || endpoint.Contains("/teams/") || endpoint.Contains("/reports/"))
                 return "manager-app";
@@ -69,7 +69,7 @@ public partial class CorporateRateLimitMiddleware
             return clientHeader.ToLowerInvariant() switch
             {
                 "admin" or "admin-app" => "admin-app",
-                "hr" or "hr-app" => "hr-app", 
+                "hr" or "hr-app" => "hr-app",
                 "manager" or "manager-app" => "manager-app",
                 "employee" or "employee-app" => "employee-app",
                 "mobile" or "mobile-app" => "employee-app",
@@ -81,13 +81,13 @@ public partial class CorporateRateLimitMiddleware
         var userAgent = context.Request.Headers["User-Agent"].FirstOrDefault()?.ToLowerInvariant() ?? "";
         if (userAgent.Contains("synqcore-admin") || userAgent.Contains("postman") || userAgent.Contains("insomnia"))
             return "admin-app";
-            
+
         if (userAgent.Contains("synqcore-hr"))
             return "hr-app";
-            
+
         if (userAgent.Contains("synqcore-manager"))
             return "manager-app";
-            
+
         if (userAgent.Contains("synqcore-mobile") || userAgent.Contains("synqcore-employee"))
             return "employee-app";
 
@@ -109,7 +109,7 @@ public partial class CorporateRateLimitMiddleware
         return "employee-app";
     }
 
-    [LoggerMessage(EventId = 2001, Level = LogLevel.Information, 
+    [LoggerMessage(EventId = 2001, Level = LogLevel.Information,
         Message = "Rate limit context - Client: {ClientId}, Path: {Path}, IP: {RemoteIP}")]
     private static partial void LogRateLimitContext(ILogger logger, string? clientId, string? path, string? remoteIP);
 }
@@ -120,16 +120,39 @@ public static class CorporateRateLimitExtensions
     {
         // Configure IP Rate Limiting
         services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
-        
-        // Configure Client Rate Limiting  
+
+        // Configure Client Rate Limiting
         services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
-        
-        // Add rate limiting services
-        services.AddInMemoryRateLimiting();
-        
+
+        // Check if Redis should be used for rate limiting store
+        var storeConfig = configuration.GetSection("RateLimitingStore");
+        var storeType = storeConfig["Type"];
+
+        if (storeType?.Equals("Redis", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            // Add Redis for distributed rate limiting
+            var redisConnection = storeConfig["RedisConfiguration"];
+            if (!string.IsNullOrEmpty(redisConnection))
+            {
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = redisConnection;
+                    options.InstanceName = "SynQcore_RateLimit";
+                });
+
+                // Use distributed rate limiting with Redis
+                services.AddDistributedRateLimiting();
+            }
+        }
+        else
+        {
+            // Use in-memory rate limiting for development
+            services.AddInMemoryRateLimiting();
+        }
+
         // Register required services
         services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-        
+
         return services;
     }
 
@@ -137,13 +160,13 @@ public static class CorporateRateLimitExtensions
     {
         // Corporate client ID middleware (must come before rate limiting)
         app.UseMiddleware<CorporateRateLimitMiddleware>();
-        
+
         // IP rate limiting
         app.UseIpRateLimiting();
-        
-        // Client rate limiting  
+
+        // Client rate limiting
         app.UseClientRateLimiting();
-        
+
         return app;
     }
 }

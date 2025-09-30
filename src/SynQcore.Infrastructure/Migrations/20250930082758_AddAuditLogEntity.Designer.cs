@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SynQcore.Infrastructure.Data;
@@ -11,9 +12,11 @@ using SynQcore.Infrastructure.Data;
 namespace SynQcore.Infrastructure.Migrations
 {
     [DbContext(typeof(SynQcoreDbContext))]
-    partial class SynQcoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250930082758_AddAuditLogEntity")]
+    partial class AddAuditLogEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1191,76 +1194,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.ToTable("UserInterests", (string)null);
                 });
 
-            modelBuilder.Entity("SynQcore.Domain.Entities.ConsentRecord", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("CollectionEvidence")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ConsentCategory")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ConsentDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("ConsentGranted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("LastModificationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProcessingPurpose")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TermsVersion")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserAgent")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("ConsentRecords");
-                });
-
             modelBuilder.Entity("SynQcore.Domain.Entities.CorporateDocument", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1487,173 +1420,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.HasIndex("TargetDepartmentId");
 
                     b.ToTable("CorporateNotifications");
-                });
-
-            modelBuilder.Entity("SynQcore.Domain.Entities.DataDeletionRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("CompleteDeletion")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("CompletionDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DataCategories")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DeletionReport")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DeletionType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("EffectiveDeletionDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("GracePeriodDays")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IncludeBackups")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("LegalJustification")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("NotificationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("NotificationSent")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("ProcessedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ProcessingDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ProcessingNotes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("VerificationHash")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("ProcessedById");
-
-                    b.ToTable("DataDeletionRequests");
-                });
-
-            modelBuilder.Entity("SynQcore.Domain.Entities.DataExportRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("CompletionDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("DataCategories")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("DownloadAttempts")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DownloadExpirationDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FileHash")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("text");
-
-                    b.Property<long?>("FileSize")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Format")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("IpAddress")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid?>("ProcessedById")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("ProcessingDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ProcessingNotes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("ProcessedById");
-
-                    b.ToTable("DataExportRequests");
                 });
 
             modelBuilder.Entity("SynQcore.Domain.Entities.DocumentAccess", b =>
@@ -2451,85 +2217,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.ToTable("Teams");
                 });
 
-            modelBuilder.Entity("SynQcore.Domain.Entities.PersonalDataCategory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("AllowsSharing")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("AuthorizedCountries")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("EffectiveDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("IncludedFields")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("InternationalTransfer")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsMandatoryData")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("LegalBasis")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProcessingPurpose")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("RequiresConsent")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("RetentionPeriodMonths")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SecurityMeasures")
-                        .HasColumnType("text");
-
-                    b.Property<int>("SensitivityLevel")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("PersonalDataCategories");
-                });
-
             modelBuilder.Entity("SynQcore.Domain.Entities.Relationships.EmployeeDepartment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3102,17 +2789,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SynQcore.Domain.Entities.ConsentRecord", b =>
-                {
-                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("SynQcore.Domain.Entities.CorporateDocument", b =>
                 {
                     b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "ApprovedByEmployee")
@@ -3166,40 +2842,6 @@ namespace SynQcore.Infrastructure.Migrations
                     b.Navigation("CreatedByEmployee");
 
                     b.Navigation("TargetDepartment");
-                });
-
-            modelBuilder.Entity("SynQcore.Domain.Entities.DataDeletionRequest", b =>
-                {
-                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "ProcessedBy")
-                        .WithMany()
-                        .HasForeignKey("ProcessedById");
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("ProcessedBy");
-                });
-
-            modelBuilder.Entity("SynQcore.Domain.Entities.DataExportRequest", b =>
-                {
-                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SynQcore.Domain.Entities.Organization.Employee", "ProcessedBy")
-                        .WithMany()
-                        .HasForeignKey("ProcessedById");
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("ProcessedBy");
                 });
 
             modelBuilder.Entity("SynQcore.Domain.Entities.DocumentAccess", b =>

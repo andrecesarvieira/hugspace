@@ -17,7 +17,7 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public SynQcoreDbContext(DbContextOptions<SynQcoreDbContext> options) : base(options)
     {
     }
-    
+
     // DbSets - Organization
     public DbSet<Employee> Employees => Set<Employee>();
     public DbSet<Department> Departments => Set<Department>();
@@ -31,11 +31,11 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public DbSet<CommentLike> CommentLikes => Set<CommentLike>();
     public DbSet<CommentMention> CommentMentions => Set<CommentMention>();
     public DbSet<Notification> Notifications => Set<Notification>();
-    
+
     // Feed and Discovery (Fase 3.4)
     public DbSet<FeedEntry> FeedEntries => Set<FeedEntry>();
     public DbSet<UserInterest> UserInterests => Set<UserInterest>();
-    
+
     // Knowledge Management
     public DbSet<KnowledgeCategory> KnowledgeCategories => Set<KnowledgeCategory>();
     public DbSet<Tag> Tags => Set<Tag>();
@@ -53,6 +53,15 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     public DbSet<DocumentAccessLog> DocumentAccessLogs => Set<DocumentAccessLog>();
     public DbSet<DocumentTemplate> DocumentTemplates => Set<DocumentTemplate>();
     public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+
+    // Security & Audit (Fase 6)
+    public DbSet<AuditLogEntity> AuditLogs => Set<AuditLogEntity>();
+
+    // Privacy & LGPD Compliance (Fase 5)
+    public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
+    public DbSet<DataExportRequest> DataExportRequests => Set<DataExportRequest>();
+    public DbSet<DataDeletionRequest> DataDeletionRequests => Set<DataDeletionRequest>();
+    public DbSet<PersonalDataCategory> PersonalDataCategories => Set<PersonalDataCategory>();
 
     // DbSets - Relationships
     public DbSet<EmployeeDepartment> EmployeeDepartments => Set<EmployeeDepartment>();

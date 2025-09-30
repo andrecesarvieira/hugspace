@@ -29,6 +29,10 @@ using SynQcore.Infrastructure.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using SynQcore.Application.Commands.Auth;
 using MediatR;
+using SynQcore.Application.Features.Privacy.DTOs;
+using SynQcore.Application.Features.Privacy.Queries;
+using SynQcore.Application.Features.Privacy.Commands;
+using SynQcore.Application.Features.Privacy.Handlers;
 using FluentValidation;
 using SynQcore.Application.Behaviors;
 using SynQcore.Application.Common.DTOs;
@@ -43,6 +47,9 @@ using SynQcore.Application.Features.DocumentTemplates.Handlers;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
 using SynQcore.Application.Features.CorporateSearch.Handlers;
+using SynQcore.Application.Features.Moderation.DTOs;
+using SynQcore.Application.Features.Moderation.Queries;
+using SynQcore.Application.Features.Moderation.Handlers;
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -85,6 +92,9 @@ builder.Services.AddScoped<RoleInitializationService>();
 
 // Admin Bootstrap Service
 builder.Services.AddScoped<AdminBootstrapService>();
+
+// Audit Service (Fase 6 - Security & Moderation)
+builder.Services.AddScoped<SynQcore.Application.Services.IAuditService, SynQcore.Infrastructure.Services.AuditService>();
 
 // Use Serilog as the logging provider
 builder.Host.UseSerilog();
@@ -276,6 +286,9 @@ if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.Ordi
     builder.Services.AddCorporateRateLimit(builder.Configuration);
 }
 
+// Add security headers configuration
+builder.Services.AddSecurityHeaders(builder.Configuration);
+
 // Add MediatR - Registrar handlers da Application layer
 builder.Services.AddMediatR(cfg =>
 {
@@ -334,6 +347,27 @@ builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<Trending
 builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto>, GetContentStatsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
 
+// === MODERATION HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<GetModerationAuditLogsQuery, PagedResult<ModerationAuditLogDto>>, ModerationQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetModerationDashboardStatsQuery, ModerationDashboardStatsDto>, GetModerationDashboardStatsQueryHandler>();
+
+// === PRIVACY & LGPD HANDLERS ===
+// Privacy Query Handlers
+builder.Services.AddScoped<IRequestHandler<GetPersonalDataCategoriesQuery, PagedResult<PersonalDataCategoryDto>>, PrivacyQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPersonalDataCategoryByIdQuery, PersonalDataCategoryDto?>, PrivacyQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetConsentRecordsQuery, PagedResult<ConsentRecordDto>>, PrivacyQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<GetConsentRecordByIdQuery, ConsentRecordDto?>, PrivacyQueryHandler>();
+
+// Privacy Create Command Handlers
+builder.Services.AddScoped<IRequestHandler<CreatePersonalDataCategoryCommand, PersonalDataCategoryDto>, PrivacyCreateHandlers>();
+builder.Services.AddScoped<IRequestHandler<CreateConsentRecordCommand, ConsentRecordDto>, PrivacyCreateHandlers>();
+builder.Services.AddScoped<IRequestHandler<CreateDataExportRequestCommand, DataExportRequestDto>, PrivacyCreateHandlers>();
+builder.Services.AddScoped<IRequestHandler<CreateDataDeletionRequestCommand, DataDeletionRequestDto>, PrivacyCreateHandlers>();
+
+// Privacy Update Command Handlers
+builder.Services.AddScoped<IRequestHandler<UpdatePersonalDataCategoryCommand, PersonalDataCategoryDto?>, PrivacyUpdateHandlers>();
+builder.Services.AddScoped<IRequestHandler<UpdateConsentRecordCommand, ConsentRecordDto?>, PrivacyUpdateHandlers>();
+
 // OBRIGATÓRIO: Registro manual dos handlers de notificação (Fase 5.0)
 // Configure rate limiting with corporate thresholds
 
@@ -374,6 +408,9 @@ if (app.Environment.IsProduction())
 
 // Corporate middleware pipeline
 app.UseExceptionHandler(); // Global exception handler
+
+// Security headers middleware
+app.UseSecurityHeaders(); // Corporate security headers
 
 // Rate limiting middleware (com bypass inteligente) - Skip in Testing environment
 if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))

@@ -632,4 +632,30 @@ public static class MappingExtensions
             TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
         };
     }
+
+    /// <summary>
+    /// Extensão genérica para paginação com mapeamento customizado
+    /// </summary>
+    public static async Task<PagedResult<TDto>> ToPaginatedResultAsync<TEntity, TDto>(
+        this IQueryable<TEntity> query,
+        int page,
+        int pageSize,
+        Func<TEntity, TDto> mapper,
+        CancellationToken cancellationToken = default)
+    {
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<TDto>
+        {
+            Items = items.Select(mapper).ToList(),
+            TotalCount = totalCount,
+            Page = page,
+            PageSize = pageSize,
+            TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        };
+    }
 }
