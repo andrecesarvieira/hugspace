@@ -49,9 +49,6 @@ using SynQcore.Application.Features.DocumentTemplates.Handlers;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
 using SynQcore.Application.Features.CorporateSearch.Handlers;
-using SynQcore.Application.Features.Moderation.DTOs;
-using SynQcore.Application.Features.Moderation.Queries;
-using SynQcore.Application.Features.Moderation.Handlers;
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -353,10 +350,6 @@ builder.Services.AddScoped<IRequestHandler<GetSearchAnalyticsQuery, SearchAnalyt
 builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<TrendingTopicDto>>, GetTrendingTopicsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto>, GetContentStatsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
-
-// === MODERATION HANDLERS ===
-builder.Services.AddScoped<IRequestHandler<GetModerationAuditLogsQuery, PagedResult<ModerationAuditLogDto>>, ModerationQueryHandler>();
-builder.Services.AddScoped<IRequestHandler<GetModerationDashboardStatsQuery, ModerationDashboardStatsDto>, GetModerationDashboardStatsQueryHandler>();
 
 // === PRIVACY & LGPD HANDLERS ===
 // Privacy Query Handlers

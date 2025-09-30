@@ -1,0 +1,301 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+@using SynQcore.BlazorApp.Services
+@inject IPostService PostService
+
+<article class="simple-post-card">
+    <div class="post-header">
+        <img src="@Post.AuthorAvatar" alt="@Post.AuthorName" class="author-avatar" />
+        <div class="author-info">
+            <a href="/perfil/@GetUserIdFromName(Post.AuthorName)" class="author-name">@Post.AuthorName</a>
+            <div class="author-role">@Post.AuthorRole</div>
+            <div class="post-time">@GetRelativeTime(Post.CreatedAt)</div>
+        </div>
+    </div>
+
+    <div class="post-content">
+        @((MarkupString)FormatContent(Post.Content))
+    </div>
+
+    @if (Post.Tags?.Length > 0)
+    {
+        <div class="post-tags">
+            @foreach (var tag in Post.Tags)
+            {
+                <span class="tag">#@tag</span>
+            }
+        </div>
+    }
+
+    <div class="post-actions">
+        <button class="action-btn @(Post.IsLiked ? "liked" : "")" @onclick="HandleLike" disabled="@isLiking">
+            <i class="fas fa-heart"></i> @Post.LikeCount
+        </button>
+        <button class="action-btn" @onclick="ToggleComments">
+            <i class="fas fa-comment"></i> @Post.CommentCount
+        </button>
+        <button class="action-btn" @onclick="HandleShare">
+            <i class="fas fa-share"></i> @Post.ShareCount
+        </button>
+    </div>
+
+    @if (showComments && Post.Comments?.Count > 0)
+    {
+        <div class="comments-section">
+            @foreach (var comment in Post.Comments.Take(3))
+            {
+                <div class="comment">
+                    <img src="@comment.AuthorAvatar" alt="@comment.AuthorName" class="comment-avatar" />
+                    <div class="comment-content">
+                        <strong>@comment.AuthorName</strong> @comment.Content
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</article>
+
+@code {
+    [Parameter] public PostModel Post { get; set; } = new();
+    [Parameter] public EventCallback<string> OnTagClick { get; set; }
+
+    private bool showComments = false;
+    private bool isLiking = false;
+
+    private async Task HandleLike()
+    {
+        if (isLiking) return;
+
+        isLiking = true;
+        try
+        {
+            if (Post.IsLiked)
+            {
+                var success = await PostService.UnlikePostAsync(Post.Id);
+                if (success)
+                {
+                    Post.IsLiked = false;
+                    Post.LikeCount--;
+                }
+            }
+            else
+            {
+                var success = await PostService.LikePostAsync(Post.Id);
+                if (success)
+                {
+                    Post.IsLiked = true;
+                    Post.LikeCount++;
+                }
+            }
+        }
+        finally
+        {
+            isLiking = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task ToggleComments()
+    {
+        showComments = !showComments;
+
+        if (showComments && (Post.Comments == null || !Post.Comments.Any()))
+        {
+            // Carrega comentários da API
+            Post.Comments = await PostService.GetPostCommentsAsync(Post.Id);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleShare()
+    {
+        // Por enquanto apenas incrementa o contador localmente
+        // Futuramente conectar com API de compartilhamento
+        Post.ShareCount++;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private string GetRelativeTime(DateTime dateTime)
+    {
+        var diff = DateTime.Now - dateTime;
+        if (diff.TotalDays >= 1) return $"{(int)diff.TotalDays}d";
+        if (diff.TotalHours >= 1) return $"{(int)diff.TotalHours}h";
+        return $"{(int)diff.TotalMinutes}m";
+    }
+
+    private string GetUserIdFromName(string authorName)
+    {
+        // Por enquanto, simples conversão do nome para ID
+        // Futuramente vir da API
+        return authorName.ToLower().Replace(" ", "-");
+    }
+
+    private string FormatContent(string content)
+    {
+        // Formato simples para hashtags e links
+        content = System.Text.RegularExpressions.Regex.Replace(content,
+        @"#(\w+)",
+        "<span class=\"hashtag\">#$1</span>");
+
+        return content;
+    }
+
+    public class PostModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = "";
+        public string AuthorRole { get; set; } = "";
+        public string AuthorAvatar { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Title { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
+        public int ShareCount { get; set; }
+        public bool IsLiked { get; set; }
+        public bool IsSaved { get; set; }
+        public bool IsOfficial { get; set; }
+        public bool IsPinned { get; set; }
+        public bool IsBookmarked { get; set; }
+        public string[] Tags { get; set; } = Array.Empty<string>();
+        public List<CommentModel>? Comments { get; set; }
+    }
+
+    public class CommentModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = "";
+        public string AuthorAvatar { get; set; } = "";
+        public string Content { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public bool IsLiked { get; set; }
+    }
+}
+
+<style>
+    .simple-post-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .author-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-name {
+        font-weight: 600;
+        color: #2d3748;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .author-name:hover {
+        color: #667eea;
+    }
+
+    .author-role {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .post-time {
+        color: #a0aec0;
+        font-size: 0.75rem;
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        color: #2d3748;
+    }
+
+    .hashtag {
+        color: #667eea;
+        font-weight: 500;
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        background: #edf2f7;
+        color: #667eea;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        color: #718096;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .action-btn.liked {
+        color: #e53e3e;
+    }
+
+    .comments-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .comment {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .comment-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .comment-content {
+        background: #f7fafc;
+        padding: 0.5rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+    }
+</style>

@@ -57,11 +57,17 @@ public class SynQcoreDbContext : IdentityDbContext<ApplicationUserEntity, Identi
     // Security & Audit (Fase 6)
     public DbSet<AuditLogEntity> AuditLogs => Set<AuditLogEntity>();
 
-    // Privacy & LGPD Compliance (Fase 5)
+    // Privacy & LGPD Compliance (Fase 6.1)
     public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
     public DbSet<DataExportRequest> DataExportRequests => Set<DataExportRequest>();
     public DbSet<DataDeletionRequest> DataDeletionRequests => Set<DataDeletionRequest>();
     public DbSet<PersonalDataCategory> PersonalDataCategories => Set<PersonalDataCategory>();
+
+    // Moderation System (Fase 6.3)
+    public DbSet<ModerationEntity> Moderations => Set<ModerationEntity>();
+    public DbSet<ModerationLogEntity> ModerationLogs => Set<ModerationLogEntity>();
+    public DbSet<ModerationAppealEntity> ModerationAppeals => Set<ModerationAppealEntity>();
+    public DbSet<UserPunishmentEntity> UserPunishments => Set<UserPunishmentEntity>();
 
     // DbSets - Relationships
     public DbSet<EmployeeDepartment> EmployeeDepartments => Set<EmployeeDepartment>();

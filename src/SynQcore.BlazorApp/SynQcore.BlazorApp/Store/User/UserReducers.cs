@@ -13,6 +13,8 @@ public static class UserReducers
     [ReducerMethod]
     public static UserState ReduceStartLoginAction(UserState state, UserActions.StartLoginAction action)
     {
+        Console.WriteLine($"[UserReducer] TESTE: Processando StartLoginAction para: {action.Email}");
+
         return state with
         {
             Status = LoginStatus.LoggingIn,
@@ -26,7 +28,9 @@ public static class UserReducers
     [ReducerMethod]
     public static UserState ReduceLoginSuccessAction(UserState state, UserActions.LoginSuccessAction action)
     {
-        return state with
+        Console.WriteLine($"[UserReducer] Processando LoginSuccessAction para: {action.User.Nome}");
+
+        var newState = state with
         {
             IsAuthenticated = true,
             CurrentUser = action.User,
@@ -39,6 +43,9 @@ public static class UserReducers
             LastLoginAt = DateTime.Now,
             Permissions = action.User.Roles
         };
+
+        Console.WriteLine($"[UserReducer] Estado atualizado - IsAuthenticated: {newState.IsAuthenticated}");
+        return newState;
     }
 
     /// <summary>

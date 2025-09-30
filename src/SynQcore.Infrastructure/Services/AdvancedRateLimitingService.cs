@@ -236,7 +236,7 @@ public partial class AdvancedRateLimitingService : IAdvancedRateLimitingService
         }
     }
 
-    private async Task<RateLimitResult> CheckIpRateLimit(string ipAddress, string endpoint, int limit, CancellationToken cancellationToken)
+    private Task<RateLimitResult> CheckIpRateLimit(string ipAddress, string endpoint, int limit, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var windowStart = now.AddMinutes(-_options.TimeWindowMinutes);
@@ -254,16 +254,16 @@ public partial class AdvancedRateLimitingService : IAdvancedRateLimitingService
         var remaining = Math.Max(0, limit - currentCount);
         var resetTime = requests.Count > 0 ? requests.Min().AddMinutes(_options.TimeWindowMinutes) : now.AddMinutes(_options.TimeWindowMinutes);
 
-        return new RateLimitResult
+        return Task.FromResult(new RateLimitResult
         {
             IsAllowed = currentCount < limit,
             RemainingRequests = remaining,
             ResetTime = resetTime,
             Reason = currentCount >= limit ? $"IP rate limit exceeded: {currentCount}/{limit}" : null
-        };
+        });
     }
 
-    private async Task<RateLimitResult> CheckEndpointRateLimit(string endpoint, int limit, CancellationToken cancellationToken)
+    private Task<RateLimitResult> CheckEndpointRateLimit(string endpoint, int limit, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
         var windowStart = now.AddMinutes(-_options.TimeWindowMinutes);
@@ -281,13 +281,13 @@ public partial class AdvancedRateLimitingService : IAdvancedRateLimitingService
         var remaining = Math.Max(0, limit - currentCount);
         var resetTime = requests.Count > 0 ? requests.Min().AddMinutes(_options.TimeWindowMinutes) : now.AddMinutes(_options.TimeWindowMinutes);
 
-        return new RateLimitResult
+        return Task.FromResult(new RateLimitResult
         {
             IsAllowed = currentCount < limit,
             RemainingRequests = remaining,
             ResetTime = resetTime,
             Reason = currentCount >= limit ? $"Endpoint rate limit exceeded: {currentCount}/{limit}" : null
-        };
+        });
     }
 
     private async Task HandleRateLimitViolation(string ipAddress, string endpoint, string? userId, string reason, CancellationToken cancellationToken)
@@ -354,7 +354,7 @@ public partial class AdvancedRateLimitingService : IAdvancedRateLimitingService
         }
     }
 
-    private bool IsTemporarilyBlocked(string ipAddress)
+    private static bool IsTemporarilyBlocked(string ipAddress)
     {
         if (!_temporaryBlocks.TryGetValue(ipAddress, out var blockUntil))
             return false;

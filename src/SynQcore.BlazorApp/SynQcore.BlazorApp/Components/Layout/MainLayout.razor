@@ -1,16 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿@using SynQcore.BlazorApp.Components
+@inherits LayoutComponentBase
 
 <AppInitializer>
     <div class="page">
-        <div class="sidebar">
-            <NavMenu />
-        </div>
-
         <main>
-            <div class="top-row px-4">
-                <a href="https://github.com/SynQcore/SynQcore" target="_blank">🚀 SynQcore GitHub</a>
-            </div>
-
             <article class="content px-4">
                 @Body
             </article>

@@ -1,0 +1,800 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+@inject IJSRuntime JS
+
+<article class="post-card">
+    <div class="post-header">
+        <div class="author-info">
+            <img src="@Post.AuthorAvatar" alt="@Post.AuthorName" class="author-avatar" />
+            <div class="author-details">
+                <div class="author-name">@Post.AuthorName</div>
+                <div class="author-role">@Post.AuthorRole</div>
+                <div class="post-timestamp">@GetRelativeTime(Post.CreatedAt)</div>
+            </div>
+        </div>
+
+        <div class="post-menu">
+            <button class="menu-btn" @onclick="ToggleMenu">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+
+            @if (showMenu)
+            {
+                <div class="post-menu-dropdown">
+                    <button class="menu-item" @onclick="SavePost">
+                        <i class="fas fa-bookmark"></i> Salvar
+                    </button>
+                    <button class="menu-item" @onclick="ReportPost">
+                        <i class="fas fa-flag"></i> Denunciar
+                    </button>
+                    <button class="menu-item" @onclick="CopyLink">
+                        <i class="fas fa-link"></i> Copiar link
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="post-content">
+        <div class="post-text">
+            @((MarkupString)FormatPostContent(Post.Content))
+        </div>
+
+        @if (Post.Tags?.Any() == true)
+        {
+            <div class="post-tags">
+                @foreach (var tag in Post.Tags)
+                {
+                    <span class="tag" @onclick="() => OnTagClick.InvokeAsync(tag)">
+                        #@tag
+                    </span>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="post-stats">
+        <div class="engagement-stats">
+            @if (Post.LikeCount > 0)
+            {
+                <span class="stat-item" @onclick="ShowLikes">
+                    <i class="fas fa-heart text-red"></i>
+                    @Post.LikeCount @(Post.LikeCount == 1 ? "curtida" : "curtidas")
+                </span>
+            }
+
+            @if (Post.CommentCount > 0)
+            {
+                <span class="stat-item" @onclick="ShowComments">
+                    @Post.CommentCount @(Post.CommentCount == 1 ? "comentário" : "comentários")
+                </span>
+            }
+
+            @if (Post.ShareCount > 0)
+            {
+                <span class="stat-item">
+                    @Post.ShareCount @(Post.ShareCount == 1 ? "compartilhamento" : "compartilhamentos")
+                </span>
+            }
+        </div>
+    </div>
+
+    <div class="post-actions">
+        <button class="action-button @(Post.IsLiked ? "liked" : "")"
+                @onclick="HandleLike"
+                @onmouseenter="() => showLikeAnimation = true"
+                @onmouseleave="() => showLikeAnimation = false">
+            <i class="@(Post.IsLiked ? "fas fa-heart" : "far fa-heart")"></i>
+            <span>Curtir</span>
+
+            @if (showLikeAnimation && !Post.IsLiked)
+            {
+                <div class="like-animation">❤️</div>
+            }
+        </button>
+
+        <button class="action-button" @onclick="HandleComment">
+            <i class="far fa-comment"></i>
+            <span>Comentar</span>
+        </button>
+
+        <button class="action-button" @onclick="HandleShare">
+            <i class="far fa-share-square"></i>
+            <span>Compartilhar</span>
+        </button>
+
+        <button class="action-button" @onclick="ToggleSave">
+            <i class="@(Post.IsSaved ? "fas fa-bookmark" : "far fa-bookmark")"></i>
+            <span>@(Post.IsSaved ? "Salvo" : "Salvar")</span>
+        </button>
+    </div>
+
+    @if (showCommentSection)
+    {
+        <div class="comment-section">
+            <div class="comment-input-area">
+                <img src="/images/default-avatar.png" alt="Seu perfil" class="comment-avatar" />
+                <div class="comment-input-container">
+                    <textarea class="comment-input"
+                              placeholder="Escreva um comentário..."
+                              @bind="newComment"
+                              @onkeypress="HandleCommentKeyPress"
+                              rows="1"></textarea>
+                    <div class="comment-actions">
+                        <button class="emoji-btn" @onclick="ShowEmojiPicker">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button class="send-comment-btn"
+                                @onclick="SendComment"
+                                disabled="@string.IsNullOrWhiteSpace(newComment)">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @if (Post.Comments?.Any() == true)
+            {
+                <div class="comments-list">
+                    @foreach (var comment in Post.Comments.Take(displayedCommentsCount))
+                    {
+                        <div class="comment-item">
+                            <img src="@comment.AuthorAvatar" alt="@comment.AuthorName" class="comment-author-avatar" />
+                            <div class="comment-content">
+                                <div class="comment-bubble">
+                                    <div class="comment-author">@comment.AuthorName</div>
+                                    <div class="comment-text">@comment.Content</div>
+                                </div>
+                                <div class="comment-meta">
+                                    <span class="comment-time">@GetRelativeTime(comment.CreatedAt)</span>
+                                    <button class="comment-like-btn @(comment.IsLiked ? "liked" : "")"
+                                            @onclick="() => ToggleCommentLike(comment.Id)">
+                                        Curtir
+                                    </button>
+                                    <button class="comment-reply-btn" @onclick="() => ReplyToComment(comment.Id)">
+                                        Responder
+                                    </button>
+                                    @if (comment.LikeCount > 0)
+                                    {
+                                        <span class="comment-likes">@comment.LikeCount</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Post.Comments.Count > displayedCommentsCount)
+                    {
+                        <button class="load-more-comments" @onclick="LoadMoreComments">
+                            Ver mais @(Post.Comments.Count - displayedCommentsCount) comentários
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    }
+</article>
+
+@code {
+    [Parameter] public PostModel Post { get; set; } = new();
+    [Parameter] public EventCallback<Guid> OnLike { get; set; }
+    [Parameter] public EventCallback<Guid> OnComment { get; set; }
+    [Parameter] public EventCallback<Guid> OnShare { get; set; }
+    [Parameter] public EventCallback<string> OnTagClick { get; set; }
+
+    private bool showMenu = false;
+    private bool showCommentSection = false;
+    private bool showLikeAnimation = false;
+    private string newComment = "";
+    private int displayedCommentsCount = 3;
+
+    private async Task HandleLike()
+    {
+        await OnLike.InvokeAsync(Post.Id);
+
+        if (Post.IsLiked)
+        {
+            await ShowLikeEffect();
+        }
+    }
+
+    private async Task HandleComment()
+    {
+        showCommentSection = !showCommentSection;
+        await OnComment.InvokeAsync(Post.Id);
+
+        if (showCommentSection)
+        {
+            await Task.Delay(100);
+            await JS.InvokeVoidAsync("focusElement", ".comment-input");
+        }
+    }
+
+    private async Task HandleShare()
+    {
+        await OnShare.InvokeAsync(Post.Id);
+        await ShowShareOptions();
+    }
+
+    private async Task SendComment()
+    {
+        if (string.IsNullOrWhiteSpace(newComment)) return;
+
+        var comment = new CommentModel
+        {
+            Id = Guid.NewGuid(),
+            AuthorName = "Admin", // TODO: Get from auth context
+            AuthorAvatar = "/images/default-avatar.png",
+            Content = newComment.Trim(),
+            CreatedAt = DateTime.Now,
+            LikeCount = 0,
+            IsLiked = false
+        };
+
+        Post.Comments ??= new List<CommentModel>();
+        Post.Comments.Insert(0, comment);
+        Post.CommentCount = Post.Comments.Count;
+
+        newComment = "";
+        StateHasChanged();
+
+        await ShowCommentSentEffect();
+    }
+
+    private async Task HandleCommentKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !e.ShiftKey)
+        {
+            await SendComment();
+        }
+    }
+
+    private void ToggleMenu() => showMenu = !showMenu;
+    private void ToggleSave() => Post.IsSaved = !Post.IsSaved;
+    private void LoadMoreComments() => displayedCommentsCount += 5;
+    private void ShowLikes() { /* TODO: Show likes modal */ }
+    private void ShowComments() => showCommentSection = true;
+    private void SavePost() { /* TODO: Save post */ showMenu = false; }
+    private void ReportPost() { /* TODO: Report post */ showMenu = false; }
+    private async Task CopyLink() { await JS.InvokeVoidAsync("copyToClipboard", $"/post/{Post.Id}"); showMenu = false; }
+    private void ShowEmojiPicker() { /* TODO: Show emoji picker */ }
+    private void ToggleCommentLike(Guid commentId)
+    {
+        var comment = Post.Comments?.FirstOrDefault(c => c.Id == commentId);
+        if (comment != null)
+        {
+            comment.IsLiked = !comment.IsLiked;
+            comment.LikeCount += comment.IsLiked ? 1 : -1;
+        }
+    }
+    private void ReplyToComment(Guid commentId) { /* TODO: Reply to comment */ }
+
+    private async Task ShowLikeEffect()
+    {
+        await JS.InvokeVoidAsync("showLikeEffect", Post.Id);
+    }
+
+    private async Task ShowCommentSentEffect()
+    {
+        await JS.InvokeVoidAsync("showNotification", "Comentário publicado!", "success");
+    }
+
+    private async Task ShowShareOptions()
+    {
+        await JS.InvokeVoidAsync("showShareOptions", Post.Id);
+    }
+
+    private string GetRelativeTime(DateTime dateTime)
+    {
+        var timeSpan = DateTime.Now - dateTime;
+
+        if (timeSpan.TotalMinutes < 1)
+            return "agora";
+        if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes}m";
+        if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours}h";
+        if (timeSpan.TotalDays < 7)
+            return $"{(int)timeSpan.TotalDays}d";
+
+        return dateTime.ToString("dd/MM");
+    }
+
+    private string FormatPostContent(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return "";
+
+        // Convert line breaks to HTML
+        content = content.Replace("\n", "<br>");
+
+        // Convert URLs to links
+        content = System.Text.RegularExpressions.Regex.Replace(content,
+            @"(https?://[^\s]+)",
+            "<a href=\"$1\" target=\"_blank\" class=\"post-link\">$1</a>");
+
+        // Convert @mentions to links
+        content = System.Text.RegularExpressions.Regex.Replace(content,
+            @"@([a-zA-Z0-9_]+)",
+            "<span class=\"mention\" onclick=\"showUserProfile('$1')\">@$1</span>");
+
+        return content;
+    }
+
+    // Nested models
+    public class PostModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = "";
+        public string AuthorRole { get; set; } = "";
+        public string AuthorAvatar { get; set; } = "";
+        public string Content { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
+        public int ShareCount { get; set; }
+        public bool IsLiked { get; set; }
+        public bool IsSaved { get; set; }
+        public string[] Tags { get; set; } = Array.Empty<string>();
+        public List<CommentModel>? Comments { get; set; }
+    }
+
+    public class CommentModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = "";
+        public string AuthorAvatar { get; set; } = "";
+        public string Content { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public bool IsLiked { get; set; }
+    }
+}
+
+<style>
+    .post-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-color: rgba(90, 103, 216, 0.3);
+    }
+
+    .post-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .author-info {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .author-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(90, 103, 216, 0.2);
+    }
+
+    .author-details {
+        flex: 1;
+    }
+
+    .author-name {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 1rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .author-role {
+        color: #718096;
+        font-size: 0.85rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .post-timestamp {
+        color: #a0aec0;
+        font-size: 0.8rem;
+    }
+
+    .post-menu {
+        position: relative;
+    }
+
+    .menu-btn {
+        background: none;
+        border: none;
+        color: #a0aec0;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+
+    .menu-btn:hover {
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .post-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+        min-width: 150px;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: none;
+        border: none;
+        text-align: left;
+        color: #4a5568;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .menu-item:hover {
+        background: #f7fafc;
+        color: #2d3748;
+    }
+
+    .menu-item:first-child {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    .menu-item:last-child {
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+    }
+
+    .post-text {
+        color: #2d3748;
+        line-height: 1.6;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .post-text ::deep(.post-link) {
+        color: #5a67d8;
+        text-decoration: none;
+    }
+
+    .post-text ::deep(.post-link:hover) {
+        text-decoration: underline;
+    }
+
+    .post-text ::deep(.mention) {
+        color: #5a67d8;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .post-text ::deep(.mention:hover) {
+        text-decoration: underline;
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag {
+        background: linear-gradient(135deg, #5a67d8, #667eea);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .tag:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(90, 103, 216, 0.3);
+    }
+
+    .post-stats {
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .engagement-stats {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .stat-item {
+        color: #718096;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .stat-item:hover {
+        color: #4a5568;
+    }
+
+    .text-red {
+        color: #e53e3e;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        padding: 0.75rem;
+        background: none;
+        border: none;
+        border-radius: 0.5rem;
+        color: #718096;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        justify-content: center;
+    }
+
+    .action-button:hover {
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .action-button.liked {
+        color: #e53e3e;
+    }
+
+    .action-button.liked:hover {
+        color: #c53030;
+    }
+
+    .like-animation {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 1.2rem;
+        animation: likeFloat 0.6s ease-out;
+        pointer-events: none;
+    }
+
+    @@keyframes likeFloat {
+        0% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px) scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px) scale(1.1);
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px) scale(1);
+        }
+    }
+
+    .comment-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .comment-input-area {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .comment-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .comment-input-container {
+        flex: 1;
+        position: relative;
+    }
+
+    .comment-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1.5rem;
+        resize: none;
+        font-size: 0.9rem;
+        font-family: inherit;
+        background: #f7fafc;
+        transition: all 0.2s;
+    }
+
+    .comment-input:focus {
+        outline: none;
+        border-color: #5a67d8;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+    }
+
+    .comment-actions {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 0.25rem;
+    }
+
+    .emoji-btn, .send-comment-btn {
+        background: none;
+        border: none;
+        color: #a0aec0;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+
+    .emoji-btn:hover, .send-comment-btn:hover:not(:disabled) {
+        color: #5a67d8;
+        background: rgba(90, 103, 216, 0.1);
+    }
+
+    .send-comment-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .comments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .comment-item {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .comment-author-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-top: 0.25rem;
+    }
+
+    .comment-content {
+        flex: 1;
+    }
+
+    .comment-bubble {
+        background: #f7fafc;
+        border-radius: 1rem;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .comment-author {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .comment-text {
+        color: #4a5568;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .comment-meta {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-left: 1rem;
+    }
+
+    .comment-time {
+        color: #a0aec0;
+        font-size: 0.8rem;
+    }
+
+    .comment-like-btn, .comment-reply-btn {
+        background: none;
+        border: none;
+        color: #a0aec0;
+        font-size: 0.8rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .comment-like-btn:hover, .comment-reply-btn:hover {
+        color: #5a67d8;
+    }
+
+    .comment-like-btn.liked {
+        color: #e53e3e;
+    }
+
+    .comment-likes {
+        color: #a0aec0;
+        font-size: 0.8rem;
+    }
+
+    .load-more-comments {
+        background: none;
+        border: none;
+        color: #5a67d8;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        margin-top: 0.5rem;
+    }
+
+    .load-more-comments:hover {
+        background: rgba(90, 103, 216, 0.1);
+    }
+
+    /* Mobile responsiveness */
+    @@media (max-width: 768px) {
+        .post-card {
+            padding: 1rem;
+            border-radius: 0.75rem;
+        }
+
+        .post-actions {
+            padding: 0.75rem 0 0;
+        }
+
+        .action-group {
+            gap: 1.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .comment-input {
+            font-size: 0.9rem;
+        }
+    }
+</style>

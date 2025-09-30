@@ -1,0 +1,725 @@
+@page "/feed-original"
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Store.User
+@using Fluxor
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject IPostService PostService
+@inject IAuthService AuthService
+@inject IState<UserState> UserState
+@inject NavigationManager Navigation
+
+<div class="feed-container">
+    <!-- Header -->
+    <header class="feed-header">
+        <div class="header-content">
+            <h1>SynQcore Feed</h1>
+
+            @if (UserState.Value.Status == LoginStatus.LoggedIn)
+            {
+                <div class="user-info">
+                    <span>Bem-vindo, <strong>@UserState.Value.CurrentUser?.Nome</strong></span>
+                    <button class="btn btn-outline" @onclick="HandleLogout">Sair</button>
+                </div>
+            }
+            else
+            {
+                <div class="auth-required">
+                    <span>Acesso restrito - Login necessário</span>
+                    <button class="btn btn-primary" @onclick="NavigateToLogin">Fazer Login</button>
+                </div>
+            }
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="feed-main">
+        @if (UserState.Value.Status == LoginStatus.LoggedIn)
+        {
+            <!-- Create Post Section -->
+            <section class="create-post-section">
+                <div class="create-post-card">
+                    <h3>Criar Nova Postagem</h3>
+                    <button class="btn btn-primary" @onclick="ShowCreatePostForm">
+                        <i class="fas fa-plus"></i>
+                        Nova Postagem
+                    </button>
+                </div>
+            </section>
+
+            <!-- Posts Section -->
+            <section class="posts-section">
+                @if (isLoading)
+                {
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Carregando posts...</p>
+                    </div>
+                }
+                else if (posts.Any())
+                {
+                    <div class="posts-list">
+                        @foreach (var post in posts)
+                        {
+                            <article class="post-card">
+                                <header class="post-header">
+                                    <div class="author-info">
+                                        <img src="@(post.AuthorAvatar ?? "/images/default-avatar.png")"
+                                             alt="@post.AuthorName" class="author-avatar" />
+                                        <div class="author-details">
+                                            <h4>@post.AuthorName</h4>
+                                            <span class="post-time">@post.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                        </div>
+                                    </div>
+                                </header>
+
+                                <div class="post-content">
+                                    <p>@post.Content</p>
+
+                                    @if (post.Tags?.Any() == true)
+                                    {
+                                        <div class="post-tags">
+                                            @foreach (var tag in post.Tags)
+                                            {
+                                                <span class="tag">@tag</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+
+                                <footer class="post-actions">
+                                    <button class="action-btn @(post.IsLiked ? "liked" : "")"
+                                            @onclick="() => ToggleLike(post.Id)">
+                                        <i class="fas fa-heart"></i>
+                                        <span>@post.LikeCount</span>
+                                    </button>
+
+                                    <button class="action-btn" @onclick="() => ShowComments(post.Id)">
+                                        <i class="fas fa-comment"></i>
+                                        <span>@post.CommentCount</span>
+                                    </button>
+
+                                    <button class="action-btn" @onclick="() => SharePost(post.Id)">
+                                        <i class="fas fa-share"></i>
+                                        <span>@post.ShareCount</span>
+                                    </button>
+                                </footer>
+                            </article>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-stream"></i>
+                        <h3>Nenhum post encontrado</h3>
+                        <p>Seja o primeiro a compartilhar algo com a equipe!</p>
+                        <button class="btn btn-primary" @onclick="ShowCreatePostForm">
+                            <i class="fas fa-plus"></i>
+                            Criar Primeira Postagem
+                        </button>
+                    </div>
+                }
+            </section>
+        }
+        else
+        {
+            <!-- Not Authenticated State -->
+            <section class="auth-required-state">
+                <div class="auth-message">
+                    <i class="fas fa-lock"></i>
+                    <h2>Área Restrita</h2>
+                    <p>Você precisa estar logado para acessar o feed da empresa.</p>
+                    <button class="btn btn-primary" @onclick="NavigateToLogin">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Fazer Login
+                    </button>
+                </div>
+            </section>
+        }
+    </main>
+</div>
+
+<!-- Create Post Modal -->
+@if (showCreatePostModal)
+{
+    <div class="modal-overlay" @onclick="HideCreatePostForm">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <header class="modal-header">
+                <h3>Criar Nova Postagem</h3>
+                <button class="btn-close" @onclick="HideCreatePostForm">
+                    <i class="fas fa-times"></i>
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <form @onsubmit="HandleCreatePost" @onsubmit:preventDefault="true">
+                    <div class="form-group">
+                        <label for="post-content">Conteúdo da Postagem</label>
+                        <textarea id="post-content" @bind="newPostContent"
+                                placeholder="Compartilhe algo interessante com a equipe..."
+                                rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="post-tags">Tags (opcional)</label>
+                        <input id="post-tags" type="text" @bind="newPostTags"
+                               placeholder="Ex: #inovação #teamwork #desenvolvimento" />
+                        <small>Separe as tags com espaços</small>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" @onclick="HideCreatePostForm">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" disabled="@isCreatingPost">
+                            @if (isCreatingPost)
+                            {
+                                <span>Publicando...</span>
+                            }
+                            else
+                            {
+                                <span>Publicar</span>
+                            }
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .feed-container {
+        min-height: 100vh;
+        background: #f5f7fa;
+    }
+
+    .feed-header {
+        background: white;
+        border-bottom: 1px solid #e1e5e9;
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-content h1 {
+        color: #2d3748;
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .user-info, .auth-required {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .feed-main {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+
+    .create-post-section {
+        margin-bottom: 2rem;
+    }
+
+    .create-post-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .create-post-card h3 {
+        margin: 0;
+        color: #2d3748;
+    }
+
+    .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .post-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .post-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .author-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .author-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-details h4 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 1rem;
+    }
+
+    .post-time {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .post-content {
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        color: #4a5568;
+    }
+
+    .post-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+    }
+
+    .tag {
+        background: #e2e8f0;
+        color: #4a5568;
+        padding: 0.25rem 0.5rem;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .action-btn {
+        background: none;
+        border: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .action-btn:hover {
+        background: #f7fafc;
+        color: #2d3748;
+    }
+
+    .action-btn.liked {
+        color: #e53e3e;
+    }
+
+    .loading-state, .empty-state, .auth-required-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .loading-state .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .empty-state i, .auth-required-state i {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3, .auth-required-state h2 {
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p, .auth-required-state p {
+        color: #718096;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #5a67d8;
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+
+    .btn-outline:hover {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 2rem;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #2d3748;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: #718096;
+        border-radius: 4px;
+    }
+
+    .btn-close:hover {
+        background: #f7fafc;
+        color: #2d3748;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #2d3748;
+    }
+
+    .form-group textarea,
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s ease;
+        resize: vertical;
+    }
+
+    .form-group textarea:focus,
+    .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .form-group small {
+        color: #718096;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .header-content {
+            padding: 0 1rem;
+        }
+
+        .feed-main {
+            padding: 0 1rem;
+        }
+
+        .user-info, .auth-required {
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: flex-end;
+        }
+
+        .modal-overlay {
+            padding: 1rem;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@code {
+    private List<PostModel> posts = new();
+    private bool isLoading = true;
+    private bool showCreatePostModal = false;
+    private bool isCreatingPost = false;
+    private string newPostContent = string.Empty;
+    private string newPostTags = string.Empty;
+
+    public class PostModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = string.Empty;
+        public string AuthorAvatar { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
+        public int ShareCount { get; set; }
+        public bool IsLiked { get; set; }
+        public string[] Tags { get; set; } = Array.Empty<string>();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Verificar se usuário está autenticado
+        if (UserState.Value.Status != LoginStatus.LoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadPosts();
+    }
+
+    private async Task LoadPosts()
+    {
+        isLoading = true;
+        try
+        {
+            var apiPosts = await PostService.GetFeedPostsAsync();
+            posts = apiPosts.Select(MapFromApiPost).ToList();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "Erro ao carregar posts:", ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private PostModel MapFromApiPost(SimplePostCard.PostModel apiPost)
+    {
+        return new PostModel
+        {
+            Id = apiPost.Id,
+            AuthorName = apiPost.AuthorName,
+            AuthorAvatar = apiPost.AuthorAvatar,
+            Content = apiPost.Content,
+            CreatedAt = apiPost.CreatedAt,
+            LikeCount = apiPost.LikeCount,
+            CommentCount = apiPost.CommentCount,
+            ShareCount = apiPost.ShareCount,
+            IsLiked = apiPost.IsLiked,
+            Tags = apiPost.Tags
+        };
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/");
+    }
+
+    private void ShowCreatePostForm()
+    {
+        showCreatePostModal = true;
+        newPostContent = string.Empty;
+        newPostTags = string.Empty;
+    }
+
+    private void HideCreatePostForm()
+    {
+        showCreatePostModal = false;
+    }
+
+    private async Task HandleCreatePost()
+    {
+        if (string.IsNullOrWhiteSpace(newPostContent))
+            return;
+
+        isCreatingPost = true;
+        try
+        {
+            var tags = newPostTags
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(tag => tag.StartsWith("#") ? tag : $"#{tag}")
+                .ToArray();
+
+            var request = new CreatePostRequest
+            {
+                Content = newPostContent,
+                Tags = tags
+            };
+
+            await PostService.CreatePostAsync(request);
+            await LoadPosts(); // Recarregar posts
+            HideCreatePostForm();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "Erro ao criar post:", ex.Message);
+        }
+        finally
+        {
+            isCreatingPost = false;
+        }
+    }
+
+    private async Task ToggleLike(Guid postId)
+    {
+        try
+        {
+            var post = posts.FirstOrDefault(p => p.Id == postId);
+            if (post != null)
+            {
+                if (post.IsLiked)
+                {
+                    await PostService.UnlikePostAsync(postId);
+                    post.IsLiked = false;
+                    post.LikeCount = Math.Max(0, post.LikeCount - 1);
+                }
+                else
+                {
+                    await PostService.LikePostAsync(postId);
+                    post.IsLiked = true;
+                    post.LikeCount++;
+                }
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("console.error", "Erro ao curtir post:", ex.Message);
+        }
+    }
+
+    private void ShowComments(Guid postId)
+    {
+        // TODO: Implementar visualização de comentários
+        JS.InvokeVoidAsync("console.log", $"Mostrar comentários do post {postId}");
+    }
+
+    private void SharePost(Guid postId)
+    {
+        // TODO: Implementar compartilhamento
+        JS.InvokeVoidAsync("console.log", $"Compartilhar post {postId}");
+    }
+}

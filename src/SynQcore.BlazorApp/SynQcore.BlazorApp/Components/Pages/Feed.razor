@@ -1,0 +1,1514 @@
+@page "/feed"
+@rendermode InteractiveServer
+@using Fluxor
+@using SynQcore.BlazorApp.Store.User
+@using SynQcore.BlazorApp.Services
+@inject IState<UserState> UserState
+@inject ILocalAuthService LocalAuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="feed-container">
+    <!-- Header Principal -->
+    <header class="main-header">
+        <div class="header-content">
+            <!-- Logo e Branding -->
+            <div class="brand-section">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <span class="brand-name">SynQcore</span>
+                </div>
+                <span class="brand-tagline">Rede Social Corporativa</span>
+            </div>
+
+            <!-- Barra de Pesquisa Global -->
+            <div class="search-section">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text"
+                           class="search-input"
+                           placeholder="Pesquisar posts, pessoas, tags..."
+                           @bind="searchQuery"
+                           @onkeypress="@(async (e) => { if (e.Key == "Enter") await HandleSearch(); })" />
+                    <div class="search-filters">
+                        <button class="filter-btn @(searchFilter == "all" ? "active" : "")" @onclick="OnFilterAll">
+                            <i class="fas fa-globe"></i>
+                            Tudo
+                        </button>
+                        <button class="filter-btn @(searchFilter == "posts" ? "active" : "")" @onclick="OnFilterPosts">
+                            <i class="fas fa-file-alt"></i>
+                            Posts
+                        </button>
+                        <button class="filter-btn @(searchFilter == "people" ? "active" : "")" @onclick="OnFilterPeople">
+                            <i class="fas fa-users"></i>
+                            Pessoas
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navegação e Perfil -->
+            <div class="nav-section">
+                <!-- Notificações -->
+                <button class="nav-btn" @onclick="ShowNotifications" title="Notificações">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+
+                <!-- Mensagens -->
+                <button class="nav-btn" @onclick="ShowMessages" title="Mensagens">
+                    <i class="fas fa-envelope"></i>
+                    <span class="message-badge">1</span>
+                </button>
+
+                <!-- Perfil do Usuário -->
+                @if (currentUser != null)
+                {
+                    <div class="user-profile-dropdown">
+                        <button class="profile-btn" @onclick="ToggleProfileMenu">
+                            <img src="/images/default-avatar.png" alt="@currentUser.Nome" class="profile-avatar" />
+                            <div class="profile-info">
+                                <span class="profile-name">@currentUser.Nome</span>
+                                <span class="profile-role">@currentUser.Cargo</span>
+                            </div>
+                            <i class="fas fa-chevron-down profile-arrow"></i>
+                        </button>
+
+                        <!-- Menu Dropdown do Perfil -->
+                        @if (showProfileMenu)
+                        {
+                            <div class="profile-menu">
+                                <a href="/perfil" class="menu-item">
+                                    <i class="fas fa-user"></i>
+                                    Meu Perfil
+                                </a>
+                                <a href="/configuracoes" class="menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Configurações
+                                </a>
+                                <a href="/ajuda" class="menu-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    Ajuda
+                                </a>
+                                <hr class="menu-divider">
+                                <button class="menu-item logout-btn" @onclick="HandleLogout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Sair
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub-navegação Contextual -->
+    <nav class="sub-navigation">
+        <div class="nav-content">
+            <div class="nav-tabs">
+                <button class="nav-tab @(activeTab == "feed" ? "active" : "")" @onclick="OnTabFeed">
+                    <i class="fas fa-home"></i>
+                    <span>Feed</span>
+                </button>
+                <button class="nav-tab @(activeTab == "threads" ? "active" : "")" @onclick="OnTabThreads">
+                    <i class="fas fa-comments"></i>
+                    <span>Discussões</span>
+                </button>
+                <button class="nav-tab @(activeTab == "endorsements" ? "active" : "")" @onclick="OnTabEndorsements">
+                    <i class="fas fa-award"></i>
+                    <span>Endorsements</span>
+                </button>
+                <button class="nav-tab @(activeTab == "people" ? "active" : "")" @onclick="OnTabPeople">
+                    <i class="fas fa-users"></i>
+                    <span>Pessoas</span>
+                </button>
+                <button class="nav-tab @(activeTab == "analytics" ? "active" : "")" @onclick="OnTabAnalytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </button>
+            </div>
+
+            <!-- Ações Rápidas -->
+            <div class="quick-actions">
+                <button class="action-btn primary" @onclick="ShowCreatePostForm">
+                    <i class="fas fa-plus"></i>
+                    Novo Post
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="feed-main">
+        <!-- Create Post Section -->
+        <section class="create-post-section">
+            <div class="create-post-card">
+                <div class="post-input">
+                    <img src="/images/default-avatar.png" alt="Seu avatar" class="input-avatar" />
+                    <button class="post-input-field" @onclick="ShowCreatePostForm">
+                        <span>O que você gostaria de compartilhar, @(currentUser?.Nome?.Split(' ')[0] ?? "Usuário")?</span>
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="post-actions">
+                    <button class="action-button" @onclick="ShowCreatePostForm">
+                        <i class="fas fa-image"></i>
+                        Foto/Vídeo
+                    </button>
+                    <button class="action-button" @onclick="ShowCreatePostForm">
+                        <i class="fas fa-poll"></i>
+                        Enquete
+                    </button>
+                    <button class="action-button" @onclick="ShowCreatePostForm">
+                        <i class="fas fa-lightbulb"></i>
+                        Ideia
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Posts Section -->
+        <section class="posts-section">
+            @if (isLoading)
+            {
+                <div class="loading-state">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <p>Carregando feed...</p>
+                </div>
+            }
+            else if (posts.Any())
+            {
+                <div class="posts-list">
+                    @foreach (var post in posts)
+                    {
+                        <article class="post-card">
+                            <header class="post-header">
+                                <div class="author-info">
+                                    <img src="@(post.AuthorAvatar ?? "/images/default-avatar.png")"
+                                         alt="@post.AuthorName" class="author-avatar" />
+                                    <div class="author-details">
+                                        <h4 class="author-name">@post.AuthorName</h4>
+                                        <div class="post-meta">
+                                            <span class="post-time">@GetTimeAgo(post.CreatedAt)</span>
+                                            <span class="post-department">Tecnologia</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="post-menu">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </header>
+
+                            <div class="post-content">
+                                <p>@post.Content</p>
+
+                                @if (post.Tags?.Any() == true)
+                                {
+                                    <div class="post-tags">
+                                        @foreach (var tag in post.Tags)
+                                        {
+                                            <span class="tag">@tag</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            <footer class="post-engagement">
+                                <div class="engagement-stats">
+                                    @if (post.LikeCount > 0)
+                                    {
+                                        <span class="stat">
+                                            <i class="fas fa-heart text-red"></i>
+                                            @post.LikeCount curtidas
+                                        </span>
+                                    }
+                                    @if (post.CommentCount > 0)
+                                    {
+                                        <span class="stat">@post.CommentCount comentários</span>
+                                    }
+                                    @if (post.ShareCount > 0)
+                                    {
+                                        <span class="stat">@post.ShareCount compartilhamentos</span>
+                                    }
+                                </div>
+
+                                <div class="engagement-actions">
+                                    <button class="engagement-btn @(post.IsLiked ? "liked" : "")"
+                                            @onclick="() => ToggleLike(post.Id)">
+                                        <i class="fas fa-heart"></i>
+                                        <span>Curtir</span>
+                                    </button>
+
+                                    <button class="engagement-btn" @onclick="() => ShowComments(post.Id)">
+                                        <i class="fas fa-comment"></i>
+                                        <span>Comentar</span>
+                                    </button>
+
+                                    <button class="engagement-btn" @onclick="() => SharePost(post.Id)">
+                                        <i class="fas fa-share"></i>
+                                        <span>Compartilhar</span>
+                                    </button>
+
+                                    <button class="engagement-btn">
+                                        <i class="fas fa-bookmark"></i>
+                                        <span>Salvar</span>
+                                    </button>
+                                </div>
+                            </footer>
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-stream"></i>
+                    </div>
+                    <h3>Bem-vindo ao SynQcore!</h3>
+                    <p>Ainda não há posts no feed. Seja o primeiro a compartilhar algo interessante com a equipe!</p>
+                    <button class="btn btn-primary" @onclick="ShowCreatePostForm">
+                        <i class="fas fa-plus"></i>
+                        Criar Primeira Postagem
+                    </button>
+                </div>
+            }
+        </section>
+    </main>
+</div>
+
+<!-- Floating Action Button -->
+<div class="fab-container">
+    <button class="fab-main @(showFabMenu ? "active" : "")" @onclick="ToggleFabMenu">
+        <i class="fas @(showFabMenu ? "fa-times" : "fa-plus")"></i>
+    </button>
+
+    @if (showFabMenu)
+    {
+        <div class="fab-menu">
+            <button class="fab-action" @onclick="ShowCreatePostForm" title="Novo Post">
+                <i class="fas fa-file-alt"></i>
+                <span>Post</span>
+            </button>
+            <button class="fab-action" @onclick="CreateDiscussion" title="Nova Discussão">
+                <i class="fas fa-comments"></i>
+                <span>Discussão</span>
+            </button>
+            <button class="fab-action" @onclick="CreateEndorsement" title="Endorsement">
+                <i class="fas fa-award"></i>
+                <span>Endorsement</span>
+            </button>
+            <button class="fab-action" @onclick="CreateAnnouncement" title="Comunicado">
+                <i class="fas fa-bullhorn"></i>
+                <span>Comunicado</span>
+            </button>
+        </div>
+    }
+</div>
+
+<!-- Create Post Modal -->
+@if (showCreatePostModal)
+{
+    <div class="modal-overlay" @onclick="HideCreatePostForm">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <header class="modal-header">
+                <h3>Criar Postagem</h3>
+                <button class="btn-close" @onclick="HideCreatePostForm">
+                    <i class="fas fa-times"></i>
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <div class="post-author">
+                    <img src="/images/default-avatar.png" alt="Seu avatar" class="author-avatar-modal" />
+                    <div class="author-info-modal">
+                        <strong>@(currentUser?.Nome ?? "Usuário")</strong>
+                        <span>@(currentUser?.Cargo ?? "Cargo")</span>
+                    </div>
+                </div>
+
+                <form @onsubmit="HandleCreatePost" @onsubmit:preventDefault="true">
+                    <div class="form-group">
+                        <textarea @bind="newPostContent"
+                                placeholder="Compartilhe uma atualização, conquista ou ideia com a equipe..."
+                                rows="4"
+                                maxlength="2000"
+                                required></textarea>
+                        <div class="char-counter">@(newPostContent?.Length ?? 0)/2000</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-hashtag"></i>
+                            Tags (opcional)
+                        </label>
+                        <input type="text" @bind="newPostTags"
+                               placeholder="Ex: #inovação #teamwork #desenvolvimento"
+                               maxlength="200" />
+                        <small>Ajude outros a encontrar seu conteúdo</small>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" @onclick="HideCreatePostForm">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary" disabled="@(isCreatingPost || string.IsNullOrWhiteSpace(newPostContent))">
+                            @if (isCreatingPost)
+                            {
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <span>Publicando...</span>
+                            }
+                            else
+                            {
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Publicar</span>
+                            }
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    .feed-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 100%);
+    }
+
+    /* ===== HEADER PRINCIPAL ===== */
+    .main-header {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    /* ===== BRANDING ===== */
+    .brand-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d3748;
+    }
+
+    .logo i {
+        color: #667eea;
+        font-size: 1.8rem;
+    }
+
+    .brand-name {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .brand-tagline {
+        font-size: 0.8rem;
+        color: #718096;
+        font-weight: 500;
+    }
+
+    /* ===== PESQUISA ===== */
+    .search-section {
+        flex: 1;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .search-container {
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 24px;
+        font-size: 0.95rem;
+        background: #f7fafc;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        background: white;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #a0aec0;
+        font-size: 1rem;
+    }
+
+    .search-filters {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        justify-content: center;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 16px;
+        background: #e2e8f0;
+        color: #4a5568;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-btn.active {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .filter-btn:hover:not(.active) {
+        background: #cbd5e0;
+    }
+
+    /* ===== NAVEGAÇÃO ===== */
+    .nav-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .nav-btn {
+        position: relative;
+        background: none;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 12px;
+        cursor: pointer;
+        color: #718096;
+        font-size: 1.2rem;
+        transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+        background: #f7fafc;
+        color: #667eea;
+    }
+
+    .notification-badge, .message-badge {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background: #e53e3e;
+        color: white;
+        font-size: 0.7rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 10px;
+        min-width: 1.2rem;
+        text-align: center;
+    }
+
+    /* ===== PERFIL DROPDOWN ===== */
+    .user-profile-dropdown {
+        position: relative;
+    }
+
+    .profile-btn {
+        background: none;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .profile-btn:hover {
+        border-color: #cbd5e0;
+        background: #f7fafc;
+    }
+
+    .profile-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .profile-info {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .profile-name {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.9rem;
+    }
+
+    .profile-role {
+        color: #718096;
+        font-size: 0.8rem;
+    }
+
+    .profile-arrow {
+        color: #a0aec0;
+        font-size: 0.8rem;
+        transition: transform 0.2s ease;
+    }
+
+    .profile-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 0.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid #e2e8f0;
+        min-width: 200px;
+        z-index: 1001;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        color: #4a5568;
+        text-decoration: none;
+        border: none;
+        background: none;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .menu-item:hover {
+        background: #f7fafc;
+        color: #667eea;
+    }
+
+    .menu-item:first-child {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .menu-item:last-child {
+        border-radius: 0 0 12px 12px;
+    }
+
+    .menu-divider {
+        border: none;
+        height: 1px;
+        background: #e2e8f0;
+        margin: 0;
+    }
+
+    .logout-btn {
+        color: #e53e3e !important;
+    }
+
+    /* ===== SUB-NAVEGAÇÃO ===== */
+    .sub-navigation {
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 88px;
+        z-index: 999;
+    }
+
+    .nav-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-tabs {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .nav-tab {
+        background: none;
+        border: none;
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #718096;
+        font-weight: 500;
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .nav-tab:hover {
+        color: #667eea;
+        background: #f7fafc;
+    }
+
+    .nav-tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+        background: linear-gradient(to bottom, rgba(102, 126, 234, 0.05), transparent);
+    }
+
+    .quick-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .action-btn.primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .action-btn.primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* ===== FLOATING ACTION BUTTON ===== */
+    .fab-container {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+    }
+
+    .fab-main {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .fab-main:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 48px rgba(102, 126, 234, 0.5);
+    }
+
+    .fab-main.active {
+        transform: rotate(45deg);
+    }
+
+    .fab-menu {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        animation: fabMenuSlide 0.3s ease;
+    }
+
+    @@keyframes fabMenuSlide {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fab-action {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-radius: 50px;
+        cursor: pointer;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        color: #4a5568;
+        font-weight: 500;
+    }
+
+    .fab-action:hover {
+        background: #667eea;
+        color: white;
+        transform: translateX(-5px);
+    }
+
+    .fab-action i {
+        font-size: 1.2rem;
+        min-width: 20px;
+    }
+
+    /* ===== CONTEÚDO PRINCIPAL ===== */
+    .feed-main {
+        max-width: 680px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .create-post-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .create-post-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .post-input {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .input-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .post-input-field {
+        flex: 1;
+        background: #f7fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 25px;
+        padding: 0.75rem 1.25rem;
+        text-align: left;
+        color: #718096;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .post-input-field:hover {
+        border-color: #cbd5e0;
+        background: #edf2f7;
+    }
+
+    .post-actions {
+        display: flex;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .action-button {
+        flex: 1;
+        background: none;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #718096;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .action-button:hover {
+        background: #f7fafc;
+        color: #667eea;
+    }
+
+    /* ===== POSTS ===== */
+    .posts-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .post-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .post-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .loading-state, .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .loading-spinner {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+        color: #2d3748;
+        margin-bottom: 0.75rem;
+        font-size: 1.5rem;
+    }
+
+    .empty-state p {
+        color: #718096;
+        margin-bottom: 2rem;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* ===== BOTÕES ===== */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: #4a5568;
+    }
+
+    .btn-secondary:hover {
+        background: #cbd5e0;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 2rem;
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 1.3rem;
+        font-weight: 700;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+        color: #a0aec0;
+        border-radius: 8px;
+        font-size: 1.2rem;
+    }
+
+    .btn-close:hover {
+        background: #f7fafc;
+        color: #718096;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .post-author {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .author-avatar-modal {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-info-modal {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .author-info-modal strong {
+        color: #2d3748;
+    }
+
+    .author-info-modal span {
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-group textarea,
+    .form-group input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    .form-group textarea:focus,
+    .form-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .char-counter {
+        text-align: right;
+        color: #a0aec0;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-group small {
+        color: #718096;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+
+    /* ===== RESPONSIVO ===== */
+    @@media (max-width: 768px) {
+        .header-content {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .search-filters {
+            flex-wrap: wrap;
+        }
+
+        .nav-section {
+            justify-content: center;
+        }
+
+        .nav-content {
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .nav-tabs {
+            overflow-x: auto;
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .nav-tab {
+            white-space: nowrap;
+            min-width: auto;
+        }
+
+        .feed-main {
+            padding: 0 1rem;
+        }
+
+        .fab-container {
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        .fab-main {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+
+        .modal-overlay {
+            padding: 1rem;
+        }
+
+        .modal-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+
+@code {
+    private UserInfo? currentUser;
+    private bool isLocalAuthenticated = false;
+    private List<PostModel> posts = new();
+    private bool isLoading = true;
+    private bool showCreatePostModal = false;
+    private bool isCreatingPost = false;
+    private string newPostContent = string.Empty;
+    private string newPostTags = string.Empty;
+
+    // Navegação
+    private string activeTab = "feed";
+    private bool showProfileMenu = false;
+    private bool showFabMenu = false;
+
+    // Pesquisa
+    private string searchQuery = string.Empty;
+    private string searchFilter = "all";
+
+    public class PostModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = string.Empty;
+        public string AuthorAvatar { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
+        public int ShareCount { get; set; }
+        public bool IsLiked { get; set; }
+        public string[] Tags { get; set; } = Array.Empty<string>();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("[FEED] OnInitializedAsync iniciado");
+
+        // Pequeno delay para garantir que LocalStorage foi atualizado após login
+        await Task.Delay(100);
+
+        // Verificar autenticação
+        isLocalAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
+
+        Console.WriteLine($"[FEED] Status de autenticação verificado - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
+
+        // Se não estiver autenticado por NENHUM método, redirecionar para login
+        if (!UserState.Value.IsAuthenticated && !isLocalAuthenticated)
+        {
+            Console.WriteLine("[FEED] Usuário não autenticado em ambos os sistemas - redirecionando para login");
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        Console.WriteLine($"[FEED] Autenticação OK - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
+
+        // Tentar obter usuário do Fluxor primeiro
+        if (UserState.Value.IsAuthenticated && UserState.Value.CurrentUser != null)
+        {
+            currentUser = UserState.Value.CurrentUser;
+            Console.WriteLine("[FEED] Usuário obtido do Fluxor State");
+        }
+        else if (isLocalAuthenticated)
+        {
+            // Fallback para LocalAuth
+            currentUser = await LocalAuthService.GetCurrentUserAsync();
+            Console.WriteLine("[FEED] Usuário obtido do LocalAuth");
+        }
+
+        Console.WriteLine($"[FEED] Feed carregado - User: {currentUser?.Nome}");
+
+        LoadPosts();
+    }
+
+    private void LoadPosts()
+    {
+        isLoading = true;
+        try
+        {
+            // TODO: Integrar com API real para carregar posts
+            // Exemplo: posts = await PostService.GetFeedPostsAsync();
+
+            // Por enquanto, lista vazia - aguardando integração com API
+            posts = new List<PostModel>();
+
+            Console.WriteLine("[FEED] Posts carregados da API (implementação pendente)");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao carregar posts: {ex.Message}");
+            posts = new List<PostModel>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }    private async Task HandleLogout()
+    {
+        try
+        {
+            Console.WriteLine("[FEED] Iniciando logout...");
+
+            // Logout do LocalAuth
+            await LocalAuthService.LogoutAsync();
+
+            Console.WriteLine("[FEED] Logout concluído - redirecionando para login");
+            Navigation.NavigateTo("/login", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro durante logout: {ex.Message}");
+        }
+    }
+
+    private void ShowCreatePostForm()
+    {
+        showCreatePostModal = true;
+        newPostContent = string.Empty;
+        newPostTags = string.Empty;
+    }
+
+    private void HideCreatePostForm()
+    {
+        showCreatePostModal = false;
+    }
+
+    private async Task HandleCreatePost()
+    {
+        if (string.IsNullOrWhiteSpace(newPostContent))
+            return;
+
+        isCreatingPost = true;
+        try
+        {
+            await Task.Delay(1500); // Simular criação
+
+            var tags = newPostTags
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(tag => tag.StartsWith("#") ? tag : $"#{tag}")
+                .ToArray();
+
+            var newPost = new PostModel
+            {
+                Id = Guid.NewGuid(),
+                AuthorName = currentUser?.Nome ?? "Usuário",
+                AuthorAvatar = "/images/default-avatar.png",
+                Content = newPostContent,
+                CreatedAt = DateTime.Now,
+                LikeCount = 0,
+                CommentCount = 0,
+                ShareCount = 0,
+                IsLiked = false,
+                Tags = tags
+            };
+
+            posts.Insert(0, newPost);
+            HideCreatePostForm();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao criar post: {ex.Message}");
+        }
+        finally
+        {
+            isCreatingPost = false;
+        }
+    }
+
+    private void ToggleLike(Guid postId)
+    {
+        try
+        {
+            var post = posts.FirstOrDefault(p => p.Id == postId);
+            if (post != null)
+            {
+                if (post.IsLiked)
+                {
+                    post.IsLiked = false;
+                    post.LikeCount = Math.Max(0, post.LikeCount - 1);
+                }
+                else
+                {
+                    post.IsLiked = true;
+                    post.LikeCount++;
+                }
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao curtir post: {ex.Message}");
+        }
+    }
+
+    private async Task ShowComments(Guid postId)
+    {
+        await JS.InvokeVoidAsync("console.log", $"Mostrar comentários do post {postId}");
+    }
+
+    private async Task SharePost(Guid postId)
+    {
+        await JS.InvokeVoidAsync("console.log", $"Compartilhar post {postId}");
+    }
+
+    private string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.Now - dateTime;
+
+        if (timeSpan.TotalMinutes < 1)
+            return "agora";
+        if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes} min";
+        if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours}h";
+        if (timeSpan.TotalDays < 7)
+            return $"{(int)timeSpan.TotalDays} dias";
+
+        return dateTime.ToString("dd/MM");
+    }
+
+    // Métodos de Navegação
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+        Console.WriteLine($"[NAVIGATION] Aba ativa alterada para: {tab}");
+
+        // TODO: Implementar navegação real para diferentes seções
+        switch (tab)
+        {
+            case "threads":
+                Navigation.NavigateTo("/threads");
+                break;
+            case "endorsements":
+                Navigation.NavigateTo("/endorsements");
+                break;
+            case "people":
+                Navigation.NavigateTo("/people");
+                break;
+            case "analytics":
+                Navigation.NavigateTo("/analytics");
+                break;
+            default:
+                // Permanecer no feed
+                break;
+        }
+    }
+
+    private void ToggleProfileMenu()
+    {
+        showProfileMenu = !showProfileMenu;
+    }
+
+    // Métodos de Pesquisa
+    private async Task HandleSearch()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+            return;
+
+        Console.WriteLine($"[SEARCH] Pesquisando: '{searchQuery}' com filtro: {searchFilter}");
+
+        // TODO: Implementar pesquisa real
+        await JS.InvokeVoidAsync("console.log", $"Pesquisar: {searchQuery}");
+    }
+
+    private void SetSearchFilter(string filter)
+    {
+        searchFilter = filter;
+        Console.WriteLine($"[SEARCH] Filtro alterado para: {filter}");
+    }
+
+    // Métodos de Notificação
+    private async Task ShowNotifications()
+    {
+        Console.WriteLine("[NOTIFICATIONS] Abrindo notificações");
+        // TODO: Implementar painel de notificações
+        await JS.InvokeVoidAsync("console.log", "Mostrar notificações");
+    }
+
+    private async Task ShowMessages()
+    {
+        Console.WriteLine("[MESSAGES] Abrindo mensagens");
+        // TODO: Implementar painel de mensagens
+        await JS.InvokeVoidAsync("console.log", "Mostrar mensagens");
+    }
+
+    // Métodos do FAB
+    private void ToggleFabMenu()
+    {
+        showFabMenu = !showFabMenu;
+    }
+
+    private async Task CreateDiscussion()
+    {
+        showFabMenu = false;
+        Console.WriteLine("[FAB] Criar nova discussão");
+        // TODO: Implementar criação de discussão
+        await JS.InvokeVoidAsync("console.log", "Criar discussão");
+    }
+
+    private async Task CreateEndorsement()
+    {
+        showFabMenu = false;
+        Console.WriteLine("[FAB] Criar endorsement");
+        // TODO: Implementar criação de endorsement
+        await JS.InvokeVoidAsync("console.log", "Criar endorsement");
+    }
+
+    private async Task CreateAnnouncement()
+    {
+        showFabMenu = false;
+        Console.WriteLine("[FAB] Criar comunicado");
+        // TODO: Implementar criação de comunicado
+        await JS.InvokeVoidAsync("console.log", "Criar comunicado");
+    }
+
+    // Métodos para navegação por abas
+    private void OnTabFeed() => SetActiveTab("feed");
+    private void OnTabThreads() => SetActiveTab("threads");
+    private void OnTabEndorsements() => SetActiveTab("endorsements");
+    private void OnTabPeople() => SetActiveTab("people");
+    private void OnTabAnalytics() => SetActiveTab("analytics");
+
+    // Métodos para filtros de pesquisa
+    private void OnFilterAll() => SetSearchFilter("all");
+    private void OnFilterPosts() => SetSearchFilter("posts");
+    private void OnFilterPeople() => SetSearchFilter("people");
+}

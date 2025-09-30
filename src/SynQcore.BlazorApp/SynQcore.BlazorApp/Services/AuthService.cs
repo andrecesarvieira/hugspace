@@ -7,7 +7,23 @@ namespace SynQcore.BlazorApp.Services;
 /// <summary>
 /// Modelos para requisições de autenticação
 /// </summary>
-public record LoginRequest(string Email, string Password);
+public record LoginRequest(string Email, string Password, bool RememberMe = true);
+
+public record ApiLoginResponse(
+    bool Success,
+    string Message,
+    string Token,
+    string RefreshToken,
+    DateTime ExpiresAt,
+    ApiUserInfo User
+);
+
+public record ApiUserInfo(
+    string Id,
+    string UserName,
+    string Email
+);
+
 public record LoginResponse(string AccessToken, string? RefreshToken, DateTime ExpiresAt, UserInfo User);
 public record RefreshTokenRequest(string RefreshToken);
 
@@ -31,15 +47,18 @@ public class AuthService : IAuthService
     private readonly IApiService _apiService;
     private readonly IDispatcher _dispatcher;
     private readonly IStateInitializationService _stateInitialization;
+    private readonly ILocalAuthService _localAuthService;
 
     public AuthService(
         IApiService apiService,
         IDispatcher dispatcher,
-        IStateInitializationService stateInitialization)
+        IStateInitializationService stateInitialization,
+        ILocalAuthService localAuthService)
     {
         _apiService = apiService;
         _dispatcher = dispatcher;
         _stateInitialization = stateInitialization;
+        _localAuthService = localAuthService;
     }
 
     /// <summary>
@@ -51,27 +70,61 @@ public class AuthService : IAuthService
         {
             _dispatcher.Dispatch(new UserActions.StartLoginAction(email, password));
 
-            var request = new LoginRequest(email, password);
+            var request = new LoginRequest(email, password, true);
 
             // Faz requisição para a API SynQcore
-            var response = await _apiService.PostAsync<LoginResponse>("api/auth/login", request);
+            var apiResponse = await _apiService.PostAsync<ApiLoginResponse>("api/auth/login", request);
 
-            if (response != null)
+            if (apiResponse != null && apiResponse.Success)
             {
+                Console.WriteLine($"[AuthService] API Response recebida - Success: {apiResponse.Success}");
+                Console.WriteLine($"[AuthService] Token: {apiResponse.Token?.Substring(0, Math.Min(20, apiResponse.Token.Length))}...");
+                Console.WriteLine($"[AuthService] User Info - Id: {apiResponse.User?.Id}, UserName: {apiResponse.User?.UserName}, Email: {apiResponse.User?.Email}");
+
                 // Configura o header de autorização
-                _apiService.SetAuthorizationHeader(response.AccessToken);
+                if (!string.IsNullOrEmpty(apiResponse.Token))
+                {
+                    _apiService.SetAuthorizationHeader(apiResponse.Token);
+                }
+
+                // Mapeia a resposta da API para o modelo interno
+                var userInfo = new UserInfo
+                {
+                    Id = apiResponse.User?.Id ?? string.Empty,
+                    Nome = apiResponse.User?.UserName ?? string.Empty,
+                    Email = apiResponse.User?.Email ?? string.Empty,
+                    Username = apiResponse.User?.UserName ?? string.Empty,
+                    Cargo = "Administrador", // Valor padrão por enquanto
+                    Departamento = "Tecnologia da Informação", // Valor padrão por enquanto
+                    DataCadastro = DateTime.Now,
+                    IsAtivo = true,
+                    Roles = new List<string> { "Admin" }
+                };
 
                 // Atualiza o estado global
+                Console.WriteLine($"[AuthService] Despachando LoginSuccessAction para: {userInfo.Nome}");
                 _dispatcher.Dispatch(new UserActions.LoginSuccessAction(
-                    response.User,
-                    response.AccessToken,
-                    response.RefreshToken,
-                    response.ExpiresAt
+                    userInfo,
+                    apiResponse.Token ?? string.Empty,
+                    apiResponse.RefreshToken,
+                    apiResponse.ExpiresAt
                 ));
+                Console.WriteLine($"[AuthService] LoginSuccessAction despachada com sucesso");
+
+                // Sincronizar com LocalAuth como backup (já que Fluxor não funciona)
+                try
+                {
+                    await _localAuthService.SaveAuthDataAsync(apiResponse.Token ?? string.Empty, userInfo);
+                    Console.WriteLine("[AuthService] Sincronizado com LocalAuth");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[AuthService] Erro ao sincronizar com LocalAuth: {ex.Message}");
+                }
 
                 _dispatcher.Dispatch(new UIActions.ShowSuccessMessageAction(
                     "Login realizado",
-                    $"Bem-vindo, {response.User.Nome}!"
+                    $"Bem-vindo, {userInfo.Nome}!"
                 ));
 
                 return true;

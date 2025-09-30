@@ -1,0 +1,332 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+@using SynQcore.BlazorApp.Services
+@inject IPostService PostService
+
+<div class="modal-overlay" @onclick="HandleOverlayClick">
+    <div class="modal-content" @onclick:stopPropagation="true">
+        <div class="modal-header">
+            <h3>Criar Nova Postagem</h3>
+            <button class="close-btn" @onclick="CloseModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+            <div class="user-info">
+                <img src="/images/default-avatar.png" alt="Seu avatar" class="user-avatar" />
+                <div class="user-details">
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">Administrador</div>
+                </div>
+            </div>
+
+            <textarea @bind="postContent"
+                     placeholder="O que você está pensando?"
+                     class="post-textarea"
+                     rows="4"
+                     maxlength="500"></textarea>
+
+            <div class="character-count">
+                @(postContent?.Length ?? 0) / 500
+            </div>
+
+            <div class="post-options">
+                <label class="post-option">
+                    <i class="fas fa-image"></i>
+                    Foto/Vídeo
+                    <input type="file" hidden />
+                </label>
+
+                <label class="post-option">
+                    <i class="fas fa-poll"></i>
+                    Enquete
+                </label>
+
+                <label class="post-option">
+                    <i class="fas fa-calendar"></i>
+                    Evento
+                </label>
+            </div>
+
+            <div class="hashtag-suggestions">
+                <span class="suggestion-label">Sugestões:</span>
+                @foreach (var tag in suggestedTags)
+                {
+                    <button class="hashtag-btn" @onclick="() => AddHashtag(tag)">
+                        #@tag
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="cancel-btn" @onclick="CloseModal" disabled="@isCreating">Cancelar</button>
+            <button class="post-btn" @onclick="CreatePost" disabled="@(string.IsNullOrWhiteSpace(postContent) || isCreating)">
+                @if (isCreating)
+                {
+                    <span>Publicando...</span>
+                }
+                else
+                {
+                    <span>Publicar</span>
+                }
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnPostCreated { get; set; }
+
+    private string postContent = "";
+    private string[] suggestedTags = { "trabalho", "inovação", "equipe", "projeto", "sucesso" };
+    private bool isCreating = false;
+
+    private async Task CloseModal()
+    {
+        await OnClose.InvokeAsync();
+    }
+
+    private async Task HandleOverlayClick()
+    {
+        await CloseModal();
+    }
+
+    private async Task CreatePost()
+    {
+        if (string.IsNullOrWhiteSpace(postContent) || isCreating)
+            return;
+
+        isCreating = true;
+        try
+        {
+            var request = new CreatePostRequest
+            {
+                Content = postContent,
+                Tags = ExtractHashtags(postContent)
+            };
+
+            await PostService.CreatePostAsync(request);
+            await OnPostCreated.InvokeAsync();
+            postContent = "";
+        }
+        finally
+        {
+            isCreating = false;
+        }
+    }
+
+    private void AddHashtag(string tag)
+    {
+        if (!postContent.Contains($"#{tag}"))
+        {
+            postContent += $" #{tag}";
+        }
+    }
+
+    private string[] ExtractHashtags(string content)
+    {
+        var hashtags = new List<string>();
+        var words = content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var word in words)
+        {
+            if (word.StartsWith("#") && word.Length > 1)
+            {
+                hashtags.Add(word.Substring(1));
+            }
+        }
+
+        return hashtags.ToArray();
+    }
+}
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        color: #2d3748;
+        font-size: 1.25rem;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        color: #718096;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.2s;
+    }
+
+    .close-btn:hover {
+        background: #f7fafc;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .user-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .user-role {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .post-textarea {
+        width: 100%;
+        border: none;
+        outline: none;
+        resize: none;
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 0.5rem;
+        color: #2d3748;
+    }
+
+    .character-count {
+        text-align: right;
+        color: #a0aec0;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .post-options {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding: 1rem 0;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .post-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        color: #667eea;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .hashtag-suggestions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .suggestion-label {
+        color: #718096;
+        font-size: 0.875rem;
+        margin-right: 0.5rem;
+    }
+
+    .hashtag-btn {
+        background: #edf2f7;
+        border: none;
+        color: #667eea;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .hashtag-btn:hover {
+        background: #e2e8f0;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .cancel-btn {
+        background: none;
+        border: 1px solid #e2e8f0;
+        color: #718096;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .cancel-btn:hover {
+        background: #f7fafc;
+    }
+
+    .post-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        cursor: pointer;
+        font-weight: 500;
+        transition: opacity 0.2s;
+    }
+
+    .post-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .post-btn:not(:disabled):hover {
+        opacity: 0.9;
+    }
+</style>

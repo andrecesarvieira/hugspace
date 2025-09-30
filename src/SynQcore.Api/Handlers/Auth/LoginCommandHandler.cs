@@ -52,7 +52,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, AuthResponse>
         {
             Success = true,
             Token = token,
-            Message = "Login realizado com sucesso" // Login successful
+            Message = "Login realizado com sucesso", // Login successful
+            User = new SynQcore.Application.DTOs.Auth.UserInfo
+            {
+                Id = user.Id, // Já é Guid, não precisa conversão
+                UserName = user.UserName ?? string.Empty,
+                Email = user.Email ?? string.Empty
+            }
         };
     }
 }
