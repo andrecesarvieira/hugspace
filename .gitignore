@@ -13,9 +13,6 @@
 *.userosscache
 *.sln.docstates
 copilot-instructions.md
-.chatmodes
-chatmode.sh
-cm
 .vscode
 docs/testing
 
@@ -525,7 +522,4 @@ private/
 *.private.md
 *-private.md
 *-confidencial.md
-business-plan/
-monetization/
-strategy/
-scripts/
+
