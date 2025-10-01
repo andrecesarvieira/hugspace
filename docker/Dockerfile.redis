@@ -1,0 +1,14 @@
+# Dockerfile personalizado para Redis com configuração completa
+FROM redis:7-alpine
+
+# Copiar arquivo de configuração
+COPY redis.conf /usr/local/etc/redis/redis.conf
+
+# Definir permissões corretas
+RUN chmod 644 /usr/local/etc/redis/redis.conf
+
+# Expor porta padrão
+EXPOSE 6379
+
+# Comando para iniciar Redis com configuração personalizada
+CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]

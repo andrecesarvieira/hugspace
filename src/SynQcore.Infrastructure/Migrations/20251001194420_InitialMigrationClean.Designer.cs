@@ -12,8 +12,8 @@ using SynQcore.Infrastructure.Data;
 namespace SynQcore.Infrastructure.Migrations
 {
     [DbContext(typeof(SynQcoreDbContext))]
-    [Migration("20250930105410_AddModerationSystem")]
-    partial class AddModerationSystem
+    [Migration("20251001194420_InitialMigrationClean")]
+    partial class InitialMigrationClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

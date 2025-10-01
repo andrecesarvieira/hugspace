@@ -1,0 +1,14 @@
+# Dockerfile personalizado para PostgreSQL com scripts de inicialização
+FROM postgres:16-alpine
+
+# Copiar scripts de inicialização
+COPY init-scripts/*.sql /docker-entrypoint-initdb.d/
+
+# Definir permissões corretas para os scripts
+RUN chmod 644 /docker-entrypoint-initdb.d/*.sql
+
+# Expor porta padrão
+EXPOSE 5432
+
+# Usar o entrypoint padrão do PostgreSQL
+# O CMD será definido pela imagem base

@@ -17,6 +17,8 @@ Comandos disponíveis:
   clean           - Limpeza completa do projeto
   docker-up       - Iniciar infraestrutura Docker
   docker-down     - Parar infraestrutura Docker
+  setup           - Configuração inicial automática do ambiente
+  status          - Mostrar status detalhado do ambiente
   help            - Mostrar esta ajuda
 
 Se nenhum comando for especificado, será executado 'start' por padrão.
@@ -123,6 +125,119 @@ def kill_processes_on_port(port):
             if pid:
                 run_command(f"kill -9 {pid}")
         time.sleep(2)
+
+def check_docker_containers():
+    """Verifica status dos containers essenciais"""
+    success, output, stderr = run_command("docker ps --format 'table {{.Names}}\t{{.Status}}'")
+
+    postgres_running = "synqcore-postgres" in output and "Up" in output
+    redis_running = "synqcore-redis" in output and "Up" in output
+    pgadmin_running = "synqcore-pgadmin" in output and "Up" in output
+
+    return postgres_running, redis_running, pgadmin_running
+
+def setup_environment():
+    """Configuração inicial automática do ambiente"""
+    print_banner("SynQcore - Configuração Inicial Automática")
+
+    # Verificar estrutura do projeto
+    if not Path("SynQcore.sln").exists():
+        log_error("Execute este script na raiz do projeto (onde está SynQcore.sln)")
+        return False
+
+    log_success("Estrutura do projeto validada")
+
+    # Verificar Docker
+    postgres_running, redis_running, pgadmin_running = check_docker_containers()
+
+    if not postgres_running or not redis_running:
+        log_info("Iniciando infraestrutura Docker...")
+        docker_up()
+
+        # Aguardar containers ficarem prontos
+        log_info("Aguardando containers ficarem saudáveis...")
+        time.sleep(10)
+    else:
+        log_success("Containers Docker já estão rodando")
+
+    # Verificar migrations
+    log_info("Verificando banco de dados...")
+    success, stdout, stderr = run_command(
+        "dotnet ef database update --project src/SynQcore.Infrastructure --startup-project src/SynQcore.Api"
+    )
+
+    if not success:
+        log_warning("Problema com migrations - pode ser necessário recriar")
+        print(stderr)
+    else:
+        log_success("Banco de dados atualizado")
+
+    # Build do projeto
+    if not restore_and_build():
+        return False
+
+    print()
+    log_success("🎉 Ambiente configurado com sucesso!")
+    print()
+    log_info("Para iniciar desenvolvimento: ./synqcore start")
+    print()
+
+    return True
+
+def show_environment_status():
+    """Mostra status detalhado do ambiente"""
+    print_banner("SynQcore - Status do Ambiente")
+
+    # Status dos containers
+    postgres_running, redis_running, pgadmin_running = check_docker_containers()
+
+    print("🐳 CONTAINERS:")
+    print(f"   PostgreSQL: {'🟢 Rodando' if postgres_running else '🔴 Parado'}")
+    print(f"   Redis: {'🟢 Rodando' if redis_running else '🔴 Parado'}")
+    print(f"   pgAdmin: {'🟢 Rodando' if pgadmin_running else '🔴 Disponível'}")
+
+    # Status das aplicações locais
+    print("\n💻 APLICAÇÕES LOCAIS:")
+
+    success, stdout, stderr = run_command("curl -s -o /dev/null -w '%{http_code}' http://localhost:5000/health")
+    api_running = success and "200" in stdout
+    print(f"   API (5000): {'🟢 Rodando' if api_running else '🔴 Parado'}")
+
+    success, stdout, stderr = run_command("curl -s -o /dev/null -w '%{http_code}' http://localhost:5226/")
+    blazor_running = success and "200" in stdout
+    print(f"   Blazor (5226): {'🟢 Rodando' if blazor_running else '🔴 Parado'}")
+
+    # URLs disponíveis
+    print("\n📍 URLS DISPONÍVEIS:")
+    if api_running:
+        print("   🔗 API: http://localhost:5000")
+        print("   📚 Swagger: http://localhost:5000/swagger")
+        print("   🏥 Health: http://localhost:5000/health")
+
+    if blazor_running:
+        print("   🌐 Blazor: http://localhost:5226")
+        print("   📱 Feed: http://localhost:5226/feed")
+        print("   🎨 Design System: http://localhost:5226/design-system")
+
+    if pgadmin_running:
+        print("   🔧 pgAdmin: http://localhost:8080")
+
+    # Resumo do status
+    total_services = 5
+    running_services = sum([postgres_running, redis_running, api_running, blazor_running, pgadmin_running])
+
+    print(f"\n📊 RESUMO: {running_services}/{total_services} serviços ativos")
+
+    if running_services == total_services:
+        log_success("Todos os serviços estão funcionando!")
+    elif running_services >= 4:
+        log_warning("Ambiente quase completo - alguns serviços opcionais parados")
+    elif running_services >= 2:
+        log_warning("Ambiente parcial - verifique serviços parados")
+    else:
+        log_error("Ambiente não configurado - execute: ./synqcore setup")
+
+    print()
 
 def check_project_structure():
     """Verifica se a estrutura dos projetos está correta"""
@@ -664,6 +779,10 @@ def main():
         docker_up()
     elif command == "docker-down":
         docker_down()
+    elif command == "setup":
+        setup_environment()
+    elif command == "status":
+        show_environment_status()
     elif command == "help" or command == "--help" or command == "-h":
         show_help()
     else:

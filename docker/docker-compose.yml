@@ -5,7 +5,9 @@
 services:
   # PostgreSQL 16 - Banco principal
   postgres:
-    image: postgres:16-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
     container_name: synqcore-postgres
     restart: unless-stopped
     environment:
@@ -19,8 +21,6 @@ services:
     volumes:
       # Dados persistentes
       - postgres_data:/var/lib/postgresql/data
-      # Scripts de inicialização
-      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - synqcore-network
     # Configurações otimizadas para rede social
@@ -43,7 +43,9 @@ services:
 
   # Redis 7 - Cache distribuído e sessões
   redis:
-    image: redis:7-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.redis
     container_name: synqcore-redis
     restart: unless-stopped
     ports:
@@ -51,11 +53,8 @@ services:
     volumes:
       # Persistência de dados
       - redis_data:/data
-      # Configuração customizada
-      - ./redis.conf:/etc/redis/redis.conf:ro
     networks:
       - synqcore-network
-    command: redis-server /etc/redis/redis.conf
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s
