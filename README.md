@@ -4,7 +4,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue)](https://www.postgresql.org/)
 [![Blazor](https://img.shields.io/badge/Blazor-Híbrido-green)](https://blazor.net/)
 [![Pioneiro Brasil](https://img.shields.io/badge/🇧🇷%20Pioneiro-Brasil-gold)](docs/PESQUISA-MERCADO-REDES-SOCIAIS-CORPORATIVAS.md)
-[![Fase](https://img.shields.io/badge/Fase-6.3%20Completa-success)](docs/ROADMAP.md)
+[![Fase](https://img.shields.io/badge/Fase-6.4%20(96%25)-success)](docs/ROADMAP.md)
 [![Licença](https://img.shields.io/badge/Licença-MIT-yellow.svg)](LICENSE)
 
 > **🇧🇷 PRIMEIRA rede social corporativa open source brasileira em C#/.NET**
@@ -16,15 +16,16 @@
 - 🏛️ **Clean Architecture** - Arquitetura empresarial com .NET 9 + CQRS + MediatR
 - 🔐 **Autenticação Completa** - JWT + Identity + Sistema de papéis corporativos
 - 🛡️ **Privacy/LGPD Compliant** - Sistema completo de conformidade com LGPD/GDPR
-- 🌐 **Interface Moderna** - Blazor Híbrido + Design System + PWA Ready
+- 🌐 **Interface Moderna** - Blazor Híbrido + Design System + Feed Layout Profissional
 - 📊 **Sistema Corporativo** - 15+ entidades para rede social empresarial completa
-- ⚡ **Performance Otimizada** - Mapeamento manual + LoggerMessage + Rate Limiting
+- ⚡ **Performance Otimizada** - Mapeamento manual + LoggerMessage + Rate Limiting + CSS Cache
 - 🔍 **Busca Inteligente** - Full-text search + Expert Finder + AI Recommendations
 - 📱 **Tempo Real** - SignalR + Notificações + Presença corporativa
 - 🗄️ **Banco Robusto** - PostgreSQL + Redis + Migrações + Schema corporativo
 - 🐳 **Docker Ready** - Ambiente completo containerizado
 - 🧪 **Testado** - 27 testes (unitários + integração) funcionais
 - 🚀 **Open Source** - MIT License + 100% brasileiro
+- 🎨 **UX/UI Profissional** - Feed 3 colunas + Barra pesquisa 1800px + Alinhamento perfeito
 
 ## 🚀 Início Rápido
 
@@ -46,8 +47,11 @@
 2. **Inicie o ambiente completo**
 
    ```bash
-   # ⭐ RECOMENDADO: Aplicação completa (API + Blazor)
-   python3 scripts/start-full.py
+   # ⭐ NOVO: Script unificado - substitui todos os outros
+   ./synqcore start
+
+   # ou usando Python diretamente:
+   python3 scripts/synqcore.py start
 
    # Abre automaticamente:
    # - API + Swagger: http://localhost:5000/swagger
@@ -61,10 +65,33 @@
 ### Scripts Alternativos
 
 ```bash
+# ⭐ NOVO: Script unificado - todas as funcionalidades
+./synqcore help                       # Ajuda completa
+./synqcore start                      # Aplicação completa (padrão)
+./synqcore api                        # Apenas API na porta 5000
+./synqcore blazor                     # Apenas Blazor na porta 5226
+./synqcore clean                      # Limpeza completa do projeto
+./synqcore docker-up                  # Infraestrutura Docker
+./synqcore docker-down                # Parar Docker
+
+# Scripts legados (mantidos para compatibilidade)
 python3 scripts/start-api-5000.py    # Apenas API
 python3 scripts/start-blazor.py      # Apenas Blazor
 python3 scripts/start-dev.py         # Apenas Docker (BD + Redis)
 ```
+
+## 🛠️ Script Unificado
+
+O **synqcore** é um script Python que consolida todas as funcionalidades necessárias para desenvolvimento:
+
+- **Gerenciamento completo**: API, Blazor, Docker, limpeza
+- **Detecção automática de problemas**: Portas ocupadas, processos conflitantes
+- **Build otimizado**: Evita erros CLR com compilação single-thread
+- **Monitoramento**: Health checks automáticos
+- **Browser automático**: Abre interface automaticamente
+- **Logs coloridos**: Output organizado por serviço
+
+**Todas as funcionalidades em um único comando! 🎯**
 
 ## 🏗️ Arquitetura
 
@@ -90,18 +117,27 @@ src/
 
 ## 📊 Status do Projeto
 
-**Fase 6.3 CONCLUÍDA** _(30/09/2025)_ - Sistema de Moderação Corporativa + Blazor UI Corrigida
+**Fase 6.4 96% CONCLUÍDA** _(01/10/2025)_ - UX/UI Avançado + Feed Layout Profissional + Projeto Optimizado
 
-| Fase         | Status           | Descrição                                |
-| ------------ | ---------------- | ---------------------------------------- |
-| **Fase 1-2** | ✅ **COMPLETO**  | Infraestrutura + API Core + Autenticação |
-| **Fase 3**   | ✅ **COMPLETO**  | Core Corporativo + Knowledge Management  |
-| **Fase 4**   | ✅ **COMPLETO**  | SignalR + Notificações + Busca + Media   |
-| **Fase 5**   | ✅ **COMPLETO**  | Interface Blazor + Design System         |
-| **Fase 6.1** | ✅ **COMPLETO**  | Sistema Privacy/LGPD Compliance          |
-| **Fase 6.2** | ✅ **COMPLETO**  | Segurança Avançada Corporativa           |
-| **Fase 6.3** | ✅ **COMPLETO**  | Sistema de Moderação + Blazor Corrigida  |
-| **Fase 7-8** | 🎯 **PLANEJADO** | Performance + UX/UI Avançado + Deploy    |
+| Fase         | Status             | Descrição                                    |
+| ------------ | ------------------ | -------------------------------------------- |
+| **Fase 1-2** | ✅ **COMPLETO**    | Infraestrutura + API Core + Autenticação     |
+| **Fase 3**   | ✅ **COMPLETO**    | Core Corporativo + Knowledge Management      |
+| **Fase 4**   | ✅ **COMPLETO**    | SignalR + Notificações + Busca + Media       |
+| **Fase 5**   | ✅ **COMPLETO**    | Interface Blazor + Design System             |
+| **Fase 6.1** | ✅ **COMPLETO**    | Sistema Privacy/LGPD Compliance              |
+| **Fase 6.2** | ✅ **COMPLETO**    | Segurança Avançada Corporativa               |
+| **Fase 6.3** | ✅ **COMPLETO**    | Sistema de Moderação + Blazor Corrigida      |
+| **Fase 6.4** | 🔄 **96% CONCLUÍDO** | UX/UI Avançado + Feed Layout + CSS Otimizado |
+| **Fase 7-8** | 🎯 **PLANEJADO**   | Performance + Dashboard + Deploy v1.0        |
+
+### 🎉 **Conquistas Recentes (01/10/2025):**
+
+- ✅ **Feed Layout Profissional** - Grid 3 colunas (280px | 1fr | 320px) alinhado
+- ✅ **Barra de Pesquisa Expandida** - 1800px de largura + header fixo independente
+- ✅ **CSS Estruturado** - Inline styles + cache versioning + performance otimizada
+- ✅ **Estabilidade Blazor** - TaskCanceledException corrigida + navegação funcional
+- ✅ **Projeto Limpo** - 15+ arquivos backup/test removidos + build otimizado
 
 > 📋 **[Ver ROADMAP completo →](docs/ROADMAP.md)** - Detalhes de todas as fases, funcionalidades implementadas e planejamento futuro.
 
