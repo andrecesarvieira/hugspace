@@ -16,7 +16,43 @@ O SynQcore é uma plataforma de comunicação corporativa desenvolvida em .NET 9
 - **Encoding**: Use UTF-8 para todos os arquivos
 - **Line Endings**: Use LF (Unix-style) consistentemente
 - **Indentação**: Use 4 espaços (não tabs)
-- **Cultura**: Configure `pt-BR` como cultura padrão da aplicação visa criar uma rede social corporativa moderna com recursos de colaboração, análise de sentimentos e gestão de conhecimento.
+- **Cultura**: Configure `pt-BR` como cultura padrão da aplicação
+
+### Padrão de Commits em Português (OBRIGATÓRIO)
+
+**SEMPRE faça commits em português brasileiro seguindo este formato:**
+
+```
+tipo: Descrição breve em português
+
+- Detalhes específicos em português
+- Contexto e justificativas
+- Impactos e benefícios
+
+Resolve [problema] e [melhoria alcançada].
+```
+
+**Tipos de commit obrigatórios:**
+- `correção:` - Bug fixes e correções de erros
+- `recurso:` - Novas funcionalidades e features
+- `melhoria:` - Otimizações e melhorias de performance
+- `documentação:` - Alterações na documentação
+- `refatoração:` - Refatoração e limpeza de código
+- `teste:` - Testes unitários e de integração
+- `configuração:` - Configurações, setup e ambiente
+
+**Exemplo padrão:**
+```
+correção: Resolve problemas de autenticação no Docker
+
+- Corrige connection string para PostgreSQL
+- Adiciona tratamento de erro robusto
+- Melhora logs de debug para desenvolvimento
+
+Resolve falhas de conexão e melhora experiência do desenvolvedor.
+```
+
+**NUNCA use commits em inglês** - Sempre mantenha consistência em português brasileiro. visa criar uma rede social corporativa moderna com recursos de colaboração, análise de sentimentos e gestão de conhecimento.
 
 ## Arquitetura do Projeto
 
