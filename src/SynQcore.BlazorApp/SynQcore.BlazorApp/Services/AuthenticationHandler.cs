@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using Fluxor;
 using SynQcore.BlazorApp.Store.User;
 using SynQcore.BlazorApp.Store.UI;
@@ -13,19 +14,38 @@ public class AuthenticationHandler : DelegatingHandler
 {
     private readonly IDispatcher _dispatcher;
     private readonly IState<UserState> _userState;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public AuthenticationHandler(IDispatcher dispatcher, IState<UserState> userState)
+    public AuthenticationHandler(
+        IDispatcher dispatcher,
+        IState<UserState> userState,
+        IHttpContextAccessor httpContextAccessor)
     {
         _dispatcher = dispatcher;
         _userState = userState;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
+        // Tenta obter token dos cookies ASP.NET Core primeiro
+        string? token = null;
+
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext?.User?.Identity?.IsAuthenticated == true)
+        {
+            token = httpContext.User.FindFirst("AccessToken")?.Value;
+        }
+
+        // Se não encontrou nos cookies, tenta no Fluxor (fallback)
+        if (string.IsNullOrEmpty(token))
+        {
+            token = _userState.Value.AccessToken;
+        }
+
         // Adiciona token automaticamente se disponível
-        var token = _userState.Value.AccessToken;
         if (!string.IsNullOrEmpty(token) && request.Headers.Authorization == null)
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);

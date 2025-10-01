@@ -11,11 +11,6 @@ public static class UIActions
     public record SetLoadingAction(bool IsLoading);
 
     /// <summary>
-    /// Ação para alterar tema
-    /// </summary>
-    public record SetThemeAction(string Theme);
-
-    /// <summary>
     /// Ação para expandir/recolher sidebar
     /// </summary>
     public record ToggleSidebarAction();

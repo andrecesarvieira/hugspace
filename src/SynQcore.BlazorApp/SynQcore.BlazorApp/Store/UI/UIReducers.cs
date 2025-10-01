@@ -17,15 +17,6 @@ public static class UIReducers
     }
 
     /// <summary>
-    /// Reducer para alterar tema
-    /// </summary>
-    [ReducerMethod]
-    public static UIState ReduceSetThemeAction(UIState state, UIActions.SetThemeAction action)
-    {
-        return state with { Theme = action.Theme };
-    }
-
-    /// <summary>
     /// Reducer para alternar sidebar
     /// </summary>
     [ReducerMethod]

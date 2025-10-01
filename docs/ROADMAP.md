@@ -629,19 +629,19 @@
 
 ## 📈 **Marcos Principais**
 
-| Marco    | Status           | Prazo         | Descrição                                                                                  |
-| -------- | ---------------- | ------------- | ------------------------------------------------------------------------------------------ |
-| **M1**   | ✅ **CONCLUÍDO** | 23/09/2025    | Infraestrutura e modelo de dados corporativo completos                                     |
-| **M2**   | ✅ **CONCLUÍDO** | 26/09/2025    | API core, autenticação, CQRS, rate limiting, employee e admin management funcionais        |
-| **M3**   | ✅ **CONCLUÍDO** | 26/09/2025    | Knowledge Management System completo com articles, tags, workflow e versionamento          |
-| **M4**   | ✅ **CONCLUÍDO** | 29/09/2025    | Corporate Collaboration Features, feeds, chat, notificações e busca corporativa funcionais |
-| **M5**   | ✅ **CONCLUÍDO** | 30/09/2025    | Interface Blazor completa, PWA, Design System corporativo e Visual Identity moderna        |
-| **M6.1** | ✅ **CONCLUÍDO** | 30/09/2025    | Privacy/LGPD Compliance System operacional                                                 |
-| **M6.2** | ✅ **CONCLUÍDO** | 30/09/2025    | Segurança Avançada Corporativa implementada                                                |
-| **M6.3** | ✅ **CONCLUÍDO** | 30/09/2025    | Sistema de Moderação Corporativa - Backend completo + Blazor UI corrigida                  |
-| **M6.4** | 🔄 **96% CONCLUÍDO** | 01/10/2025 | UX/UI Avançado - Feed Layout Profissional + Limpeza Projeto + Estabilidade Blazor          |
-| **M7**   | ⏳ Planejado     | Dezembro 2025 | Performance, escalabilidade e monitoramento avançado                                       |
-| **M8**   | ⏳ Planejado     | Janeiro 2026  | **Lançamento da versão 1.0** com documentação completa                                     |
+| Marco    | Status               | Prazo         | Descrição                                                                                  |
+| -------- | -------------------- | ------------- | ------------------------------------------------------------------------------------------ |
+| **M1**   | ✅ **CONCLUÍDO**     | 23/09/2025    | Infraestrutura e modelo de dados corporativo completos                                     |
+| **M2**   | ✅ **CONCLUÍDO**     | 26/09/2025    | API core, autenticação, CQRS, rate limiting, employee e admin management funcionais        |
+| **M3**   | ✅ **CONCLUÍDO**     | 26/09/2025    | Knowledge Management System completo com articles, tags, workflow e versionamento          |
+| **M4**   | ✅ **CONCLUÍDO**     | 29/09/2025    | Corporate Collaboration Features, feeds, chat, notificações e busca corporativa funcionais |
+| **M5**   | ✅ **CONCLUÍDO**     | 30/09/2025    | Interface Blazor completa, PWA, Design System corporativo e Visual Identity moderna        |
+| **M6.1** | ✅ **CONCLUÍDO**     | 30/09/2025    | Privacy/LGPD Compliance System operacional                                                 |
+| **M6.2** | ✅ **CONCLUÍDO**     | 30/09/2025    | Segurança Avançada Corporativa implementada                                                |
+| **M6.3** | ✅ **CONCLUÍDO**     | 30/09/2025    | Sistema de Moderação Corporativa - Backend completo + Blazor UI corrigida                  |
+| **M6.4** | 🔄 **96% CONCLUÍDO** | 01/10/2025    | UX/UI Avançado - Feed Layout Profissional + Limpeza Projeto + Estabilidade Blazor          |
+| **M7**   | ⏳ Planejado         | Dezembro 2025 | Performance, escalabilidade e monitoramento avançado                                       |
+| **M8**   | ⏳ Planejado         | Janeiro 2026  | **Lançamento da versão 1.0** com documentação completa                                     |
 
 ### 🎯 **Status Atual do Projeto (01/10/2025)**
 

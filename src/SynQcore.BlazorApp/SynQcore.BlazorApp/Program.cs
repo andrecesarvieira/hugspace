@@ -13,6 +13,31 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+// Configuração de Autenticação e Autorização
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/login";
+        options.LogoutPath = "/logout";
+        options.AccessDeniedPath = "/access-denied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(24);
+        options.SlidingExpiration = true;
+        options.Cookie.Name = "SynQcore.Auth";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    // Políticas de autorização corporativa
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ManagerOrAdmin", policy => policy.RequireRole("Manager", "Admin"));
+    options.AddPolicy("EmployeeAccess", policy => policy.RequireAuthenticatedUser());
+});
+
+// Serviços necessários para autenticação
+builder.Services.AddHttpContextAccessor();
+
 // Serviços de armazenamento local
 builder.Services.AddBlazoredLocalStorage();
 
@@ -51,6 +76,7 @@ builder.Services.AddScoped<ThemeService>();
 builder.Services.AddScoped<IStateInitializationService, StateInitializationService>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICookieAuthService, CookieAuthService>(); // Novo serviço de autenticação com cookies
 builder.Services.AddScoped<ILocalAuthService, LocalAuthService>(); // Backup auth service
 builder.Services.AddScoped<IModerationService, ModerationService>(); // Serviço de moderação
 builder.Services.AddScoped<IUserPermissionService, UserPermissionService>(); // Serviço de permissões
@@ -65,7 +91,7 @@ builder.Services.AddScoped<AuthenticationHandler>();
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     // Configuração da base URL da API SynQcore
-    client.BaseAddress = new Uri("http://localhost:5000/"); // URL da API SynQcore
+    client.BaseAddress = new Uri("http://localhost:5000/api/"); // URL da API SynQcore com prefixo /api/
     client.Timeout = TimeSpan.FromSeconds(30);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
@@ -74,7 +100,7 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 // HttpClient para PostService
 builder.Services.AddHttpClient<IPostService, PostService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/");
+    client.BaseAddress = new Uri("http://localhost:5000/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
@@ -83,7 +109,7 @@ builder.Services.AddHttpClient<IPostService, PostService>(client =>
 // HttpClient adicional para requisições sem interceptor
 builder.Services.AddHttpClient("NoAuth", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/");
+    client.BaseAddress = new Uri("http://localhost:5000/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
@@ -110,6 +136,11 @@ else
 }
 
 app.UseHttpsRedirection();
+
+// Autenticação e Autorização
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseAntiforgery();
 
 app.MapStaticAssets();

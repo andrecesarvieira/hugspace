@@ -9,6 +9,7 @@ namespace SynQcore.BlazorApp.Services;
 public partial class PlatformStatsService : IPlatformStatsService
 {
     private readonly IApiService _apiService;
+    private readonly ILocalAuthService _authService;
     private readonly ILogger<PlatformStatsService> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -21,9 +22,10 @@ public partial class PlatformStatsService : IPlatformStatsService
     [LoggerMessage(Level = LogLevel.Error, Message = "Erro ao buscar estatísticas de conteúdo")]
     private static partial void LogErrorContentStats(ILogger logger, Exception ex);
 
-    public PlatformStatsService(IApiService apiService, ILogger<PlatformStatsService> logger)
+    public PlatformStatsService(IApiService apiService, ILocalAuthService authService, ILogger<PlatformStatsService> logger)
     {
         _apiService = apiService;
+        _authService = authService;
         _logger = logger;
     }
 
@@ -34,6 +36,20 @@ public partial class PlatformStatsService : IPlatformStatsService
     {
         try
         {
+            // Durante prerendering, retorna dados mock imediatamente para evitar erros
+            if (!IsClientSideRendering())
+            {
+                return GetMockPlatformStats();
+            }
+
+            // Verificar se o usuário está autenticado (apenas no cliente)
+            var isAuthenticated = await _authService.IsAuthenticatedAsync();
+            if (!isAuthenticated)
+            {
+                // Retornar dados mock se não estiver autenticado
+                return GetMockPlatformStats();
+            }
+
             // Buscar diferentes fontes de dados em paralelo
             var contentStatsTask = GetContentStatsAsync();
             var communicationStatsTask = GetCommunicationStatsAsync();
@@ -70,6 +86,19 @@ public partial class PlatformStatsService : IPlatformStatsService
     {
         try
         {
+            // Durante prerendering, retorna dados mock imediatamente
+            if (!IsClientSideRendering())
+            {
+                return GetFallbackCommunicationStats();
+            }
+
+            // Verificar se o usuário está autenticado
+            var isAuthenticated = await _authService.IsAuthenticatedAsync();
+            if (!isAuthenticated)
+            {
+                return GetFallbackCommunicationStats();
+            }
+
             var response = await _apiService.GetAsync<dynamic>("corporatecommunication/statistics");
 
             if (response != null)
@@ -109,6 +138,19 @@ public partial class PlatformStatsService : IPlatformStatsService
     {
         try
         {
+            // Durante prerendering, retorna dados mock imediatamente
+            if (!IsClientSideRendering())
+            {
+                return GetFallbackContentStats();
+            }
+
+            // Verificar se o usuário está autenticado
+            var isAuthenticated = await _authService.IsAuthenticatedAsync();
+            if (!isAuthenticated)
+            {
+                return GetFallbackContentStats();
+            }
+
             var response = await _apiService.GetAsync<ContentStatsDto>("corporatesearch/stats");
             return response ?? GetFallbackContentStats();
         }
@@ -179,20 +221,74 @@ public partial class PlatformStatsService : IPlatformStatsService
     }
 
     /// <summary>
-    /// Estatísticas de conteúdo de fallback
+    /// Estatísticas mock para usuários não autenticados
+    /// </summary>
+    private static PlatformStatsDto GetMockPlatformStats()
+    {
+        return new PlatformStatsDto
+        {
+            TotalEmployees = 0,
+            ActiveUsersToday = 0,
+            TotalPosts = 0,
+            TotalComments = 0,
+            TotalDocuments = 0,
+            OnlineUsers = 0,
+            EngagementRate = 0.0,
+            LastUpdated = DateTime.Now.ToString("HH:mm", CultureInfo.InvariantCulture)
+        };
+    }
+
+    /// <summary>
+    /// Estatísticas de comunicação para usuários não autenticados
+    /// </summary>
+    private static CommunicationStatsDto GetFallbackCommunicationStats()
+    {
+        return new CommunicationStatsDto
+        {
+            TotalMessages = 0,
+            CompanyAnnouncements = 0,
+            TeamMessages = 0,
+            ActiveTeams = 0,
+            SatisfactionRate = 0.0
+        };
+    }
+
+    /// <summary>
+    /// Estatísticas de conteúdo para usuários não autenticados
     /// </summary>
     private static ContentStatsDto GetFallbackContentStats()
     {
         return new ContentStatsDto
         {
-            TotalPosts = 1247,
-            TotalDocuments = 156,
-            TotalMediaAssets = 89,
-            TotalComments = 3892,
-            TotalEmployees = 500,
-            ActiveUsersToday = 87,
-            ActiveUsersThisWeek = 234,
-            ActiveUsersThisMonth = 445
+            TotalPosts = 0,
+            TotalDocuments = 0,
+            TotalMediaAssets = 0,
+            TotalComments = 0,
+            TotalEmployees = 0,
+            ActiveUsersToday = 0,
+            ActiveUsersThisWeek = 0,
+            ActiveUsersThisMonth = 0,
+            ContentTypeDistribution = new(),
+            CategoryDistribution = new(),
+            DepartmentActivity = new()
         };
+    }
+
+    /// <summary>
+    /// Verifica se está rodando no lado cliente (não durante prerendering)
+    /// </summary>
+    private static bool IsClientSideRendering()
+    {
+        try
+        {
+            // Durante prerendering, OperatingSystem.IsBrowser() retorna false
+            // No cliente, retorna true
+            return OperatingSystem.IsBrowser();
+        }
+        catch
+        {
+            // Em caso de erro, assume que é prerendering
+            return false;
+        }
     }
 }

@@ -1,6 +1,7 @@
 using Fluxor;
 using SynQcore.BlazorApp.Store.User;
 using SynQcore.BlazorApp.Store.UI;
+using System.Text.Json.Serialization;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -13,8 +14,8 @@ public record ApiLoginResponse(
     bool Success,
     string Message,
     string Token,
-    string RefreshToken,
-    DateTime ExpiresAt,
+    [property: JsonPropertyName("refreshToken")] string RefreshToken,
+    [property: JsonPropertyName("expiresAt")] DateTime ExpiresAt,
     ApiUserInfo User
 );
 

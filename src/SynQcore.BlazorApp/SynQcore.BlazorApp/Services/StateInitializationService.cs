@@ -114,13 +114,7 @@ public class StateInitializationService : IStateInitializationService
     {
         try
         {
-            // Carrega preferências da UI
-            var themeJson = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "synqcore_ui_theme");
-            if (!string.IsNullOrEmpty(themeJson))
-            {
-                _dispatcher.Dispatch(new UIActions.SetThemeAction(themeJson));
-            }
-
+            // Carrega preferências da UI (sidebar apenas)
             var sidebarCollapsedJson = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "synqcore_ui_sidebar_collapsed");
             if (!string.IsNullOrEmpty(sidebarCollapsedJson) && bool.TryParse(sidebarCollapsedJson, out var isCollapsed))
             {

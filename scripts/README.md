@@ -1,41 +1,189 @@
-# Scripts de Inicialização - SynQcore
+# 🚀 SynQcore - Script Unificado de Gerenciamento
 
-Este diretório contém scripts para facilitar o desenvolvimento e execução do SynQcore.
+Este diretório contém o script consolidado para facilitar o desenvolvimento e execução do SynQcore.
 
-**🐍 PADRÃO ESTABELECIDO: Todos os scripts devem ser feitos em Python**
+## ⭐ Script Principal
 
-## Scripts Disponíveis
+### 🎯 synqcore.py - Script Unificado
 
-### 🐍 Scripts Python (Padrão do Projeto)
-
-#### Ambiente de Desenvolvimento
+**ÚNICO SCRIPT NECESSÁRIO**: Substitui todos os scripts anteriores! Todas as funcionalidades em um só lugar.
 
 ```bash
-# Iniciar ambiente completo (Docker)
-python3 scripts/start-dev.py
+# 🚀 Iniciar aplicação completa (API + Blazor) - PADRÃO
+python3 scripts/synqcore.py
 
-# Parar ambiente
-python3 scripts/stop-dev.py
-
-# Limpeza completa do projeto
-python3 scripts/clean-build.py
-```
-
-#### Aplicações
-
-```bash
-# 🚀 Iniciar aplicação completa (API + Blazor)
-python3 scripts/start-full.py
+# ou especificamente:
+python3 scripts/synqcore.py start
 
 # 🔗 Iniciar apenas API na porta 5000
-python3 scripts/start-api-5000.py
+python3 scripts/synqcore.py api
 
-# 🌐 Iniciar apenas Blazor App na porta 5226
-python3 scripts/start-blazor.py
+# 🌐 Iniciar apenas Blazor na porta 5226
+python3 scripts/synqcore.py blazor
 
-# Testes automatizados de colaboração
-python3 scripts/test-collaboration-features.py
+# 🧹 Limpeza completa do projeto
+python3 scripts/synqcore.py clean
+
+# 🐳 Gerenciar infraestrutura Docker
+python3 scripts/synqcore.py docker-up
+python3 scripts/synqcore.py docker-down
+
+# ❓ Ajuda
+python3 scripts/synqcore.py help
 ```
+
+### 🎯 Acesso Rápido via Link Simbólico
+
+Para maior conveniência, há um link simbólico na raiz do projeto:
+
+```bash
+# Acesso direto da raiz do projeto
+./synqcore start          # Aplicação completa
+./synqcore api            # Apenas API
+./synqcore blazor         # Apenas Blazor
+./synqcore clean          # Limpeza
+./synqcore docker-up      # Infraestrutura
+./synqcore help           # Ajuda
+```
+
+## � Funcionalidades Integradas
+
+### ✨ O que o Script Faz
+
+- **🔍 Verificação Automática**: Valida estrutura do projeto e dependências
+- **🔌 Gerenciamento de Portas**: Detecta e libera portas ocupadas automaticamente
+- **🏗️ Build Inteligente**: Compilação otimizada evitando erros CLR
+- **⚡ Inicialização Rápida**: API na porta 5000, Blazor na porta 5226
+- **🌐 Browser Automático**: Abre interface automaticamente
+- **📊 Monitoramento**: Health checks e logs coloridos por serviço
+- **🧹 Limpeza Completa**: Remove bins, obj, cache NuGet, arquivos temporários
+- **🐳 Docker Integration**: Gerencia infraestrutura (PostgreSQL, Redis, pgAdmin)
+
+### 🎨 Recursos Visuais
+
+- **Logs Coloridos**: Output organizado por serviço (API=Magenta, Blazor=Cyan, Docker=Azul)
+- **Emojis Informativos**: Feedback visual claro para cada operação
+- **Progress Indicators**: Acompanhamento em tempo real do status
+- **Error Handling**: Tratamento robusto de erros com mensagens claras
+
+### 🔧 Solução de Problemas Comuns
+
+- **CLR Errors**: Build single-thread para evitar erros internos do CLR
+- **Port Conflicts**: Mata processos conflitantes automaticamente
+- **MSBuild Issues**: Shutdown automático de servidores de build
+- **Memory Cleanup**: Limpeza de cache e arquivos temporários
+
+## 📍 URLs Configuradas
+
+Após executar qualquer comando de inicialização:
+
+| Serviço           | URL                                 | Descrição                 |
+| ----------------- | ----------------------------------- | ------------------------- |
+| **API**           | http://localhost:5000               | API RESTful completa      |
+| **Swagger**       | http://localhost:5000/swagger       | Documentação interativa   |
+| **Health Check**  | http://localhost:5000/health        | Monitoramento de saúde    |
+| **Blazor App**    | http://localhost:5226               | Interface moderna         |
+| **Design System** | http://localhost:5226/design-system | Biblioteca de componentes |
+| **pgAdmin**       | http://localhost:8080               | Administração do banco    |
+
+## 🚀 Credenciais de Teste
+
+**SEMPRE use estas credenciais para desenvolvimento:**
+
+- **Email**: `admin@synqcore.com`
+- **Senha**: `SynQcore@Admin123!`
+- **Username**: `admin`
+
+## �️ Configurações Aplicadas
+
+### launchSettings.json
+
+```json
+{
+  "profiles": {
+    "http": {
+      "applicationUrl": "http://localhost:5000"
+    }
+  }
+}
+```
+
+### Program.cs
+
+```csharp
+app.UseSwaggerUI(options =>
+{
+    options.RoutePrefix = "swagger"; // /swagger path
+});
+```
+
+### Variáveis de Ambiente
+
+```bash
+export ASPNETCORE_URLS="http://localhost:5000"
+export ASPNETCORE_ENVIRONMENT=Development
+```
+
+## 📈 Uso Recomendado
+
+### 🥇 Desenvolvimento Diário
+
+```bash
+./synqcore start    # Aplicação completa em um comando
+```
+
+### 🔧 Desenvolvimento Específico
+
+```bash
+./synqcore api      # Apenas back-end
+./synqcore blazor   # Apenas front-end
+./synqcore clean    # Limpeza antes de push
+```
+
+### 🐳 Infraestrutura
+
+```bash
+./synqcore docker-up    # PostgreSQL + Redis + pgAdmin
+./synqcore docker-down  # Parar infraestrutura
+```
+
+## ⚠️ Troubleshooting
+
+### Porta Ocupada
+
+O script resolve automaticamente, mas pode verificar manualmente:
+
+```bash
+lsof -i :5000
+pkill -f "dotnet.*SynQcore"
+```
+
+### Build Fails
+
+```bash
+./synqcore clean
+./synqcore start
+```
+
+### CLR Internal Error
+
+```bash
+# O script já trata isso automaticamente com:
+dotnet build-server shutdown
+rm -rf src/*/bin src/*/obj
+dotnet build --maxcpucount:1
+```
+
+## 🏆 Vantagens do Script Unificado
+
+- ✅ **Simplicidade**: Um script, todas as funcionalidades
+- ✅ **Robustez**: Tratamento automático de problemas comuns
+- ✅ **Performance**: Build otimizado e gerenciamento de recursos
+- ✅ **Produtividade**: Menos comandos para memorizar
+- ✅ **Consistência**: Comportamento padronizado em todos os ambientes
+- ✅ **Manutenibilidade**: Código centralizado e organizado
+
+**Resultado: Desenvolvimento mais ágil e confiável! 🎯**
 
 #### Limpeza de Arquivos Desnecessários
 

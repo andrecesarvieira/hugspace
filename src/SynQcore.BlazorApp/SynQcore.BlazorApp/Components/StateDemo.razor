@@ -19,9 +19,6 @@
             <div class="state-section">
                 <h5>🎨 Estado da UI</h5>
                 <div class="state-controls">
-                    <SynQButton Text="@($"Tema: {UIState.Value.Theme}")" OnClick="ToggleTheme"
-                        Variant="SynQButtonVariant.Secondary" Size="SynQButtonSize.Small" />
-
                     <SynQButton Text="@($"Sidebar: {(UIState.Value.IsSidebarExpanded ? "Expandido" : "Recolhido")}")"
                         OnClick="ToggleSidebar" Variant="SynQButtonVariant.Secondary" Size="SynQButtonSize.Small" />
 
@@ -179,15 +176,6 @@
     [Inject] private IDispatcher Dispatcher { get; set; } = null!;
 
     private bool IsLoading => UIState.Value.IsLoading;
-
-    /// <summary>
-    /// Alterna o tema entre claro e escuro
-    /// </summary>
-    private void ToggleTheme()
-    {
-        var newTheme = UIState.Value.Theme == "light" ? "dark" : "light";
-        Dispatcher.Dispatch(new UIActions.SetThemeAction(newTheme));
-    }
 
     /// <summary>
     /// Alterna o estado da sidebar

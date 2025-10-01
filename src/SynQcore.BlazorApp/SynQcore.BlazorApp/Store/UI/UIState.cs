@@ -14,11 +14,6 @@ public record UIState
     public bool IsLoading { get; init; }
 
     /// <summary>
-    /// Tema atual (light/dark)
-    /// </summary>
-    public string Theme { get; init; } = "light";
-
-    /// <summary>
     /// Menu sidebar expandido
     /// </summary>
     public bool IsSidebarExpanded { get; init; } = true;

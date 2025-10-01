@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using SynQcore.BlazorApp.Store.User;
+using static SynQcore.BlazorApp.Services.AuthService;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -63,23 +64,23 @@ public partial class LocalAuthService : ILocalAuthService
             LogLoginAttempt(_logger, email);
 
             var loginRequest = new { email, password };
-            var response = await _apiService.PostAsync<dynamic>("/api/auth/login", loginRequest);
+            var response = await _apiService.PostAsync<ApiLoginResponse>("/api/auth/login", loginRequest);
 
-            if (response?.AccessToken != null)
+            if (response != null && response.Success && !string.IsNullOrEmpty(response.Token))
             {
-                // Salvar token
-                await _localStorage.SetItemAsync(AUTH_TOKEN_KEY, response.AccessToken.ToString());
-
-                // Salvar informações do usuário
+                // Salvar token e dados do usuário usando cache e localStorage
                 var userInfo = new UserInfo
                 {
-                    Id = response.User?.Id?.ToString() ?? "",
-                    Nome = response.User?.Nome?.ToString() ?? "",
-                    Email = response.User?.Email?.ToString() ?? email,
-                    Username = response.User?.Username?.ToString() ?? email.Split('@')[0]
+                    Id = response.User.Id,
+                    Nome = response.User.UserName,
+                    Email = response.User.Email,
+                    Username = response.User.UserName,
+                    IsAtivo = true,
+                    DataCadastro = DateTime.UtcNow,
+                    UltimoAcesso = DateTime.UtcNow
                 };
 
-                await _localStorage.SetItemAsync(USER_INFO_KEY, userInfo);
+                await SaveAuthDataAsync(response.Token, userInfo);
 
                 LogLoginSuccess(_logger, email);
                 return true;

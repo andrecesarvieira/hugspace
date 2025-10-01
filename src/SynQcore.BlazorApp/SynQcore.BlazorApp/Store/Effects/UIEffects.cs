@@ -43,23 +43,6 @@ public class UIEffects
     }
 
     /// <summary>
-    /// Effect para alterar tema - aplica no DOM
-    /// </summary>
-    [EffectMethod]
-    public async Task HandleSetThemeAction(UIActions.SetThemeAction action, IDispatcher dispatcher)
-    {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("document.documentElement.setAttribute", "data-theme", action.Theme);
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "synqcore_theme", action.Theme);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[UIEffects] Erro ao aplicar tema: {ex.Message}");
-        }
-    }
-
-    /// <summary>
     /// Effect para abrir modal - foca no modal
     /// </summary>
     [EffectMethod]

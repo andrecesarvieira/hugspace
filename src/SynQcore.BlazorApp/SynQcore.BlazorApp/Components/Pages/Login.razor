@@ -6,191 +6,125 @@
 @inject IDispatcher Dispatcher
 @inject IState<UserState> UserState
 @inject IAuthService AuthService
+@inject ICookieAuthService CookieAuthService
 @inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
 
-<div class="login-container">
-    <div class="login-background">
-        <div class="background-shapes">
-            <div class="shape shape-1"></div>
-            <div class="shape shape-2"></div>
-            <div class="shape shape-3"></div>
-        </div>
-    </div>
+<PageTitle>Login - SynQcore</PageTitle>
 
-    <div class="login-content">
-        <!-- Lado Esquerdo - Informações da Empresa -->
-        <div class="login-info">
-            <div class="company-branding">
-                <div class="logo-container">
-                    <div class="logo-circle">
-                        <i class="fas fa-at logo-icon"></i>
+<div class="login-page">
+    <div class="login-container">
+        <div class="login-content">
+            <!-- Lado Esquerdo - Informações da Empresa -->
+            <div class="login-info">
+                <div class="company-branding">
+                    <div class="logo-container">
+                        <div class="logo-circle">
+                            <i class="fas fa-at logo-icon"></i>
+                        </div>
+                        <h1>SynQcore</h1>
                     </div>
-                    <h1>SynQcore</h1>
-                </div>
 
-                <p class="company-tagline">
-                    Conecte-se, colabore e cresça com sua equipe
-                </p>
+                    <p class="company-tagline">
+                        Conecte-se, colabore e cresça com sua equipe
+                    </p>
 
-                <p class="company-description">
-                    A rede social corporativa que transforma a comunicação interna,
-                    promove colaboração e constrói conhecimento coletivo.
-                </p>
+                    <p class="company-description">
+                        A rede social corporativa que transforma a comunicação interna,
+                        promove colaboração e constrói conhecimento coletivo.
+                    </p>
 
-                <div class="features-preview">
-                    <div class="feature-item">
-                        <i class="fas fa-users"></i>
-                        <span>Colaboração em Tempo Real</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-brain"></i>
-                        <span>Gestão de Conhecimento</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Analytics Avançados</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Segurança Enterprise</span>
+                    <div class="features-preview">
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Colaboração em Tempo Real</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-brain"></i>
+                            <span>Gestão de Conhecimento</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics Avançados</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Segurança Enterprise</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Lado Direito - Formulário de Login -->
-        <div class="login-form-section">
-            <div class="login-card">
-                <div class="login-header">
-                    <h2>Bem-vindo de volta!</h2>
-                    <p class="login-subtitle">Faça login para acessar sua conta</p>
-                </div>
+            <!-- Lado Direito - Formulário de Login -->
+            <div class="login-form-section">
+                <div class="login-card">
+                    <div class="login-header">
+                        <h2>Bem-vindo de volta!</h2>
+                        <p class="login-subtitle">Faça login para acessar sua conta</p>
+                    </div>
 
-                <div class="login-form">
-                    @if (!string.IsNullOrEmpty(ErrorMessage))
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            @ErrorMessage
-                        </div>
-                    }
-
-                    @if (IsLoading)
-                    {
-                        <div class="loading-overlay">
-                            <div class="spinner">
-                                <div class="spinner-circle"></div>
-                                <p>Autenticando...</p>
+                    <div class="login-form">
+                        @* Mensagem de erro *@
+                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                @ErrorMessage
                             </div>
-                        </div>
-                    }
+                        }
 
-                    <form @onsubmit="HandleSubmit" @onsubmit:preventDefault="true">
-                        <div class="form-group">
-                            <label for="email">E-mail corporativo</label>
-                            <div class="input-group">
-                                <i class="fas fa-envelope input-icon"></i>
-                                <input id="email"
-                                       type="email"
-                                       @bind="LoginRequest.Email"
-                                       @bind:event="oninput"
-                                       class="form-control"
-                                       placeholder="seu.email@empresa.com"
-                                       disabled="@IsLoading"
-                                       required
-                                       autocomplete="email" />
-                            </div>
-                            @if (!IsValidEmail(LoginRequest.Email) && !string.IsNullOrEmpty(LoginRequest.Email))
-                            {
-                                <div class="validation-message">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    E-mail deve ter um formato válido
+                        @* Formulário *@
+                        <form @onsubmit="HandleSubmit" @onsubmit:preventDefault="true">
+                            <div class="form-group">
+                                <label for="email" class="form-label">E-mail</label>
+                                <div class="input-group">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <input id="email" type="email" @bind="Email" @bind:event="oninput"
+                                        class="form-control" placeholder="seu.email@empresa.com" disabled="@IsLoading"
+                                        required autocomplete="email" />
                                 </div>
-                            }
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">Senha</label>
-                            <div class="input-group">
-                                <i class="fas fa-lock input-icon"></i>
-                                <input id="password"
-                                       type="@(ShowPassword ? "text" : "password")"
-                                       @bind="LoginRequest.Password"
-                                       @bind:event="oninput"
-                                       class="form-control"
-                                       placeholder="Digite sua senha"
-                                       disabled="@IsLoading"
-                                       required
-                                       minlength="6"
-                                       autocomplete="current-password" />
-                                <button type="button"
-                                        class="btn-toggle-password"
-                                        @onclick="TogglePasswordVisibility"
-                                        disabled="@IsLoading"
-                                        tabindex="-1">
-                                    <i class="fas @(ShowPassword ? "fa-eye-slash" : "fa-eye")"></i>
-                                </button>
                             </div>
-                            @if (LoginRequest.Password.Length > 0 && LoginRequest.Password.Length < 6)
-                            {
-                                <div class="validation-message">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    Senha deve ter pelo menos 6 caracteres
+
+                            <div class="form-group">
+                                <label for="password" class="form-label">Senha</label>
+                                <div class="input-group">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input id="password" type="@(ShowPassword ? "text" : "password")" @bind="Password"
+                                        @bind:event="oninput" class="form-control" placeholder="Digite sua senha"
+                                        disabled="@IsLoading" required autocomplete="current-password" />
+                                    <button type="button" class="btn-toggle-password"
+                                        @onclick="TogglePasswordVisibility" disabled="@IsLoading" tabindex="-1">
+                                        <i class="fas @(ShowPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                                    </button>
                                 </div>
-                            }
-                        </div>
-
-                        <div class="form-options">
-                            <div class="form-check">
-                                <input id="rememberMe"
-                                       type="checkbox"
-                                       @bind="LoginRequest.RememberMe"
-                                       class="form-check-input"
-                                       disabled="@IsLoading" />
-                                <label class="form-check-label" for="rememberMe">
-                                    Lembrar-me neste dispositivo
-                                </label>
                             </div>
 
-                            <a href="/recuperar-senha" class="forgot-password">
-                                Esqueceu a senha?
-                            </a>
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-primary btn-block"
-                                disabled="@(IsLoading || !IsFormValid())"
-                                @onclick="HandleLogin">
-                            @if (IsLoading)
-                            {
-                                <div class="btn-loading">
-                                    <div class="btn-spinner"></div>
-                                    <span>Entrando...</span>
+                            <div class="form-options">
+                                <div class="form-check">
+                                    <input id="rememberMe" type="checkbox" @bind="RememberMe" class="form-check-input"
+                                        disabled="@IsLoading" />
+                                    <label class="form-check-label" for="rememberMe">
+                                        Lembrar-me
+                                    </label>
                                 </div>
-                            }
-                            else
-                            {
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span>Entrar na Plataforma</span>
-                            }
-                        </button>
-                    </form>
-
-                    <div class="login-footer">
-                        <div class="help-section">
-                            <p>Precisa de ajuda?</p>
-                            <div class="help-links">
-                                <a href="/suporte">
-                                    <i class="fas fa-headset"></i>
-                                    Suporte Técnico
-                                </a>
-                                <a href="/contato">
-                                    <i class="fas fa-envelope"></i>
-                                    Fale Conosco
-                                </a>
                             </div>
-                        </div>
+
+                            <button type="submit" class="btn btn-primary btn-login"
+                                disabled="@(IsLoading || !IsFormValid())" @onclick="HandleLogin">
+                                @if (IsLoading)
+                                {
+                                    <div class="btn-loading">
+                                        <div class="btn-spinner"></div>
+                                        <span>Entrando...</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <span>Entrar</span>
+                                }
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -198,641 +132,21 @@
     </div>
 </div>
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    .login-container {
-        min-height: 100vh;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* ===== BACKGROUND ===== */
-    .login-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-        z-index: 1;
-    }
-
-    .background-shapes {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-    }
-
-    .shape {
-        position: absolute;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        animation: float 8s ease-in-out infinite;
-    }
-
-    .shape-1 {
-        width: 200px;
-        height: 200px;
-        top: 10%;
-        left: 10%;
-        animation-delay: 0s;
-    }
-
-    .shape-2 {
-        width: 150px;
-        height: 150px;
-        top: 60%;
-        right: 15%;
-        animation-delay: 3s;
-    }
-
-    .shape-3 {
-        width: 100px;
-        height: 100px;
-        bottom: 20%;
-        left: 20%;
-        animation-delay: 6s;
-    }
-
-    @@keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
-        50% { transform: translateY(-30px) rotate(180deg); opacity: 1; }
-    }
-
-    /* ===== MAIN CONTENT ===== */
-    .login-content {
-        position: relative;
-        z-index: 2;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        min-height: 100vh;
-    }
-
-    /* ===== LEFT SIDE - COMPANY INFO ===== */
-    .login-info {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem;
-        color: white;
-    }
-
-    .company-branding {
-        max-width: 500px;
-    }
-
-    .logo-container {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .logo-circle {
-        width: 80px;
-        height: 80px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(20px);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .logo-icon {
-        font-size: 2rem;
-        color: white;
-    }
-
-    .logo-container h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .company-tagline {
-        font-size: 1.5rem;
-        font-weight: 300;
-        margin-bottom: 1.5rem;
-        opacity: 0.95;
-        line-height: 1.4;
-    }
-
-    .company-description {
-        font-size: 1.1rem;
-        line-height: 1.6;
-        margin-bottom: 3rem;
-        opacity: 0.9;
-    }
-
-    .features-preview {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-    }
-
-    .feature-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-    }
-
-    .feature-item:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: translateY(-2px);
-    }
-
-    .feature-item i {
-        font-size: 1.5rem;
-        color: #fbbf24;
-    }
-
-    .feature-item span {
-        font-weight: 500;
-        font-size: 0.95rem;
-    }
-
-    /* ===== RIGHT SIDE - LOGIN FORM ===== */
-    .login-form-section {
-        background: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-    }
-
-    .login-card {
-        width: 100%;
-        max-width: 450px;
-        background: white;
-        border-radius: 24px;
-        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-        padding: 0;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .login-header {
-        padding: 2.5rem 2.5rem 1.5rem;
-        text-align: center;
-        background: linear-gradient(135deg, #f8f9ff 0%, #e8efff 100%);
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .login-header h2 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 0.5rem;
-    }
-
-    .login-subtitle {
-        color: #6b7280;
-        font-size: 1rem;
-        margin: 0;
-    }
-
-    .login-form {
-        padding: 2.5rem;
-        position: relative;
-    }
-
-    /* ===== FORM ELEMENTS ===== */
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 0.75rem;
-        font-weight: 600;
-        color: #374151;
-        font-size: 0.95rem;
-    }
-
-    .input-group {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .input-icon {
-        position: absolute;
-        left: 1rem;
-        color: #9ca3af;
-        z-index: 2;
-        font-size: 1rem;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 1rem 1rem 1rem 3rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: #ffffff;
-        font-family: inherit;
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        background: #fefefe;
-    }
-
-    .form-control:disabled {
-        background-color: #f9fafb;
-        cursor: not-allowed;
-        opacity: 0.7;
-    }
-
-    .btn-toggle-password {
-        position: absolute;
-        right: 1rem;
-        background: none;
-        border: none;
-        color: #9ca3af;
-        cursor: pointer;
-        padding: 0.5rem;
-        z-index: 2;
-        border-radius: 6px;
-        transition: all 0.2s ease;
-    }
-
-    .btn-toggle-password:hover:not(:disabled) {
-        color: #667eea;
-        background: #f3f4f6;
-    }
-
-    .form-options {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .form-check {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .form-check-input {
-        width: 18px;
-        height: 18px;
-        margin: 0;
-        cursor: pointer;
-    }
-
-    .form-check-label {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #6b7280;
-        cursor: pointer;
-        user-select: none;
-    }
-
-    .forgot-password {
-        color: #667eea;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-
-    .forgot-password:hover {
-        color: #5a67d8;
-        text-decoration: underline;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn-primary {
-        width: 100%;
-        padding: 1rem 1.5rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 12px;
-        color: white;
-        font-weight: 600;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-primary:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-    }
-
-    .btn-loading {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .btn-spinner {
-        width: 20px;
-        height: 20px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 1s ease-in-out infinite;
-    }
-
-    @@keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-
-    /* ===== ALERTS ===== */
-    .alert {
-        padding: 1rem 1.25rem;
-        border-radius: 12px;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-    }
-
-    .alert-danger {
-        background: linear-gradient(135deg, #fef2f2, #fee2e2);
-        color: #dc2626;
-        border: 1px solid #fecaca;
-    }
-
-    .validation-message {
-        color: #dc2626;
-        font-size: 0.85rem;
-        margin-top: 0.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-weight: 500;
-    }
-
-    /* ===== LOADING OVERLAY ===== */
-    .loading-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.95);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10;
-        border-radius: 24px;
-        backdrop-filter: blur(5px);
-    }
-
-    .spinner {
-        text-align: center;
-        color: #667eea;
-    }
-
-    .spinner-circle {
-        width: 50px;
-        height: 50px;
-        border: 4px solid #e5e7eb;
-        border-radius: 50%;
-        border-top-color: #667eea;
-        animation: spin 1s ease-in-out infinite;
-        margin: 0 auto 1rem;
-    }
-
-    .spinner p {
-        margin: 0;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-
-    /* ===== FOOTER ===== */
-    .login-footer {
-        border-top: 1px solid #e5e7eb;
-        padding-top: 1.5rem;
-    }
-
-    .help-section {
-        text-align: center;
-    }
-
-    .help-section p {
-        font-size: 0.9rem;
-        color: #9ca3af;
-        margin-bottom: 1rem;
-    }
-
-    .help-links {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        flex-wrap: wrap;
-    }
-
-    .help-links a {
-        color: #667eea;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.2s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-    }
-
-    .help-links a:hover {
-        background: #f3f4f6;
-        color: #5a67d8;
-    }
-
-    /* ===== RESPONSIVE DESIGN ===== */
-    @@media (max-width: 1024px) {
-        .login-content {
-            grid-template-columns: 1fr;
-        }
-
-        .login-info {
-            display: none;
-        }
-
-        .login-form-section {
-            min-height: 100vh;
-        }
-    }
-
-    @@media (max-width: 768px) {
-        .login-form-section {
-            padding: 1rem;
-        }
-
-        .login-card {
-            max-width: none;
-            border-radius: 0;
-            box-shadow: none;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .login-header,
-        .login-form {
-            padding: 2rem;
-        }
-
-        .login-header h2 {
-            font-size: 1.75rem;
-        }
-
-        .features-preview {
-            grid-template-columns: 1fr;
-        }
-
-        .form-options {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-
-        .help-links {
-            flex-direction: column;
-            gap: 1rem;
-        }
-    }
-
-    @@media (max-width: 480px) {
-        .login-header,
-        .login-form {
-            padding: 1.5rem;
-        }
-
-        .company-branding {
-            text-align: center;
-        }
-
-        .logo-container {
-            justify-content: center;
-        }
-    }
-</style>
-
 @code {
-    private LoginModel LoginRequest = new();
+    private string Email = "admin@synqcore.com";
+    private string Password = "SynQcore@Admin123!";
+    private bool RememberMe = false;
     private bool IsLoading = false;
     private bool ShowPassword = false;
     private string ErrorMessage = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        try
+        // Verificar se já está autenticado
+        if (UserState.Value.IsAuthenticated)
         {
-            // Verificar se já está logado usando AMBOS os sistemas
-            var isFluxorAuth = UserState.Value.IsAuthenticated;
-            var isLocalAuth = await LocalAuthService.IsAuthenticatedAsync();
-
-            if (isFluxorAuth || isLocalAuth)
-            {
-                Console.WriteLine($"[LOGIN] Usuário já autenticado - Fluxor: {isFluxorAuth}, Local: {isLocalAuth}");
-                Navigation.NavigateTo("/feed");
-                return;
-            }
-
-            // Preencher credenciais padrão para desenvolvimento
-            LoginRequest.Email = "admin@synqcore.com";
-            LoginRequest.Password = "SynQcore@Admin123!";
-            LoginRequest.RememberMe = true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[LOGIN] Erro na inicialização: {ex.Message}");
-        }
-    }
-
-    private async Task HandleLogin()
-    {
-        if (!IsFormValid())
-        {
-            ErrorMessage = "Por favor, preencha todos os campos obrigatórios.";
+            Navigation.NavigateTo("/");
             return;
-        }
-
-        try
-        {
-            Console.WriteLine($"[LOGIN] Iniciando autenticação para: {LoginRequest.Email}");
-
-            IsLoading = true;
-            ErrorMessage = string.Empty;
-            StateHasChanged();
-
-            await Task.Delay(500); // Pequeno delay para UX
-
-            // Tentar primeiro com AuthService (Fluxor)
-            var success = await AuthService.LoginAsync(LoginRequest.Email, LoginRequest.Password);
-
-            // Se Fluxor falhar, usar LocalAuthService como backup
-            if (!success)
-            {
-                Console.WriteLine("[LOGIN] Fluxor falhou, tentando LocalAuth...");
-                success = await LocalAuthService.LoginAsync(LoginRequest.Email, LoginRequest.Password);
-            }
-
-            if (success)
-            {
-                Console.WriteLine("[LOGIN] Autenticação bem-sucedida");
-
-                // Aguardar atualização do state
-                await Task.Delay(200);
-
-                // Redirecionar para o feed
-                Navigation.NavigateTo("/feed", forceLoad: true);
-            }
-            else
-            {
-                ErrorMessage = "Credenciais inválidas. Verifique seu e-mail e senha.";
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[LOGIN] Erro durante autenticação: {ex.Message}");
-            ErrorMessage = "Erro interno do sistema. Tente novamente em alguns instantes.";
-        }
-        finally
-        {
-            IsLoading = false;
-            StateHasChanged();
         }
     }
 
@@ -841,32 +155,80 @@
         await HandleLogin();
     }
 
-    private void TogglePasswordVisibility()
+    private async Task HandleLogin()
     {
-        if (!IsLoading)
+        if (!IsFormValid() || IsLoading)
+            return;
+
+        IsLoading = true;
+        ErrorMessage = string.Empty;
+        StateHasChanged();
+
+        try
         {
-            ShowPassword = !ShowPassword;
+            // Usar LocalAuthService que não depende de cookies
+            var success = await LocalAuthService.LoginAsync(Email, Password);
+
+            if (success)
+            {
+                // Buscar os dados reais do usuário do LocalAuthService
+                var currentUser = await LocalAuthService.GetCurrentUserAsync();
+
+                if (currentUser != null)
+                {
+                    Console.WriteLine($"[LOGIN] Usuário logado com sucesso: {currentUser.Nome}");
+
+                    // Atualizar o estado do usuário via Fluxor
+                    Dispatcher.Dispatch(new UserActions.LoginSuccessAction(
+                    currentUser,
+                    AccessToken: "token-from-api", // Será sobrescrito pelo token real
+                    RefreshToken: null,
+                    ExpiresAt: DateTime.UtcNow.AddHours(24)
+                    ));
+
+                    Console.WriteLine("[LOGIN] LoginSuccessAction disparado");
+
+                    // Aguardar um pouco para o estado ser processado
+                    await Task.Delay(100);
+                    StateHasChanged();
+
+                    Console.WriteLine("[LOGIN] Redirecionando para /feed");
+
+                    // Navegação forçada sem wait para evitar problemas com response
+                    Navigation.NavigateTo("/feed", forceLoad: true);
+                }
+                else
+                {
+                    ErrorMessage = "Erro ao obter dados do usuário após login.";
+                }
+            }
+            else
+            {
+                ErrorMessage = "Credenciais inválidas. Verifique seu e-mail e senha.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro durante login: {Email}");
+            Console.WriteLine($"{ex}");
+            ErrorMessage = "Erro interno do sistema. Tente novamente.";
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
         }
     }
 
-    private bool IsValidEmail(string email)
+    private void TogglePasswordVisibility()
     {
-        if (string.IsNullOrEmpty(email)) return true;
-        return email.Contains("@") && email.Contains(".") && email.Length > 5;
+        ShowPassword = !ShowPassword;
     }
 
     private bool IsFormValid()
     {
-        return !string.IsNullOrWhiteSpace(LoginRequest.Email)
-               && !string.IsNullOrWhiteSpace(LoginRequest.Password)
-               && IsValidEmail(LoginRequest.Email)
-               && LoginRequest.Password.Length >= 6;
-    }
-
-    public class LoginModel
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public bool RememberMe { get; set; } = true;
+        return !string.IsNullOrWhiteSpace(Email) &&
+        !string.IsNullOrWhiteSpace(Password) &&
+        Email.Contains("@");
     }
 }
