@@ -386,7 +386,8 @@ FodyWeavers.xsd
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
+!.vscode/synqcore.code-workspace
+# Permitir workspace específico do SynQcore para sincronização entre computadores
 
 # Local History for Visual Studio Code
 .history/

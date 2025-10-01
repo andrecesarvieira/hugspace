@@ -1,0 +1,30 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    // Git - Controle Manual Obrigatório
+    "git.autofetch": false,
+    "git.autofetchPeriod": 0,
+    "git.pullBeforeCheckout": false,
+    "git.confirmSync": true,
+    
+    // Projeto SynQcore específico
+    "files.associations": {
+      "*.cs": "csharp",
+      "*.razor": "razor",
+      "*.json": "json"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.blazorwasm-companion",
+      "ms-python.python",
+      "ms-python.debugpy",
+      "bradlc.vscode-tailwindcss"
+    ]
+  }
+}

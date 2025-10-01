@@ -1,0 +1,33 @@
+{
+  // Configurações Git - Controle Manual de Sincronização
+  "git.autofetch": false,
+  "git.autofetchPeriod": 0,
+  "git.pullBeforeCheckout": false,
+  "git.enableSmartCommit": false,
+  "git.confirmSync": true,
+  "git.showPushSuccessNotification": true,
+  
+  // Configurações adicionais para controle manual
+  "scm.autoReveal": false,
+  "git.fetchOnPull": true,
+  "git.pruneOnFetch": false,
+  
+  // Configurações do projeto SynQcore
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "editor.insertSpaces": true,
+  "editor.tabSize": 4,
+  "editor.detectIndentation": false,
+  
+  // Configurações .NET
+  "dotnet.defaultSolution": "SynQcore.sln",
+  "omnisharp.enableImportCompletion": true,
+  "omnisharp.enableAsyncCompletion": true,
+  
+  // Configurações Python para scripts
+  "python.defaultInterpreterPath": "/usr/bin/python3",
+  
+  // Configurações de terminal
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.defaultProfile.linux": "bash"
+}
