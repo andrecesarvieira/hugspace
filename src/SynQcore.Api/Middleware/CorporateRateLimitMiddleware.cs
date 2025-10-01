@@ -114,7 +114,7 @@ public partial class CorporateRateLimitMiddleware
     private static partial void LogRateLimitContext(ILogger logger, string? clientId, string? path, string? remoteIP);
 }
 
-public static class CorporateRateLimitExtensions
+public static partial class CorporateRateLimitExtensions
 {
     public static IServiceCollection AddCorporateRateLimit(this IServiceCollection services, IConfiguration configuration)
     {
@@ -123,6 +123,19 @@ public static class CorporateRateLimitExtensions
 
         // Configure Client Rate Limiting
         services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
+
+        // Check if rate limiting should be enabled for current environment
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var ipRateLimitConfig = configuration.GetSection("IpRateLimiting");
+        var isEnabled = ipRateLimitConfig.GetValue<bool>("EnableEndpointRateLimiting");
+
+        // Skip rate limiting setup for Docker environment if disabled
+        if (environment?.Equals("Docker", StringComparison.OrdinalIgnoreCase) == true && !isEnabled)
+        {
+            // Add dummy services to prevent DI errors
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            return services;
+        }
 
         // Check if Redis should be used for rate limiting store
         var storeConfig = configuration.GetSection("RateLimitingStore");
@@ -161,12 +174,25 @@ public static class CorporateRateLimitExtensions
         // Corporate client ID middleware (must come before rate limiting)
         app.UseMiddleware<CorporateRateLimitMiddleware>();
 
-        // IP rate limiting
-        app.UseIpRateLimiting();
+        try
+        {
+            // IP rate limiting
+            app.UseIpRateLimiting();
 
-        // Client rate limiting
-        app.UseClientRateLimiting();
+            // Client rate limiting
+            app.UseClientRateLimiting();
+        }
+        catch (Exception ex)
+        {
+            // Log the error but don't crash the application
+            var logger = app.ApplicationServices.GetRequiredService<ILogger<CorporateRateLimitMiddleware>>();
+            LogRateLimitingInitializationError(logger, ex);
+        }
 
         return app;
     }
+
+    [LoggerMessage(EventId = 2002, Level = LogLevel.Error,
+        Message = "Failed to initialize rate limiting middleware. Rate limiting will be disabled.")]
+    private static partial void LogRateLimitingInitializationError(ILogger logger, Exception exception);
 }

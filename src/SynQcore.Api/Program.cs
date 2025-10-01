@@ -555,8 +555,9 @@ app.UseExceptionHandler(); // Global exception handler
 // Security headers middleware
 app.UseSecurityHeaders(); // Corporate security headers
 
-// Rate limiting middleware (com bypass inteligente) - Skip in Testing environment
-if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+// Rate limiting middleware (com bypass inteligente) - Skip in Testing environment ou quando desabilitado
+var rateLimitEnabled = builder.Configuration.GetSection("IpRateLimiting").GetValue<bool>("EnableEndpointRateLimiting");
+if (!app.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase) && rateLimitEnabled)
 {
     app.UseCorporateRateLimit(); // Corporate rate limiting com bypass
 }

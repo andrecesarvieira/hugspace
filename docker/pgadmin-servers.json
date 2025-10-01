@@ -7,7 +7,7 @@
             "Port": 5432,
             "MaintenanceDB": "synqcore_db",
             "Username": "synqcore_user",
-            "Password": "synqcore_dev_password", 
+            "Password": "SynQcore@Dev123!", 
             "SSLMode": "prefer",
             "Favorite": true
         }
