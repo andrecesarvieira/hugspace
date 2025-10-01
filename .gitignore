@@ -12,7 +12,6 @@
 *.user
 *.userosscache
 *.sln.docstates
-copilot-instructions.md
 .vscode
 docs/testing
 
