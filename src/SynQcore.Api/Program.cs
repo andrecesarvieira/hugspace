@@ -233,7 +233,10 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings["Issuer"],
         ValidAudience = jwtSettings["Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]!)),
+        ClockSkew = TimeSpan.Zero,
+        NameClaimType = "name",
+        RoleClaimType = "role"
     };
 
     // Enable JWT authentication for SignalR hubs
@@ -249,6 +252,18 @@ builder.Services.AddAuthentication(options =>
             {
                 context.Token = accessToken;
             }
+            return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"[DEBUG] JWT Authentication failed: {context.Exception?.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"[DEBUG] JWT Token validated successfully");
+            var claims = context.Principal?.Claims.Select(c => $"{c.Type}={c.Value}");
+            Console.WriteLine($"[DEBUG] Claims: {string.Join(", ", claims ?? Array.Empty<string>())}");
             return Task.CompletedTask;
         }
     };

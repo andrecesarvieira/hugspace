@@ -4,11 +4,13 @@
 @using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Models
+@using SynQcore.BlazorApp.Components.Social
 @inject IState<UserState> UserState
 @inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject IUserPermissionService UserPermissionService
+@inject IPostService PostService
 
 <style>
     /* === RESET COMPLETO === */
@@ -372,7 +374,7 @@
 @code {
     private UserInfo? currentUser;
     private bool isLocalAuthenticated = false;
-    private List<PostModel> posts = new();
+    private List<SimplePostCard.PostModel> posts = new();
     private bool isLoading = true;
     private bool isCreatingPost = false;
     private string newPostContent = string.Empty;
@@ -433,15 +435,15 @@
                 canModerate = await UserPermissionService.CanModerateAsync();
             }
 
-            // Carregar posts (simulado)
-            await LoadPostsAsync();
+            // Carregar posts reais da API
+            await LoadPostsFromApiAsync();
 
-            Console.WriteLine("[FEED] Posts carregados da API (implementação pendente)");
+            Console.WriteLine($"[FEED] Posts carregados da API - Total: {posts.Count}");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[FEED] Erro ao carregar feed: {ex.Message}");
-            posts = new List<PostModel>();
+            posts = new List<SimplePostCard.PostModel>();
         }
         finally
         {
@@ -450,11 +452,37 @@
         }
     }
 
+    private async Task LoadPostsFromApiAsync()
+    {
+        try
+        {
+            // Usar o PostService para carregar posts reais da API
+            var feedPosts = await PostService.GetFeedPostsAsync(page: 1, pageSize: 20);
+            
+            if (feedPosts?.Any() == true)
+            {
+                posts = feedPosts;
+                Console.WriteLine($"[FEED] {posts.Count} posts carregados da API com sucesso");
+            }
+            else
+            {
+                // Se não há posts, criar uma lista vazia
+                posts = new List<SimplePostCard.PostModel>();
+                Console.WriteLine("[FEED] Nenhum post encontrado na API - feed vazio");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao carregar posts da API: {ex.Message}");
+            // Em caso de erro, manter lista vazia
+            posts = new List<SimplePostCard.PostModel>();
+        }
+    }
+
     private async Task LoadPostsAsync()
     {
-        // Simulação de carregamento de posts
-        await Task.Delay(1000);
-        posts = new List<PostModel>();
+        // Método legacy - redireciona para o novo método da API
+        await LoadPostsFromApiAsync();
     }
 
     private async Task CreatePost()
@@ -467,28 +495,30 @@
             isCreatingPost = true;
             StateHasChanged();
 
-            // Simular criação de post
-            await Task.Delay(500);
-
-            var newPost = new PostModel
+            // Criar post usando a API real
+            var createRequest = new CreatePostRequest
             {
-                Id = Guid.NewGuid(),
-                Title = "Novo Post",
                 Content = newPostContent,
-                AuthorId = Guid.Parse(currentUser.Id),
-                AuthorName = currentUser?.Nome ?? "Usuário",
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now,
-                Tags = newPostTags?.Split(',').Where(t => !string.IsNullOrWhiteSpace(t)).Select(t => t.Trim()).ToList() ?? new List<string>(),
-                Likes = 0,
-                Comments = new List<CommentModel>()
+                Tags = newPostTags?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(t => t.Trim())
+                                  .Where(t => !string.IsNullOrWhiteSpace(t))
+                                  .ToArray()
             };
 
-            posts.Insert(0, newPost);
-            newPostContent = string.Empty;
-            newPostTags = string.Empty;
+            var newPost = await PostService.CreatePostAsync(createRequest);
 
-            Console.WriteLine($"[FEED] Post criado: {newPost.Content}");
+            if (newPost != null)
+            {
+                posts.Insert(0, newPost);
+                newPostContent = string.Empty;
+                newPostTags = string.Empty;
+
+                Console.WriteLine($"[FEED] Post criado com sucesso via API: {newPost.Content}");
+            }
+            else
+            {
+                Console.WriteLine("[FEED] Falha ao criar post via API");
+            }
         }
         catch (Exception ex)
         {
@@ -506,10 +536,16 @@
         var post = posts.FirstOrDefault(p => p.Id == postId);
         if (post != null)
         {
-            post.Likes++;
-            StateHasChanged();
+            // Chamar API para curtir o post
+            var success = await PostService.LikePostAsync(postId);
+            
+            if (success)
+            {
+                post.LikeCount++;
+                post.IsLiked = true;
+                StateHasChanged();
+            }
         }
-        await Task.CompletedTask;
     }
 
     private async Task ShowComments(Guid postId)

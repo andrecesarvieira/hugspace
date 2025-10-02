@@ -273,9 +273,16 @@ public class FeedController : ControllerBase
     /// </summary>
     private Guid GetCurrentUserId()
     {
+        // Debug: log all claims
+        var allClaims = User.Claims.Select(c => $"{c.Type}={c.Value}").ToList();
+        Console.WriteLine($"[DEBUG] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
+        Console.WriteLine($"[DEBUG] All claims: {string.Join(", ", allClaims)}");
+
         var userIdClaim = User.FindFirst("sub")?.Value ?? 
                          User.FindFirst("id")?.Value ?? 
                          User.FindFirst("userId")?.Value;
+        
+        Console.WriteLine($"[DEBUG] Found userIdClaim: {userIdClaim}");
         
         if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
         {

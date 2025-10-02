@@ -21,7 +21,7 @@
 
     <!-- Build Configuration -->
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <NoWarn>CS1587;CS1591</NoWarn>
+    <NoWarn>CS1587;CS1591;CA1861</NoWarn>
     <WarningsAsErrors />
     <WarningsNotAsErrors />
 
