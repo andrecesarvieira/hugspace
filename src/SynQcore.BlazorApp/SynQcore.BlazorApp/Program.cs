@@ -85,6 +85,7 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>(); // Serviço de 
 builder.Services.AddScoped<IEndorsementService, EndorsementService>(); // Serviço de endorsements
 builder.Services.AddScoped<IKnowledgeService, KnowledgeService>(); // Serviço de gestão de conhecimento
 builder.Services.AddScoped<IDiscussionThreadService, DiscussionThreadService>(); // Serviço de discussion threads
+builder.Services.AddScoped<INotificationService, NotificationService>(); // Serviço de notificações real-time
 
 // HttpClient com interceptor de autenticação
 builder.Services.AddScoped<AuthenticationHandler>();

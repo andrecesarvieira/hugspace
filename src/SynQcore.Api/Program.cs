@@ -588,6 +588,7 @@ app.UseAuthorization();
 // Map SignalR Hubs
 app.MapHub<SynQcore.Api.Hubs.CorporateCollaborationHub>("/hubs/corporate-collaboration");
 app.MapHub<SynQcore.Api.Hubs.ExecutiveCommunicationHub>("/hubs/executive-communication");
+app.MapHub<SynQcore.Api.Hubs.CorporateNotificationHub>("/hubs/corporate-notifications");
 
 app.MapControllers();
 

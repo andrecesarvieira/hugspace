@@ -5,12 +5,14 @@
 @using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Models
 @using SynQcore.BlazorApp.Components.Social
+@using SynQcore.BlazorApp.Components.Shared
 @inject IState<UserState> UserState
 @inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject IUserPermissionService UserPermissionService
 @inject IPostService PostService
+@inject INotificationService NotificationService
 
 <style>
     /* === RESET COMPLETO === */
@@ -154,12 +156,7 @@
         <!-- Área de Ações do Usuário -->
         <div class="header-actions">
             <!-- Notificações -->
-            <div class="notifications">
-                <button class="notification-btn" @onclick="ShowNotifications">
-                    <i class="fas fa-bell notification-icon"></i>
-                    <span class="notification-badge">3</span>
-                </button>
-            </div>
+            <NotificationCenter />
 
             <!-- Perfil do Usuário -->
             @if (currentUser != null)
@@ -435,6 +432,9 @@
                 canModerate = await UserPermissionService.CanModerateAsync();
             }
 
+            // Inicializar serviço de notificações se autenticado
+            await InitializeNotificationServiceAsync();
+
             // Carregar posts reais da API
             await LoadPostsFromApiAsync();
 
@@ -600,13 +600,29 @@
     private void OnFilterPosts() => SetSearchFilter("posts");
     private void OnFilterPeople() => SetSearchFilter("people");
 
-    // Métodos de Notificação
-    private async Task ShowNotifications()
+    // Método para inicializar serviço de notificações
+    private async Task InitializeNotificationServiceAsync()
     {
-        Console.WriteLine("[NOTIFICATIONS] Abrindo notificações");
-        // TODO: Implementar painel de notificações
-        Console.WriteLine($"[BLAZOR] [FEED] Mostrar notificações");
-        await Task.CompletedTask;
+        try
+        {
+            if (isLocalAuthenticated)
+            {
+                var accessToken = await LocalAuthService.GetAccessTokenAsync();
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    await NotificationService.StartAsync(accessToken);
+                    Console.WriteLine("[FEED] NotificationService inicializado com sucesso");
+                }
+                else
+                {
+                    Console.WriteLine("[FEED] Token de acesso não encontrado para NotificationService");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao inicializar NotificationService: {ex.Message}");
+        }
     }
 
     private async Task ShowMessages()

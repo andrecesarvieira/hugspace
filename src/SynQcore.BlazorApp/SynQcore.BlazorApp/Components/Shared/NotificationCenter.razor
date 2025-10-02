@@ -1,0 +1,285 @@
+@using SynQcore.BlazorApp.Models
+@using SynQcore.BlazorApp.Services
+@inject INotificationService NotificationService
+@inject IJSRuntime JS
+@implements IDisposable
+
+<!-- Incluir CSS externo -->
+<link rel="stylesheet" href="~/css/notification-center.css" />
+
+<div class="notification-center">
+    <!-- Botão de Notificações -->
+    <div class="notification-trigger" @onclick="ToggleNotifications">
+        <i class="fas fa-bell notification-icon"></i>
+        @if (unreadCount > 0)
+        {
+            <span class="notification-badge">@(unreadCount > 99 ? "99+" : unreadCount.ToString())</span>
+        }
+    </div>
+
+    <!-- Dropdown de Notificações -->
+    @if (isNotificationPanelOpen)
+    {
+        <div class="notification-dropdown" @onclick:stopPropagation="true">
+            <div class="notification-header">
+                <h3>Notificações</h3>
+                <div class="notification-actions">
+                    @if (unreadCount > 0)
+                    {
+                        <button class="btn-mark-all-read" @onclick="MarkAllAsRead">
+                            Marcar todas como lidas
+                        </button>
+                    }
+                    <button class="btn-close" @onclick="CloseNotifications">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="notification-filters">
+                <button class="filter-btn @(selectedFilter == "all" ? "active" : "")" 
+                        @onclick='() => SetFilter("all")'>
+                    Todas (@totalNotifications)
+                </button>
+                <button class="filter-btn @(selectedFilter == "unread" ? "active" : "")" 
+                        @onclick='() => SetFilter("unread")'>
+                    Não lidas (@unreadCount)
+                </button>
+                <button class="filter-btn @(selectedFilter == "personal" ? "active" : "")" 
+                        @onclick='() => SetFilter("personal")'>
+                    Pessoais
+                </button>
+                <button class="filter-btn @(selectedFilter == "corporate" ? "active" : "")" 
+                        @onclick='() => SetFilter("corporate")'>
+                    Corporativas
+                </button>
+            </div>
+
+            <div class="notification-list">
+                @if (filteredNotifications.Any())
+                {
+                    @foreach (var notification in filteredNotifications.Take(20))
+                    {
+                        <div class="notification-item @notification.PriorityClass @(notification.IsRead ? "read" : "unread")"
+                             @onclick="() => HandleNotificationClick(notification)">
+                            
+                            <div class="notification-icon" style="color: @notification.TypeColor">
+                                <i class="@notification.IconClass"></i>
+                            </div>
+
+                            <div class="notification-content">
+                                <div class="notification-title">@notification.Title</div>
+                                <div class="notification-message">@notification.Message</div>
+                                <div class="notification-meta">
+                                    <span class="notification-type">@GetTypeDisplayName(notification.Type)</span>
+                                    <span class="notification-time">@notification.TimeAgo</span>
+                                </div>
+                            </div>
+
+                            @if (!notification.IsRead)
+                            {
+                                <div class="unread-indicator"></div>
+                            }
+
+                            @if (notification.Priority == NotificationPriority.Critical)
+                            {
+                                <div class="priority-indicator critical">!</div>
+                            }
+                            else if (notification.Priority == NotificationPriority.High)
+                            {
+                                <div class="priority-indicator high">⚠</div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-notifications">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>@GetEmptyMessage()</p>
+                    </div>
+                }
+            </div>
+
+            <div class="notification-footer">
+                <button class="btn-view-all" @onclick="ViewAllNotifications">
+                    Ver todas as notificações
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Toast Notifications -->
+@if (showToastNotification && currentToastNotification != null)
+{
+    <div class="toast-notification @currentToastNotification.PriorityClass" 
+         style="animation: slideInRight 0.3s ease-out;">
+        <div class="toast-icon" style="color: @currentToastNotification.TypeColor">
+            <i class="@currentToastNotification.IconClass"></i>
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">@currentToastNotification.Title</div>
+            <div class="toast-message">@currentToastNotification.Message</div>
+        </div>
+        <button class="toast-close" @onclick="CloseToast">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+}
+
+@code {
+    private bool isNotificationPanelOpen = false;
+    private bool showToastNotification = false;
+    private NotificationModel? currentToastNotification;
+    private string selectedFilter = "all";
+    private int unreadCount = 0;
+    private List<NotificationModel> notifications = new();
+
+    private int totalNotifications => notifications.Count;
+    
+    private List<NotificationModel> filteredNotifications => selectedFilter switch
+    {
+        "unread" => notifications.Where(n => !n.IsRead).ToList(),
+        "personal" => notifications.Where(n => n.Type == NotificationType.Personal).ToList(),
+        "corporate" => notifications.Where(n => n.Type == NotificationType.Corporate).ToList(),
+        _ => notifications
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Configurar eventos do serviço de notificações
+        NotificationService.NotificationReceived += OnNotificationReceived;
+        NotificationService.UnreadCountUpdated += OnUnreadCountUpdated;
+
+        // Carregar notificações existentes
+        notifications = NotificationService.RecentNotifications;
+        unreadCount = NotificationService.UnreadCount;
+
+        await Task.CompletedTask;
+    }
+
+    private async Task OnNotificationReceived(NotificationModel notification)
+    {
+        notifications.Insert(0, notification);
+        
+        // Manter apenas as 50 mais recentes
+        if (notifications.Count > 50)
+        {
+            notifications.RemoveRange(50, notifications.Count - 50);
+        }
+
+        // Mostrar toast para notificações de alta prioridade
+        if (notification.Priority >= NotificationPriority.High)
+        {
+            await ShowToast(notification);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnUnreadCountUpdated(int count)
+    {
+        unreadCount = count;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ShowToast(NotificationModel notification)
+    {
+        currentToastNotification = notification;
+        showToastNotification = true;
+        StateHasChanged();
+
+        // Auto-hide após 5 segundos
+        await Task.Delay(5000);
+        if (currentToastNotification?.Id == notification.Id)
+        {
+            await CloseToast();
+        }
+    }
+
+    private async Task CloseToast()
+    {
+        showToastNotification = false;
+        currentToastNotification = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleNotifications()
+    {
+        isNotificationPanelOpen = !isNotificationPanelOpen;
+    }
+
+    private void CloseNotifications()
+    {
+        isNotificationPanelOpen = false;
+    }
+
+    private void SetFilter(string filter)
+    {
+        selectedFilter = filter;
+    }
+
+    private async Task HandleNotificationClick(NotificationModel notification)
+    {
+        if (!notification.IsRead)
+        {
+            await NotificationService.MarkAsReadAsync(notification.Id);
+        }
+
+        // Navegar para URL se disponível
+        if (!string.IsNullOrEmpty(notification.ActionUrl))
+        {
+            await JS.InvokeVoidAsync("open", notification.ActionUrl, "_blank");
+        }
+
+        CloseNotifications();
+    }
+
+    private async Task MarkAllAsRead()
+    {
+        var unreadNotifications = notifications.Where(n => !n.IsRead).ToList();
+        
+        foreach (var notification in unreadNotifications)
+        {
+            await NotificationService.MarkAsReadAsync(notification.Id);
+        }
+    }
+
+    private void ViewAllNotifications()
+    {
+        // Navegar para página de todas as notificações
+        CloseNotifications();
+        // Implementar navegação
+    }
+
+    private string GetTypeDisplayName(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Personal => "Pessoal",
+            NotificationType.Department => "Departamento",
+            NotificationType.Corporate => "Corporativa",
+            NotificationType.Role => "Função",
+            NotificationType.Topic => "Tópico",
+            _ => "Geral"
+        };
+    }
+
+    private string GetEmptyMessage()
+    {
+        return selectedFilter switch
+        {
+            "unread" => "Nenhuma notificação não lida",
+            "personal" => "Nenhuma notificação pessoal",
+            "corporate" => "Nenhuma notificação corporativa",
+            _ => "Nenhuma notificação disponível"
+        };
+    }
+
+    public void Dispose()
+    {
+        NotificationService.NotificationReceived -= OnNotificationReceived;
+        NotificationService.UnreadCountUpdated -= OnUnreadCountUpdated;
+    }
+}

@@ -14,6 +14,7 @@ public interface ILocalAuthService
     Task<bool> IsAuthenticatedAsync();
     Task<UserInfo?> GetCurrentUserAsync();
     Task SaveAuthDataAsync(string token, UserInfo userInfo);
+    Task<string?> GetAccessTokenAsync();
 }
 
 public partial class LocalAuthService : ILocalAuthService
@@ -215,6 +216,34 @@ public partial class LocalAuthService : ILocalAuthService
         {
             Console.WriteLine($"[LOCAL AUTH] ERRO ao salvar dados: {ex.Message}");
             LogLoginError(_logger, userInfo.Email, ex);
+        }
+    }
+
+    public async Task<string?> GetAccessTokenAsync()
+    {
+        try
+        {
+            // Verificar cache primeiro
+            if (_isAuthenticated && !string.IsNullOrEmpty(_cachedToken))
+            {
+                return _cachedToken;
+            }
+
+            // Buscar no LocalStorage
+            var token = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
+            
+            if (!string.IsNullOrEmpty(token))
+            {
+                _cachedToken = token;
+                return token;
+            }
+
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[LOCAL AUTH] Erro ao obter access token: {ex.Message}");
+            return null;
         }
     }
 }
