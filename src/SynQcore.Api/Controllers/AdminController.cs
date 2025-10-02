@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MediatR;
 using SynQcore.Application.DTOs.Auth;
 using SynQcore.Application.DTOs.Admin;
 using SynQcore.Application.Commands.Admin;
 using SynQcore.Application.Queries.Admin;
+using SynQcore.Api.Hubs;
 
 namespace SynQcore.Api.Controllers;
 
@@ -21,13 +23,15 @@ namespace SynQcore.Api.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IHubContext<CorporateNotificationHub> _notificationHub;
 
     /// <summary>
     /// Construtor da classe
     /// </summary>
-    public AdminController(IMediator mediator)
+    public AdminController(IMediator mediator, IHubContext<CorporateNotificationHub> notificationHub)
     {
         _mediator = mediator;
+        _notificationHub = notificationHub;
     }
 
     /// <summary>
@@ -92,5 +96,47 @@ public class AdminController : ControllerBase
     {
         var roles = new[] { "Employee", "Manager", "HR", "Admin" };
         return Ok(roles);
+    }
+
+    /// <summary>
+    /// Enviar notificação de teste via SignalR
+    /// </summary>
+    /// <param name="message">Mensagem da notificação</param>
+    /// <param name="type">Tipo da notificação (Info, Warning, Error)</param>
+    /// <returns>Status do envio da notificação</returns>
+    [HttpPost("test-notification")]
+    public async Task<ActionResult> SendTestNotification(
+        [FromQuery] string message = "Notificação de teste",
+        [FromQuery] string type = "Info")
+    {
+        try
+        {
+            var notification = new
+            {
+                Id = Guid.NewGuid().ToString(),
+                Title = "Teste do Sistema",
+                Message = message,
+                Type = type,
+                CreatedAt = DateTime.UtcNow,
+                IsRead = false,
+                Action = new
+                {
+                    Label = "Ver",
+                    Url = "/feed"
+                }
+            };
+
+            // Enviar para todos os usuários conectados
+            await _notificationHub.Clients.All.SendAsync("ReceberNotificacao", notification);
+
+            return Ok(new { 
+                message = "Notificação enviada com sucesso",
+                notification = notification
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Erro ao enviar notificação: {ex.Message}" });
+        }
     }
 }

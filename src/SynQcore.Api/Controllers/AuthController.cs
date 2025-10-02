@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using MediatR;
 using SynQcore.Application.Commands.Auth;
 using SynQcore.Application.DTOs.Auth;
+using SynQcore.Api.Hubs;
 
 namespace SynQcore.Api.Controllers;
 
@@ -17,13 +19,15 @@ namespace SynQcore.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly IHubContext<CorporateNotificationHub> _notificationHub;
 
     /// <summary>
     /// Construtor da classe
     /// </summary>
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, IHubContext<CorporateNotificationHub> notificationHub)
     {
         _mediator = mediator;
+        _notificationHub = notificationHub;
     }
 
     /// <summary>
@@ -65,5 +69,50 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = response.Message });
 
         return Ok(response);
+    }
+
+    /// <summary>
+    /// Enviar notificação de teste para todos os clientes conectados
+    /// </summary>
+    /// <param name="message">Mensagem da notificação</param>
+    /// <returns>Status do envio</returns>
+    [HttpPost("test-notification")]
+    public async Task<ActionResult> SendTestNotification([FromQuery] string message = "Teste de notificação")
+    {
+        try
+        {
+            var notification = new
+            {
+                Id = Guid.NewGuid().ToString(),
+                Title = "🧪 Teste do Sistema",
+                Message = message,
+                Type = "Info",
+                CreatedAt = DateTime.UtcNow,
+                IsRead = false,
+                Action = new
+                {
+                    Label = "Ver Feed",
+                    Url = "/feed"
+                }
+            };
+
+            // Enviar para todos os clientes conectados
+            await _notificationHub.Clients.All.SendAsync("ReceberNotificacao", notification);
+
+            return Ok(new { 
+                success = true,
+                message = "Notificação enviada com sucesso via SignalR",
+                notification = notification,
+                timestamp = DateTime.UtcNow
+            });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { 
+                success = false,
+                message = $"Erro ao enviar notificação: {ex.Message}",
+                timestamp = DateTime.UtcNow
+            });
+        }
     }
 }
