@@ -73,7 +73,7 @@ public class NotificationModel
             if (timeSpan.TotalDays < 7)
                 return $"{(int)timeSpan.TotalDays}d";
             
-            return Timestamp.ToString("dd/MM/yyyy");
+            return Timestamp.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 

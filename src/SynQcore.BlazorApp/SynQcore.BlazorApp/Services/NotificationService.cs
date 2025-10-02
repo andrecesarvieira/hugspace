@@ -71,12 +71,52 @@ public interface INotificationService : IAsyncDisposable
     int UnreadCount { get; }
 }
 
-public class NotificationService : INotificationService
+public partial class NotificationService : INotificationService
 {
     private HubConnection? _hubConnection;
     private readonly ILogger<NotificationService> _logger;
     private readonly List<NotificationModel> _recentNotifications;
     private int _unreadCount;
+
+    // LoggerMessage delegates para performance otimizada
+    [LoggerMessage(Level = LogLevel.Information, Message = "Conexão com NotificationHub estabelecida com sucesso")]
+    private static partial void LogHubConnected(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Erro ao conectar com NotificationHub: {message}")]
+    private static partial void LogHubConnectionError(ILogger logger, string message, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Conexão com NotificationHub encerrada")]
+    private static partial void LogHubDisconnected(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Subscrito ao tópico: {topic}")]
+    private static partial void LogTopicSubscribed(ILogger logger, string topic);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Removida subscrição do tópico: {topic}")]
+    private static partial void LogTopicUnsubscribed(ILogger logger, string topic);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Preferências de notificação atualizadas")]
+    private static partial void LogPreferencesUpdated(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Erro ao processar contagem de não lidas")]
+    private static partial void LogUnreadCountError(ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "NotificationHub conectado com sucesso: {data}")]
+    private static partial void LogHubConnectedWithData(ILogger logger, string data);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Notificação marcada como lida: {data}")]
+    private static partial void LogNotificationMarkedRead(ILogger logger, string data);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Subscrito ao tópico: {data}")]
+    private static partial void LogTopicSubscribedWithData(ILogger logger, string data);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Removida subscrição do tópico: {data}")]
+    private static partial void LogTopicUnsubscribedWithData(ILogger logger, string data);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Erro ao parsear notificação: {data}")]
+    private static partial void LogNotificationParseError(ILogger logger, string data, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Nova notificação processada: {title} - Tipo: {type}")]
+    private static partial void LogNotificationProcessed(ILogger logger, string title, NotificationType type);
 
     public event Func<NotificationModel, Task>? NotificationReceived;
     public event Func<int, Task>? UnreadCountUpdated;
@@ -100,7 +140,7 @@ public class NotificationService : INotificationService
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl("http://localhost:5000/hubs/corporate-notifications", options =>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                    options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
                 })
                 .WithAutomaticReconnect(new[] { TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
                 .Build();
@@ -110,14 +150,14 @@ public class NotificationService : INotificationService
 
             // Iniciar conexão
             await _hubConnection.StartAsync();
-            _logger.LogInformation("Conexão com NotificationHub estabelecida com sucesso");
+            LogHubConnected(_logger);
 
             // Solicitar contagem inicial de não lidas
             await RequestUnreadCountAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao conectar com NotificationHub: {Message}", ex.Message);
+            LogHubConnectionError(_logger, ex.Message, ex);
             throw;
         }
     }
@@ -127,7 +167,7 @@ public class NotificationService : INotificationService
         if (_hubConnection != null)
         {
             await _hubConnection.StopAsync();
-            _logger.LogInformation("Conexão com NotificationHub encerrada");
+            LogHubDisconnected(_logger);
         }
     }
 
@@ -153,7 +193,7 @@ public class NotificationService : INotificationService
         if (_hubConnection?.State == HubConnectionState.Connected)
         {
             await _hubConnection.InvokeAsync("SubscribeToTopic", topic);
-            _logger.LogInformation("Subscrito ao tópico: {Topic}", topic);
+            LogTopicSubscribed(_logger, topic);
         }
     }
 
@@ -162,7 +202,7 @@ public class NotificationService : INotificationService
         if (_hubConnection?.State == HubConnectionState.Connected)
         {
             await _hubConnection.InvokeAsync("UnsubscribeFromTopic", topic);
-            _logger.LogInformation("Removida subscrição do tópico: {Topic}", topic);
+            LogTopicUnsubscribed(_logger, topic);
         }
     }
 
@@ -179,7 +219,7 @@ public class NotificationService : INotificationService
         if (_hubConnection?.State == HubConnectionState.Connected)
         {
             await _hubConnection.InvokeAsync("UpdateNotificationPreferences", preferences);
-            _logger.LogInformation("Preferências de notificação atualizadas");
+            LogPreferencesUpdated(_logger);
         }
     }
 
@@ -237,34 +277,34 @@ public class NotificationService : INotificationService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro ao processar contagem de não lidas");
+                LogUnreadCountError(_logger, ex);
             }
         });
 
         // Handler para confirmação de conexão
         _hubConnection.On<object>("NotificationHubConnected", (data) =>
         {
-            _logger.LogInformation("NotificationHub conectado com sucesso: {Data}", JsonSerializer.Serialize(data));
+            LogHubConnectedWithData(_logger, JsonSerializer.Serialize(data));
             return Task.CompletedTask;
         });
 
         // Handler para notificação marcada como lida
         _hubConnection.On<object>("NotificationMarkedAsRead", (data) =>
         {
-            _logger.LogInformation("Notificação marcada como lida: {Data}", JsonSerializer.Serialize(data));
+            LogNotificationMarkedRead(_logger, JsonSerializer.Serialize(data));
             return Task.CompletedTask;
         });
 
         // Handlers para subscrições de tópicos
         _hubConnection.On<object>("SubscribedToTopic", (data) =>
         {
-            _logger.LogInformation("Subscrito ao tópico: {Data}", JsonSerializer.Serialize(data));
+            LogTopicSubscribedWithData(_logger, JsonSerializer.Serialize(data));
             return Task.CompletedTask;
         });
 
         _hubConnection.On<object>("UnsubscribedFromTopic", (data) =>
         {
-            _logger.LogInformation("Removida subscrição do tópico: {Data}", JsonSerializer.Serialize(data));
+            LogTopicUnsubscribedWithData(_logger, JsonSerializer.Serialize(data));
             return Task.CompletedTask;
         });
     }
@@ -292,7 +332,7 @@ public class NotificationService : INotificationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao parsear notificação: {Data}", JsonSerializer.Serialize(data));
+            LogNotificationParseError(_logger, JsonSerializer.Serialize(data), ex);
             
             // Retornar notificação padrão em caso de erro
             return new NotificationModel
@@ -325,10 +365,10 @@ public class NotificationService : INotificationService
         await OnNotificationReceived(notification);
         await OnUnreadCountUpdated(_unreadCount);
 
-        _logger.LogInformation("Nova notificação processada: {Title} - Tipo: {Type}", notification.Title, notification.Type);
+        LogNotificationProcessed(_logger, notification.Title, notification.Type);
     }
 
-    private string GetIconForType(NotificationType type)
+    private static string GetIconForType(NotificationType type)
     {
         return type switch
         {
@@ -363,6 +403,8 @@ public class NotificationService : INotificationService
         {
             await _hubConnection.DisposeAsync();
         }
+        
+        GC.SuppressFinalize(this);
     }
 }
 
