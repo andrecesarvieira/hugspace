@@ -72,7 +72,7 @@ public partial class PostService : IPostService
     {
         try
         {
-            var response = await _httpClient.GetAsync($"api/feed?page={page}&pageSize={pageSize}");
+            var response = await _httpClient.GetAsync($"/api/feed?page={page}&pageSize={pageSize}");
 
             if (response.IsSuccessStatusCode)
             {

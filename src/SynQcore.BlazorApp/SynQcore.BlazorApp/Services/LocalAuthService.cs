@@ -108,10 +108,20 @@ public partial class LocalAuthService : ILocalAuthService
 
             Console.WriteLine("[LOCAL AUTH] Cache em memória limpo");
 
-            // Limpar LocalStorage
-            await _localStorage.RemoveItemAsync(AUTH_TOKEN_KEY);
-            await _localStorage.RemoveItemAsync(USER_INFO_KEY);
-            LogLogoutSuccess(_logger);
+            // Proteção contra JavaScript Interop durante renderização estática
+            try
+            {
+                // Limpar LocalStorage
+                await _localStorage.RemoveItemAsync(AUTH_TOKEN_KEY);
+                await _localStorage.RemoveItemAsync(USER_INFO_KEY);
+                LogLogoutSuccess(_logger);
+            }
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            {
+                // Durante renderização estática, cache já foi limpo
+                Console.WriteLine("[LOCAL AUTH] JavaScript Interop não disponível - logout realizado apenas em cache");
+                LogLogoutSuccess(_logger);
+            }
         }
         catch (Exception ex)
         {
@@ -130,24 +140,35 @@ public partial class LocalAuthService : ILocalAuthService
                 return true;
             }
 
-            // Fallback para LocalStorage se cache vazio
-            var token = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
-            var isAuthenticated = !string.IsNullOrEmpty(token);
-
-            // Atualizar cache com dados do LocalStorage
-            if (isAuthenticated)
+            // Proteção contra JavaScript Interop durante renderização estática
+            try
             {
-                _cachedToken = token;
-                _isAuthenticated = true;
-                // Carregar UserInfo também se disponível
-                if (_cachedUserInfo == null)
-                {
-                    _cachedUserInfo = await _localStorage.GetItemAsync<UserInfo>(USER_INFO_KEY);
-                }
-            }
+                // Fallback para LocalStorage se cache vazio
+                var token = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
+                var isAuthenticated = !string.IsNullOrEmpty(token);
 
-            Console.WriteLine($"[LOCAL AUTH] IsAuthenticatedAsync - LocalStorage: {isAuthenticated}, Cache atualizado: {_isAuthenticated}");
-            return isAuthenticated;
+                // Atualizar cache com dados do LocalStorage
+                if (isAuthenticated)
+                {
+                    _cachedToken = token;
+                    _isAuthenticated = true;
+                    // Carregar UserInfo também se disponível
+                    if (_cachedUserInfo == null)
+                    {
+                        _cachedUserInfo = await _localStorage.GetItemAsync<UserInfo>(USER_INFO_KEY);
+                    }
+                }
+
+                Console.WriteLine($"[LOCAL AUTH] IsAuthenticatedAsync - LocalStorage: {isAuthenticated}, Cache atualizado: {_isAuthenticated}");
+                return isAuthenticated;
+            }
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            {
+                // Durante renderização estática, não podemos acessar localStorage
+                // Usar apenas cache em memória
+                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível durante renderização - usando cache: {_isAuthenticated}");
+                return _isAuthenticated;
+            }
         }
         catch (Exception ex)
         {
@@ -171,15 +192,25 @@ public partial class LocalAuthService : ILocalAuthService
             var isAuth = await IsAuthenticatedAsync();
             if (!isAuth) return null;
 
-            // Buscar do LocalStorage se não estiver em cache
-            var userInfo = await _localStorage.GetItemAsync<UserInfo>(USER_INFO_KEY);
-            if (userInfo != null)
+            // Proteção contra JavaScript Interop durante renderização estática
+            try
             {
-                _cachedUserInfo = userInfo; // Atualizar cache
-                Console.WriteLine($"[LOCAL AUTH] GetCurrentUserAsync - LocalStorage: {userInfo.Nome}");
-            }
+                // Buscar do LocalStorage se não estiver em cache
+                var userInfo = await _localStorage.GetItemAsync<UserInfo>(USER_INFO_KEY);
+                if (userInfo != null)
+                {
+                    _cachedUserInfo = userInfo; // Atualizar cache
+                    Console.WriteLine($"[LOCAL AUTH] GetCurrentUserAsync - LocalStorage: {userInfo.Nome}");
+                }
 
-            return userInfo;
+                return userInfo;
+            }
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            {
+                // Durante renderização estática, retornar dados do cache
+                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível - retornando cache: {_cachedUserInfo?.Nome ?? "null"}");
+                return _cachedUserInfo;
+            }
         }
         catch (Exception ex)
         {
@@ -201,16 +232,26 @@ public partial class LocalAuthService : ILocalAuthService
 
             Console.WriteLine($"[LOCAL AUTH] Cache em memória atualizado - IsAuth: {_isAuthenticated}");
 
-            // Salvar no LocalStorage para persistência
-            await _localStorage.SetItemAsync(AUTH_TOKEN_KEY, token);
-            await _localStorage.SetItemAsync(USER_INFO_KEY, userInfo);
+            // Proteção contra JavaScript Interop durante renderização estática
+            try
+            {
+                // Salvar no LocalStorage para persistência
+                await _localStorage.SetItemAsync(AUTH_TOKEN_KEY, token);
+                await _localStorage.SetItemAsync(USER_INFO_KEY, userInfo);
 
-            // Verificação imediata para confirmar que foi salvo
-            var savedToken = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
-            var savedUser = await _localStorage.GetItemAsync<UserInfo>(USER_INFO_KEY);
+                // Verificação imediata para confirmar que foi salvo
+                var savedToken = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
+                var savedUser = await _localStorage.GetItemAsync<UserInfo>(USER_INFO_KEY);
 
-            Console.WriteLine($"[LOCAL AUTH] Dados salvos com sucesso - Token recuperado: {!string.IsNullOrEmpty(savedToken)}, User recuperado: {savedUser != null}");
-            LogLoginSuccess(_logger, userInfo.Email);
+                Console.WriteLine($"[LOCAL AUTH] Dados salvos com sucesso - Token recuperado: {!string.IsNullOrEmpty(savedToken)}, User recuperado: {savedUser != null}");
+                LogLoginSuccess(_logger, userInfo.Email);
+            }
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            {
+                // Durante renderização estática, dados já estão no cache
+                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível - dados mantidos em cache");
+                LogLoginSuccess(_logger, userInfo.Email);
+            }
         }
         catch (Exception ex)
         {
@@ -229,16 +270,26 @@ public partial class LocalAuthService : ILocalAuthService
                 return _cachedToken;
             }
 
-            // Buscar no LocalStorage
-            var token = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
-            
-            if (!string.IsNullOrEmpty(token))
+            // Proteção contra JavaScript Interop durante renderização estática
+            try
             {
-                _cachedToken = token;
-                return token;
-            }
+                // Buscar no LocalStorage
+                var token = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
+                
+                if (!string.IsNullOrEmpty(token))
+                {
+                    _cachedToken = token;
+                    return token;
+                }
 
-            return null;
+                return null;
+            }
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            {
+                // Durante renderização estática, retornar token do cache
+                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível - retornando token do cache: {!string.IsNullOrEmpty(_cachedToken)}");
+                return _cachedToken;
+            }
         }
         catch (Exception ex)
         {
