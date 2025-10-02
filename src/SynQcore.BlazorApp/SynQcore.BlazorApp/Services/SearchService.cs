@@ -24,11 +24,11 @@ public partial class SearchService : ISearchService
     [LoggerMessage(LogLevel.Error, "Erro ao executar busca avançada")]
     private static partial void LogAdvancedSearchError(ILogger logger, Exception? exception);
 
-    [LoggerMessage(LogLevel.Information, "Obtendo sugestões de busca: {partial}")]
-    private static partial void LogSuggestionsStarted(ILogger logger, string partial, Exception? exception = null);
+    [LoggerMessage(LogLevel.Information, "Obtendo sugestões de busca: {partialText}")]
+    private static partial void LogSuggestionsStarted(ILogger logger, string partialText, Exception? exception = null);
 
-    [LoggerMessage(LogLevel.Error, "Erro ao obter sugestões de busca: {partial}")]
-    private static partial void LogSuggestionsError(ILogger logger, string partial, Exception? exception);
+    [LoggerMessage(LogLevel.Error, "Erro ao obter sugestões de busca: {partialText}")]
+    private static partial void LogSuggestionsError(ILogger logger, string partialText, Exception? exception);
 
     [LoggerMessage(LogLevel.Information, "Buscando por categoria: {category}")]
     private static partial void LogCategorySearchStarted(ILogger logger, string category, Exception? exception = null);
@@ -153,16 +153,16 @@ public partial class SearchService : ISearchService
         }
     }
 
-    public async Task<List<SearchSuggestionDto>> GetSearchSuggestionsAsync(string partial, int maxSuggestions = 10)
+    public async Task<List<SearchSuggestionDto>> GetSearchSuggestionsAsync(string partialText, int maxSuggestions = 10)
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(partial) || partial.Length < 2)
+            if (string.IsNullOrWhiteSpace(partialText) || partialText.Length < 2)
                 return new List<SearchSuggestionDto>();
 
-            LogSuggestionsStarted(_logger, partial);
+            LogSuggestionsStarted(_logger, partialText);
 
-            var encodedPartial = Uri.EscapeDataString(partial);
+            var encodedPartial = Uri.EscapeDataString(partialText);
             var response = await _httpClient.GetAsync($"/api/corporate-search/suggestions?partial={encodedPartial}&maxSuggestions={maxSuggestions}");
             response.EnsureSuccessStatusCode();
 
@@ -171,7 +171,7 @@ public partial class SearchService : ISearchService
         }
         catch (Exception ex)
         {
-            LogSuggestionsError(_logger, partial, ex);
+            LogSuggestionsError(_logger, partialText, ex);
             return new List<SearchSuggestionDto>();
         }
     }
@@ -276,7 +276,7 @@ public partial class SearchService : ISearchService
             LogRecentContentStarted(_logger, hours);
 
             var url = $"/api/corporate-search/recent?hours={hours}&page={page}&pageSize={pageSize}";
-            if (contentTypes?.Any() == true)
+            if (contentTypes?.Count > 0)
                 url += $"&contentTypes={string.Join(",", contentTypes.Select(Uri.EscapeDataString))}";
 
             var response = await _httpClient.GetAsync(url);
@@ -299,7 +299,7 @@ public partial class SearchService : ISearchService
             LogPopularContentStarted(_logger, period);
 
             var url = $"/api/corporate-search/popular?period={period}&page={page}&pageSize={pageSize}";
-            if (contentTypes?.Any() == true)
+            if (contentTypes?.Count > 0)
                 url += $"&contentTypes={string.Join(",", contentTypes.Select(Uri.EscapeDataString))}";
 
             var response = await _httpClient.GetAsync(url);
@@ -329,7 +329,7 @@ public partial class SearchService : ISearchService
             if (endDate.HasValue)
                 queryParams.Add($"endDate={endDate.Value:yyyy-MM-dd}");
 
-            if (queryParams.Any())
+            if (queryParams.Count > 0)
                 url += "?" + string.Join("&", queryParams);
 
             var response = await _httpClient.GetAsync(url);
@@ -416,7 +416,7 @@ public partial class SearchService : ISearchService
             if (endDate.HasValue)
                 queryParams.Add($"endDate={endDate.Value:yyyy-MM-dd}");
 
-            if (queryParams.Any())
+            if (queryParams.Count > 0)
                 url += "?" + string.Join("&", queryParams);
 
             var response = await _httpClient.GetAsync(url);

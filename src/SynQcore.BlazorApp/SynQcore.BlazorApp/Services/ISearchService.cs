@@ -18,7 +18,7 @@ public interface ISearchService
     /// <summary>
     /// Obtém sugestões de busca baseadas em entrada parcial
     /// </summary>
-    Task<List<SearchSuggestionDto>> GetSearchSuggestionsAsync(string partial, int maxSuggestions = 10);
+    Task<List<SearchSuggestionDto>> GetSearchSuggestionsAsync(string partialText, int maxSuggestions = 10);
 
     /// <summary>
     /// Busca por categoria específica
