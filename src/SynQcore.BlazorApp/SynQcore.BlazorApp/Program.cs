@@ -107,6 +107,24 @@ builder.Services.AddHttpClient<IPostService, PostService>(client =>
 })
 .AddHttpMessageHandler<AuthenticationHandler>();
 
+// HttpClient para SearchService  
+builder.Services.AddHttpClient<ISearchService, SearchService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5000/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddHttpMessageHandler<AuthenticationHandler>();
+
+// HttpClient para DepartmentService  
+builder.Services.AddHttpClient<IDepartmentService, DepartmentService>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5000/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+})
+.AddHttpMessageHandler<AuthenticationHandler>();
+
 // HttpClient adicional para requisições sem interceptor
 builder.Services.AddHttpClient("NoAuth", client =>
 {

@@ -6,6 +6,8 @@
 @using SynQcore.BlazorApp.Models
 @using SynQcore.BlazorApp.Components.Social
 @using SynQcore.BlazorApp.Components.Shared
+@using SynQcore.Application.Features.CorporateSearch.DTOs
+@using SynQcore.Application.Features.Departments.DTOs
 @inject IState<UserState> UserState
 @inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
@@ -13,6 +15,8 @@
 @inject IUserPermissionService UserPermissionService
 @inject IPostService PostService
 @inject INotificationService NotificationService
+@inject ISearchService SearchService
+@inject IDepartmentService DepartmentService
 
 <style>
     /* === RESET COMPLETO === */
@@ -453,7 +457,7 @@
                     @if (searchResults?.Any() == true)
                     {
                         <div class="search-results-content">
-                            @foreach (var category in searchResults.GroupBy(r => r.Category))
+                            @foreach (var category in searchResults.GroupBy(r => r.Type))
                             {
                                 <div class="search-category">
                                     <h4 class="category-title">@GetCategoryDisplayName(category.Key)</h4>
@@ -462,12 +466,12 @@
                                         {
                                             <div class="search-result-card" @onclick="() => NavigateToResult(result)">
                                                 <div class="result-icon">
-                                                    <i class="@GetCategoryIcon(result.Category)"></i>
+                                                    <i class="@GetCategoryIcon(result.Type)"></i>
                                                 </div>
                                                 <div class="result-content">
                                                     <h5>@result.Title</h5>
-                                                    <p>@result.Description</p>
-                                                    <span class="result-meta">@result.Category • @result.Date.ToString("dd/MM/yyyy")</span>
+                                                    <p>@result.Excerpt</p>
+                                                    <span class="result-meta">@result.Type • @result.CreatedAt.ToString("dd/MM/yyyy") • @result.AuthorName</span>
                                                 </div>
                                             </div>
                                         }
@@ -604,7 +608,7 @@
     private string currentSearchTerm = string.Empty;
     private bool isSearchActive = false;
     private bool isSearching = false;
-    private List<SearchResult>? searchResults;
+    private List<SearchResultDto>? searchResults;
     private ElementReference searchInputRef;
     private Timer? searchTimer;
 
@@ -817,10 +821,19 @@
 
         try
         {
-            // Simular busca com dados mockados
-            await Task.Delay(500); // Simular latência da API
+            // Configurar filtros baseados no filtro selecionado
+            SearchFiltersDto? filters = null;
+            if (searchFilter != "all")
+            {
+                filters = new SearchFiltersDto
+                {
+                    ContentTypes = new List<string> { GetContentTypeFromFilter(searchFilter) }
+                };
+            }
 
-            searchResults = GenerateMockSearchResults(currentSearchTerm, searchFilter);
+            // Executar busca real via API
+            var searchResult = await SearchService.SearchAsync(currentSearchTerm, 1, 20, filters);
+            searchResults = searchResult.Items;
             isSearching = false;
             StateHasChanged();
 
@@ -829,93 +842,22 @@
         catch (Exception ex)
         {
             Console.WriteLine($"[SEARCH] Erro na busca: {ex.Message}");
+            searchResults = new List<SearchResultDto>();
             isSearching = false;
             StateHasChanged();
         }
     }
 
-    private List<SearchResult> GenerateMockSearchResults(string term, string filter)
+    private string GetContentTypeFromFilter(string filter)
     {
-        var results = new List<SearchResult>();
-
-        // Resultados mockados baseados no termo de busca
-        if (filter == "all" || filter == "people")
+        return filter switch
         {
-            results.AddRange(new[]
-            {
-                new SearchResult
-                {
-                    Id = "user1",
-                    Title = $"João Silva - Desenvolvedor",
-                    Description = $"Especialista em .NET e arquitetura de software. Trabalha com {term} há 5 anos.",
-                    Category = "people",
-                    Date = DateTime.Now.AddDays(-2),
-                    Url = "/profile/joao-silva",
-                    AuthorName = "João Silva",
-                    Department = "Tecnologia"
-                },
-                new SearchResult
-                {
-                    Id = "user2", 
-                    Title = $"Maria Santos - Analista",
-                    Description = $"Expert em análise de dados e {term}. Líder de equipe.",
-                    Category = "people",
-                    Date = DateTime.Now.AddDays(-1),
-                    Url = "/profile/maria-santos",
-                    AuthorName = "Maria Santos", 
-                    Department = "Dados"
-                }
-            });
-        }
-
-        if (filter == "all" || filter == "posts")
-        {
-            results.AddRange(new[]
-            {
-                new SearchResult
-                {
-                    Id = "post1",
-                    Title = $"Discussão sobre {term}",
-                    Description = $"Uma análise profunda sobre {term} e suas implicações no mercado atual...",
-                    Category = "posts",
-                    Date = DateTime.Now.AddHours(-3),
-                    Url = "/post/discussao-sobre-termo",
-                    AuthorName = "Pedro Costa",
-                    Department = "Estratégia"
-                },
-                new SearchResult
-                {
-                    Id = "post2",
-                    Title = $"Implementando {term} na prática",
-                    Description = $"Tutorial prático sobre como implementar {term} em projetos reais...",
-                    Category = "posts",
-                    Date = DateTime.Now.AddHours(-6),
-                    Url = "/post/implementando-termo",
-                    AuthorName = "Ana Oliveira",
-                    Department = "Desenvolvimento"
-                }
-            });
-        }
-
-        if (filter == "all" || filter == "documents")
-        {
-            results.AddRange(new[]
-            {
-                new SearchResult
-                {
-                    Id = "doc1",
-                    Title = $"Manual de {term}",
-                    Description = $"Documentação completa sobre {term} com exemplos práticos...",
-                    Category = "documents",
-                    Date = DateTime.Now.AddDays(-7),
-                    Url = "/documents/manual-termo",
-                    AuthorName = "Equipe Técnica",
-                    Department = "Documentação"
-                }
-            });
-        }
-
-        return results;
+            "posts" => "Post",
+            "people" => "Employee", 
+            "documents" => "Document",
+            "discussions" => "Discussion",
+            _ => "Post"
+        };
     }
 
     private void SetSearchFilter(string filter)
@@ -1030,10 +972,12 @@
     {
         return category switch
         {
-            "posts" => "Posts",
-            "people" => "Pessoas",
-            "documents" => "Documentos",
-            "discussions" => "Discussões",
+            "Post" => "Posts",
+            "Employee" => "Pessoas", 
+            "Document" => "Documentos",
+            "Discussion" => "Discussões",
+            "MediaAsset" => "Mídia",
+            "KnowledgeBase" => "Base de Conhecimento",
             _ => "Outros"
         };
     }
@@ -1042,30 +986,30 @@
     {
         return category switch
         {
-            "posts" => "fas fa-comment",
-            "people" => "fas fa-user",
-            "documents" => "fas fa-file-alt",
-            "discussions" => "fas fa-comments",
+            "Post" => "fas fa-comment",
+            "Employee" => "fas fa-user",
+            "Document" => "fas fa-file-alt", 
+            "Discussion" => "fas fa-comments",
+            "MediaAsset" => "fas fa-image",
+            "KnowledgeBase" => "fas fa-book",
             _ => "fas fa-search"
         };
     }
 
-    private void NavigateToResult(SearchResult result)
+    private void NavigateToResult(SearchResultDto result)
     {
-        // TODO: Implementar navegação baseada no tipo de resultado
-        Navigation.NavigateTo(result.Url);
-    }
-
-    // Classe para resultados de busca
-    public class SearchResult
-    {
-        public string Id { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Category { get; set; } = string.Empty;
-        public DateTime Date { get; set; } = DateTime.Now;
-        public string Url { get; set; } = string.Empty;
-        public string? AuthorName { get; set; }
-        public string? Department { get; set; }
+        // Gerar URL baseada no tipo de conteúdo
+        var url = result.Type switch
+        {
+            "Employee" => $"/profile/{result.Id}",
+            "Post" => $"/post/{result.Id}",
+            "Document" => $"/document/{result.Id}",
+            "Discussion" => $"/discussion/{result.Id}",
+            "MediaAsset" => $"/media/{result.Id}",
+            "KnowledgeBase" => $"/knowledge/{result.Id}",
+            _ => $"/content/{result.Id}"
+        };
+        
+        Navigation.NavigateTo(url);
     }
 }
