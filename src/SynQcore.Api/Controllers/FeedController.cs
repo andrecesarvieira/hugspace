@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using SynQcore.Application.Features.Feed.Commands;
 using SynQcore.Application.Features.Feed.Queries;
+using SynQcore.Application.Features.Feed.DTOs;
 using SynQcore.Application.DTOs;
 
 namespace SynQcore.Api.Controllers;
@@ -27,6 +28,38 @@ public class FeedController : ControllerBase
     public FeedController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    /// <summary>
+    /// Cria um novo post no feed corporativo
+    /// </summary>
+    /// <param name="request">Dados do post a ser criado</param>
+    /// <returns>Post criado</returns>
+    [HttpPost]
+    [ProducesResponseType(typeof(FeedPostDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<FeedPostDto>> CreateFeedPost([FromBody] CreateFeedPostRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            var command = new CreateFeedPostCommand
+            {
+                AuthorId = userId,
+                Content = request.Content,
+                Tags = request.Tags,
+                ImageUrl = request.ImageUrl,
+                IsPublic = request.IsPublic
+            };
+
+            var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetCorporateFeed), new { }, result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao criar post", error = ex.Message });
+        }
     }
 
     /// <summary>

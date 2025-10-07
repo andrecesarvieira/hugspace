@@ -60,6 +60,7 @@ using SynQcore.Application.Features.Collaboration.Handlers;
 using SynQcore.Application.Features.Feed.Queries;
 using SynQcore.Application.Features.Feed.Commands;
 using SynQcore.Application.Features.Feed.Handlers;
+using SynQcore.Application.Features.Feed.DTOs;
 using SynQcore.Application.DTOs;
 using SynQcore.Application.Features.CorporateDocuments.DTOs;
 using SynQcore.Application.Features.CorporateDocuments.Queries;
@@ -441,6 +442,7 @@ builder.Services.AddScoped<IRequestHandler<GetCorporateFeedQuery, PagedResult<Fe
 builder.Services.AddScoped<IRequestHandler<GetFeedStatsQuery, FeedStatsDto>, GetFeedStatsHandler>();
 builder.Services.AddScoped<IRequestHandler<GetUserInterestsQuery, UserInterestsResponseDto>, GetUserInterestsHandler>();
 builder.Services.AddScoped<IRequestHandler<RegenerateFeedCommand>, RegenerateFeedHandler>();
+builder.Services.AddScoped<IRequestHandler<CreateFeedPostCommand, FeedPostDto>, CreateFeedPostHandler>();
 
 // === CORPORATE DOCUMENTS HANDLERS ===
 builder.Services.AddScoped<IRequestHandler<GetDocumentsQuery, PagedResult<CorporateDocumentDto>>, GetDocumentsQueryHandler>();

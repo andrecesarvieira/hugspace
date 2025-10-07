@@ -1,6 +1,16 @@
 using MediatR;
+using SynQcore.Application.Features.Feed.DTOs;
 
 namespace SynQcore.Application.Features.Feed.Commands;
+
+public record CreateFeedPostCommand : IRequest<FeedPostDto>
+{
+    public Guid AuthorId { get; init; }
+    public string Content { get; init; } = string.Empty;
+    public string[]? Tags { get; init; }
+    public string? ImageUrl { get; init; }
+    public bool IsPublic { get; init; } = true;
+}
 
 public record RegenerateFeedCommand : IRequest
 {
