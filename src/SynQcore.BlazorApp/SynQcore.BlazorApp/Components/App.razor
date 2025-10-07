@@ -8,16 +8,15 @@
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["SynQcore.BlazorApp.styles.css"]" />
-    <!-- SynQcore Design System -->
-    <link rel="stylesheet" href="_content/SynQcore.BlazorApp.Client/css/design-tokens.css" />
-    <link rel="stylesheet" href="_content/SynQcore.BlazorApp.Client/css/synqcore.css" />
-    <link rel="stylesheet" href="_content/SynQcore.BlazorApp.Client/css/animations.css" />
     <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- CSS específico do Login -->
-    <link rel="stylesheet" href="css/login.css?v=6" />
-    <!-- CSS específico do Feed - DEVE SER O ÚLTIMO -->
-    <link rel="stylesheet" href="css/feed.css?v=20250101145310" />
+    <!-- Design System CSS -->
+    <link rel="stylesheet" href="css/design-tokens.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/component-styles.css" />
+    <link rel="stylesheet" href="css/feed.css" />
+    <!-- Notification Center CSS -->
+    <link rel="stylesheet" href="css/notification-center.css" />
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
@@ -27,6 +26,7 @@
     <Fluxor.Blazor.Web.StoreInitializer />
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script src="js/feed-minimal.js"></script>
 </body>
 
 </html>
