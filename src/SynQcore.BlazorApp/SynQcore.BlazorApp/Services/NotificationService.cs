@@ -138,7 +138,7 @@ public partial class NotificationService : INotificationService
         {
             // Configurar conexão SignalR
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:5000/hubs/corporate-notifications", options =>
+                .WithUrl("http://localhost:5005/hubs/corporate-notifications", options =>
                 {
                     options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
                 })

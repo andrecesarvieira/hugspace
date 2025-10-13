@@ -1,15 +1,51 @@
 @namespace SynQcore.BlazorApp.Components.Social
 @using Microsoft.AspNetCore.Components
 @using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Store.User
+@using Fluxor
 @inject IPostService PostService
+@inject IState<UserState> UserState
+@inject IJSRuntime JS
 
-<article class="simple-post-card">
+<article class="simple-post-card" data-post-id="@Post.Id">
     <div class="post-header">
         <img src="@Post.AuthorAvatar" alt="@Post.AuthorName" class="author-avatar" />
         <div class="author-info">
             <a href="/perfil/@GetUserIdFromName(Post.AuthorName)" class="author-name">@Post.AuthorName</a>
             <div class="author-role">@Post.AuthorRole</div>
             <div class="post-time">@GetRelativeTime(Post.CreatedAt)</div>
+        </div>
+
+        <div class="post-menu">
+            <button class="menu-btn" @onclick="ToggleMenu">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+
+            @if (showMenu)
+            {
+                <div class="post-menu-dropdown">
+                    @if (IsCurrentUserPost())
+                    {
+                        <button class="menu-item edit-item" @onclick="EditPost">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="menu-item delete-item" @onclick="DeletePost">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                        <div class="menu-divider"></div>
+                    }
+                    <button class="menu-item" @onclick="BookmarkPost">
+                        <i class="@(Post.IsBookmarked ? "fas fa-bookmark" : "far fa-bookmark")"></i>
+                        @(Post.IsBookmarked ? "Remover dos salvos" : "Salvar")
+                    </button>
+                    <button class="menu-item" @onclick="CopyLink">
+                        <i class="fas fa-link"></i> Copiar link
+                    </button>
+                    <button class="menu-item report-item" @onclick="ReportPost">
+                        <i class="fas fa-flag"></i> Denunciar
+                    </button>
+                </div>
+            }
         </div>
     </div>
 
@@ -28,14 +64,18 @@
     }
 
     <div class="post-actions">
-        <button class="action-btn @(Post.IsLiked ? "liked" : "")" @onclick="HandleLike" disabled="@isLiking">
-            <i class="fas fa-heart"></i> @Post.LikeCount
-        </button>
+        <PostReactions PostId="Post.Id" 
+                      TotalLikes="Post.LikeCount" 
+                      CurrentReaction="Post.ReactionType"
+                      ShowSimpleMode="false"
+                      OnReactionChanged="OnReactionChanged" />
         <button class="action-btn" @onclick="ToggleComments">
-            <i class="fas fa-comment"></i> @Post.CommentCount
+            <i class="far fa-comment"></i> 
+            <span>@(Post.CommentCount > 0 ? Post.CommentCount.ToString() : "Comentar")</span>
         </button>
         <button class="action-btn" @onclick="HandleShare">
-            <i class="fas fa-share"></i> @Post.ShareCount
+            <i class="far fa-share-square"></i> 
+            <span>@(Post.ShareCount > 0 ? Post.ShareCount.ToString() : "Compartilhar")</span>
         </button>
     </div>
 
@@ -55,44 +95,23 @@
     }
 </article>
 
+<EditPostModal @ref="editPostModal" 
+               PostId="Post.Id"
+               OnPostUpdated="OnPostUpdated" 
+               OnClosed="() => Task.CompletedTask" />
+
 @code {
-    [Parameter] public PostModel Post { get; set; } = new();
-    [Parameter] public EventCallback<string> OnTagClick { get; set; }
 
     private bool showComments = false;
-    private bool isLiking = false;
 
-    private async Task HandleLike()
+    private async Task OnReactionChanged(PostReactions.ReactionChangedArgs args)
     {
-        if (isLiking) return;
-
-        isLiking = true;
-        try
-        {
-            if (Post.IsLiked)
-            {
-                var success = await PostService.UnlikePostAsync(Post.Id);
-                if (success)
-                {
-                    Post.IsLiked = false;
-                    Post.LikeCount--;
-                }
-            }
-            else
-            {
-                var success = await PostService.LikePostAsync(Post.Id);
-                if (success)
-                {
-                    Post.IsLiked = true;
-                    Post.LikeCount++;
-                }
-            }
-        }
-        finally
-        {
-            isLiking = false;
-            await InvokeAsync(StateHasChanged);
-        }
+        // Atualizar modelo local
+        Post.LikeCount = args.TotalLikes;
+        Post.IsLiked = !string.IsNullOrEmpty(args.NewReaction);
+        Post.ReactionType = args.NewReaction;
+        
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task ToggleComments()
@@ -109,10 +128,17 @@
 
     private async Task HandleShare()
     {
-        // Por enquanto apenas incrementa o contador localmente
-        // Futuramente conectar com API de compartilhamento
-        Post.ShareCount++;
-        await InvokeAsync(StateHasChanged);
+        // Chamar callback se disponível
+        if (OnShare.HasDelegate)
+        {
+            await OnShare.InvokeAsync();
+        }
+        else
+        {
+            // Fallback - incrementar contador localmente
+            Post.ShareCount++;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private string GetRelativeTime(DateTime dateTime)
@@ -140,6 +166,119 @@
         return content;
     }
 
+    // Novos métodos para gerenciamento de posts
+    private bool showMenu = false;
+    private EditPostModal? editPostModal;
+
+    private bool IsCurrentUserPost()
+    {
+        var currentUser = UserState.Value.CurrentUser;
+        if (currentUser == null) return false;
+        
+        // Comparar pelo nome do autor (futuramente usar ID)
+        return Post.AuthorName.Equals(currentUser.Nome, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void ToggleMenu()
+    {
+        showMenu = !showMenu;
+        StateHasChanged();
+    }
+
+    private async Task EditPost()
+    {
+        showMenu = false;
+        
+        if (OnEdit.HasDelegate)
+        {
+            await OnEdit.InvokeAsync(Post);
+        }
+        else if (editPostModal != null)
+        {
+            await editPostModal.ShowModal(Post);
+        }
+        
+        StateHasChanged();
+    }
+
+    private async Task DeletePost()
+    {
+        showMenu = false;
+        
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir este post?");
+        if (!confirmed) return;
+
+        if (OnDelete.HasDelegate)
+        {
+            await OnDelete.InvokeAsync(Post);
+        }
+        else
+        {
+            // Fallback para a implementação original
+            var success = await PostService.DeletePostAsync(Post.Id);
+            if (success)
+            {
+                await JS.InvokeVoidAsync("showNotification", "Post excluído com sucesso!", "success");
+                // Notificar componente pai para remover o post da lista
+                if (OnPostDeleted.HasDelegate)
+                {
+                    await OnPostDeleted.InvokeAsync(Post.Id);
+                }
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("showNotification", "Erro ao excluir o post", "error");
+            }
+        }
+    }
+
+    private async Task BookmarkPost()
+    {
+        showMenu = false;
+        var success = await PostService.BookmarkPostAsync(Post.Id);
+        if (success)
+        {
+            Post.IsBookmarked = !Post.IsBookmarked;
+            var message = Post.IsBookmarked ? "Post salvo nos favoritos!" : "Post removido dos favoritos!";
+            await JS.InvokeVoidAsync("showNotification", message, "success");
+            StateHasChanged();
+        }
+    }
+
+    private async Task CopyLink()
+    {
+        showMenu = false;
+        await JS.InvokeVoidAsync("copyToClipboard", $"/feed/{Post.Id}");
+        await JS.InvokeVoidAsync("showNotification", "Link copiado para a área de transferência!", "success");
+    }
+
+    private async Task ReportPost()
+    {
+        showMenu = false;
+        await JS.InvokeVoidAsync("showNotification", "Denúncia enviada. Obrigado pelo feedback!", "info");
+    }
+
+    private Task OnPostUpdated(PostModel updatedPost)
+    {
+        // Atualizar os dados do post
+        Post.Content = updatedPost.Content;
+        Post.Tags = updatedPost.Tags;
+        Post.IsPublic = updatedPost.IsPublic;
+        Post.Visibility = updatedPost.Visibility;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    // Parâmetros do componente
+    [Parameter] public PostModel Post { get; set; } = new();
+    [Parameter] public object? CurrentUser { get; set; }
+    [Parameter] public EventCallback<PostModel> OnEdit { get; set; }
+    [Parameter] public EventCallback<PostModel> OnDelete { get; set; }
+    [Parameter] public EventCallback<string> OnTagClick { get; set; }
+    [Parameter] public EventCallback<Guid> OnPostDeleted { get; set; } // Mantido para compatibilidade
+    [Parameter] public EventCallback OnLike { get; set; }
+    [Parameter] public EventCallback OnShare { get; set; }
+
     public class PostModel
     {
         public Guid Id { get; set; }
@@ -148,15 +287,19 @@
         public string AuthorAvatar { get; set; } = "";
         public string Content { get; set; } = "";
         public string Title { get; set; } = "";
+        public string? ImageUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public int LikeCount { get; set; }
         public int CommentCount { get; set; }
         public int ShareCount { get; set; }
         public bool IsLiked { get; set; }
+        public string? ReactionType { get; set; }
         public bool IsSaved { get; set; }
         public bool IsOfficial { get; set; }
         public bool IsPinned { get; set; }
         public bool IsBookmarked { get; set; }
+        public bool IsPublic { get; set; } = true;
+        public string Visibility { get; set; } = "Company";
         public string[] Tags { get; set; } = Array.Empty<string>();
         public List<CommentModel>? Comments { get; set; }
     }
@@ -172,130 +315,3 @@
         public bool IsLiked { get; set; }
     }
 }
-
-<style>
-    .simple-post-card {
-        background: white;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .post-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
-    .author-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .author-name {
-        font-weight: 600;
-        color: #2d3748;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .author-name:hover {
-        color: #667eea;
-    }
-
-    .author-role {
-        color: #718096;
-        font-size: 0.875rem;
-    }
-
-    .post-time {
-        color: #a0aec0;
-        font-size: 0.75rem;
-    }
-
-    .post-content {
-        margin-bottom: 1rem;
-        line-height: 1.6;
-        color: #2d3748;
-    }
-
-    .hashtag {
-        color: #667eea;
-        font-weight: 500;
-    }
-
-    .post-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .tag {
-        background: #edf2f7;
-        color: #667eea;
-        padding: 0.25rem 0.5rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-        font-weight: 500;
-    }
-
-    .post-actions {
-        display: flex;
-        gap: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #e2e8f0;
-    }
-
-    .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: none;
-        border: none;
-        color: #718096;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        transition: all 0.2s;
-    }
-
-    .action-btn:hover {
-        background: #f7fafc;
-        color: #4a5568;
-    }
-
-    .action-btn.liked {
-        color: #e53e3e;
-    }
-
-    .comments-section {
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #e2e8f0;
-    }
-
-    .comment {
-        display: flex;
-        gap: 0.5rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .comment-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .comment-content {
-        background: #f7fafc;
-        padding: 0.5rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-    }
-</style>

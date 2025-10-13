@@ -66,51 +66,58 @@
             @if (currentUser != null)
             {
                 <div class="user-profile">
-                    <button class="profile-btn" @onclick="ToggleProfileMenu">
-                        <div class="profile-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
-                        <div class="profile-info">
-                            <span class="profile-name">@currentUser.Nome</span>
-                            <span class="profile-role">@currentUser.Cargo</span>
+                    <button class="synqcore-profile-btn" @onclick="ToggleProfileMenu">
+                        <div class="synqcore-profile-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
+                        <div class="synqcore-profile-info">
+                            <span class="synqcore-profile-name">@currentUser.Nome</span>
+                            <span class="synqcore-profile-role">@currentUser.Cargo</span>
                         </div>
-                        <i class="fas fa-chevron-down profile-arrow"></i>
+                        <i class="fas fa-chevron-down synqcore-profile-arrow"></i>
                     </button>
 
                     <!-- Menu Dropdown do Perfil -->
                     @if (showProfileMenu)
                     {
-                        <div class="profile-menu">
-                            <a href="/perfil" class="menu-item">
-                                <i class="fas fa-user"></i>
-                                Meu Perfil
-                            </a>
-                            <a href="/configuracoes" class="menu-item">
-                                <i class="fas fa-cog"></i>
-                                Configurações
-                            </a>
-                            <a href="/employees" class="menu-item">
-                                <i class="fas fa-users"></i>
-                                Funcionários
-                            </a>
-                            <a href="/endorsements" class="menu-item">
-                                <i class="fas fa-award"></i>
-                                Endorsements
-                            </a>
-                            @if (canModerate)
-                            {
-                                <a href="/moderation" class="menu-item">
-                                    <i class="fas fa-shield-alt"></i>
-                                    Moderação
+                        <div class="synq-profile-menu show">
+                            <div class="synq-profile-menu-header">
+                                <div class="synq-profile-menu-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
+                                <div class="synq-profile-menu-name">@currentUser.Nome</div>
+                                <div class="synq-profile-menu-role">@currentUser.Cargo</div>
+                            </div>
+                            <div class="synq-profile-menu-body">
+                                <a href="/perfil" class="synq-profile-menu-item">
+                                    <i class="fas fa-user"></i>
+                                    Meu Perfil
                                 </a>
-                            }
-                            <a href="/ajuda" class="menu-item">
-                                <i class="fas fa-question-circle"></i>
-                                Ajuda
-                            </a>
-                            <hr class="menu-divider">
-                            <button class="menu-item logout-btn" @onclick="HandleLogout">
-                                <i class="fas fa-sign-out-alt"></i>
-                                Sair
-                            </button>
+                                <a href="/configuracoes" class="synq-profile-menu-item">
+                                    <i class="fas fa-cog"></i>
+                                    Configurações
+                                </a>
+                                <a href="/employees" class="synq-profile-menu-item">
+                                    <i class="fas fa-users"></i>
+                                    Funcionários
+                                </a>
+                                <a href="/endorsements" class="synq-profile-menu-item">
+                                    <i class="fas fa-award"></i>
+                                    Endorsements
+                                </a>
+                                @if (canModerate)
+                                {
+                                    <a href="/moderation" class="synq-profile-menu-item">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Moderação
+                                    </a>
+                                }
+                                <a href="/ajuda" class="synq-profile-menu-item">
+                                    <i class="fas fa-question-circle"></i>
+                                    Ajuda
+                                </a>
+                                <div class="synq-profile-menu-divider"></div>
+                                <button class="synq-profile-menu-item danger" @onclick="HandleLogout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Sair
+                                </button>
+                            </div>
                         </div>
                     }
                 </div>
@@ -122,45 +129,51 @@
     <div class="main-content">
         <!-- Sidebar de Navegação Esquerda -->
         <div class="sidebar-left">
-            <div class="navigation-menu">
-                <h3>Navegação</h3>
-                <nav class="main-nav">
-                    <a href="#" class="nav-item @(activeTab == "feed" ? "active" : "")" @onclick="@(() => SetActiveTab("feed"))">
+            <div class="synq-main-nav">
+                <h3 class="synq-nav-title">
+                    <i class="fas fa-compass"></i>
+                    Navegação
+                </h3>
+                <nav class="synq-nav-list">
+                    <a href="#" class="synq-nav-item @(activeTab == "feed" ? "active" : "")" @onclick="@(() => SetActiveTab("feed"))">
                         <i class="fas fa-home"></i>
-                        <span>Feed Principal</span>
+                        <span class="synq-nav-item-text">Feed Principal</span>
                     </a>
-                    <a href="#" class="nav-item @(activeTab == "discussions" ? "active" : "")" @onclick="@(() => SetActiveTab("discussions"))">
+                    <a href="#" class="synq-nav-item @(activeTab == "discussions" ? "active" : "")" @onclick="@(() => SetActiveTab("discussions"))">
                         <i class="fas fa-comments"></i>
-                        <span>Discussões</span>
+                        <span class="synq-nav-item-text">Discussões</span>
                     </a>
-                    <a href="#" class="nav-item @(activeTab == "endorsements" ? "active" : "")" @onclick="@(() => SetActiveTab("endorsements"))">
+                    <a href="#" class="synq-nav-item @(activeTab == "endorsements" ? "active" : "")" @onclick="@(() => SetActiveTab("endorsements"))">
                         <i class="fas fa-award"></i>
-                        <span>Endorsements</span>
+                        <span class="synq-nav-item-text">Endorsements</span>
                     </a>
-                    <a href="#" class="nav-item @(activeTab == "people" ? "active" : "")" @onclick="@(() => SetActiveTab("people"))">
+                    <a href="#" class="synq-nav-item @(activeTab == "people" ? "active" : "")" @onclick="@(() => SetActiveTab("people"))">
                         <i class="fas fa-users"></i>
-                        <span>Pessoas</span>
+                        <span class="synq-nav-item-text">Pessoas</span>
                     </a>
-                    <a href="#" class="nav-item @(activeTab == "analytics" ? "active" : "")" @onclick="@(() => SetActiveTab("analytics"))">
+                    <a href="#" class="synq-nav-item @(activeTab == "analytics" ? "active" : "")" @onclick="@(() => SetActiveTab("analytics"))">
                         <i class="fas fa-chart-bar"></i>
-                        <span>Analytics</span>
+                        <span class="synq-nav-item-text">Analytics</span>
                     </a>
                 </nav>
             </div>
 
-            <div class="quick-actions">
-                <h4>Ações Rápidas</h4>
-                <button class="action-btn" @onclick="ShowCreatePostModal">
+            <div class="synq-quick-actions">
+                <h4 class="synq-quick-actions-title">
+                    <i class="fas fa-bolt"></i>
+                    Ações Rápidas
+                </h4>
+                <button class="synq-quick-action" @onclick="ShowCreatePostModal">
                     <i class="fas fa-plus"></i>
-                    <span>Nova Postagem</span>
+                    <span class="synq-quick-action-text">Nova Postagem</span>
                 </button>
-                <button class="action-btn" @onclick="ShowCreateDiscussion">
+                <button class="synq-quick-action" @onclick="ShowCreateDiscussion">
                     <i class="fas fa-comments"></i>
-                    <span>Criar Discussão</span>
+                    <span class="synq-quick-action-text">Criar Discussão</span>
                 </button>
-                <button class="action-btn" @onclick="ShowCreateEndorsement">
+                <button class="synq-quick-action" @onclick="ShowCreateEndorsement">
                     <i class="fas fa-award"></i>
-                    <span>Endorsement</span>
+                    <span class="synq-quick-action-text">Endorsement</span>
                 </button>
             </div>
 
@@ -301,11 +314,30 @@
                 <div class="posts-container">
                     @foreach (var post in posts)
                     {
-                        <div class="post-card">
-                            <h4>@post.Title</h4>
-                            <p>@post.Content</p>
-                            <small>Por @post.AuthorName - @post.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
-                        </div>
+                        <SimplePostCard Post="@(new SimplePostCard.PostModel 
+                        { 
+                            Id = post.Id,
+                            AuthorName = post.AuthorName,
+                            AuthorRole = post.AuthorRole,
+                            AuthorAvatar = post.AuthorAvatar ?? "/images/default-avatar.png",
+                            Content = post.Content,
+                            Title = post.Title,
+                            CreatedAt = post.CreatedAt,
+                            LikeCount = post.LikeCount,
+                            CommentCount = post.CommentCount,
+                            ShareCount = post.ShareCount,
+                            IsLiked = post.IsLiked,
+                            ReactionType = post.ReactionType,
+                            Tags = post.Tags ?? Array.Empty<string>(),
+                            IsOfficial = post.IsOfficial,
+                            IsPinned = post.IsPinned,
+                            IsBookmarked = post.IsBookmarked
+                        })"
+                                     CurrentUser="currentUser" 
+                                     OnEdit="HandleEditPost"
+                                     OnDelete="HandleDeletePost"
+                                     OnLike="() => LikePost(post.Id)"
+                                     OnShare="() => SharePost(post.Id)" />
                     }
                 </div>
             }
@@ -381,6 +413,11 @@
             }
 
             Console.WriteLine($"[FEED] Autenticação OK - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
+
+            // Verificar token de acesso
+            var accessToken = await LocalAuthService.GetAccessTokenAsync();
+            Console.WriteLine($"[FEED] Token de acesso encontrado: {!string.IsNullOrEmpty(accessToken)}");
+            Console.WriteLine($"[FEED] Token (primeiros 20 chars): {accessToken?.Substring(0, Math.Min(20, accessToken.Length))}...");
 
             // Carregar dados do usuário
             if (UserState.Value.IsAuthenticated && UserState.Value.CurrentUser != null)
@@ -502,18 +539,48 @@
 
     private async Task LikePost(Guid postId)
     {
-        var post = posts.FirstOrDefault(p => p.Id == postId);
-        if (post != null)
+        try
         {
+            var post = posts.FirstOrDefault(p => p.Id == postId);
+            if (post == null) return;
+
             // Chamar API para curtir o post
-            var success = await PostService.LikePostAsync(postId);
+            bool success;
             
+            if (post.IsLiked)
+            {
+                // Descurtir
+                success = await PostService.UnlikePostAsync(postId);
+                if (success)
+                {
+                    post.LikeCount = Math.Max(0, post.LikeCount - 1);
+                    post.IsLiked = false;
+                }
+            }
+            else
+            {
+                // Curtir
+                success = await PostService.LikePostAsync(postId);
+                if (success)
+                {
+                    post.LikeCount++;
+                    post.IsLiked = true;
+                }
+            }
+
             if (success)
             {
-                post.LikeCount++;
-                post.IsLiked = true;
                 StateHasChanged();
             }
+            else
+            {
+                // Mostrar mensagem de erro
+                await JS.InvokeVoidAsync("showNotification", "Erro ao processar reação", "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao processar reação: {ex.Message}", "error");
         }
     }
 
@@ -525,8 +592,36 @@
 
     private async Task SharePost(Guid postId)
     {
-        Console.WriteLine($"[BLAZOR] [FEED] Compartilhar post {postId}");
-        await Task.CompletedTask;
+        try
+        {
+            var post = posts.FirstOrDefault(p => p.Id == postId);
+            if (post == null) return;
+
+            // Incrementar contador de compartilhamento
+            post.ShareCount++;
+            StateHasChanged();
+            
+            // Processar compartilhamento via JavaScript
+            await JS.InvokeVoidAsync("showShareOptions", postId);
+            
+            // Simular API call para registrar compartilhamento
+            // TODO: Implementar endpoint real de compartilhamento
+            await Task.Delay(100);
+            
+            await JS.InvokeVoidAsync("showNotification", "Post compartilhado com sucesso!", "success");
+        }
+        catch (Exception ex)
+        {
+            // Reverter contador em caso de erro
+            var post = posts.FirstOrDefault(p => p.Id == postId);
+            if (post != null)
+            {
+                post.ShareCount = Math.Max(0, post.ShareCount - 1);
+                StateHasChanged();
+            }
+            
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao compartilhar: {ex.Message}", "error");
+        }
     }
 
     private void SetActiveTab(string tab)
@@ -739,6 +834,67 @@
         };
     }
 
+    
+
+    // Métodos para manipulação de posts
+    private void HandleEditPost(SimplePostCard.PostModel post)
+    {
+        // Lógica para editar post será implementada quando o modal estiver integrado
+        Console.WriteLine($"[FEED] Editando post: {post.Id}");
+    }
+
+    private async Task HandleDeletePost(SimplePostCard.PostModel post)
+    {
+        try
+        {
+            Console.WriteLine($"[FEED] Excluindo post: {post.Id}");
+            
+            // Chamar serviço para excluir post
+            await PostService.DeletePostAsync(post.Id);
+            
+            // Remover da lista local
+            posts.RemoveAll(p => p.Id == post.Id);
+            
+            // Forçar re-render
+            StateHasChanged();
+            
+            Console.WriteLine($"[FEED] Post {post.Id} excluído com sucesso");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao excluir post {post.Id}: {ex.Message}");
+        }
+    }
+
+    // Métodos de teste para TestPostCard
+    private void HandleEditPostTest(TestPostCard.PostModel post)
+    {
+        Console.WriteLine($"[FEED TEST] Editando post: {post.Id} - {post.Title}");
+    }
+
+    private async Task HandleDeletePostTest(TestPostCard.PostModel post)
+    {
+        try
+        {
+            Console.WriteLine($"[FEED TEST] Excluindo post: {post.Id} - {post.Title}");
+            
+            // Chamar serviço para excluir post
+            await PostService.DeletePostAsync(post.Id);
+            
+            // Remover da lista local
+            posts.RemoveAll(p => p.Id == post.Id);
+            
+            // Forçar re-render
+            StateHasChanged();
+            
+            Console.WriteLine($"[FEED TEST] Post {post.Id} excluído com sucesso");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED TEST] Erro ao excluir post {post.Id}: {ex.Message}");
+        }
+    }
+
     private void NavigateToResult(SearchResultDto result)
     {
         // Gerar URL baseada no tipo de conteúdo
@@ -756,3 +912,17 @@
         Navigation.NavigateTo(url);
     }
 }
+
+private void NavigateToResult(SearchResultDto result)
+    {
+        // Gerar URL baseada no tipo de conteúdo
+        var url = result.Type switch
+        {
+            "Employee" => $"/profile/{result.Id}",
+            "Post" => $"/post/{result.Id}",
+            "Document" => $"/document/{result.Id}",
+            "Discussion" => $"/discussion/{result.Id}",
+            "MediaAsset" => $"/media/{result.Id}",
+            "KnowledgeBase" => $"/knowledge/{result.Id}",
+            _ => $"/content/{result.Id}"
+        };

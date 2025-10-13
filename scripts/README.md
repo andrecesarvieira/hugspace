@@ -8,33 +8,35 @@ Este diretório contém o script consolidado para facilitar o desenvolvimento e 
 
 **ÚNICO SCRIPT NECESSÁRIO**: Substitui todos os scripts anteriores! Todas as funcionalidades em um só lugar.
 
+#### Python (Todas as Plataformas)
+
 ```bash
 # 🚀 Iniciar aplicação completa (API + Blazor) - PADRÃO
-python3 scripts/synqcore.py
+python scripts/synqcore.py
 
 # ou especificamente:
-python3 scripts/synqcore.py start
+python scripts/synqcore.py start
 
 # 🔗 Iniciar apenas API na porta 5000
-python3 scripts/synqcore.py api
+python scripts/synqcore.py api
 
 # 🌐 Iniciar apenas Blazor na porta 5226
-python3 scripts/synqcore.py blazor
+python scripts/synqcore.py blazor
 
 # 🧹 Limpeza completa do projeto
-python3 scripts/synqcore.py clean
+python scripts/synqcore.py clean
 
 # 🐳 Gerenciar infraestrutura Docker
-python3 scripts/synqcore.py docker-up
-python3 scripts/synqcore.py docker-down
+python scripts/synqcore.py docker-up
+python scripts/synqcore.py docker-down
 
 # ❓ Ajuda
-python3 scripts/synqcore.py help
+python scripts/synqcore.py help
 ```
 
-### 🎯 Acesso Rápido via Link Simbólico
+### 🎯 Acesso Rápido por Plataforma
 
-Para maior conveniência, há um link simbólico na raiz do projeto:
+#### Linux/Mac (Link Simbólico)
 
 ```bash
 # Acesso direto da raiz do projeto
@@ -44,6 +46,30 @@ Para maior conveniência, há um link simbólico na raiz do projeto:
 ./synqcore clean          # Limpeza
 ./synqcore docker-up      # Infraestrutura
 ./synqcore help           # Ajuda
+```
+
+#### Windows PowerShell
+
+```powershell
+# Acesso via wrapper PowerShell
+.\synqcore.ps1 start      # Aplicação completa
+.\synqcore.ps1 api        # Apenas API
+.\synqcore.ps1 blazor     # Apenas Blazor
+.\synqcore.ps1 clean      # Limpeza
+.\synqcore.ps1 docker-up  # Infraestrutura
+.\synqcore.ps1 help       # Ajuda
+```
+
+#### Windows Command Prompt
+
+```cmd
+REM Acesso via wrapper CMD
+synqcore.cmd start        # Aplicação completa
+synqcore.cmd api          # Apenas API
+synqcore.cmd blazor       # Apenas Blazor
+synqcore.cmd clean        # Limpeza
+synqcore.cmd docker-up    # Infraestrutura
+synqcore.cmd help         # Ajuda
 ```
 
 ## � Funcionalidades Integradas

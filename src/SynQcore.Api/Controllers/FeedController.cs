@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using System.Security.Claims;
 using SynQcore.Application.Features.Feed.Commands;
 using SynQcore.Application.Features.Feed.Queries;
 using SynQcore.Application.Features.Feed.DTOs;
 using SynQcore.Application.DTOs;
+using SynQcore.Application.Common.DTOs;
 
 namespace SynQcore.Api.Controllers;
 
@@ -54,11 +56,258 @@ public class FeedController : ControllerBase
             };
 
             var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetCorporateFeed), new { }, result);
+            return CreatedAtAction(nameof(GetFeedPost), new { postId = result.Id }, result);
         }
         catch (Exception ex)
         {
             return BadRequest(new { message = "Erro ao criar post", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Obtém um post específico do feed
+    /// </summary>
+    /// <param name="postId">ID do post</param>
+    /// <returns>Post solicitado</returns>
+    [HttpGet("{postId}")]
+    [ProducesResponseType(typeof(FeedPostDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FeedPostDto>> GetFeedPost(Guid postId)
+    {
+        var userId = GetCurrentUserId();
+        
+        var command = new GetFeedPostCommand
+        {
+            PostId = postId,
+            UserId = userId
+        };
+
+        var result = await _mediator.Send(command);
+        
+        if (result == null)
+            return NotFound(new { message = "Post não encontrado" });
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Atualiza um post do feed corporativo
+    /// </summary>
+    /// <param name="postId">ID do post a ser atualizado</param>
+    /// <param name="request">Dados atualizados do post</param>
+    /// <returns>Post atualizado</returns>
+    [HttpPut("{postId}")]
+    [ProducesResponseType(typeof(FeedPostDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FeedPostDto>> UpdateFeedPost(Guid postId, [FromBody] UpdateFeedPostRequest request)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            var command = new UpdateFeedPostCommand
+            {
+                PostId = postId,
+                UserId = userId,
+                Content = request.Content,
+                Tags = request.Tags,
+                ImageUrl = request.ImageUrl,
+                IsPublic = request.IsPublic
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao atualizar post", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Exclui um post do feed corporativo
+    /// </summary>
+    /// <param name="postId">ID do post a ser excluído</param>
+    /// <returns>Confirmação de exclusão</returns>
+    [HttpDelete("{postId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteFeedPost(Guid postId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            var command = new DeleteFeedPostCommand
+            {
+                PostId = postId,
+                UserId = userId
+            };
+
+            await _mediator.Send(command);
+            return Ok(new { message = "Post excluído com sucesso" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao excluir post", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Curte um post do feed
+    /// </summary>
+    /// <param name="postId">ID do post a ser curtido</param>
+    /// <param name="reactionType">Tipo de reação: Like, Helpful, Insightful, Celebrate</param>
+    /// <returns>Resultado da operação de curtida</returns>
+    [HttpPost("{postId}/like")]
+    [ProducesResponseType(typeof(PostLikeResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PostLikeResponseDto>> LikePost(Guid postId, [FromQuery] string reactionType = "Like")
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            var command = new LikePostCommand
+            {
+                PostId = postId,
+                UserId = userId,
+                ReactionType = reactionType
+            };
+
+            var result = await _mediator.Send(command);
+            
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao curtir post", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Remove curtida de um post do feed
+    /// </summary>
+    /// <param name="postId">ID do post</param>
+    /// <returns>Resultado da operação</returns>
+    [HttpDelete("{postId}/like")]
+    [ProducesResponseType(typeof(PostLikeResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PostLikeResponseDto>> UnlikePost(Guid postId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            var command = new UnlikePostCommand
+            {
+                PostId = postId,
+                UserId = userId
+            };
+
+            var result = await _mediator.Send(command);
+            
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao remover curtida", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Obtém status de curtida de um post específico
+    /// </summary>
+    /// <param name="postId">ID do post</param>
+    /// <returns>Status das curtidas do post</returns>
+    [HttpGet("{postId}/like/status")]
+    [ProducesResponseType(typeof(PostLikeStatusDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PostLikeStatusDto>> GetPostLikeStatus(Guid postId)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            var query = new GetPostLikeStatusQuery
+            {
+                PostId = postId,
+                UserId = userId
+            };
+
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao obter status das curtidas", error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Obtém lista de curtidas de um post
+    /// </summary>
+    /// <param name="postId">ID do post</param>
+    /// <param name="page">Número da página</param>
+    /// <param name="pageSize">Itens por página</param>
+    /// <param name="reactionType">Filtro por tipo de reação</param>
+    /// <returns>Lista paginada de curtidas</returns>
+    [HttpGet("{postId}/likes")]
+    [ProducesResponseType(typeof(PagedResult<PostLikeDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<PagedResult<PostLikeDto>>> GetPostLikes(
+        Guid postId, 
+        [FromQuery] int page = 1, 
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? reactionType = null)
+    {
+        try
+        {
+            var query = new GetPostLikesQuery
+            {
+                PostId = postId,
+                Page = page,
+                PageSize = pageSize,
+                ReactionType = reactionType
+            };
+
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = "Erro ao obter curtidas do post", error = ex.Message });
         }
     }
 
@@ -306,20 +555,13 @@ public class FeedController : ControllerBase
     /// </summary>
     private Guid GetCurrentUserId()
     {
-        // Debug: log all claims
-        var allClaims = User.Claims.Select(c => $"{c.Type}={c.Value}").ToList();
-        Console.WriteLine($"[DEBUG] User.Identity.IsAuthenticated: {User.Identity?.IsAuthenticated}");
-        Console.WriteLine($"[DEBUG] All claims: {string.Join(", ", allClaims)}");
-
-        var userIdClaim = User.FindFirst("sub")?.Value ?? 
-                         User.FindFirst("id")?.Value ?? 
-                         User.FindFirst("userId")?.Value;
-        
-        Console.WriteLine($"[DEBUG] Found userIdClaim: {userIdClaim}");
+        // Buscar claim 'sub' que contém o User ID no token JWT
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? 
+                         User.FindFirst("sub")?.Value;
         
         if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
         {
-            throw new UnauthorizedAccessException("ID do usuário não encontrado no token");
+            throw new UnauthorizedAccessException("ID do usuário não encontrado no token JWT");
         }
         
         return userId;

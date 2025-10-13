@@ -1,0 +1,541 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+@using SynQcore.BlazorApp.Services
+@inject IPostService PostService
+@inject IJSRuntime JS
+
+@if (isVisible)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-container" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-edit"></i>
+                    Editar Post
+                </h3>
+                <button class="close-button" @onclick="CloseModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                @if (isLoading)
+                {
+                    <div class="loading-container">
+                        <div class="spinner"></div>
+                        <p>Carregando...</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="post-form">
+                        <div class="form-group">
+                            <label for="content">Conteúdo do Post</label>
+                            <textarea id="content"
+                                    class="content-input"
+                                    placeholder="O que você gostaria de compartilhar?"
+                                    @bind="Content"
+                                    @oninput="OnContentChanged"
+                                    maxlength="5000"
+                                    rows="6"></textarea>
+                            <div class="character-count">
+                                @Content.Length / 5000 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageUrl">URL da Imagem (opcional)</label>
+                            <input id="imageUrl"
+                                   type="url"
+                                   class="url-input"
+                                   placeholder="https://exemplo.com/imagem.jpg"
+                                   @bind="ImageUrl" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tags">Tags (opcional)</label>
+                            <input id="tags"
+                                   type="text"
+                                   class="tags-input"
+                                   placeholder="Digite as tags separadas por vírgula (ex: reunião, projeto, feedback)"
+                                   @bind="TagsInput"
+                                   @oninput="OnTagsChanged" />
+                            @if (ParsedTags.Count > 0)
+                            {
+                                <div class="tags-preview">
+                                    @foreach (var tag in ParsedTags)
+                                    {
+                                        <span class="tag-preview">
+                                            #@tag
+                                            <button type="button" class="remove-tag" @onclick="() => RemoveTag(tag)">×</button>
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" @bind="IsPublic" />
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">
+                                        <i class="@(IsPublic ? "fas fa-globe" : "fas fa-building")"></i>
+                                        @(IsPublic ? "Visível para toda a empresa" : "Visível apenas para o departamento")
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseModal" disabled="@isLoading">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" 
+                        @onclick="SaveChanges" 
+                        disabled="@(isLoading || string.IsNullOrWhiteSpace(Content) || isSaving)">
+                    @if (isSaving)
+                    {
+                        <div class="btn-spinner"></div>
+                        <span>Salvando...</span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-save"></i>
+                        <span>Salvar Alterações</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid PostId { get; set; }
+    [Parameter] public EventCallback<SimplePostCard.PostModel> OnPostUpdated { get; set; }
+    [Parameter] public EventCallback OnClosed { get; set; }
+
+    private bool isVisible = false;
+    private bool isLoading = false;
+    private bool isSaving = false;
+
+    private string Content = "";
+    private string ImageUrl = "";
+    private string TagsInput = "";
+    private bool IsPublic = true;
+    private List<string> ParsedTags = new();
+
+    public async Task ShowModal(SimplePostCard.PostModel post)
+    {
+        // Carregar dados do post
+        Content = post.Content;
+        ImageUrl = post.ImageUrl ?? "";
+        IsPublic = post.Visibility != "Department";
+        TagsInput = string.Join(", ", post.Tags ?? Array.Empty<string>());
+        ParsedTags = (post.Tags ?? Array.Empty<string>()).ToList();
+
+        isVisible = true;
+        StateHasChanged();
+
+        await Task.Delay(100);
+        await JS.InvokeVoidAsync("focusElement", "#content");
+    }
+
+    private async Task CloseModal()
+    {
+        isVisible = false;
+        await OnClosed.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private async Task SaveChanges()
+    {
+        if (string.IsNullOrWhiteSpace(Content) || isSaving)
+            return;
+
+        isSaving = true;
+        StateHasChanged();
+
+        try
+        {
+            var request = new UpdatePostRequest
+            {
+                Content = Content.Trim(),
+                ImageUrl = string.IsNullOrWhiteSpace(ImageUrl) ? null : ImageUrl.Trim(),
+                Tags = ParsedTags.Count > 0 ? ParsedTags.ToArray() : null,
+                IsPublic = IsPublic
+            };
+
+            var updatedPost = await PostService.UpdatePostAsync(PostId, request);
+
+            if (updatedPost != null)
+            {
+                await OnPostUpdated.InvokeAsync(updatedPost);
+                await JS.InvokeVoidAsync("showNotification", "Post atualizado com sucesso!", "success");
+                await CloseModal();
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("showNotification", "Erro ao atualizar o post", "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[EDIT MODAL] Erro ao salvar: {ex.Message}");
+            await JS.InvokeVoidAsync("showNotification", "Erro inesperado ao atualizar o post", "error");
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    private void OnContentChanged(ChangeEventArgs e)
+    {
+        Content = e.Value?.ToString() ?? "";
+        StateHasChanged();
+    }
+
+    private void OnTagsChanged(ChangeEventArgs e)
+    {
+        TagsInput = e.Value?.ToString() ?? "";
+        ParseTags();
+        StateHasChanged();
+    }
+
+    private void ParseTags()
+    {
+        ParsedTags.Clear();
+        if (!string.IsNullOrWhiteSpace(TagsInput))
+        {
+            var tags = TagsInput.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                               .Select(t => t.Trim())
+                               .Where(t => !string.IsNullOrWhiteSpace(t))
+                               .Distinct()
+                               .Take(10) // Máximo 10 tags
+                               .ToList();
+            ParsedTags.AddRange(tags);
+        }
+    }
+
+    private void RemoveTag(string tag)
+    {
+        ParsedTags.Remove(tag);
+        TagsInput = string.Join(", ", ParsedTags);
+        StateHasChanged();
+    }
+}
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .modal-container {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+
+    .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .modal-title i {
+        color: #5a67d8;
+    }
+
+    .close-button {
+        background: none;
+        border: none;
+        color: #a0aec0;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+    }
+
+    .close-button:hover {
+        background: #edf2f7;
+        color: #4a5568;
+    }
+
+    .modal-body {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+    }
+
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem;
+        gap: 1rem;
+    }
+
+    .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #5a67d8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .post-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.9rem;
+    }
+
+    .content-input, .url-input, .tags-input {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        font-family: inherit;
+        resize: none;
+    }
+
+    .content-input:focus, .url-input:focus, .tags-input:focus {
+        outline: none;
+        border-color: #5a67d8;
+        box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
+    }
+
+    .content-input {
+        min-height: 120px;
+        line-height: 1.6;
+    }
+
+    .character-count {
+        text-align: right;
+        font-size: 0.8rem;
+        color: #a0aec0;
+        margin-top: 0.25rem;
+    }
+
+    .tags-preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .tag-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #5a67d8, #667eea);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .remove-tag {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+        padding: 0;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .remove-tag:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        position: relative;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .checkbox-label input[type="checkbox"]:checked {
+        background: #5a67d8;
+        border-color: #5a67d8;
+    }
+
+    .checkbox-label input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .checkbox-text {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #4a5568;
+    }
+
+    .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .btn-secondary {
+        background: #edf2f7;
+        color: #4a5568;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        background: #e2e8f0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #5a67d8, #667eea);
+        color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(90, 103, 216, 0.3);
+    }
+
+    .btn-spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    /* Mobile responsiveness */
+    @@media (max-width: 768px) {
+        .modal-overlay {
+            padding: 0.5rem;
+        }
+
+        .modal-container {
+            max-height: 95vh;
+        }
+
+        .modal-header, .modal-body, .modal-footer {
+            padding: 1rem;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+        }
+    }
+</style>

@@ -1,0 +1,406 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+@using SynQcore.BlazorApp.Services
+@inject IPostService PostService
+@inject IJSRuntime JS
+
+@if (IsVisible)
+{
+    <div class="likes-modal-overlay" @onclick="CloseModal">
+        <div class="likes-modal" @onclick:stopPropagation="true">
+            <div class="likes-modal-header">
+                <h3>Quem curtiu este post</h3>
+                <button class="close-btn" @onclick="CloseModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="reaction-filters">
+                <button class="filter-btn @(selectedFilter == null ? "active" : "")" 
+                        @onclick="() => FilterByReaction(null)">
+                    Todas (@totalLikes)
+                </button>
+                @foreach (var reactionType in availableReactions)
+                {
+                    var count = GetReactionCount(reactionType);
+                    if (count > 0)
+                    {
+                        <button class="filter-btn @(selectedFilter == reactionType ? "active" : "")" 
+                                @onclick="() => FilterByReaction(reactionType)">
+                            <i class="@GetReactionIcon(reactionType)"></i> @count
+                        </button>
+                    }
+                }
+            </div>
+
+            <div class="likes-list">
+                @if (isLoading)
+                {
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i> Carregando...
+                    </div>
+                }
+                else if (likes.Any())
+                {
+                    @foreach (var like in likes)
+                    {
+                        <div class="like-item">
+                            <img src="@(like.EmployeeAvatarUrl ?? "/images/default-avatar.png")" 
+                                 alt="@like.EmployeeName" 
+                                 class="like-avatar" />
+                            <div class="like-info">
+                                <div class="like-name">@like.EmployeeName</div>
+                                <div class="like-department">@like.EmployeeDepartment</div>
+                            </div>
+                            <div class="like-reaction">
+                                <i class="@GetReactionIcon(like.ReactionType)"></i>
+                            </div>
+                            <div class="like-time">@GetRelativeTime(like.CreatedAt)</div>
+                        </div>
+                    }
+                    
+                    @if (hasMoreLikes)
+                    {
+                        <div class="load-more-container">
+                            <button class="load-more-btn" @onclick="LoadMoreLikes" disabled="@isLoadingMore">
+                                @if (isLoadingMore)
+                                {
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                }
+                                else
+                                {
+                                    <text>Carregar mais</text>
+                                }
+                            </button>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-likes">
+                        <i class="fas fa-heart-broken"></i>
+                        <p>Nenhuma reação ainda</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid PostId { get; set; }
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private List<PostLikeDto> likes = new();
+    private List<PostLikeDto> allLikes = new();
+    private readonly string[] availableReactions = { "Like", "Helpful", "Insightful", "Celebrate" };
+    private string? selectedFilter;
+    private bool isLoading = false;
+    private bool isLoadingMore = false;
+    private bool hasMoreLikes = false;
+    private int currentPage = 1;
+    private int totalLikes = 0;
+    private const int PageSize = 20;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsVisible && PostId != Guid.Empty)
+        {
+            await LoadLikes();
+        }
+    }
+
+    private async Task LoadLikes()
+    {
+        isLoading = true;
+        currentPage = 1;
+        likes.Clear();
+        allLikes.Clear();
+        
+        try
+        {
+            // Carregar todas as reações
+            allLikes = await PostService.GetPostLikesAsync(PostId, null, 1, 100);
+            totalLikes = allLikes.Count;
+            
+            // Aplicar filtro se houver
+            FilterLikes();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", "Erro ao carregar curtidas", "error");
+            Console.WriteLine($"Erro ao carregar curtidas: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task LoadMoreLikes()
+    {
+        if (isLoadingMore || !hasMoreLikes) return;
+
+        isLoadingMore = true;
+        currentPage++;
+
+        try
+        {
+            var moreLikes = await PostService.GetPostLikesAsync(PostId, selectedFilter, currentPage, PageSize);
+            likes.AddRange(moreLikes);
+            hasMoreLikes = moreLikes.Count == PageSize;
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", "Erro ao carregar mais curtidas", "error");
+            Console.WriteLine($"Erro ao carregar mais curtidas: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingMore = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task FilterByReaction(string? reactionType)
+    {
+        selectedFilter = reactionType;
+        FilterLikes();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void FilterLikes()
+    {
+        if (string.IsNullOrEmpty(selectedFilter))
+        {
+            likes = allLikes.ToList();
+        }
+        else
+        {
+            likes = allLikes.Where(l => l.ReactionType == selectedFilter).ToList();
+        }
+
+        hasMoreLikes = false; // Para simplificar, desabilitar paginação no filtro
+    }
+
+    private int GetReactionCount(string reactionType)
+    {
+        return allLikes.Count(l => l.ReactionType == reactionType);
+    }
+
+    private string GetReactionIcon(string reactionType) => reactionType switch
+    {
+        "Like" => "fas fa-heart",
+        "Helpful" => "fas fa-thumbs-up",
+        "Insightful" => "fas fa-lightbulb",
+        "Celebrate" => "fas fa-star",
+        _ => "fas fa-heart"
+    };
+
+    private string GetRelativeTime(DateTime dateTime)
+    {
+        var diff = DateTime.Now - dateTime;
+        if (diff.TotalDays >= 1) return $"{(int)diff.TotalDays}d";
+        if (diff.TotalHours >= 1) return $"{(int)diff.TotalHours}h";
+        return $"{(int)diff.TotalMinutes}m";
+    }
+
+    private async Task CloseModal()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+}
+
+<style>
+    .likes-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .likes-modal {
+        background: white;
+        border-radius: 1rem;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .likes-modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .likes-modal-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #a0aec0;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+    }
+
+    .close-btn:hover {
+        background: #f7fafc;
+        color: #4a5568;
+    }
+
+    .reaction-filters {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: #f7fafc;
+        border: none;
+        padding: 0.5rem 0.75rem;
+        border-radius: 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4a5568;
+    }
+
+    .filter-btn:hover {
+        background: #edf2f7;
+        color: #2d3748;
+    }
+
+    .filter-btn.active {
+        background: #667eea;
+        color: white;
+    }
+
+    .likes-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 1.5rem;
+    }
+
+    .like-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f7fafc;
+    }
+
+    .like-item:last-child {
+        border-bottom: none;
+    }
+
+    .like-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .like-info {
+        flex: 1;
+    }
+
+    .like-name {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 0.9rem;
+    }
+
+    .like-department {
+        color: #718096;
+        font-size: 0.8rem;
+    }
+
+    .like-reaction {
+        color: #667eea;
+        font-size: 1.1rem;
+    }
+
+    .like-time {
+        color: #a0aec0;
+        font-size: 0.75rem;
+        min-width: 30px;
+        text-align: right;
+    }
+
+    .loading-spinner {
+        text-align: center;
+        padding: 2rem;
+        color: #718096;
+    }
+
+    .no-likes {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #a0aec0;
+    }
+
+    .no-likes i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .load-more-container {
+        text-align: center;
+        padding: 1rem 0;
+    }
+
+    .load-more-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+    }
+
+    .load-more-btn:hover:not(:disabled) {
+        background: #5a67d8;
+    }
+
+    .load-more-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>

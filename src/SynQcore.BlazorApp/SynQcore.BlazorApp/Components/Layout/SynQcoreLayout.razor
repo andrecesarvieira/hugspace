@@ -1,0 +1,334 @@
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models
+@using Fluxor
+@using SynQcore.BlazorApp.Store.User
+@inject IState<UserState> UserState
+@inject ILocalAuthService LocalAuthService
+@inject NavigationManager Navigation
+@inject INotificationService NotificationService
+
+<!-- Layout padrão do SynQcore baseado no LinkedIn -->
+<div class="synqcore-layout">
+    <!-- Header Global -->
+    <header class="synqcore-header">
+        <div class="synqcore-header-content">
+            <!-- Logo -->
+            <a href="/feed" class="synqcore-logo">
+                <div class="synqcore-logo-icon">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="synqcore-logo-text">
+                    <h1 class="synqcore-logo-title">SynQcore</h1>
+                    <span class="synqcore-logo-subtitle">Rede Social Corporativa</span>
+                </div>
+            </a>
+
+            <!-- Busca Global -->
+            <div class="synqcore-search">
+                <input type="text" 
+                       class="synqcore-search-input" 
+                       placeholder="Buscar discussões, colegas, projetos..."
+                       @bind="searchQuery"
+                       @onkeypress="@(async (e) => { if (e.Key == "Enter") await HandleGlobalSearch(); })" />
+                <i class="fas fa-search synqcore-search-icon"></i>
+            </div>
+
+            <!-- Ações do Usuário -->
+            <div class="synqcore-user-actions">
+                <!-- Notificações -->
+                <button class="synqcore-notification-btn" @onclick="ToggleNotifications">
+                    <i class="fas fa-bell"></i>
+                    @if (unreadNotificationCount > 0)
+                    {
+                        <span class="synqcore-notification-badge">@unreadNotificationCount</span>
+                    }
+                </button>
+
+                <!-- Menu do Usuário -->
+                @if (currentUser != null)
+                {
+                    <div class="synqcore-user-profile">
+                        <button class="synqcore-profile-btn" @onclick="ToggleProfileMenu">
+                            <div class="synqcore-profile-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
+                            <div class="synqcore-profile-info">
+                                <span class="synqcore-profile-name">@currentUser.Nome</span>
+                                <span class="synqcore-profile-role">@currentUser.Cargo</span>
+                            </div>
+                            <i class="fas fa-chevron-down synqcore-profile-arrow"></i>
+                        </button>
+
+                        @if (showProfileMenu)
+                        {
+                            <div class="synq-profile-menu show">
+                                <div class="synq-profile-menu-header">
+                                    <div class="synq-profile-menu-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
+                                    <div class="synq-profile-menu-name">@currentUser.Nome</div>
+                                    <div class="synq-profile-menu-role">@currentUser.Cargo</div>
+                                </div>
+                                <div class="synq-profile-menu-body">
+                                    <a href="/perfil" class="synq-profile-menu-item">
+                                        <i class="fas fa-user"></i>
+                                        Meu Perfil
+                                    </a>
+                                    <a href="/feed" class="synq-profile-menu-item">
+                                        <i class="fas fa-home"></i>
+                                        Feed Principal
+                                    </a>
+                                    <a href="/employees" class="synq-profile-menu-item">
+                                        <i class="fas fa-users"></i>
+                                        Funcionários
+                                    </a>
+                                    <a href="/endorsements" class="synq-profile-menu-item">
+                                        <i class="fas fa-award"></i>
+                                        Endorsements
+                                    </a>
+                                    <a href="/knowledge" class="synq-profile-menu-item">
+                                        <i class="fas fa-book"></i>
+                                        Base de Conhecimento
+                                    </a>
+                                    @if (canModerate)
+                                    {
+                                        <a href="/dashboard" class="synq-profile-menu-item">
+                                            <i class="fas fa-chart-dashboard"></i>
+                                            Dashboard
+                                        </a>
+                                    }
+                                    <a href="/configuracoes" class="synq-profile-menu-item">
+                                        <i class="fas fa-cog"></i>
+                                        Configurações
+                                    </a>
+                                    <a href="/ajuda" class="synq-profile-menu-item">
+                                        <i class="fas fa-question-circle"></i>
+                                        Ajuda
+                                    </a>
+                                    <div class="synq-profile-menu-divider"></div>
+                                    <button class="synq-profile-menu-item danger" @onclick="HandleLogout">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        Sair
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="synqcore-main @LayoutClass">
+        @if (ShowBreadcrumbs && !string.IsNullOrEmpty(BreadcrumbText))
+        {
+            <nav class="synqcore-breadcrumbs">
+                <a href="/feed" class="synqcore-breadcrumb-item">
+                    <i class="fas fa-home"></i>
+                    Início
+                </a>
+                <span class="synqcore-breadcrumb-separator">
+                    <i class="fas fa-chevron-right"></i>
+                </span>
+                <span class="synqcore-breadcrumb-item active">@BreadcrumbText</span>
+            </nav>
+        }
+
+        @if (ShowSidebarLeft)
+        {
+            <aside class="synqcore-sidebar-left">
+                @SidebarLeftContent
+            </aside>
+        }
+
+        <section class="synqcore-content">
+            @if (!string.IsNullOrEmpty(PageTitle))
+            {
+                <header class="synqcore-section-header">
+                    <h1 class="synqcore-section-title">
+                        @if (!string.IsNullOrEmpty(PageIcon))
+                        {
+                            <i class="@PageIcon"></i>
+                        }
+                        @PageTitle
+                    </h1>
+                    @if (!string.IsNullOrEmpty(PageSubtitle))
+                    {
+                        <p class="synqcore-section-subtitle">@PageSubtitle</p>
+                    }
+                </header>
+            }
+            
+            @ChildContent
+        </section>
+
+        @if (ShowSidebarRight)
+        {
+            <aside class="synqcore-sidebar-right">
+                @SidebarRightContent
+            </aside>
+        }
+    </main>
+
+    <!-- Painel de Notificações -->
+    @if (showNotifications)
+    {
+        <div class="synq-notification-menu show" style="position: fixed; top: 70px; right: 20px;">
+            <div class="synq-notification-menu-header">
+                <h3 class="synq-notification-menu-title">
+                    <i class="fas fa-bell"></i>
+                    Notificações
+                </h3>
+                <div class="synq-notification-tabs">
+                    <button class="synq-notification-tab active">Todas</button>
+                    <button class="synq-notification-tab">Não Lidas</button>
+                </div>
+            </div>
+            <div class="synq-notification-menu-body">
+                @if (notifications?.Any() == true)
+                {
+                    @foreach (var notification in notifications.Take(10))
+                    {
+                        <div class="synq-notification-item @(notification.IsRead ? "" : "unread")">
+                            <div class="synq-notification-avatar">
+                                @notification.SenderName?.Substring(0, 1).ToUpper()
+                            </div>
+                            <div class="synq-notification-content">
+                                <div class="synq-notification-title">@notification.Title</div>
+                                <div class="synq-notification-message">@notification.Message</div>
+                                <div class="synq-notification-time">@notification.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="synqcore-empty-state">
+                        <i class="fas fa-bell-slash synqcore-empty-state-icon"></i>
+                        <h4 class="synqcore-empty-state-title">Nenhuma notificação</h4>
+                        <p class="synqcore-empty-state-description">
+                            Quando você receber notificações, elas aparecerão aqui.
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? SidebarLeftContent { get; set; }
+    [Parameter] public RenderFragment? SidebarRightContent { get; set; }
+    [Parameter] public string? PageTitle { get; set; }
+    [Parameter] public string? PageSubtitle { get; set; }
+    [Parameter] public string? PageIcon { get; set; }
+    [Parameter] public string? BreadcrumbText { get; set; }
+    [Parameter] public bool ShowBreadcrumbs { get; set; } = true;
+    [Parameter] public bool ShowSidebarLeft { get; set; } = true;
+    [Parameter] public bool ShowSidebarRight { get; set; } = true;
+    [Parameter] public string LayoutClass { get; set; } = "three-column"; // three-column, two-column, single-column, full-width
+
+    private UserInfo? currentUser;
+    private bool showProfileMenu = false;
+    private bool showNotifications = false;
+    private bool canModerate = false;
+    private string searchQuery = string.Empty;
+    private int unreadNotificationCount = 0;
+    private List<NotificationItem>? notifications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserInfo();
+        await LoadNotifications();
+    }
+
+    private async Task LoadUserInfo()
+    {
+        try
+        {
+            if (UserState.Value.IsAuthenticated && UserState.Value.CurrentUser != null)
+            {
+                currentUser = UserState.Value.CurrentUser;
+            }
+            else
+            {
+                var isAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
+                if (isAuthenticated)
+                {
+                    currentUser = await LocalAuthService.GetCurrentUserAsync();
+                }
+            }
+
+            if (currentUser != null)
+            {
+                // Verificar permissões de moderação (simplificado para demonstração)
+                canModerate = currentUser.Roles?.Contains("Admin") == true || 
+                             currentUser.Roles?.Contains("Moderator") == true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[LAYOUT] Erro ao carregar usuário: {ex.Message}");
+        }
+    }
+
+    private Task LoadNotifications()
+    {
+        try
+        {
+            // Implementar carregamento real de notificações aqui
+            notifications = new List<NotificationItem>();
+            unreadNotificationCount = notifications?.Count(n => !n.IsRead) ?? 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[LAYOUT] Erro ao carregar notificações: {ex.Message}");
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    private void ToggleProfileMenu()
+    {
+        showProfileMenu = !showProfileMenu;
+        if (showProfileMenu)
+        {
+            showNotifications = false; // Fechar notificações se abrir perfil
+        }
+        StateHasChanged();
+    }
+
+    private void ToggleNotifications()
+    {
+        showNotifications = !showNotifications;
+        if (showNotifications)
+        {
+            showProfileMenu = false; // Fechar perfil se abrir notificações
+        }
+        StateHasChanged();
+    }
+
+    private async Task HandleLogout()
+    {
+        await LocalAuthService.LogoutAsync();
+        Navigation.NavigateTo("/login", true);
+    }
+
+    private Task HandleGlobalSearch()
+    {
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            Navigation.NavigateTo($"/search?q={Uri.EscapeDataString(searchQuery.Trim())}");
+        }
+        
+        return Task.CompletedTask;
+    }
+
+    // Classe modelo para notificações (temporária)
+    public class NotificationItem
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Message { get; set; } = string.Empty;
+        public string SenderName { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public bool IsRead { get; set; }
+    }
+}

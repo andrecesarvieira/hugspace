@@ -15,31 +15,52 @@ public class AuthenticationHandler : DelegatingHandler
     private readonly IDispatcher _dispatcher;
     private readonly IState<UserState> _userState;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IServiceProvider _serviceProvider;
 
     public AuthenticationHandler(
         IDispatcher dispatcher,
         IState<UserState> userState,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IServiceProvider serviceProvider)
     {
         _dispatcher = dispatcher;
         _userState = userState;
         _httpContextAccessor = httpContextAccessor;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        // Tenta obter token dos cookies ASP.NET Core primeiro
+        // Tenta obter token do LocalAuthService primeiro (mais confiável)
         string? token = null;
 
-        var httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext?.User?.Identity?.IsAuthenticated == true)
+        try
         {
-            token = httpContext.User.FindFirst("AccessToken")?.Value;
+            using var scope = _serviceProvider.CreateScope();
+            var localAuthService = scope.ServiceProvider.GetService<ILocalAuthService>();
+            if (localAuthService != null)
+            {
+                token = await localAuthService.GetAccessTokenAsync();
+            }
+        }
+        catch (Exception)
+        {
+            // Silently continue to fallback options
         }
 
-        // Se não encontrou nos cookies, tenta no Fluxor (fallback)
+        // Fallback para cookies ASP.NET Core
+        if (string.IsNullOrEmpty(token))
+        {
+            var httpContext = _httpContextAccessor.HttpContext;
+            if (httpContext?.User?.Identity?.IsAuthenticated == true)
+            {
+                token = httpContext.User.FindFirst("AccessToken")?.Value;
+            }
+        }
+
+        // Fallback final para Fluxor
         if (string.IsNullOrEmpty(token))
         {
             token = _userState.Value.AccessToken;

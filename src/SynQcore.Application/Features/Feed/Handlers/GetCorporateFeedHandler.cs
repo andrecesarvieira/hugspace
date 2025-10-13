@@ -11,7 +11,7 @@ using SynQcore.Domain.Entities.Organization;
 
 namespace SynQcore.Application.Features.Feed.Handlers;
 
-public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQuery, PagedResult<FeedItemDto>>
+public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQuery, CorporateFeedResponseDto>
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ILogger<GetCorporateFeedHandler> _logger;
@@ -24,7 +24,7 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         _logger = logger;
     }
 
-    public async Task<PagedResult<FeedItemDto>> Handle(GetCorporateFeedQuery request, CancellationToken cancellationToken)
+    public async Task<CorporateFeedResponseDto> Handle(GetCorporateFeedQuery request, CancellationToken cancellationToken)
     {
         LogProcessingFeedRequest(_logger, request.UserId, request.FeedType ?? "mixed", request.PageNumber);
 
@@ -49,13 +49,17 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
         // Converte para DTOs
         var feedItems = await ConvertToFeedItems(feedEntries, request.UserId, cancellationToken);
 
-        return new PagedResult<FeedItemDto>
+        return new CorporateFeedResponseDto
         {
             Items = feedItems,
             TotalCount = totalCount,
-            Page = request.PageNumber,
+            PageNumber = request.PageNumber,
             PageSize = request.PageSize,
-            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize)
+            HasNextPage = (request.PageNumber * request.PageSize) < totalCount,
+            HasPreviousPage = request.PageNumber > 1,
+            GeneratedAt = DateTime.UtcNow,
+            UnreadCount = feedItems.Count(f => !f.IsRead),
+            FeedType = request.FeedType ?? "Mixed"
         };
     }
 
@@ -203,13 +207,17 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
 
     private static FeedEntry? CreateFeedEntry(Employee user, Post post, Dictionary<string, double> userInterests)
     {
-        // Não inclui posts próprios no feed
-        if (post.AuthorId == user.Id)
-            return null;
-
         var relevanceScore = CalculateRelevanceScore(user, post, userInterests);
         var priority = CalculatePriority(post, relevanceScore);
         var reason = DetermineReason(user, post, userInterests);
+
+        // Se é post próprio, ajustar a razão e prioridade
+        if (post.AuthorId == user.Id)
+        {
+            reason = FeedReason.Following; // Posts próprios como "Following"
+            relevanceScore = 1.0; // Posts próprios sempre têm alta relevância
+            priority = FeedPriority.High; // Posts próprios têm prioridade alta
+        }
 
         return new FeedEntry
         {
@@ -296,14 +304,62 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
     {
         var postIds = feedEntries.Select(fe => fe.PostId).ToList();
 
-        // Busca informações de interação do usuário (comentários)
+        // Busca informações de interação do usuário (comentários e likes)
         var userComments = await _context.Comments
             .Where(c => c.AuthorId == userId && postIds.Contains(c.PostId))
             .Select(c => c.PostId)
             .Distinct()
             .ToListAsync(cancellationToken);
 
-        return feedEntries.ToFeedItemDtos();
+        var userLikes = await _context.PostLikes
+            .Where(pl => pl.EmployeeId == userId && postIds.Contains(pl.PostId))
+            .ToDictionaryAsync(pl => pl.PostId, pl => pl.ReactionType, cancellationToken);
+
+        // Mapeia feed entries para DTOs com informações completas do post
+        return feedEntries.Select(fe => new FeedItemDto
+        {
+            Id = fe.Id,
+            PostId = fe.PostId,
+            Priority = fe.Priority.ToString(),
+            RelevanceScore = fe.RelevanceScore,
+            Reason = fe.Reason.ToString(),
+            CreatedAt = fe.CreatedAt,
+            ViewedAt = fe.ViewedAt,
+            IsRead = fe.IsRead,
+            IsBookmarked = fe.IsBookmarked,
+            
+            // Informações do Post
+            Title = fe.Post?.Title ?? "Sem título",
+            Content = fe.Post?.Content ?? "",
+            Summary = fe.Post?.Summary,
+            PostType = fe.Post?.Type.ToString() ?? "General",
+            ImageUrl = fe.Post?.ImageUrl,
+            IsPinned = fe.Post?.IsPinned ?? false,
+            IsOfficial = fe.Post?.IsOfficial ?? false,
+            
+            // Informações do Autor
+            AuthorId = fe.Post?.AuthorId ?? Guid.Empty,
+            AuthorName = fe.Post?.Author != null 
+                ? $"{fe.Post.Author.FirstName} {fe.Post.Author.LastName}".Trim()
+                : "Usuário desconhecido",
+            AuthorEmail = fe.Post?.Author?.Email ?? "",
+            AuthorAvatarUrl = fe.Post?.Author?.ProfilePhotoUrl,
+            AuthorDepartment = fe.Department?.Name,
+            
+            // Métricas de Engajamento
+            LikeCount = fe.Post?.LikeCount ?? 0,
+            CommentCount = fe.Post?.CommentCount ?? 0,
+            ViewCount = fe.Post?.ViewCount ?? 0,
+            
+            // Interação do Usuário
+            HasLiked = userLikes.ContainsKey(fe.PostId),
+            HasCommented = userComments.Contains(fe.PostId),
+            ReactionType = userLikes.TryGetValue(fe.PostId, out var reactionType) ? reactionType.ToString() : null,
+            
+            // Tags e Categorias
+            Tags = fe.Post?.PostTags?.Select(pt => pt.Tag.Name).ToList() ?? [],
+            Category = fe.Post?.Category?.Name
+        }).ToList();
     }
 
     // LoggerMessage delegates para performance otimizada

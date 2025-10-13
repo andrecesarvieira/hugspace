@@ -15,13 +15,16 @@ public partial class CreateFeedPostHandler : IRequestHandler<CreateFeedPostComma
 {
     private readonly ISynQcoreDbContext _context;
     private readonly ILogger<CreateFeedPostHandler> _logger;
+    private readonly IMediator _mediator;
 
     public CreateFeedPostHandler(
         ISynQcoreDbContext context,
-        ILogger<CreateFeedPostHandler> logger)
+        ILogger<CreateFeedPostHandler> logger,
+        IMediator mediator)
     {
         _context = context;
         _logger = logger;
+        _mediator = mediator;
     }
 
     public async Task<FeedPostDto> Handle(CreateFeedPostCommand request, CancellationToken cancellationToken)
@@ -102,6 +105,24 @@ public partial class CreateFeedPostHandler : IRequestHandler<CreateFeedPostComma
             await _context.SaveChangesAsync(cancellationToken);
 
             LogFeedPostCreated(_logger, post.Id, request.AuthorId);
+
+            // Forçar regeneração do feed para que o novo post apareça imediatamente
+            try
+            {
+                var regenerateCommand = new RegenerateFeedCommand
+                {
+                    UserId = request.AuthorId,
+                    PreserveBookmarks = true,
+                    DaysToInclude = 30
+                };
+                await _mediator.Send(regenerateCommand, cancellationToken);
+                Console.WriteLine($"[CREATE POST] Feed regenerado automaticamente para usuário {request.AuthorId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CREATE POST] Erro ao regenerar feed: {ex.Message}");
+                // Não falha a criação do post por erro na regeneração do feed
+            }
 
             // Retornar DTO
             return new FeedPostDto

@@ -134,3 +134,41 @@ window.focusElement = function(elementId) {
         element.focus();
     }
 };
+
+// Função para copiar texto para área de transferência
+window.copyToClipboard = function(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            showNotification('Link copiado para a área de transferência!', 'success');
+        }).catch(function() {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+};
+
+function fallbackCopyToClipboard(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showNotification('Link copiado para a área de transferência!', 'success');
+    } catch (err) {
+        showNotification('Não foi possível copiar o link', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Função para confirmar ações
+window.confirm = function(message) {
+    return window.confirm(message);
+};

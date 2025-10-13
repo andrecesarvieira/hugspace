@@ -1,0 +1,80 @@
+/* ================================================================
+   MAIN LAYOUT - ESTILOS DO LAYOUT PRINCIPAL
+   ================================================================ */
+
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--synq-gray-50);
+}
+
+.main-layout__header {
+  background: var(--synq-white);
+  border-bottom: 1px solid var(--synq-gray-200);
+  box-shadow: var(--synq-shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.main-layout__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-layout__main {
+  flex: 1;
+  padding: 0;
+}
+
+.main-layout__footer {
+  background: var(--synq-white);
+  border-top: 1px solid var(--synq-gray-200);
+  padding: var(--synq-space-4);
+  text-align: center;
+  color: var(--synq-gray-600);
+  font-size: var(--synq-text-sm);
+}
+
+/* === ESTADOS DE CARREGAMENTO === */
+.main-layout__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--synq-gray-500);
+}
+
+.main-layout__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--synq-red-600);
+  text-align: center;
+  padding: var(--synq-space-6);
+}
+
+.main-layout__error i {
+  font-size: var(--synq-text-3xl);
+  margin-bottom: var(--synq-space-4);
+}
+
+.main-layout__error h3 {
+  font-size: var(--synq-text-lg);
+  margin-bottom: var(--synq-space-2);
+}
+
+.main-layout__error p {
+  color: var(--synq-gray-600);
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+  .main-layout__content {
+    min-height: calc(100vh - 60px);
+  }
+}

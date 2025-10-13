@@ -92,7 +92,7 @@ builder.Services.AddScoped<AuthenticationHandler>();
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     // Configuração da base URL da API SynQcore
-    client.BaseAddress = new Uri("http://localhost:5000/api/"); // URL da API SynQcore com prefixo /api/
+    client.BaseAddress = new Uri("http://localhost:5005/api/"); // URL da API SynQcore com prefixo /api/
     client.Timeout = TimeSpan.FromSeconds(30);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
@@ -101,7 +101,7 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 // HttpClient para PostService
 builder.Services.AddHttpClient<IPostService, PostService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/api/");
+    client.BaseAddress = new Uri("http://localhost:5005/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
@@ -110,7 +110,7 @@ builder.Services.AddHttpClient<IPostService, PostService>(client =>
 // HttpClient para SearchService  
 builder.Services.AddHttpClient<ISearchService, SearchService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/");
+    client.BaseAddress = new Uri("http://localhost:5005/");
     client.Timeout = TimeSpan.FromSeconds(30);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
@@ -119,7 +119,7 @@ builder.Services.AddHttpClient<ISearchService, SearchService>(client =>
 // HttpClient para DepartmentService  
 builder.Services.AddHttpClient<IDepartmentService, DepartmentService>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/");
+    client.BaseAddress = new Uri("http://localhost:5005/");
     client.Timeout = TimeSpan.FromSeconds(30);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 })
@@ -128,7 +128,7 @@ builder.Services.AddHttpClient<IDepartmentService, DepartmentService>(client =>
 // HttpClient adicional para requisições sem interceptor
 builder.Services.AddHttpClient("NoAuth", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000/api/");
+    client.BaseAddress = new Uri("http://localhost:5005/api/");
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 

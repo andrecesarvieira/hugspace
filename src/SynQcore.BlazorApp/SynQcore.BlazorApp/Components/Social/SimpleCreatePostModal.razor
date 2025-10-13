@@ -105,7 +105,8 @@
             var request = new CreatePostRequest
             {
                 Content = postContent,
-                Tags = ExtractHashtags(postContent)
+                Tags = ExtractHashtags(postContent),
+                IsPublic = true
             };
 
             await PostService.CreatePostAsync(request);

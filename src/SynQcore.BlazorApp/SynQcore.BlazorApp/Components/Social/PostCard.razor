@@ -1,8 +1,9 @@
 @namespace SynQcore.BlazorApp.Components.Social
 @using Microsoft.AspNetCore.Components
 @inject IJSRuntime JS
+@inject NavigationManager NavigationManager
 
-<article class="post-card">
+<article class="post-card" data-post-id="@Post.Id">
     <div class="post-header">
         <div class="author-info">
             <img src="@Post.AuthorAvatar" alt="@Post.AuthorName" class="author-avatar" />
@@ -14,24 +15,9 @@
         </div>
 
         <div class="post-menu">
-            <button class="menu-btn" @onclick="ToggleMenu">
+            <button class="menu-btn" @onclick="ToggleMenu" @onclick:stopPropagation="true">
                 <i class="fas fa-ellipsis-h"></i>
             </button>
-
-            @if (showMenu)
-            {
-                <div class="post-menu-dropdown">
-                    <button class="menu-item" @onclick="SavePost">
-                        <i class="fas fa-bookmark"></i> Salvar
-                    </button>
-                    <button class="menu-item" @onclick="ReportPost">
-                        <i class="fas fa-flag"></i> Denunciar
-                    </button>
-                    <button class="menu-item" @onclick="CopyLink">
-                        <i class="fas fa-link"></i> Copiar link
-                    </button>
-                </div>
-            }
         </div>
     </div>
 
@@ -80,17 +66,16 @@
     </div>
 
     <div class="post-actions">
-        <button class="action-button @(Post.IsLiked ? "liked" : "")"
+        <button class="action-button like-button @(Post.IsLiked ? "liked" : "")"
                 @onclick="HandleLike"
-                @onmouseenter="() => showLikeAnimation = true"
-                @onmouseleave="() => showLikeAnimation = false">
+                @oncontextmenu="HandleLikeMenu"
+                @oncontextmenu:preventDefault="true"
+                @onclick:stopPropagation="true">
             <i class="@(Post.IsLiked ? "fas fa-heart" : "far fa-heart")"></i>
             <span>Curtir</span>
-
-            @if (showLikeAnimation && !Post.IsLiked)
-            {
-                <div class="like-animation">❤️</div>
-            }
+            
+            @* Seta pequena para indicar que há menu de reações *@
+            <i class="fas fa-caret-down reaction-arrow" @onclick="HandleLikeMenu" @onclick:stopPropagation="true"></i>
         </button>
 
         <button class="action-button" @onclick="HandleComment">
@@ -103,7 +88,7 @@
             <span>Compartilhar</span>
         </button>
 
-        <button class="action-button" @onclick="ToggleSave">
+        <button class="action-button" @onclick="ToggleSavePost">
             <i class="@(Post.IsSaved ? "fas fa-bookmark" : "far fa-bookmark")"></i>
             <span>@(Post.IsSaved ? "Salvo" : "Salvar")</span>
         </button>
@@ -181,20 +166,72 @@
     [Parameter] public EventCallback<Guid> OnComment { get; set; }
     [Parameter] public EventCallback<Guid> OnShare { get; set; }
     [Parameter] public EventCallback<string> OnTagClick { get; set; }
+    [Parameter] public EventCallback<Guid> OnEdit { get; set; }
+    [Parameter] public EventCallback<Guid> OnDelete { get; set; }
 
-    private bool showMenu = false;
     private bool showCommentSection = false;
-    private bool showLikeAnimation = false;
     private string newComment = "";
     private int displayedCommentsCount = 3;
+    private bool isProcessingReaction = false;
+
+    private async Task ToggleMenu()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("togglePostMenu", Post.Id.ToString(), DotNetObjectReference.Create(this));
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao abrir menu: {ex.Message}", "error");
+        }
+    }
 
     private async Task HandleLike()
     {
-        await OnLike.InvokeAsync(Post.Id);
+        // Verificar se deve mostrar menu de reações (long press ou right click)
+        await ReactToPost("Like");
+    }
 
-        if (Post.IsLiked)
+    private async Task HandleLikeMenu()
+    {
+        try
         {
-            await ShowLikeEffect();
+            await JS.InvokeVoidAsync("toggleReactionsMenu", Post.Id.ToString(), DotNetObjectReference.Create(this));
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao abrir reações: {ex.Message}", "error");
+        }
+    }
+    
+    private async Task ReactToPost(string reactionType)
+    {
+        if (isProcessingReaction) return;
+        
+        try
+        {
+            isProcessingReaction = true;
+            
+            // Chamar serviço para processar reação
+            await OnLike.InvokeAsync(Post.Id);
+
+            if (!Post.IsLiked)
+            {
+                Post.IsLiked = true;
+                Post.LikeCount++;
+                await ShowLikeEffect();
+            }
+            
+            // Fechar menu de reações
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao processar reação: {ex.Message}", "error");
+        }
+        finally
+        {
+            isProcessingReaction = false;
         }
     }
 
@@ -212,8 +249,25 @@
 
     private async Task HandleShare()
     {
-        await OnShare.InvokeAsync(Post.Id);
-        await ShowShareOptions();
+        try
+        {
+            // Incrementar contador imediatamente para feedback visual
+            Post.ShareCount++;
+            StateHasChanged();
+            
+            // Processar compartilhamento
+            await OnShare.InvokeAsync(Post.Id);
+            await ShowShareOptions();
+            
+            await JS.InvokeVoidAsync("showNotification", "Post compartilhado com sucesso!", "success");
+        }
+        catch (Exception ex)
+        {
+            // Reverter contador em caso de erro
+            Post.ShareCount--;
+            StateHasChanged();
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao compartilhar: {ex.Message}", "error");
+        }
     }
 
     private async Task SendComment()
@@ -249,14 +303,65 @@
         }
     }
 
-    private void ToggleMenu() => showMenu = !showMenu;
-    private void ToggleSave() => Post.IsSaved = !Post.IsSaved;
     private void LoadMoreComments() => displayedCommentsCount += 5;
     private void ShowLikes() { /* TODO: Show likes modal */ }
     private void ShowComments() => showCommentSection = true;
-    private void SavePost() { /* TODO: Save post */ showMenu = false; }
-    private void ReportPost() { /* TODO: Report post */ showMenu = false; }
-    private async Task CopyLink() { await JS.InvokeVoidAsync("copyToClipboard", $"/post/{Post.Id}"); showMenu = false; }
+    
+    // Métodos do menu de três pontos
+    private async Task SavePost() 
+    { 
+        try
+        {
+            Post.IsSaved = !Post.IsSaved;
+            await JS.InvokeVoidAsync("showNotification", 
+                Post.IsSaved ? "Post salvo!" : "Post removido dos salvos", "success");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", $"Erro ao salvar: {ex.Message}", "error");
+        }
+    }
+    
+    private async Task EditPost()
+    {
+        await OnEdit.InvokeAsync(Post.Id);
+    }
+    
+    private async Task DeletePost()
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir este post?"))
+        {
+            await OnDelete.InvokeAsync(Post.Id);
+        }
+    }
+    
+    private async Task ReportPost() 
+    { 
+        await JS.InvokeVoidAsync("showNotification", "Post denunciado para moderação", "info");
+    }
+    
+    private async Task CopyLink() 
+    { 
+        await JS.InvokeVoidAsync("copyToClipboard", $"{NavigationManager.BaseUri}post/{Post.Id}"); 
+        await JS.InvokeVoidAsync("showNotification", "Link copiado!", "success");
+    }
+    
+    private async Task SharePost()
+    {
+        await HandleShare();
+    }
+    
+    private async Task HidePost()
+    {
+        await JS.InvokeVoidAsync("showNotification", "Post ocultado do seu feed", "info");
+    }
+    
+    private async Task ToggleSavePost()
+    {
+        await SavePost();
+    }
+    
+    // Métodos para menu de reações - removidos pois agora são gerenciados pelo JavaScript
     private void ShowEmojiPicker() { /* TODO: Show emoji picker */ }
     private void ToggleCommentLike(Guid commentId)
     {

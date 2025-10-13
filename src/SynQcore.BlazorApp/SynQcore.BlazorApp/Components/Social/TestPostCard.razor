@@ -1,0 +1,343 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+
+<div class="test-post-card" style="border: 1px solid #e1e5e9; margin: 0 0 16px 0; padding: 20px; border-radius: 12px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: all 0.2s ease;">
+    <div class="post-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div class="author-info" style="display: flex; align-items: center; gap: 12px;">
+            <div class="author-avatar" style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px;">
+                @Post.AuthorName.Substring(0, 1).ToUpper()
+            </div>
+            <div>
+                <div style="font-weight: 600; color: #1a1a1a; font-size: 15px;">@Post.AuthorName</div>
+                <div style="color: #65676b; font-size: 13px;">@Post.AuthorRole</div>
+                <div style="color: #90949c; font-size: 12px;">@GetRelativeTime(Post.CreatedAt)</div>
+            </div>
+        </div>
+
+        <div class="post-menu" style="position: relative;">
+            <button class="menu-btn" @onclick="ToggleMenu" 
+                    style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%; transition: background-color 0.2s; color: #65676b;"
+                    onmouseover="this.style.backgroundColor='#f2f3f5'" 
+                    onmouseout="this.style.backgroundColor='transparent'">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+
+            @if (showMenu)
+            {
+                <div class="post-menu-dropdown" 
+                     style="position: absolute; right: 0; top: 100%; background: white; border: 1px solid #dadde1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; min-width: 160px; overflow: hidden; margin-top: 4px;">
+                    @if (IsCurrentUserPost())
+                    {
+                        <button class="menu-item" @onclick="EditPost"
+                                style="display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px; color: #1c1e21; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#f2f3f5'" 
+                                onmouseout="this.style.backgroundColor='transparent'">
+                            <i class="fas fa-edit" style="color: #42a5f5; width: 16px;"></i>
+                            Editar post
+                        </button>
+                        <button class="menu-item" @onclick="DeletePost"
+                                style="display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px; color: #e91e63; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#fef2f2'" 
+                                onmouseout="this.style.backgroundColor='transparent'">
+                            <i class="fas fa-trash" style="color: #e91e63; width: 16px;"></i>
+                            Excluir post
+                        </button>
+                        <hr style="margin: 0; border: none; border-top: 1px solid #dadde1;">
+                    }
+                    <button class="menu-item" @onclick="BookmarkPost"
+                            style="display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px; color: #1c1e21; transition: background-color 0.2s;"
+                            onmouseover="this.style.backgroundColor='#f2f3f5'" 
+                            onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="fas fa-bookmark" style="color: #ff9800; width: 16px;"></i>
+                        Salvar post
+                    </button>
+                    <button class="menu-item" @onclick="SharePost"
+                            style="display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 12px 16px; border: none; background: none; cursor: pointer; font-size: 14px; color: #1c1e21; transition: background-color 0.2s;"
+                            onmouseover="this.style.backgroundColor='#f2f3f5'" 
+                            onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="fas fa-share" style="color: #4caf50; width: 16px;"></i>
+                        Compartilhar
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="post-content" style="margin-bottom: 16px; line-height: 1.5;">
+        @if (!string.IsNullOrEmpty(Post.Title))
+        {
+            <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1a1a1a;">@Post.Title</h4>
+        }
+        <div style="margin: 0; color: #1c1e21; font-size: 15px; white-space: pre-wrap;">@Post.Content</div>
+    </div>
+
+    @if (Post.Tags?.Length > 0)
+    {
+        <div class="post-tags" style="margin-bottom: 16px;">
+            @foreach (var tag in Post.Tags)
+            {
+                <span style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); color: #1976d2; padding: 4px 8px; border-radius: 16px; font-size: 12px; font-weight: 500; margin-right: 6px; margin-bottom: 4px; display: inline-block; border: 1px solid #90caf9;">
+                    #@tag
+                </span>
+            }
+        </div>
+    }
+
+    <div class="post-actions" style="display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #f0f2f5;">
+        <div style="display: flex; gap: 20px;">
+            <button class="action-btn" @onclick="LikePost"
+                    style="background: none; border: none; cursor: pointer; color: #65676b; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='#f2f3f5'; this.style.color='#e91e63';" 
+                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#65676b';">
+                <i class="fas fa-heart"></i>
+                <span>@Post.LikeCount</span>
+            </button>
+            <button class="action-btn" @onclick="CommentPost"
+                    style="background: none; border: none; cursor: pointer; color: #65676b; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='#f2f3f5'; this.style.color='#42a5f5';" 
+                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#65676b';">
+                <i class="fas fa-comment"></i>
+                <span>@Post.CommentCount</span>
+            </button>
+            <button class="action-btn" @onclick="SharePost"
+                    style="background: none; border: none; cursor: pointer; color: #65676b; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 6px; font-size: 14px; font-weight: 500; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='#f2f3f5'; this.style.color='#4caf50';" 
+                    onmouseout="this.style.backgroundColor='transparent'; this.style.color='#65676b';">
+                <i class="fas fa-share"></i>
+                <span>@Post.ShareCount</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edição -->
+@if (showEditModal)
+{
+    <div class="modal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px;"
+         @onclick="@(() => { if (!isEditingContent) CloseEditModal(); })">
+        <div class="edit-modal" style="background: white; border-radius: 12px; max-width: 600px; width: 100%; max-height: 80vh; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3);"
+             @onclick:stopPropagation="true">
+            <div class="modal-header" style="padding: 20px; border-bottom: 1px solid #dadde1; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #1c1e21; font-size: 20px; font-weight: 600;">Editar post</h3>
+                <button @onclick="CloseEditModal" 
+                        style="background: none; border: none; font-size: 24px; cursor: pointer; color: #65676b; padding: 4px; border-radius: 50%; transition: background-color 0.2s;"
+                        onmouseover="this.style.backgroundColor='#f2f3f5'" 
+                        onmouseout="this.style.backgroundColor='transparent'">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 20px; max-height: 60vh; overflow-y: auto;">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #1c1e21; font-size: 14px;">Título</label>
+                    <input type="text" @bind="editTitle" @bind:event="oninput" @onfocus="() => isEditingContent = true" @onblur="() => isEditingContent = false"
+                           style="width: 100%; padding: 12px; border: 1px solid #dadde1; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s;"
+                           placeholder="Digite o título do post...">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #1c1e21; font-size: 14px;">Conteúdo</label>
+                    <textarea @bind="editContent" @bind:event="oninput" @onfocus="() => isEditingContent = true" @onblur="() => isEditingContent = false"
+                              style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid #dadde1; border-radius: 8px; font-size: 15px; resize: vertical; outline: none; transition: border-color 0.2s; font-family: inherit; line-height: 1.5;"
+                              placeholder="O que você gostaria de compartilhar?"></textarea>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-weight: 500; color: #1c1e21; font-size: 14px;">Tags (separadas por vírgula)</label>
+                    <input type="text" @bind="editTags" @bind:event="oninput" @onfocus="() => isEditingContent = true" @onblur="() => isEditingContent = false"
+                           style="width: 100%; padding: 12px; border: 1px solid #dadde1; border-radius: 8px; font-size: 15px; outline: none; transition: border-color 0.2s;"
+                           placeholder="tecnologia, desenvolvimento, produtividade">
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 16px 20px; border-top: 1px solid #dadde1; display: flex; justify-content: flex-end; gap: 12px; background: #f8f9fa;">
+                <button @onclick="CloseEditModal" 
+                        style="padding: 10px 20px; border: 1px solid #dadde1; background: white; color: #65676b; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s;"
+                        onmouseover="this.style.backgroundColor='#f2f3f5';" 
+                        onmouseout="this.style.backgroundColor='white';">
+                    Cancelar
+                </button>
+                <button @onclick="SaveEdit" disabled="@isSaving"
+                        style="padding: 10px 20px; border: none; background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); color: white; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.2s; opacity: @(isSaving ? "0.7" : "1");"
+                        onmouseover="@(isSaving ? "" : "this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(66,165,245,0.4)';") " 
+                        onmouseout="@(isSaving ? "" : "this.style.transform='translateY(0)'; this.style.boxShadow='none';")">
+                    @if (isSaving)
+                    {
+                        <i class="fas fa-spinner fa-spin" style="margin-right: 6px;"></i>
+                        <span>Salvando...</span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-save" style="margin-right: 6px;"></i>
+                        <span>Salvar alterações</span>
+                    }
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public PostModel Post { get; set; } = new();
+    [Parameter] public object? CurrentUser { get; set; }
+    [Parameter] public EventCallback<PostModel> OnEdit { get; set; }
+    [Parameter] public EventCallback<PostModel> OnDelete { get; set; }
+
+    private bool showMenu = false;
+    private bool showEditModal = false;
+    private bool isSaving = false;
+    private bool isEditingContent = false;
+    
+    // Variáveis de edição
+    private string editTitle = "";
+    private string editContent = "";
+    private string editTags = "";
+
+    private void ToggleMenu()
+    {
+        showMenu = !showMenu;
+        Console.WriteLine($"[TEST POST] Menu toggled: {showMenu} para post {Post.Id}");
+    }
+
+    private void CloseMenu()
+    {
+        showMenu = false;
+    }
+
+    private bool IsCurrentUserPost()
+    {
+        Console.WriteLine($"[TEST POST] Verificando se é post do usuário atual: {Post.AuthorName}");
+        // Para teste, sempre retorna true para mostrar as opções
+        return true;
+    }
+
+    private void EditPost()
+    {
+        showMenu = false;
+        Console.WriteLine($"[TEST POST] Abrindo modal de edição para post: {Post.Id}");
+        
+        // Preencher campos de edição com dados atuais
+        editTitle = Post.Title;
+        editContent = Post.Content;
+        editTags = string.Join(", ", Post.Tags ?? Array.Empty<string>());
+        
+        showEditModal = true;
+        StateHasChanged();
+    }
+
+    private void CloseEditModal()
+    {
+        if (!isEditingContent)
+        {
+            showEditModal = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SaveEdit()
+    {
+        if (isSaving) return;
+        
+        isSaving = true;
+        Console.WriteLine($"[TEST POST] Salvando edições para post: {Post.Id}");
+        
+        try
+        {
+            // Simular delay de salvamento
+            await Task.Delay(1000);
+            
+            // Atualizar dados do post
+            Post.Title = editTitle;
+            Post.Content = editContent;
+            Post.Tags = editTags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                .Select(t => t.Trim())
+                                .Where(t => !string.IsNullOrEmpty(t))
+                                .ToArray();
+            
+            // Chamar callback se definido
+            if (OnEdit.HasDelegate)
+            {
+                await OnEdit.InvokeAsync(Post);
+            }
+            
+            showEditModal = false;
+            Console.WriteLine($"[TEST POST] Post {Post.Id} editado com sucesso!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[TEST POST] Erro ao salvar edições: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeletePost()
+    {
+        showMenu = false;
+        Console.WriteLine($"[TEST POST] Solicitando confirmação para excluir post: {Post.Id}");
+        
+        // Simular confirmação (em uma implementação real, usar um modal de confirmação)
+        var confirmed = await Task.FromResult(true); // Simula confirmação
+        
+        if (confirmed && OnDelete.HasDelegate)
+        {
+            Console.WriteLine($"[TEST POST] Excluindo post: {Post.Id}");
+            await OnDelete.InvokeAsync(Post);
+        }
+    }
+
+    private void BookmarkPost()
+    {
+        showMenu = false;
+        Console.WriteLine($"[TEST POST] Salvando post: {Post.Id}");
+        // Implementar lógica de bookmark
+    }
+
+    private void SharePost()
+    {
+        showMenu = false;
+        Console.WriteLine($"[TEST POST] Compartilhando post: {Post.Id}");
+        // Implementar lógica de compartilhamento
+    }
+
+    private void LikePost()
+    {
+        Console.WriteLine($"[TEST POST] Curtindo post: {Post.Id}");
+        Post.LikeCount = Post.LikeCount > 0 ? Post.LikeCount - 1 : Post.LikeCount + 1;
+        StateHasChanged();
+    }
+
+    private void CommentPost()
+    {
+        Console.WriteLine($"[TEST POST] Comentando post: {Post.Id}");
+        // Implementar lógica de comentários
+    }
+
+    private string GetRelativeTime(DateTime dateTime)
+    {
+        var timeSpan = DateTime.Now - dateTime;
+        
+        return timeSpan switch
+        {
+            { TotalMinutes: < 1 } => "agora",
+            { TotalMinutes: < 60 } => $"{(int)timeSpan.TotalMinutes}m",
+            { TotalHours: < 24 } => $"{(int)timeSpan.TotalHours}h",
+            { TotalDays: < 7 } => $"{(int)timeSpan.TotalDays}d",
+            _ => dateTime.ToString("dd/MM/yyyy")
+        };
+    }
+
+    // Classe PostModel simples para teste
+    public class PostModel
+    {
+        public Guid Id { get; set; }
+        public string AuthorName { get; set; } = "";
+        public string AuthorRole { get; set; } = "";
+        public string Content { get; set; } = "";
+        public string Title { get; set; } = "";
+        public DateTime CreatedAt { get; set; }
+        public int LikeCount { get; set; }
+        public int CommentCount { get; set; }
+        public int ShareCount { get; set; }
+        public string[] Tags { get; set; } = Array.Empty<string>();
+    }
+}

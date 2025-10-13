@@ -52,3 +52,25 @@ public record ProcessBulkFeedUpdateCommand : IRequest
     public List<Guid> PostIds { get; init; } = [];
     public string UpdateType { get; init; } = "new_post"; // "new_post", "post_updated", "post_deleted"
 }
+
+public record UpdateFeedPostCommand : IRequest<FeedPostDto>
+{
+    public Guid PostId { get; init; }
+    public Guid UserId { get; init; }
+    public string? Content { get; init; }
+    public string[]? Tags { get; init; }
+    public string? ImageUrl { get; init; }
+    public bool? IsPublic { get; init; }
+}
+
+public record DeleteFeedPostCommand : IRequest
+{
+    public Guid PostId { get; init; }
+    public Guid UserId { get; init; }
+}
+
+public record GetFeedPostCommand : IRequest<FeedPostDto?>
+{
+    public Guid PostId { get; init; }
+    public Guid UserId { get; init; }
+}

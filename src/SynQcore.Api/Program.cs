@@ -13,6 +13,8 @@
 
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Identity;
@@ -131,11 +133,20 @@ builder.Services.AddScoped<AdminBootstrapService>();
 // Audit Service (Fase 6 - Security & Moderation)
 builder.Services.AddScoped<SynQcore.Application.Services.IAuditService, SynQcore.Infrastructure.Services.AuditService>();
 
+// Feed Post Cache Service (Fase 8 - Performance & Cache)
+builder.Services.AddScoped<SynQcore.Application.Common.Interfaces.IFeedPostCacheService, SynQcore.Infrastructure.Services.FeedPostCacheService>();
+
 // Use Serilog as the logging provider
 builder.Host.UseSerilog();
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
+        options.JsonSerializerOptions.WriteIndented = false;
+    });
 
 // Configure Swagger/OpenAPI Corporate
 builder.Services.AddEndpointsApiExplorer();
@@ -330,6 +341,21 @@ builder.Services.AddProblemDetails();
 // Add memory cache (required for rate limiting)
 builder.Services.AddMemoryCache();
 
+// Add Redis distributed cache
+if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        options.InstanceName = "SynQcore";
+    });
+}
+else
+{
+    // Use in-memory cache for testing
+    builder.Services.AddDistributedMemoryCache();
+}
+
 // Add corporate rate limiting - Skip in Testing environment
 if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.OrdinalIgnoreCase))
 {
@@ -438,11 +464,20 @@ builder.Services.AddScoped<IRequestHandler<DeleteEndorsementCommand>, DeleteEndo
 builder.Services.AddScoped<IRequestHandler<ToggleEndorsementCommand, EndorsementDto?>, ToggleEndorsementCommandHandler>();
 
 // === FEED HANDLERS ===
-builder.Services.AddScoped<IRequestHandler<GetCorporateFeedQuery, PagedResult<FeedItemDto>>, GetCorporateFeedHandler>();
+builder.Services.AddScoped<IRequestHandler<GetCorporateFeedQuery, CorporateFeedResponseDto>, GetCorporateFeedHandler>();
 builder.Services.AddScoped<IRequestHandler<GetFeedStatsQuery, FeedStatsDto>, GetFeedStatsHandler>();
 builder.Services.AddScoped<IRequestHandler<GetUserInterestsQuery, UserInterestsResponseDto>, GetUserInterestsHandler>();
 builder.Services.AddScoped<IRequestHandler<RegenerateFeedCommand>, RegenerateFeedHandler>();
 builder.Services.AddScoped<IRequestHandler<CreateFeedPostCommand, FeedPostDto>, CreateFeedPostHandler>();
+builder.Services.AddScoped<IRequestHandler<UpdateFeedPostCommand, FeedPostDto>, UpdateFeedPostHandler>();
+builder.Services.AddScoped<IRequestHandler<DeleteFeedPostCommand>, DeleteFeedPostHandler>();
+builder.Services.AddScoped<IRequestHandler<GetFeedPostCommand, FeedPostDto?>, GetFeedPostHandler>();
+
+// === FEED LIKES HANDLERS ===
+builder.Services.AddScoped<IRequestHandler<LikePostCommand, PostLikeResponseDto>, LikePostHandler>();
+builder.Services.AddScoped<IRequestHandler<UnlikePostCommand, PostLikeResponseDto>, UnlikePostHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPostLikeStatusQuery, PostLikeStatusDto>, GetPostLikeStatusHandler>();
+builder.Services.AddScoped<IRequestHandler<GetPostLikesQuery, PagedResult<PostLikeDto>>, GetPostLikesHandler>();
 
 // === CORPORATE DOCUMENTS HANDLERS ===
 builder.Services.AddScoped<IRequestHandler<GetDocumentsQuery, PagedResult<CorporateDocumentDto>>, GetDocumentsQueryHandler>();

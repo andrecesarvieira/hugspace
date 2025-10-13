@@ -38,6 +38,7 @@ public record FeedItemDto
     // User interaction
     public bool HasLiked { get; init; }
     public bool HasCommented { get; init; }
+    public string? ReactionType { get; init; }
     
     // Tags and categories
     public List<string> Tags { get; init; } = [];

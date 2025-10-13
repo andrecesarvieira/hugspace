@@ -48,10 +48,18 @@
 
    ```bash
    # ⭐ NOVO: Script unificado - substitui todos os outros
+   
+   # Linux/Mac:
    ./synqcore start
-
-   # ou usando Python diretamente:
-   python3 scripts/synqcore.py start
+   
+   # Windows (PowerShell):
+   .\synqcore.ps1 start
+   
+   # Windows (Command Prompt):
+   synqcore.cmd start
+   
+   # ou usando Python diretamente (todas as plataformas):
+   python scripts/synqcore.py start
 
    # Abre automaticamente:
    # - API + Swagger: http://localhost:5000/swagger
@@ -61,6 +69,52 @@
 3. **Credenciais de teste**
    - **Email**: `admin@synqcore.com`
    - **Senha**: `SynQcore@Admin123!`
+
+### Scripts por Plataforma
+
+#### Linux/Mac
+```bash
+./synqcore help                       # Ajuda completa
+./synqcore start                      # Aplicação completa (padrão)
+./synqcore api                        # Apenas API na porta 5000
+./synqcore blazor                     # Apenas Blazor na porta 5226
+./synqcore clean                      # Limpeza completa do projeto
+./synqcore docker-up                  # Infraestrutura Docker
+./synqcore docker-down                # Parar Docker
+```
+
+#### Windows PowerShell
+```powershell
+.\synqcore.ps1 help                   # Ajuda completa
+.\synqcore.ps1 start                  # Aplicação completa (padrão)
+.\synqcore.ps1 api                    # Apenas API na porta 5000
+.\synqcore.ps1 blazor                 # Apenas Blazor na porta 5226
+.\synqcore.ps1 clean                  # Limpeza completa do projeto
+.\synqcore.ps1 docker-up              # Infraestrutura Docker
+.\synqcore.ps1 docker-down            # Parar Docker
+```
+
+#### Windows Command Prompt
+```cmd
+synqcore.cmd help                     # Ajuda completa
+synqcore.cmd start                    # Aplicação completa (padrão)
+synqcore.cmd api                      # Apenas API na porta 5000
+synqcore.cmd blazor                   # Apenas Blazor na porta 5226
+synqcore.cmd clean                    # Limpeza completa do projeto
+synqcore.cmd docker-up                # Infraestrutura Docker
+synqcore.cmd docker-down              # Parar Docker
+```
+
+#### Python (Todas as Plataformas)
+```bash
+python scripts/synqcore.py help       # Ajuda completa
+python scripts/synqcore.py start      # Aplicação completa (padrão)
+python scripts/synqcore.py api        # Apenas API na porta 5000
+python scripts/synqcore.py blazor     # Apenas Blazor na porta 5226
+python scripts/synqcore.py clean      # Limpeza completa do projeto
+python scripts/synqcore.py docker-up  # Infraestrutura Docker
+python scripts/synqcore.py docker-down # Parar Docker
+```
 
 ### Scripts Alternativos
 

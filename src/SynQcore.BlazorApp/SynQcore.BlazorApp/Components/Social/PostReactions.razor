@@ -1,0 +1,298 @@
+@namespace SynQcore.BlazorApp.Components.Social
+@using Microsoft.AspNetCore.Components
+@using SynQcore.BlazorApp.Services
+@inject IPostService PostService
+@inject IJSRuntime JS
+
+    <div class="post-reactions">
+    @if (ShowSimpleMode)
+    {
+        <!-- Modo simples - apenas like estilo LinkedIn -->
+        <button class="reaction-btn @(CurrentReaction == "Like" ? "active active-like" : "")" 
+                @onclick="HandleLikeClick" 
+                disabled="@isReacting">
+            <i class="@(CurrentReaction == "Like" ? "fas fa-heart" : "far fa-heart")"></i> 
+            <span class="like-count" @onclick="ShowLikesModal" @onclick:stopPropagation="true">
+                @if (TotalLikes > 0)
+                {
+                    @TotalLikes
+                }
+                else
+                {
+                    <span>Curtir</span>
+                }
+            </span>
+        </button>
+    }
+    else
+    {
+        <!-- Modo avançado estilo LinkedIn -->
+        <div class="reactions-container">
+            <div class="primary-reaction">
+                <button class="reaction-btn @GetActiveClass() @(isReacting ? "loading" : "")" 
+                        @onclick="HandlePrimaryReaction" 
+                        disabled="@isReacting"
+                        @onmouseenter="() => showReactionPicker = true"
+                        @onmouseleave="() => DelayHideReactionPicker()">
+                    <i class="@GetCurrentReactionIcon()"></i> 
+                    <span class="like-count" @onclick="ShowLikesModal" @onclick:stopPropagation="true">
+                        @if (TotalLikes > 0)
+                        {
+                            @TotalLikes
+                        }
+                        else
+                        {
+                            <span>@GetReactionText()</span>
+                        }
+                    </span>
+                </button>
+                
+                @if (showReactionPicker)
+                {
+                    <div class="reaction-picker" 
+                         @onmouseenter="() => cancelHideTimer = true"
+                         @onmouseleave="() => HideReactionPicker()">
+                        @foreach (var reaction in AvailableReactions)
+                        {
+                            <button class="reaction-option @(CurrentReaction == reaction.Type ? "selected" : "")" 
+                                    @onclick="() => HandleReaction(reaction.Type)"
+                                    title="@reaction.Label">
+                                <i class="@reaction.Icon"></i>
+                                <span class="reaction-label">@reaction.Label</span>
+                            </button>
+                        }
+                        
+                        @if (HasReaction)
+                        {
+                            <div class="reaction-divider"></div>
+                            <button class="reaction-remove" @onclick="() => HandleReaction(null)">
+                                <i class="fas fa-times"></i>
+                                <span>Remover</span>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    
+    <PostLikesModal PostId="PostId" 
+                    IsVisible="showLikesModal" 
+                    OnClose="() => { showLikesModal = false; StateHasChanged(); }" />
+</div>
+
+@code {
+    [Parameter] public Guid PostId { get; set; }
+    [Parameter] public int TotalLikes { get; set; }
+    [Parameter] public string? CurrentReaction { get; set; }
+    [Parameter] public bool ShowSimpleMode { get; set; } = false;
+    [Parameter] public EventCallback<ReactionChangedArgs> OnReactionChanged { get; set; }
+
+    private bool isReacting = false;
+    private bool showReactionPicker = false;
+    private bool showLikesModal = false;
+    private bool cancelHideTimer = false;
+    private Timer? hideTimer;
+
+    private bool HasReaction => !string.IsNullOrEmpty(CurrentReaction);
+
+    private readonly List<ReactionType> AvailableReactions = new()
+    {
+        new("Like", "fas fa-heart", "Curtir", "#e53e3e"),
+        new("Helpful", "fas fa-thumbs-up", "Útil", "#38a169"),
+        new("Insightful", "fas fa-lightbulb", "Perspicaz", "#d69e2e"),
+        new("Celebrate", "fas fa-star", "Celebrar", "#805ad5")
+    };
+
+    private async Task HandlePrimaryReaction()
+    {
+        Console.WriteLine($"[PostReactions] HandlePrimaryReaction - HasReaction: {HasReaction}, Current: {CurrentReaction}");
+        
+        if (HasReaction)
+        {
+            await HandleReaction(null); // Remove reação atual
+        }
+        else
+        {
+            await HandleReaction("Like"); // Adiciona like padrão
+        }
+    }
+
+    private async Task HandleLikeClick()
+    {
+        Console.WriteLine($"[PostReactions] HandleLikeClick - Current: {CurrentReaction}");
+        
+        if (CurrentReaction == "Like")
+        {
+            await HandleReaction(null);
+        }
+        else
+        {
+            await HandleReaction("Like");
+        }
+    }
+
+    private async Task HandleReaction(string? reactionType)
+    {
+        if (isReacting) return;
+
+        isReacting = true;
+        showReactionPicker = false;
+
+        try
+        {
+            bool success;
+            int newTotal = TotalLikes;
+
+            if (reactionType == null)
+            {
+                // Remover reação atual
+                success = await PostService.UnlikePostAsync(PostId);
+                if (success)
+                {
+                    newTotal = Math.Max(0, TotalLikes - 1);
+                    CurrentReaction = null;
+                }
+            }
+            else
+            {
+                // Adicionar/alterar reação - passar o tipo de reação
+                success = await PostService.LikePostAsync(PostId, reactionType);
+                if (success)
+                {
+                    // Se já tinha uma reação, o total não muda
+                    // Se não tinha reação, incrementa
+                    if (!HasReaction)
+                        newTotal = TotalLikes + 1;
+                    
+                    CurrentReaction = reactionType;
+                }
+            }
+
+            if (success)
+            {
+                TotalLikes = newTotal;
+                
+                if (OnReactionChanged.HasDelegate)
+                {
+                    await OnReactionChanged.InvokeAsync(new ReactionChangedArgs
+                    {
+                        PostId = PostId,
+                        NewReaction = CurrentReaction,
+                        TotalLikes = TotalLikes
+                    });
+                }
+
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("showNotification", "Erro ao processar reação", "error");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("showNotification", "Erro inesperado ao processar reação", "error");
+            Console.WriteLine($"Erro ao processar reação: {ex.Message}");
+        }
+        finally
+        {
+            isReacting = false;
+        }
+    }
+
+    private string GetCurrentReactionIcon()
+    {
+        if (string.IsNullOrEmpty(CurrentReaction))
+            return "far fa-heart";
+
+        var reaction = AvailableReactions.FirstOrDefault(r => r.Type == CurrentReaction);
+        return reaction?.Icon ?? "far fa-heart";
+    }
+
+    private string GetActiveClass()
+    {
+        if (!HasReaction) return "";
+
+        return CurrentReaction?.ToLower() switch
+        {
+            "like" => "active active-like",
+            "helpful" => "active active-helpful",
+            "insightful" => "active active-insightful",
+            "celebrate" => "active active-celebrate",
+            _ => "active"
+        };
+    }
+
+    private string GetReactionText()
+    {
+        if (!HasReaction) return "Curtir";
+
+        return CurrentReaction switch
+        {
+            "Like" => "Curtir",
+            "Helpful" => "Útil",
+            "Insightful" => "Perspicaz",
+            "Celebrate" => "Celebrar",
+            _ => "Curtir"
+        };
+    }
+
+    private void DelayHideReactionPicker()
+    {
+        cancelHideTimer = false;
+        hideTimer?.Dispose();
+        hideTimer = new Timer(_ =>
+        {
+            if (!cancelHideTimer)
+            {
+                InvokeAsync(() =>
+                {
+                    showReactionPicker = false;
+                    StateHasChanged();
+                });
+            }
+        }, null, 500, Timeout.Infinite);
+    }
+
+    private void HideReactionPicker()
+    {
+        cancelHideTimer = false;
+        showReactionPicker = false;
+        StateHasChanged();
+    }
+
+    private async Task ShowLikesModal()
+    {
+        showLikesModal = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        hideTimer?.Dispose();
+    }
+
+    public class ReactionType
+    {
+        public string Type { get; }
+        public string Icon { get; }
+        public string Label { get; }
+        public string Color { get; }
+
+        public ReactionType(string type, string icon, string label, string color)
+        {
+            Type = type;
+            Icon = icon;
+            Label = label;
+            Color = color;
+        }
+    }
+
+    public class ReactionChangedArgs
+    {
+        public Guid PostId { get; set; }
+        public string? NewReaction { get; set; }
+        public int TotalLikes { get; set; }
+    }
+}

@@ -5,18 +5,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
-    <link rel="stylesheet" href="@Assets["app.css"]" />
-    <link rel="stylesheet" href="@Assets["SynQcore.BlazorApp.styles.css"]" />
+    
     <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <!-- Design System CSS -->
-    <link rel="stylesheet" href="css/design-tokens.css" />
-    <link rel="stylesheet" href="css/components.css" />
-    <link rel="stylesheet" href="css/component-styles.css" />
-    <link rel="stylesheet" href="css/feed.css" />
-    <!-- Notification Center CSS -->
-    <link rel="stylesheet" href="css/notification-center.css" />
+    
+    <!-- SYNQCORE DESIGN SYSTEM - ARQUIVO PRINCIPAL -->
+    <link rel="stylesheet" href="css/synqcore-main.css" />
+    
+    <!-- Blazor Generated Styles -->
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["SynQcore.BlazorApp.styles.css"]" />
+    
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
@@ -27,6 +29,8 @@
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script src="js/feed-minimal.js"></script>
+    <script src="js/feed-functions.js"></script>
+    <script src="js/feed-menu-manager.js"></script>
 </body>
 
 </html>

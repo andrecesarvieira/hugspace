@@ -4,7 +4,7 @@ using SynQcore.Application.Common.DTOs;
 
 namespace SynQcore.Application.Features.Feed.Queries;
 
-public record GetCorporateFeedQuery : IRequest<PagedResult<FeedItemDto>>
+public record GetCorporateFeedQuery : IRequest<CorporateFeedResponseDto>
 {
     public Guid UserId { get; init; }
 
