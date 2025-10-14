@@ -7,6 +7,7 @@
 @inject IState<UserState> UserState
 @inject NavigationManager Navigation
 @inject IPlatformStatsService PlatformStatsService
+@inject ILocalAuthService LocalAuthService
 @rendermode InteractiveServer
 
 <div class="home-container">
@@ -860,10 +861,13 @@
     private bool isLoadingStats = true;
     private PlatformStatsDto? platformStats;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        // Verificar autenticação tanto no Fluxor quanto no LocalAuthService
+        var isLocallyAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
+        
         // Se já estiver autenticado, redirecionar automaticamente para o feed
-        if (UserState.Value.IsAuthenticated)
+        if (UserState.Value.IsAuthenticated || isLocallyAuthenticated)
         {
             Navigation.NavigateTo("/feed");
             return;

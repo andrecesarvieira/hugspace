@@ -286,7 +286,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorporatePolicy", policy =>
     {
-        if (builder.Environment.IsDevelopment())
+        if (builder.Environment.IsDevelopment() || builder.Environment.EnvironmentName == "Docker")
         {
             policy.AllowAnyOrigin()
                   .AllowAnyMethod()

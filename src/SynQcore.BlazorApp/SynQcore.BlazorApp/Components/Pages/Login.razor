@@ -163,8 +163,6 @@
 
                 if (currentUser != null)
                 {
-                    Console.WriteLine($"[LOGIN] Usuário logado com sucesso: {currentUser.Nome}");
-
                     // Atualizar o estado do usuário via Fluxor
                     Dispatcher.Dispatch(new UserActions.LoginSuccessAction(
                     currentUser,
@@ -173,16 +171,19 @@
                     ExpiresAt: DateTime.UtcNow.AddHours(24)
                     ));
 
-                    Console.WriteLine("[LOGIN] LoginSuccessAction disparado");
-
-                    // Aguardar um pouco para o estado ser processado
-                    await Task.Delay(100);
+                    // Aguardar processamento no Windows
+                    await Task.Delay(500);
                     StateHasChanged();
 
-                    Console.WriteLine("[LOGIN] Redirecionando para /feed");
-
-                    // Navegação forçada sem wait para evitar problemas com response
-                    Navigation.NavigateTo("/feed", forceLoad: true);
+                    // Redirecionar para o Feed após login bem-sucedido
+                    try
+                    {
+                        Navigation.NavigateTo("/feed");
+                    }
+                    catch (Exception)
+                    {
+                        Navigation.NavigateTo("/feed", forceLoad: true);
+                    }
                 }
                 else
                 {
@@ -194,10 +195,8 @@
                 ErrorMessage = "Credenciais inválidas. Verifique seu e-mail e senha.";
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Erro durante login: {Email}");
-            Console.WriteLine($"{ex}");
             ErrorMessage = "Erro interno do sistema. Tente novamente.";
         }
         finally

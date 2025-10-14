@@ -47,7 +47,7 @@ public partial class CookieAuthService : ICookieAuthService
     [LoggerMessage(LogLevel.Information, "Login bem-sucedido para usuário {UserName}")]
     private static partial void LogLoginCompleted(ILogger logger, string userName);
 
-    [LoggerMessage(LogLevel.Information, "Enviando requisição para /api/auth/login")]
+    [LoggerMessage(LogLevel.Information, "Enviando requisição para auth/login")]
     private static partial void LogApiRequest(ILogger logger);
 
     [LoggerMessage(LogLevel.Information, "Resposta recebida: {ResponseStatus}")]
@@ -125,7 +125,7 @@ public partial class CookieAuthService : ICookieAuthService
             };
 
             LogApiRequest(_logger);
-            var response = await _apiService.PostAsync<ApiLoginResponse>("/api/auth/login", loginRequest);
+            var response = await _apiService.PostAsync<ApiLoginResponse>("auth/login", loginRequest);
 
             LogApiResponseReceived(_logger, response != null ? "Não nula" : "Nula");
 

@@ -65,7 +65,7 @@ public partial class LocalAuthService : ILocalAuthService
             LogLoginAttempt(_logger, email);
 
             var loginRequest = new { email, password };
-            var response = await _apiService.PostAsync<ApiLoginResponse>("/api/auth/login", loginRequest);
+            var response = await _apiService.PostAsync<ApiLoginResponse>("auth/login", loginRequest);
 
             if (response != null && response.Success && !string.IsNullOrEmpty(response.Token))
             {

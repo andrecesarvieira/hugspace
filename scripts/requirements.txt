@@ -1,0 +1,5 @@
+# SynQcore - Dependências Python para o Script de Desenvolvimento
+# Execute: pip install -r requirements.txt
+
+requests>=2.31.0
+colorama>=0.4.6  # Para cores no terminal Windows
