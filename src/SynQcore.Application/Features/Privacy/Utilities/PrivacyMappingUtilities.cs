@@ -1,5 +1,5 @@
-using SynQcore.Application.Features.Privacy.DTOs;
 using SynQcore.Application.Features.Privacy.Commands;
+using SynQcore.Application.Features.Privacy.DTOs;
 using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Features.Privacy.Utilities;

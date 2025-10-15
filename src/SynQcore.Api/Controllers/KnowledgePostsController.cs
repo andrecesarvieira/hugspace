@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using MediatR;
-using SynQcore.Application.Features.KnowledgeManagement.Commands;
-using SynQcore.Application.Features.KnowledgeManagement.Queries;
-using SynQcore.Application.Features.KnowledgeManagement.DTOs;
-using SynQcore.Application.Common.DTOs;
 using System.Security.Claims;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.KnowledgeManagement.Commands;
+using SynQcore.Application.Features.KnowledgeManagement.DTOs;
+using SynQcore.Application.Features.KnowledgeManagement.Queries;
 
 namespace SynQcore.Api.Controllers;
 
@@ -13,9 +13,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class KnowledgePostsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -23,131 +23,131 @@ public class KnowledgePostsController : ControllerBase
 
     // LoggerMessage delegates para alta performance
     private static readonly Action<ILogger, Exception?> LogProcessingKnowledgeSearch =
-        LoggerMessage.Define(LogLevel.Information, new EventId(1001, nameof(LogProcessingKnowledgeSearch)), 
+        LoggerMessage.Define(LogLevel.Information, new EventId(1001, nameof(LogProcessingKnowledgeSearch)),
             "Processando busca de artigos de conhecimento");
 
     private static readonly Action<ILogger, int, Exception?> LogSearchCompleted =
-        LoggerMessage.Define<int>(LogLevel.Information, new EventId(1002, nameof(LogSearchCompleted)), 
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(1002, nameof(LogSearchCompleted)),
             "Busca realizada com sucesso. {Count} artigos encontrados");
 
     private static readonly Action<ILogger, Exception?> LogSearchError =
-        LoggerMessage.Define(LogLevel.Error, new EventId(1003, nameof(LogSearchError)), 
+        LoggerMessage.Define(LogLevel.Error, new EventId(1003, nameof(LogSearchError)),
             "Erro ao buscar artigos de conhecimento");
 
     private static readonly Action<ILogger, Guid, Exception?> LogSearchingArticle =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1004, nameof(LogSearchingArticle)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1004, nameof(LogSearchingArticle)),
             "Buscando artigo de conhecimento: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogArticleFound =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1005, nameof(LogArticleFound)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1005, nameof(LogArticleFound)),
             "Artigo encontrado com sucesso: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogArticleNotFound =
-        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1006, nameof(LogArticleNotFound)), 
+        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1006, nameof(LogArticleNotFound)),
             "Artigo não encontrado: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogSearchArticleError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1007, nameof(LogSearchArticleError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1007, nameof(LogSearchArticleError)),
             "Erro ao buscar artigo: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogSearchingByCategory =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1008, nameof(LogSearchingByCategory)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1008, nameof(LogSearchingByCategory)),
             "Buscando artigos por categoria: {CategoryId}");
 
     private static readonly Action<ILogger, int, Exception?> LogCategorySearchCompleted =
-        LoggerMessage.Define<int>(LogLevel.Information, new EventId(1009, nameof(LogCategorySearchCompleted)), 
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(1009, nameof(LogCategorySearchCompleted)),
             "Busca por categoria realizada: {Count} artigos encontrados");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCategoryNotFound =
-        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1010, nameof(LogCategoryNotFound)), 
+        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1010, nameof(LogCategoryNotFound)),
             "Categoria não encontrada: {CategoryId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCategorySearchError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1011, nameof(LogCategorySearchError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1011, nameof(LogCategorySearchError)),
             "Erro ao buscar artigos por categoria: {CategoryId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogSearchingVersions =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1012, nameof(LogSearchingVersions)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1012, nameof(LogSearchingVersions)),
             "Buscando versões do artigo: {ArticleId}");
 
     private static readonly Action<ILogger, int, Guid, Exception?> LogVersionsFound =
-        LoggerMessage.Define<int, Guid>(LogLevel.Information, new EventId(1013, nameof(LogVersionsFound)), 
+        LoggerMessage.Define<int, Guid>(LogLevel.Information, new EventId(1013, nameof(LogVersionsFound)),
             "Versões encontradas: {Count} para artigo {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogParentArticleNotFound =
-        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1014, nameof(LogParentArticleNotFound)), 
+        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1014, nameof(LogParentArticleNotFound)),
             "Artigo pai não encontrado: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogVersionsSearchError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1015, nameof(LogVersionsSearchError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1015, nameof(LogVersionsSearchError)),
             "Erro ao buscar versões do artigo: {ArticleId}");
 
     private static readonly Action<ILogger, Exception?> LogInvalidAuthenticatedUser =
-        LoggerMessage.Define(LogLevel.Warning, new EventId(1016, nameof(LogInvalidAuthenticatedUser)), 
+        LoggerMessage.Define(LogLevel.Warning, new EventId(1016, nameof(LogInvalidAuthenticatedUser)),
             "Tentativa de criar artigo sem usuário autenticado válido");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCreatingArticle =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1017, nameof(LogCreatingArticle)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1017, nameof(LogCreatingArticle)),
             "Criando novo artigo de conhecimento por usuário: {UserId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogArticleCreated =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(1018, nameof(LogArticleCreated)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(1018, nameof(LogArticleCreated)),
             "Artigo criado com sucesso: {ArticleId} por {UserId}");
 
     private static readonly Action<ILogger, string, Exception?> LogInvalidCreationData =
-        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1019, nameof(LogInvalidCreationData)), 
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1019, nameof(LogInvalidCreationData)),
             "Dados inválidos para criação de artigo: {Error}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCreationError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1020, nameof(LogCreationError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1020, nameof(LogCreationError)),
             "Erro ao criar artigo por usuário: {UserId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogUpdatingArticle =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(1021, nameof(LogUpdatingArticle)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(1021, nameof(LogUpdatingArticle)),
             "Atualizando artigo: {ArticleId} por usuário: {UserId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogArticleUpdated =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1022, nameof(LogArticleUpdated)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1022, nameof(LogArticleUpdated)),
             "Artigo atualizado com sucesso: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogUpdateNotFound =
-        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1023, nameof(LogUpdateNotFound)), 
+        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1023, nameof(LogUpdateNotFound)),
             "Artigo não encontrado para atualização: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogUpdateUnauthorized =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Warning, new EventId(1024, nameof(LogUpdateUnauthorized)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Warning, new EventId(1024, nameof(LogUpdateUnauthorized)),
             "Usuário {UserId} não autorizado a atualizar artigo: {ArticleId}");
 
     private static readonly Action<ILogger, string, Exception?> LogInvalidUpdateData =
-        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1025, nameof(LogInvalidUpdateData)), 
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1025, nameof(LogInvalidUpdateData)),
             "Dados inválidos para atualização: {Error}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogUpdateError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1026, nameof(LogUpdateError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1026, nameof(LogUpdateError)),
             "Erro ao atualizar artigo: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogDeletingArticle =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(1027, nameof(LogDeletingArticle)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(1027, nameof(LogDeletingArticle)),
             "Excluindo artigo: {ArticleId} por usuário: {UserId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogArticleDeleted =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1028, nameof(LogArticleDeleted)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(1028, nameof(LogArticleDeleted)),
             "Artigo excluído com sucesso: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogDeleteNotFound =
-        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1029, nameof(LogDeleteNotFound)), 
+        LoggerMessage.Define<Guid>(LogLevel.Warning, new EventId(1029, nameof(LogDeleteNotFound)),
             "Artigo não encontrado para exclusão: {ArticleId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogDeleteUnauthorized =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Warning, new EventId(1030, nameof(LogDeleteUnauthorized)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Warning, new EventId(1030, nameof(LogDeleteUnauthorized)),
             "Usuário {UserId} não autorizado a excluir artigo: {ArticleId}");
 
     private static readonly Action<ILogger, string, Exception?> LogDeleteValidationError =
-        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1031, nameof(LogDeleteValidationError)), 
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1031, nameof(LogDeleteValidationError)),
             "Erro de validação na exclusão: {Error}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogDeleteError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1032, nameof(LogDeleteError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(1032, nameof(LogDeleteError)),
             "Erro ao excluir artigo: {ArticleId}");
 
     /// <summary>
@@ -183,7 +183,7 @@ public class KnowledgePostsController : ControllerBase
         {
             var query = new GetKnowledgePostsQuery { SearchRequest = searchRequest };
             var result = await _mediator.Send(query);
-            
+
             LogSearchCompleted(_logger, result.TotalCount, null);
             return Ok(result);
         }
@@ -211,13 +211,13 @@ public class KnowledgePostsController : ControllerBase
 
         try
         {
-            var query = new GetKnowledgePostByIdQuery 
-            { 
-                Id = id, 
-                IncrementViewCount = incrementViewCount 
+            var query = new GetKnowledgePostByIdQuery
+            {
+                Id = id,
+                IncrementViewCount = incrementViewCount
             };
             var result = await _mediator.Send(query);
-            
+
             LogArticleFound(_logger, id, null);
             return Ok(result);
         }
@@ -248,8 +248,8 @@ public class KnowledgePostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<PagedResult<KnowledgePostDto>>> GetKnowledgePostsByCategory(
-        Guid categoryId, 
-        [FromQuery] int page = 1, 
+        Guid categoryId,
+        [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string? sortBy = "CreatedAt",
         [FromQuery] bool sortDescending = true)
@@ -267,7 +267,7 @@ public class KnowledgePostsController : ControllerBase
                 SortDescending = sortDescending
             };
             var result = await _mediator.Send(query);
-            
+
             LogCategorySearchCompleted(_logger, result.TotalCount, null);
             return Ok(result);
         }
@@ -301,7 +301,7 @@ public class KnowledgePostsController : ControllerBase
         {
             var query = new GetKnowledgePostVersionsQuery { ParentPostId = id };
             var result = await _mediator.Send(query);
-            
+
             LogVersionsFound(_logger, result.Count, id, null);
             return Ok(result);
         }
@@ -340,13 +340,13 @@ public class KnowledgePostsController : ControllerBase
 
         try
         {
-            var command = new CreateKnowledgePostCommand 
-            { 
-                Data = createDto, 
-                AuthorId = userId 
+            var command = new CreateKnowledgePostCommand
+            {
+                Data = createDto,
+                AuthorId = userId
             };
             var result = await _mediator.Send(command);
-            
+
             LogArticleCreated(_logger, result.Id, userId, null);
             return CreatedAtAction(nameof(GetKnowledgePost), new { id = result.Id }, result);
         }
@@ -388,14 +388,14 @@ public class KnowledgePostsController : ControllerBase
 
         try
         {
-            var command = new UpdateKnowledgePostCommand 
-            { 
-                Id = id, 
-                Data = updateDto, 
-                UserId = userId 
+            var command = new UpdateKnowledgePostCommand
+            {
+                Id = id,
+                Data = updateDto,
+                UserId = userId
             };
             var result = await _mediator.Send(command);
-            
+
             LogArticleUpdated(_logger, id, null);
             return Ok(result);
         }
@@ -445,13 +445,13 @@ public class KnowledgePostsController : ControllerBase
 
         try
         {
-            var command = new DeleteKnowledgePostCommand 
-            { 
-                Id = id, 
-                UserId = userId 
+            var command = new DeleteKnowledgePostCommand
+            {
+                Id = id,
+                UserId = userId
             };
             await _mediator.Send(command);
-            
+
             LogArticleDeleted(_logger, id, null);
             return NoContent();
         }

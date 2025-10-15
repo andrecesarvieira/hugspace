@@ -2,9 +2,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Moderation.Commands;
 using SynQcore.Application.Features.Moderation.DTOs;
 using SynQcore.Application.Features.Moderation.Queries;
-using SynQcore.Application.Features.Moderation.Commands;
 
 namespace SynQcore.Api.Controllers;
 

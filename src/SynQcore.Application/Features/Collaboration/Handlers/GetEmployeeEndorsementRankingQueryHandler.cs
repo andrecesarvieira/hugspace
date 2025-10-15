@@ -53,7 +53,7 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
             }
 
             var employees = await employeesQuery.ToListAsync(cancellationToken);
-            
+
             // 2. Buscar todos os endorsements com filtros de data
             var endorsementsQuery = _context.Endorsements
                 .Include(e => e.Post)
@@ -110,7 +110,7 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
                     EmployeeEmail = employee.Email,
                     Department = employee.EmployeeDepartments.FirstOrDefault()?.Department?.Name ?? "Sem Departamento",
                     Position = employee.Position ?? "Não Informado",
-                    
+
                     // Estatísticas reais
                     TotalEndorsementsReceived = receivedEndorsements.Count,
                     TotalEndorsementsGiven = givenEndorsements.Count,
@@ -131,7 +131,7 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
             // 5. Aplicar ranking position e limitar resultados
             var result = rankings
                 .Take(request.TopCount)
-                .Select((r, index) => 
+                .Select((r, index) =>
                 {
                     r.Ranking = index + 1;
                     return r;
@@ -148,7 +148,7 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
         }
     }
 
-    private static double CalculateEngagementScore(int totalReceived, int totalGiven, 
+    private static double CalculateEngagementScore(int totalReceived, int totalGiven,
         int helpfulReceived, int insightfulReceived, int accurateReceived, int innovativeReceived)
     {
         if (totalReceived == 0 && totalGiven == 0) return 0.0;
@@ -157,18 +157,18 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
         // - Peso maior para endorsements recebidos (qualidade do conteúdo)
         // - Peso médio para endorsements dados (participação na comunidade)
         // - Bônus por diversidade de tipos recebidos
-        
+
         var receivedScore = totalReceived * 2.0; // Peso 2x para recebidos
         var givenScore = totalGiven * 1.0; // Peso 1x para dados
-        
+
         // Bônus por diversidade (até 4 tipos diferentes)
         var typesReceived = new[] { helpfulReceived, insightfulReceived, accurateReceived, innovativeReceived }
             .Count(count => count > 0);
         var diversityBonus = typesReceived * 0.5;
-        
+
         // Bônus extra para tipos premium (Insightful e Innovative)
         var premiumBonus = (insightfulReceived + innovativeReceived) * 0.3;
-        
+
         return Math.Round(receivedScore + givenScore + diversityBonus + premiumBonus, 2);
     }
 
@@ -180,31 +180,31 @@ public partial class GetEmployeeEndorsementRankingQueryHandler : IRequestHandler
             "received" => rankings.OrderByDescending(r => r.TotalEndorsementsReceived)
                                  .ThenByDescending(r => r.EngagementScore)
                                  .ToList(),
-            
+
             "given" => rankings.OrderByDescending(r => r.TotalEndorsementsGiven)
                               .ThenByDescending(r => r.EngagementScore)
                               .ToList(),
-            
+
             "engagement" => rankings.OrderByDescending(r => r.EngagementScore)
                                    .ThenByDescending(r => r.TotalEndorsementsReceived)
                                    .ToList(),
-            
+
             "helpful" => rankings.OrderByDescending(r => r.HelpfulReceived)
                                 .ThenByDescending(r => r.EngagementScore)
                                 .ToList(),
-            
+
             "insightful" => rankings.OrderByDescending(r => r.InsightfulReceived)
                                    .ThenByDescending(r => r.EngagementScore)
                                    .ToList(),
-            
+
             "accurate" => rankings.OrderByDescending(r => r.AccurateReceived)
                                  .ThenByDescending(r => r.EngagementScore)
                                  .ToList(),
-            
+
             "innovative" => rankings.OrderByDescending(r => r.InnovativeReceived)
                                    .ThenByDescending(r => r.EngagementScore)
                                    .ToList(),
-            
+
             _ => rankings.OrderByDescending(r => r.EngagementScore) // Default: engagement
                         .ThenByDescending(r => r.TotalEndorsementsReceived)
                         .ToList()

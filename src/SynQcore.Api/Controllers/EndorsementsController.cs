@@ -1,11 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using MediatR;
-using SynQcore.Application.Features.Collaboration.Commands;
-using SynQcore.Application.Features.Collaboration.Queries;
-using SynQcore.Application.Features.Collaboration.DTOs;
-using SynQcore.Application.Common.DTOs;
 using System.Security.Claims;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Collaboration.Commands;
+using SynQcore.Application.Features.Collaboration.DTOs;
+using SynQcore.Application.Features.Collaboration.Queries;
 using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Api.Controllers;
@@ -17,9 +17,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class EndorsementsController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -27,27 +27,27 @@ public class EndorsementsController : ControllerBase
 
     // LoggerMessage delegates para performance otimizada
     private static readonly Action<ILogger, Exception?> LogProcessingEndorsementRequest =
-        LoggerMessage.Define(LogLevel.Information, new EventId(4001, nameof(LogProcessingEndorsementRequest)), 
+        LoggerMessage.Define(LogLevel.Information, new EventId(4001, nameof(LogProcessingEndorsementRequest)),
             "Processando requisição de endorsements");
 
     private static readonly Action<ILogger, int, Exception?> LogEndorsementSearchCompleted =
-        LoggerMessage.Define<int>(LogLevel.Information, new EventId(4002, nameof(LogEndorsementSearchCompleted)), 
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(4002, nameof(LogEndorsementSearchCompleted)),
             "Busca de endorsements realizada: {Count} resultados");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEndorsementCreationRequest =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4003, nameof(LogEndorsementCreationRequest)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4003, nameof(LogEndorsementCreationRequest)),
             "Requisição de criação de endorsement por usuário: {UserId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEndorsementCreated =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4004, nameof(LogEndorsementCreated)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4004, nameof(LogEndorsementCreated)),
             "Endorsement criado com sucesso: {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogEndorsementUpdateRequest =
-        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(4005, nameof(LogEndorsementUpdateRequest)), 
+        LoggerMessage.Define<Guid, Guid>(LogLevel.Information, new EventId(4005, nameof(LogEndorsementUpdateRequest)),
             "Requisição de atualização do endorsement {EndorsementId} por usuário {UserId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEndorsementUpdated =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4006, nameof(LogEndorsementUpdated)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4006, nameof(LogEndorsementUpdated)),
             "Endorsement atualizado com sucesso: {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Guid, Exception?> LogEndorsementDeleteRequest =
@@ -55,35 +55,35 @@ public class EndorsementsController : ControllerBase
             "Requisição de exclusão do endorsement {EndorsementId} por usuário {UserId}");
 
     private static readonly Action<ILogger, Exception?> LogEndorsementError =
-        LoggerMessage.Define(LogLevel.Error, new EventId(4008, nameof(LogEndorsementError)), 
+        LoggerMessage.Define(LogLevel.Error, new EventId(4008, nameof(LogEndorsementError)),
             "Erro ao buscar endorsements");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEndorsementByIdError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4009, nameof(LogEndorsementByIdError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4009, nameof(LogEndorsementByIdError)),
             "Erro ao buscar endorsement {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogPostEndorsementsError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4010, nameof(LogPostEndorsementsError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4010, nameof(LogPostEndorsementsError)),
             "Erro ao buscar endorsements do post {PostId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCommentEndorsementsError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4011, nameof(LogCommentEndorsementsError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4011, nameof(LogCommentEndorsementsError)),
             "Erro ao buscar endorsements do comment {CommentId}");
 
     private static readonly Action<ILogger, Exception?> LogEndorsementStatsError =
-        LoggerMessage.Define(LogLevel.Error, new EventId(4012, nameof(LogEndorsementStatsError)), 
+        LoggerMessage.Define(LogLevel.Error, new EventId(4012, nameof(LogEndorsementStatsError)),
             "Erro ao calcular estatísticas de endorsements");
 
     private static readonly Action<ILogger, Guid, Exception?> LogCreateEndorsementError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4013, nameof(LogCreateEndorsementError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4013, nameof(LogCreateEndorsementError)),
             "Erro ao criar endorsement por usuário {UserId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogToggleEndorsementError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4014, nameof(LogToggleEndorsementError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4014, nameof(LogToggleEndorsementError)),
             "Erro no toggle de endorsement por usuário {UserId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogUpdateEndorsementError =
-        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4015, nameof(LogUpdateEndorsementError)), 
+        LoggerMessage.Define<Guid>(LogLevel.Error, new EventId(4015, nameof(LogUpdateEndorsementError)),
             "Erro ao atualizar endorsement {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogDeleteEndorsementError =
@@ -91,19 +91,19 @@ public class EndorsementsController : ControllerBase
             "Erro ao excluir endorsement {EndorsementId}");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEndorsementDeleted =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4008, nameof(LogEndorsementDeleted)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(4008, nameof(LogEndorsementDeleted)),
             "Endorsement excluído com sucesso: {EndorsementId}");
 
     private static readonly Action<ILogger, EndorsementType, Guid, Exception?> LogEndorsementToggleRequest =
-        LoggerMessage.Define<EndorsementType, Guid>(LogLevel.Information, new EventId(4009, nameof(LogEndorsementToggleRequest)), 
+        LoggerMessage.Define<EndorsementType, Guid>(LogLevel.Information, new EventId(4009, nameof(LogEndorsementToggleRequest)),
             "Toggle endorsement {Type} por usuário {UserId}");
 
     private static readonly Action<ILogger, bool, Exception?> LogEndorsementToggleCompleted =
-        LoggerMessage.Define<bool>(LogLevel.Information, new EventId(4010, nameof(LogEndorsementToggleCompleted)), 
+        LoggerMessage.Define<bool>(LogLevel.Information, new EventId(4010, nameof(LogEndorsementToggleCompleted)),
             "Toggle endorsement completado - Criado: {IsCreated}");
 
     private static readonly Action<ILogger, Exception?> LogInvalidAuthenticatedUser =
-        LoggerMessage.Define(LogLevel.Warning, new EventId(4011, nameof(LogInvalidAuthenticatedUser)), 
+        LoggerMessage.Define(LogLevel.Warning, new EventId(4011, nameof(LogInvalidAuthenticatedUser)),
             "Tentativa de operação sem usuário autenticado válido");
 
     /// <summary>
@@ -139,7 +139,7 @@ public class EndorsementsController : ControllerBase
         {
             var query = new GetEndorsementsQuery { SearchRequest = searchRequest };
             var result = await _mediator.Send(query);
-            
+
             LogEndorsementSearchCompleted(_logger, result.TotalCount, null);
             return Ok(result);
         }
@@ -185,7 +185,7 @@ public class EndorsementsController : ControllerBase
     [ProducesResponseType(typeof(List<EndorsementDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<List<EndorsementDto>>> GetPostEndorsements(
-        Guid postId, 
+        Guid postId,
         [FromQuery] EndorsementType? filterByType = null,
         [FromQuery] bool includePrivate = false,
         [FromQuery] string sortBy = "EndorsedAt",
@@ -193,8 +193,8 @@ public class EndorsementsController : ControllerBase
     {
         try
         {
-            var query = new GetPostEndorsementsQuery 
-            { 
+            var query = new GetPostEndorsementsQuery
+            {
                 PostId = postId,
                 FilterByType = filterByType,
                 IncludePrivate = includePrivate,
@@ -219,7 +219,7 @@ public class EndorsementsController : ControllerBase
     [ProducesResponseType(typeof(List<EndorsementDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<List<EndorsementDto>>> GetCommentEndorsements(
-        Guid commentId, 
+        Guid commentId,
         [FromQuery] EndorsementType? filterByType = null,
         [FromQuery] bool includePrivate = false,
         [FromQuery] string sortBy = "EndorsedAt",
@@ -227,8 +227,8 @@ public class EndorsementsController : ControllerBase
     {
         try
         {
-            var query = new GetCommentEndorsementsQuery 
-            { 
+            var query = new GetCommentEndorsementsQuery
+            {
                 CommentId = commentId,
                 FilterByType = filterByType,
                 IncludePrivate = includePrivate,
@@ -260,8 +260,8 @@ public class EndorsementsController : ControllerBase
     {
         try
         {
-            var query = new GetEndorsementStatsQuery 
-            { 
+            var query = new GetEndorsementStatsQuery
+            {
                 PostId = postId,
                 CommentId = commentId,
                 IncludePrivate = includePrivate
@@ -301,13 +301,13 @@ public class EndorsementsController : ControllerBase
 
         try
         {
-            var command = new CreateEndorsementCommand 
-            { 
-                Data = createDto, 
-                EndorserId = userId 
+            var command = new CreateEndorsementCommand
+            {
+                Data = createDto,
+                EndorserId = userId
             };
             var result = await _mediator.Send(command);
-            
+
             LogEndorsementCreated(_logger, result.Id, null);
             return CreatedAtAction(nameof(GetEndorsement), new { id = result.Id }, result);
         }
@@ -348,8 +348,8 @@ public class EndorsementsController : ControllerBase
 
         try
         {
-            var command = new ToggleEndorsementCommand 
-            { 
+            var command = new ToggleEndorsementCommand
+            {
                 PostId = postId,
                 CommentId = commentId,
                 Type = type,
@@ -357,9 +357,9 @@ public class EndorsementsController : ControllerBase
                 Context = context
             };
             var result = await _mediator.Send(command);
-            
+
             LogEndorsementToggleCompleted(_logger, result != null, null);
-            
+
             if (result != null)
             {
                 return Ok(result); // Endorsement criado
@@ -403,14 +403,14 @@ public class EndorsementsController : ControllerBase
 
         try
         {
-            var command = new UpdateEndorsementCommand 
-            { 
-                Id = id, 
-                Data = updateDto, 
-                UserId = userId 
+            var command = new UpdateEndorsementCommand
+            {
+                Id = id,
+                Data = updateDto,
+                UserId = userId
             };
             var result = await _mediator.Send(command);
-            
+
             LogEndorsementUpdated(_logger, id, null);
             return Ok(result);
         }
@@ -455,13 +455,13 @@ public class EndorsementsController : ControllerBase
 
         try
         {
-            var command = new DeleteEndorsementCommand 
-            { 
-                Id = id, 
-                UserId = userId 
+            var command = new DeleteEndorsementCommand
+            {
+                Id = id,
+                UserId = userId
             };
             await _mediator.Send(command);
-            
+
             LogEndorsementDeleted(_logger, id, null);
             return NoContent();
         }

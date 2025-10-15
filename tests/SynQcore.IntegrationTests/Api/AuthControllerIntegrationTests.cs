@@ -1,11 +1,11 @@
+using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Xunit;
 using SynQcore.IntegrationTests.Infrastructure;
+using Xunit;
 
 namespace SynQcore.IntegrationTests.Api;
 

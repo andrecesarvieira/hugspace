@@ -18,7 +18,7 @@ public class CreateEndorsementCommandValidator : AbstractValidator<CreateEndorse
 
         // Deve especificar OU PostId OU CommentId, nunca ambos
         RuleFor(x => x.Data)
-            .Must(data => (data.PostId.HasValue && !data.CommentId.HasValue) || 
+            .Must(data => (data.PostId.HasValue && !data.CommentId.HasValue) ||
                          (!data.PostId.HasValue && data.CommentId.HasValue))
             .WithMessage("Deve especificar um Post OU um Comment para endorsar, nunca ambos");
 
@@ -87,7 +87,7 @@ public class ToggleEndorsementCommandValidator : AbstractValidator<ToggleEndorse
 
         // Deve especificar OU PostId OU CommentId
         RuleFor(x => x)
-            .Must(cmd => (cmd.PostId.HasValue && !cmd.CommentId.HasValue) || 
+            .Must(cmd => (cmd.PostId.HasValue && !cmd.CommentId.HasValue) ||
                         (!cmd.PostId.HasValue && cmd.CommentId.HasValue))
             .WithMessage("Deve especificar um Post OU um Comment para toggle, nunca ambos");
 
@@ -111,7 +111,7 @@ public class BulkEndorsementCommandValidator : AbstractValidator<BulkEndorsement
 
         // Deve especificar OU PostId OU CommentId
         RuleFor(x => x)
-            .Must(cmd => (cmd.PostId.HasValue && !cmd.CommentId.HasValue) || 
+            .Must(cmd => (cmd.PostId.HasValue && !cmd.CommentId.HasValue) ||
                         (!cmd.PostId.HasValue && cmd.CommentId.HasValue))
             .WithMessage("Deve especificar um Post OU um Comment, nunca ambos");
 

@@ -1,11 +1,12 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs;
-using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Feed.Queries;
+using SynQcore.Application.Services;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
 
@@ -14,19 +15,25 @@ namespace SynQcore.Application.Features.Feed.Handlers;
 public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQuery, CorporateFeedResponseDto>
 {
     private readonly ISynQcoreDbContext _context;
+    private readonly IEmployeeSyncService _employeeSyncService;
     private readonly ILogger<GetCorporateFeedHandler> _logger;
 
     public GetCorporateFeedHandler(
         ISynQcoreDbContext context,
+        IEmployeeSyncService employeeSyncService,
         ILogger<GetCorporateFeedHandler> logger)
     {
         _context = context;
+        _employeeSyncService = employeeSyncService;
         _logger = logger;
     }
 
     public async Task<CorporateFeedResponseDto> Handle(GetCorporateFeedQuery request, CancellationToken cancellationToken)
     {
         LogProcessingFeedRequest(_logger, request.UserId, request.FeedType ?? "mixed", request.PageNumber);
+
+        // Garantir que o Employee existe (auto-criação se necessário)
+        await _employeeSyncService.EnsureEmployeeExistsAsync(request.UserId, cancellationToken);
 
         // Se solicitado refresh ou feed vazio, regenera
         if (request.RefreshFeed || await ShouldRegenerateFeed(request.UserId, cancellationToken))
@@ -327,7 +334,7 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
             ViewedAt = fe.ViewedAt,
             IsRead = fe.IsRead,
             IsBookmarked = fe.IsBookmarked,
-            
+
             // Informações do Post
             Title = fe.Post?.Title ?? "Sem título",
             Content = fe.Post?.Content ?? "",
@@ -336,26 +343,26 @@ public partial class GetCorporateFeedHandler : IRequestHandler<GetCorporateFeedQ
             ImageUrl = fe.Post?.ImageUrl,
             IsPinned = fe.Post?.IsPinned ?? false,
             IsOfficial = fe.Post?.IsOfficial ?? false,
-            
+
             // Informações do Autor
             AuthorId = fe.Post?.AuthorId ?? Guid.Empty,
-            AuthorName = fe.Post?.Author != null 
+            AuthorName = fe.Post?.Author != null
                 ? $"{fe.Post.Author.FirstName} {fe.Post.Author.LastName}".Trim()
                 : "Usuário desconhecido",
             AuthorEmail = fe.Post?.Author?.Email ?? "",
             AuthorAvatarUrl = fe.Post?.Author?.ProfilePhotoUrl,
             AuthorDepartment = fe.Department?.Name,
-            
+
             // Métricas de Engajamento
             LikeCount = fe.Post?.LikeCount ?? 0,
             CommentCount = fe.Post?.CommentCount ?? 0,
             ViewCount = fe.Post?.ViewCount ?? 0,
-            
+
             // Interação do Usuário
             HasLiked = userLikes.ContainsKey(fe.PostId),
             HasCommented = userComments.Contains(fe.PostId),
             ReactionType = userLikes.TryGetValue(fe.PostId, out var reactionType) ? reactionType.ToString() : null,
-            
+
             // Tags e Categorias
             Tags = fe.Post?.PostTags?.Select(pt => pt.Tag.Name).ToList() ?? [],
             Category = fe.Post?.Category?.Name

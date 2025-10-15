@@ -1,8 +1,8 @@
+using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using SynQcore.Application.Features.Feed.DTOs;
 using SynQcore.Application.Common.Interfaces;
-using System.Text.Json;
+using SynQcore.Application.Features.Feed.DTOs;
 
 namespace SynQcore.Infrastructure.Services;
 
@@ -13,7 +13,7 @@ public partial class FeedPostCacheService : IFeedPostCacheService
 {
     private readonly IDistributedCache _distributedCache;
     private readonly ILogger<FeedPostCacheService> _logger;
-    
+
     private const int CacheExpirationInMinutes = 30;
     private const string PostKeyPrefix = "feed_post:";
     private const string PopularPostsKey = "feed:popular_posts";
@@ -97,7 +97,7 @@ public partial class FeedPostCacheService : IFeedPostCacheService
         {
             var key = GetPostKey(post.Id);
             var serializedPost = JsonSerializer.Serialize(post);
-            
+
             var options = new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheExpirationInMinutes)
@@ -159,7 +159,7 @@ public partial class FeedPostCacheService : IFeedPostCacheService
         try
         {
             var serializedPosts = JsonSerializer.Serialize(posts);
-            
+
             var options = new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15) // Posts populares expiram mais rápido
@@ -206,7 +206,7 @@ public partial class FeedPostCacheService : IFeedPostCacheService
         {
             var key = GetUserFeedKey(userId, page, pageSize);
             var serializedFeed = JsonSerializer.Serialize(posts);
-            
+
             var options = new DistributedCacheEntryOptions
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10) // Feed personalizado expira rapidamente
@@ -229,14 +229,14 @@ public partial class FeedPostCacheService : IFeedPostCacheService
         {
             // Remove todas as páginas do feed do usuário
             var pattern = $"{UserFeedKey}{userId}:*";
-            
+
             // Para uma implementação mais robusta, seria necessário usar Redis SCAN
             // Por ora, removemos apenas as primeiras páginas mais comuns
             var commonPages = new[] { 1, 2, 3, 4, 5 };
             var commonPageSizes = new[] { 10, 20, 50 };
 
             var tasks = new List<Task>();
-            
+
             foreach (var page in commonPages)
             {
                 foreach (var pageSize in commonPageSizes)
@@ -247,7 +247,7 @@ public partial class FeedPostCacheService : IFeedPostCacheService
             }
 
             await Task.WhenAll(tasks);
-            
+
             LogUserFeedInvalidated(_logger, userId);
         }
         catch (Exception ex)
@@ -294,7 +294,7 @@ public partial class FeedPostCacheService : IFeedPostCacheService
     }
 
     private static string GetPostKey(Guid postId) => $"{PostKeyPrefix}{postId}";
-    
-    private static string GetUserFeedKey(Guid userId, int page, int pageSize) => 
+
+    private static string GetUserFeedKey(Guid userId, int page, int pageSize) =>
         $"{UserFeedKey}{userId}:{page}:{pageSize}";
 }

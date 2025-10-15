@@ -1,3 +1,4 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -6,7 +7,6 @@ using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
-using System.Globalization;
 
 namespace SynQcore.Application.Features.CorporateSearch.Handlers;
 

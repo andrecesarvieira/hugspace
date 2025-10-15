@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,6 @@ using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Departments.Commands;
 using SynQcore.Application.Features.Departments.DTOs;
 using SynQcore.Application.Features.Departments.Queries;
-using System.ComponentModel.DataAnnotations;
 using DepartmentDto = SynQcore.Application.Features.Departments.DTOs.DepartmentDto;
 
 namespace SynQcore.Api.Controllers;
@@ -43,7 +43,7 @@ public partial class DepartmentsController : ControllerBase
         {
             var query = new GetDepartmentsQuery(request);
             var result = await _mediator.Send(query);
-            
+
             LogDepartmentSuccess(result.TotalCount);
             return Ok(result);
         }
@@ -132,7 +132,7 @@ public partial class DepartmentsController : ControllerBase
         {
             var command = new CreateDepartmentCommand(request);
             var result = await _mediator.Send(command);
-            
+
             LogCreateDepartmentSuccess(result.Id, result.Name);
             return CreatedAtAction(nameof(GetDepartmentById), new { id = result.Id }, result);
         }
@@ -169,7 +169,7 @@ public partial class DepartmentsController : ControllerBase
         {
             var command = new UpdateDepartmentCommand(id, request);
             var result = await _mediator.Send(command);
-            
+
             LogUpdateDepartmentSuccess(id, result.Name);
             return Ok(result);
         }
@@ -210,7 +210,7 @@ public partial class DepartmentsController : ControllerBase
         {
             var command = new DeleteDepartmentCommand(id);
             await _mediator.Send(command);
-            
+
             LogDeleteDepartmentSuccess(id);
             return NoContent();
         }

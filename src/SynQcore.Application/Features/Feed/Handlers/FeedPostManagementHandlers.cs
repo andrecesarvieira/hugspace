@@ -333,11 +333,11 @@ public partial class GetFeedPostHandler : IRequestHandler<GetFeedPostCommand, Fe
             {
                 // Incrementar view count no cache e banco
                 await _cacheService.IncrementViewCountAsync(request.PostId, cancellationToken);
-                
+
                 // Incrementar no banco também
                 var postForView = await _context.Posts
                     .FirstOrDefaultAsync(p => p.Id == request.PostId && !p.IsDeleted, cancellationToken);
-                    
+
                 if (postForView != null)
                 {
                     postForView.ViewCount++;

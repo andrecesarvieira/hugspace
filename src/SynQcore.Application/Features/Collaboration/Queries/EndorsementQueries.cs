@@ -1,6 +1,6 @@
 using MediatR;
-using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.Application.Features.Collaboration.Queries;

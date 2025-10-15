@@ -1,6 +1,6 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.SignalR.Client;
 using SynQcore.BlazorApp.Models;
-using System.Text.Json;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -176,7 +176,7 @@ public partial class NotificationService : INotificationService
         if (_hubConnection?.State == HubConnectionState.Connected)
         {
             await _hubConnection.InvokeAsync("MarkNotificationAsRead", notificationId);
-            
+
             // Atualizar localmente
             var notification = _recentNotifications.FirstOrDefault(n => n.Id == notificationId);
             if (notification != null && !notification.IsRead)
@@ -333,7 +333,7 @@ public partial class NotificationService : INotificationService
         catch (Exception ex)
         {
             LogNotificationParseError(_logger, JsonSerializer.Serialize(data), ex);
-            
+
             // Retornar notificação padrão em caso de erro
             return new NotificationModel
             {
@@ -403,7 +403,7 @@ public partial class NotificationService : INotificationService
         {
             await _hubConnection.DisposeAsync();
         }
-        
+
         GC.SuppressFinalize(this);
     }
 }

@@ -10,8 +10,8 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using SynQcore.Domain.Entities.Communication;
 using SynQcore.BlazorApp.Models;
+using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.BlazorApp.Services;
 

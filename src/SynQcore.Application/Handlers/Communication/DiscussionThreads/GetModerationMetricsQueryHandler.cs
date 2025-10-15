@@ -1,9 +1,9 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
-using System.Globalization;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -197,8 +197,8 @@ public partial class GetModerationMetricsQueryHandler : IRequestHandler<GetModer
     }
 
     private async Task<List<ModeratorStats>> CalculateTopModeratorsAsync(
-        DateTime fromDate, 
-        DateTime toDate, 
+        DateTime fromDate,
+        DateTime toDate,
         CancellationToken cancellationToken)
     {
         var moderatorStats = await _context.Comments

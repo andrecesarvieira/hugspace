@@ -40,10 +40,10 @@ public class CommentMentionConfiguration : IEntityTypeConfiguration<CommentMenti
         // Configurar propriedades FK explicitamente
         builder.Property(e => e.CommentId)
             .IsRequired();
-            
+
         builder.Property(e => e.MentionedEmployeeId)
             .IsRequired();
-            
+
         builder.Property(e => e.MentionedById)
             .IsRequired();
 

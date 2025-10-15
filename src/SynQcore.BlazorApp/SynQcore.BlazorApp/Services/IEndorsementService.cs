@@ -8,8 +8,8 @@
  */
 
 using System.ComponentModel.DataAnnotations;
-using SynQcore.Domain.Entities.Communication;
 using SynQcore.BlazorApp.Models;
+using SynQcore.Domain.Entities.Communication;
 
 namespace SynQcore.BlazorApp.Services;
 

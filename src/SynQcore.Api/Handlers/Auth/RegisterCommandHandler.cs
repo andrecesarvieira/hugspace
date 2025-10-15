@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using SynQcore.Application.Commands.Auth;
 using SynQcore.Application.DTOs.Auth;
+using SynQcore.Infrastructure.EventHandlers;
 using SynQcore.Infrastructure.Identity;
 using SynQcore.Infrastructure.Services.Auth;
 
@@ -11,11 +12,16 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 {
     private readonly UserManager<ApplicationUserEntity> _userManager;
     private readonly IJwtService _jwtService;
+    private readonly UserRegistrationService _userRegistrationService;
 
-    public RegisterCommandHandler(UserManager<ApplicationUserEntity> userManager, IJwtService jwtService)
+    public RegisterCommandHandler(
+        UserManager<ApplicationUserEntity> userManager,
+        IJwtService jwtService,
+        UserRegistrationService userRegistrationService)
     {
         _userManager = userManager;
         _jwtService = jwtService;
+        _userRegistrationService = userRegistrationService;
     }
 
     public async Task<AuthResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -44,6 +50,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 
         // Adicionar role padrão "Employee" para novos usuários
         await _userManager.AddToRoleAsync(user, "Employee");
+
+        // Criar registro do funcionário automaticamente
+        await _userRegistrationService.HandleUserRegisteredAsync(user);
 
         // Gerar token JWT
         var token = _jwtService.GenerateToken(user);

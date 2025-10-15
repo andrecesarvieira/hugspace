@@ -1,16 +1,16 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
-using SynQcore.Application.Common.Extensions;
 using SynQcore.Domain.Entities;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
-using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace SynQcore.Application.Features.CorporateSearch.Handlers;
 

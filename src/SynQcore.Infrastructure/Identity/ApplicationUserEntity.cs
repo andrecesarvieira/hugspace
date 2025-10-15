@@ -7,7 +7,7 @@ public class ApplicationUserEntity : IdentityUser<Guid>
 {
     // Relacionamentos corporativos
     public Guid? EmployeeId { get; set; }
-    
+
     // Navigation Properties
     public Employee? Employee { get; set; }
 }

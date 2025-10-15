@@ -1,7 +1,7 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.BlazorApp.Services;
-using System.Security.Claims;
 
 namespace SynQcore.BlazorApp.Services;
 

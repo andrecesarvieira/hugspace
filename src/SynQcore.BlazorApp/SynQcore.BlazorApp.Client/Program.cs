@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using SynQcore.BlazorApp.Client.Services;
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
+using SynQcore.BlazorApp.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

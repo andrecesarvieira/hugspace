@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using SynQcore.Infrastructure.Data;
 using SynQcore.Domain.Entities.Organization;
+using SynQcore.Infrastructure.Data;
 using SynQcore.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
 
 namespace SynQcore.IntegrationTests.Infrastructure;
 

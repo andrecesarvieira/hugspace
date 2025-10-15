@@ -33,7 +33,7 @@ public partial class DeleteEndorsementCommandHandler : IRequestHandler<DeleteEnd
     private static partial void LogEndorsementDeleteError(ILogger logger, Guid endorsementId, Exception ex);
 
     public DeleteEndorsementCommandHandler(
-        ISynQcoreDbContext context, 
+        ISynQcoreDbContext context,
         ILogger<DeleteEndorsementCommandHandler> logger)
     {
         _context = context;

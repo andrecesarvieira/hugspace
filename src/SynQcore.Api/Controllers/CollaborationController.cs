@@ -6,13 +6,13 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using SynQcore.Application.Features.Collaboration.Queries;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Collaboration.Commands;
 using SynQcore.Application.Features.Collaboration.DTOs;
-using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Collaboration.Queries;
 
 namespace SynQcore.Api.Controllers;
 

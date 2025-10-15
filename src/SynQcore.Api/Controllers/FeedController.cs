@@ -1,12 +1,12 @@
+using System.Security.Claims;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using System.Security.Claims;
-using SynQcore.Application.Features.Feed.Commands;
-using SynQcore.Application.Features.Feed.Queries;
-using SynQcore.Application.Features.Feed.DTOs;
-using SynQcore.Application.DTOs;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.DTOs;
+using SynQcore.Application.Features.Feed.Commands;
+using SynQcore.Application.Features.Feed.DTOs;
+using SynQcore.Application.Features.Feed.Queries;
 
 namespace SynQcore.Api.Controllers;
 
@@ -17,9 +17,9 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class FeedController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -45,7 +45,7 @@ public class FeedController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            
+
             var command = new CreateFeedPostCommand
             {
                 AuthorId = userId,
@@ -75,7 +75,7 @@ public class FeedController : ControllerBase
     public async Task<ActionResult<FeedPostDto>> GetFeedPost(Guid postId)
     {
         var userId = GetCurrentUserId();
-        
+
         var command = new GetFeedPostCommand
         {
             PostId = postId,
@@ -83,7 +83,7 @@ public class FeedController : ControllerBase
         };
 
         var result = await _mediator.Send(command);
-        
+
         if (result == null)
             return NotFound(new { message = "Post não encontrado" });
 
@@ -106,7 +106,7 @@ public class FeedController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            
+
             var command = new UpdateFeedPostCommand
             {
                 PostId = postId,
@@ -148,7 +148,7 @@ public class FeedController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            
+
             var command = new DeleteFeedPostCommand
             {
                 PostId = postId,
@@ -187,7 +187,7 @@ public class FeedController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            
+
             var command = new LikePostCommand
             {
                 PostId = postId,
@@ -196,7 +196,7 @@ public class FeedController : ControllerBase
             };
 
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -224,7 +224,7 @@ public class FeedController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            
+
             var command = new UnlikePostCommand
             {
                 PostId = postId,
@@ -232,7 +232,7 @@ public class FeedController : ControllerBase
             };
 
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(result);
@@ -259,7 +259,7 @@ public class FeedController : ControllerBase
         try
         {
             var userId = GetCurrentUserId();
-            
+
             var query = new GetPostLikeStatusQuery
             {
                 PostId = postId,
@@ -287,8 +287,8 @@ public class FeedController : ControllerBase
     [ProducesResponseType(typeof(PagedResult<PostLikeDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PagedResult<PostLikeDto>>> GetPostLikes(
-        Guid postId, 
-        [FromQuery] int page = 1, 
+        Guid postId,
+        [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         [FromQuery] string? reactionType = null)
     {
@@ -342,7 +342,7 @@ public class FeedController : ControllerBase
         [FromQuery] string[]? categories = null)
     {
         var userId = GetCurrentUserId();
-        
+
         // Valida parâmetros
         if (page < 1) page = 1;
         if (pageSize < 1 || pageSize > 100) pageSize = 20;
@@ -385,7 +385,7 @@ public class FeedController : ControllerBase
     public async Task<IActionResult> MarkAsRead(Guid feedEntryId)
     {
         var userId = GetCurrentUserId();
-        
+
         var command = new MarkFeedItemAsReadCommand
         {
             FeedEntryId = feedEntryId,
@@ -404,7 +404,7 @@ public class FeedController : ControllerBase
     public async Task<IActionResult> ToggleBookmark(Guid feedEntryId)
     {
         var userId = GetCurrentUserId();
-        
+
         var command = new ToggleFeedBookmarkCommand
         {
             FeedEntryId = feedEntryId,
@@ -424,7 +424,7 @@ public class FeedController : ControllerBase
     public async Task<IActionResult> HideItem(Guid feedEntryId, [FromBody] string? reason = null)
     {
         var userId = GetCurrentUserId();
-        
+
         var command = new HideFeedItemCommand
         {
             FeedEntryId = feedEntryId,
@@ -449,7 +449,7 @@ public class FeedController : ControllerBase
         [FromQuery] int? maxItems = null)
     {
         var userId = GetCurrentUserId();
-        
+
         var command = new RegenerateFeedCommand
         {
             UserId = userId,
@@ -475,7 +475,7 @@ public class FeedController : ControllerBase
         [FromQuery] bool recalculateScores = false)
     {
         var userId = GetCurrentUserId();
-        
+
         // Valida tipo de interação
         var validTypes = new[] { "like", "comment", "share", "view", "bookmark" };
         if (!validTypes.Contains(interactionType.ToLowerInvariant()))
@@ -502,7 +502,7 @@ public class FeedController : ControllerBase
     public async Task<ActionResult<FeedStatsDto>> GetFeedStats()
     {
         var userId = GetCurrentUserId();
-        
+
         var query = new GetFeedStatsQuery
         {
             UserId = userId
@@ -519,7 +519,7 @@ public class FeedController : ControllerBase
     public async Task<ActionResult<UserInterestsResponseDto>> GetUserInterests()
     {
         var userId = GetCurrentUserId();
-        
+
         var query = new GetUserInterestsQuery
         {
             UserId = userId
@@ -556,14 +556,14 @@ public class FeedController : ControllerBase
     private Guid GetCurrentUserId()
     {
         // Buscar claim 'sub' que contém o User ID no token JWT
-        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? 
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ??
                          User.FindFirst("sub")?.Value;
-        
+
         if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
         {
             throw new UnauthorizedAccessException("ID do usuário não encontrado no token JWT");
         }
-        
+
         return userId;
     }
 

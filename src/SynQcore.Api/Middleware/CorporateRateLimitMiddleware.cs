@@ -6,8 +6,8 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
-using Microsoft.Extensions.Logging;
 using AspNetCoreRateLimit;
+using Microsoft.Extensions.Logging;
 
 namespace SynQcore.Api.Middleware;
 

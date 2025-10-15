@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Components.Forms;
 using SynQcore.BlazorApp.Models;
 
 namespace SynQcore.BlazorApp.Services;

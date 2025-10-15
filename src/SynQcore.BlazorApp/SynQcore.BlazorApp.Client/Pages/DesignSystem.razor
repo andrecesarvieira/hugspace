@@ -11,11 +11,9 @@
         </div>
 
         <div class="synq-stagger-item">
-            <SynQButton
-                Text="@ThemeService.GetThemeDisplayName()"
-                Icon="@ThemeService.GetThemeToggleIcon()"
-                Variant="SynQButtonVariant.Outline"
-                OnClick="ToggleTheme" />
+            <span class="theme-info">
+                @ThemeService.GetThemeToggleIcon() @ThemeService.GetThemeDisplayName()
+            </span>
         </div>
     </div>
 
@@ -382,11 +380,6 @@
         await ThemeService.InitializeAsync();
     }
 
-    private async Task ToggleTheme()
-    {
-        await ThemeService.ToggleThemeAsync();
-    }
-
     private SynQButtonVariant GetButtonVariant()
     {
         return buttonVariant switch
@@ -634,30 +627,17 @@
         padding: var(--synq-space-4);
     }
 
-    /* Tema escuro */
-    [data-theme="dark"] .playground-controls {
-        background: var(--synq-gray-800);
-        border-color: var(--synq-gray-600);
-    }
-
-    [data-theme="dark"] .playground-preview {
-        background: var(--synq-gray-800);
-        border-color: var(--synq-gray-600);
-    }
-
-    [data-theme="dark"] .synq-select {
-        background: var(--synq-gray-700);
-        color: var(--synq-gray-100);
-        border-color: var(--synq-gray-600);
-    }
-
-    [data-theme="dark"] .preview-area {
-        background: var(--synq-gray-900);
-        border-color: var(--synq-gray-600);
-    }
-
-    [data-theme="dark"] .preview-area:hover {
-        border-color: var(--synq-primary);
-        background: var(--synq-gray-800);
+    /* Sistema configurado para APENAS modo claro */
+    .theme-info {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--synq-success-50);
+        color: var(--synq-success-700);
+        border: 1px solid var(--synq-success-200);
+        border-radius: var(--synq-radius);
+        font-weight: 500;
+        font-size: 0.9rem;
     }
 </style>

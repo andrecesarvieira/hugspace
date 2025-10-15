@@ -1,6 +1,6 @@
 using MediatR;
-using SynQcore.Application.Features.Feed.DTOs;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Feed.DTOs;
 
 namespace SynQcore.Application.Features.Feed.Commands;
 

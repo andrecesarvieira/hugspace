@@ -47,10 +47,10 @@ public class EndorsementConfiguration : IEntityTypeConfiguration<Endorsement>
         // Configurar propriedades de FK explicitamente para evitar shadow state
         builder.Property(e => e.PostId)
             .IsRequired(false);
-            
+
         builder.Property(e => e.CommentId)
             .IsRequired(false);
-            
+
         builder.Property(e => e.EndorserId)
             .IsRequired();
 

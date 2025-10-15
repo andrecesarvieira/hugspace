@@ -1,7 +1,7 @@
-using Serilog;
-using Serilog.Context;
 using System.Diagnostics;
 using System.Text;
+using Serilog;
+using Serilog.Context;
 
 namespace SynQcore.Api.Middleware;
 
@@ -56,10 +56,10 @@ public class AuditLoggingMiddleware
 
         var correlationId = context.TraceIdentifier;
         var stopwatch = Stopwatch.StartNew();
-        
+
         // Capture request details
         var requestBody = await CaptureRequestBody(context);
-        
+
         // Enrich log context with corporate audit information
         using var logContext1 = LogContext.PushProperty("CorrelationId", correlationId);
         using var logContext2 = LogContext.PushProperty("UserId", GetUserId(context));
@@ -72,8 +72,8 @@ public class AuditLoggingMiddleware
         using var logContext9 = LogContext.PushProperty("RequestBodySize", requestBody?.Length ?? 0);
 
         // Log incoming request using high-performance LoggerMessage
-        LogRequestStarted(_logger, 
-            context.Request.Method, 
+        LogRequestStarted(_logger,
+            context.Request.Method,
             context.Request.Path,
             GetUserId(context),
             GetClientIpAddress(context) ?? "unknown",
@@ -96,14 +96,14 @@ public class AuditLoggingMiddleware
         finally
         {
             stopwatch.Stop();
-            
+
             // Capture response body for audit (if not too large)
             var responseBody = await CaptureResponseBody(responseBodyMemoryStream);
-            
+
             // Copy response back to original stream
             responseBodyMemoryStream.Position = 0;
             await responseBodyMemoryStream.CopyToAsync(originalResponseBody);
-            
+
             // Log completed request with corporate audit details
             using var responseLogContext1 = LogContext.PushProperty("ResponseStatusCode", context.Response.StatusCode);
             using var responseLogContext2 = LogContext.PushProperty("ResponseHeaders", GetSafeHeaders(context.Response.Headers), true);
@@ -112,7 +112,7 @@ public class AuditLoggingMiddleware
 
             // Use high-performance LoggerMessage for request completed
             LogRequestCompleted(_logger,
-                context.Request.Method, 
+                context.Request.Method,
                 context.Request.Path,
                 context.Response.StatusCode,
                 stopwatch.ElapsedMilliseconds,
@@ -135,7 +135,7 @@ public class AuditLoggingMiddleware
                     RequestSize = requestBody?.Length ?? 0,
                     ResponseSize = responseBody?.Length ?? 0
                 };
-                
+
                 LogAuditTrail(_logger, auditRecord, null);
             }
         }
@@ -161,11 +161,11 @@ public class AuditLoggingMiddleware
             return null;
 
         context.Request.EnableBuffering();
-        
+
         var buffer = new byte[context.Request.ContentLength ?? 0];
         await context.Request.Body.ReadExactlyAsync(buffer, 0, buffer.Length);
         context.Request.Body.Position = 0;
-        
+
         return Encoding.UTF8.GetString(buffer);
     }
 
@@ -177,7 +177,7 @@ public class AuditLoggingMiddleware
         responseBodyStream.Position = 0;
         var responseBytes = new byte[responseBodyStream.Length];
         await responseBodyStream.ReadExactlyAsync(responseBytes);
-        
+
         return Encoding.UTF8.GetString(responseBytes);
     }
 
@@ -192,8 +192,8 @@ public class AuditLoggingMiddleware
     private static string GetUserId(HttpContext context)
     {
         // Extract user ID from JWT claims when authentication is implemented
-        return context.User?.FindFirst("sub")?.Value ?? 
-               context.User?.FindFirst("employee_id")?.Value ?? 
+        return context.User?.FindFirst("sub")?.Value ??
+               context.User?.FindFirst("employee_id")?.Value ??
                "anonymous";
     }
 
@@ -223,7 +223,7 @@ public class AuditLoggingMiddleware
         // - Admin operations
         var method = context.Request.Method;
         var path = context.Request.Path.Value?.ToLowerInvariant();
-        
+
         return method is "POST" or "PUT" or "DELETE" or "PATCH" ||
                path?.Contains("auth") == true ||
                path?.Contains("admin") == true;

@@ -1,7 +1,7 @@
 using System.Text.Json;
+using Fluxor;
 using SynQcore.BlazorApp.Components.Social;
 using SynQcore.BlazorApp.Store.User;
-using Fluxor;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -70,7 +70,7 @@ public partial class PostService : IPostService
 
     [LoggerMessage(LogLevel.Error, "Erro ao bookmark feed item {FeedEntryId}")]
     private static partial void LogBookmarkError(ILogger logger, Guid feedEntryId, Exception exception);
-    
+
     [LoggerMessage(LogLevel.Information, "Curtindo post {PostId} com reação {ReactionType}")]
     private static partial void LogLikingPost(ILogger logger, Guid postId, string reactionType);
 
@@ -98,7 +98,7 @@ public partial class PostService : IPostService
                 var json = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<FeedResponse>(json, JsonOptions);
                 var posts = result?.Items?.Select(MapToPostModel).ToList() ?? new List<SimplePostCard.PostModel>();
-                
+
                 return posts;
             }
             else
@@ -162,7 +162,7 @@ public partial class PostService : IPostService
         }
 
         Console.WriteLine($"[POST SERVICE] FALLBACK: Retornando post em memória - NÃO SERÁ PERSISTIDO!");
-        
+
         // Fallback: criar post usando dados reais do usuário autenticado
         var userId = _userState.Value.CurrentUser?.Id ?? "anonymous";
         var userName = _userState.Value.CurrentUser?.Nome ?? "Usuário";
@@ -249,15 +249,15 @@ public partial class PostService : IPostService
         try
         {
             LogLikingPost(_logger, postId, reactionType);
-            
+
             // Usar endpoint real de like com tipo de reação
             var response = await _httpClient.PostAsync($"api/feed/{postId}/like?reactionType={reactionType}", null);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<PostLikeResponseDto>(responseContent, JsonOptions);
-                
+
                 LogLikeResult(_logger, postId, result?.Success == true, result?.TotalLikes ?? 0);
                 return result?.Success == true;
             }
@@ -281,15 +281,15 @@ public partial class PostService : IPostService
         {
             // Usar endpoint real de unlike
             var response = await _httpClient.DeleteAsync($"api/feed/{postId}/like");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<PostLikeResponseDto>(responseContent, JsonOptions);
-                
+
                 return result?.Success == true;
             }
-            
+
             return false;
         }
         catch (Exception ex)
@@ -304,15 +304,15 @@ public partial class PostService : IPostService
         try
         {
             var response = await _httpClient.GetAsync($"feed/{postId}/like/status");
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<PostLikeStatusDto>(responseContent, JsonOptions);
-                
+
                 return result;
             }
-            
+
             return null;
         }
         catch (Exception ex)
@@ -333,15 +333,15 @@ public partial class PostService : IPostService
             }
 
             var response = await _httpClient.GetAsync(url);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<PagedResultDto<PostLikeDto>>(responseContent, JsonOptions);
-                
+
                 return result?.Items ?? new List<PostLikeDto>();
             }
-            
+
             return new List<PostLikeDto>();
         }
         catch (Exception ex)

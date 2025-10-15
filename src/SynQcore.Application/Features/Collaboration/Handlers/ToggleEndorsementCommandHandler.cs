@@ -1,7 +1,7 @@
-using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Collaboration.Commands;
 using SynQcore.Application.Features.Collaboration.DTOs;
@@ -41,7 +41,7 @@ public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEnd
     private static partial void LogToggleError(ILogger logger, Guid userId, Exception ex);
 
     public ToggleEndorsementCommandHandler(
-        ISynQcoreDbContext context, 
+        ISynQcoreDbContext context,
         ILogger<ToggleEndorsementCommandHandler> logger)
     {
         _context = context;
@@ -97,7 +97,7 @@ public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEnd
 
             // Verificar se já existe endorsement do mesmo tipo
             var existingEndorsement = await _context.Endorsements
-                .Where(e => e.EndorserId == request.EndorserId && 
+                .Where(e => e.EndorserId == request.EndorserId &&
                            e.Type == request.Type &&
                            ((request.PostId.HasValue && e.PostId == request.PostId) ||
                             (request.CommentId.HasValue && e.CommentId == request.CommentId)))
@@ -141,7 +141,7 @@ public partial class ToggleEndorsementCommandHandler : IRequestHandler<ToggleEnd
 
                 // Mapear para DTO usando extensões manuais
                 var result = createdEndorsement.ToEndorsementDto();
-                
+
                 // As informações de tipo já são adicionadas no ToEndorsementDto()
 
                 return result;

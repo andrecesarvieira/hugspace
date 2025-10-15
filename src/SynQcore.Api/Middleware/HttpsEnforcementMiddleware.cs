@@ -6,8 +6,8 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace SynQcore.Api.Middleware;
 

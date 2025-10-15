@@ -126,7 +126,7 @@ public partial class GetDiscussionAnalyticsQueryHandler : IRequestHandler<GetDis
     }
 
     private async Task<List<TopContributor>> CalculateTopContributorsAsync(
-        List<Domain.Entities.Communication.Comment> comments, 
+        List<Domain.Entities.Communication.Comment> comments,
         CancellationToken cancellationToken)
     {
         var contributorStats = comments
@@ -167,7 +167,7 @@ public partial class GetDiscussionAnalyticsQueryHandler : IRequestHandler<GetDis
     }
 
     private async Task<List<ActiveThread>> CalculateMostActiveThreadsAsync(
-        GetDiscussionAnalyticsQuery request, 
+        GetDiscussionAnalyticsQuery request,
         CancellationToken cancellationToken)
     {
         var threadsQuery = _context.Posts.AsQueryable();

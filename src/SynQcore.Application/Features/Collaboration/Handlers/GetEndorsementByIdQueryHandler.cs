@@ -32,7 +32,7 @@ public partial class GetEndorsementByIdQueryHandler : IRequestHandler<GetEndorse
     private static partial void LogEndorsementSearchError(ILogger logger, Guid endorsementId, Exception ex);
 
     public GetEndorsementByIdQueryHandler(
-        ISynQcoreDbContext context, 
+        ISynQcoreDbContext context,
         ILogger<GetEndorsementByIdQueryHandler> logger)
     {
         _context = context;
@@ -62,7 +62,7 @@ public partial class GetEndorsementByIdQueryHandler : IRequestHandler<GetEndorse
 
             // Mapear para DTO usando extensões manuais
             var result = endorsement.ToEndorsementDto();
-            
+
             // As informações de tipo já são adicionadas no ToEndorsementDto()
             return result;
         }

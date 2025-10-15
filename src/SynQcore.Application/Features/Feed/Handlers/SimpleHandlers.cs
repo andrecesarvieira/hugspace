@@ -25,7 +25,7 @@ public partial class RegenerateFeedHandler : IRequestHandler<RegenerateFeedComma
 
         // Remove entradas antigas se não preservar bookmarks
         var entriesToRemove = _context.FeedEntries.Where(fe => fe.UserId == request.UserId);
-        
+
         if (request.PreserveBookmarks)
         {
             entriesToRemove = entriesToRemove.Where(fe => !fe.IsBookmarked);

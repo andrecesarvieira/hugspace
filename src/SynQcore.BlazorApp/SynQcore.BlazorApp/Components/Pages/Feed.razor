@@ -8,7 +8,9 @@
 @using SynQcore.BlazorApp.Components.Shared
 @using SynQcore.Application.Features.CorporateSearch.DTOs
 @using SynQcore.Application.Features.Departments.DTOs
+@implements IDisposable
 @inject IState<UserState> UserState
+@inject IDispatcher Dispatcher
 @inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
@@ -370,8 +372,11 @@
     private bool isLoading = true;
     private bool isCreatingPost = false;
     private string newPostContent = string.Empty;
-    private string newPostTags = string.Empty;
     private bool canModerate = false;
+    
+    // Flag para evitar múltiplas sincronizações
+    private bool isAuthSyncInProgress = false;
+    private bool hasAuthSyncCompleted = false;
 
     // Navegação
     private string activeTab = "feed";
@@ -413,6 +418,61 @@
             }
 
             Console.WriteLine($"[FEED] Autenticação OK - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
+            Console.WriteLine($"[FEED] Estado Fluxor - CurrentUser: {UserState.Value.CurrentUser?.Nome}, Status: {UserState.Value.Status}");
+
+            // SINCRONIZAÇÃO OTIMIZADA: Se LocalAuth está autenticado mas Fluxor não, sincronizar apenas uma vez
+            if (isLocalAuthenticated && !UserState.Value.IsAuthenticated && !isAuthSyncInProgress && !hasAuthSyncCompleted)
+            {
+                isAuthSyncInProgress = true;
+                Console.WriteLine("[FEED] SINCRONIZANDO: LocalAuth=True mas Fluxor=False - Atualizando estado do Fluxor");
+                
+                try
+                {
+                    var localUser = await LocalAuthService.GetCurrentUserAsync();
+                    if (localUser != null)
+                    {
+                        var localAccessToken = await LocalAuthService.GetAccessTokenAsync() ?? "local-token";
+                        
+                        Console.WriteLine($"[FEED] PRÉ-DISPATCH: Fluxor.IsAuthenticated = {UserState.Value.IsAuthenticated}");
+                        Console.WriteLine($"[FEED] DISPATCH: Enviando LoginSuccessAction - User: {localUser.Nome}, Token: {!string.IsNullOrEmpty(localAccessToken)}");
+                        
+                        // TESTE: Primeiro vamos testar um action mais simples
+                        Console.WriteLine("[FEED] TESTE: Despachando StartLoginAction primeiro");
+                        Dispatcher.Dispatch(new UserActions.StartLoginAction(localUser.Email, "test-password"));
+                        
+                        await Task.Delay(100); // Aguardar processamento
+                        
+                        Console.WriteLine($"[FEED] TESTE PÓS-StartLogin: Status = {UserState.Value.Status}");
+                        
+                        // Agora o LoginSuccessAction
+                        Dispatcher.Dispatch(new UserActions.LoginSuccessAction(
+                            localUser,
+                            AccessToken: localAccessToken,
+                            RefreshToken: null,
+                            ExpiresAt: DateTime.UtcNow.AddHours(24)
+                        ));
+                        
+                        // Aguardar um ciclo de renderização para o estado ser atualizado
+                        await Task.Delay(100);
+                        
+                        Console.WriteLine($"[FEED] PÓS-DISPATCH: Fluxor.IsAuthenticated = {UserState.Value.IsAuthenticated}");
+                        Console.WriteLine($"[FEED] PÓS-DISPATCH: CurrentUser = {UserState.Value.CurrentUser?.Nome}");
+                        Console.WriteLine($"[FEED] PÓS-DISPATCH: Status = {UserState.Value.Status}");
+                        
+                        hasAuthSyncCompleted = true;
+                        Console.WriteLine($"[FEED] Estado do Fluxor sincronizado para usuário: {localUser.Nome}");
+                        StateHasChanged();
+                    }
+                }
+                finally
+                {
+                    isAuthSyncInProgress = false;
+                }
+            }
+            else if (hasAuthSyncCompleted)
+            {
+                Console.WriteLine("[FEED] Sincronização já concluída anteriormente - pulando");
+            }
 
             // Verificar token de acesso
             var accessToken = await LocalAuthService.GetAccessTokenAsync();
@@ -485,12 +545,6 @@
         }
     }
 
-    private async Task LoadPostsAsync()
-    {
-        // Método legacy - redireciona para o novo método da API
-        await LoadPostsFromApiAsync();
-    }
-
     private async Task CreatePost()
     {
         if (string.IsNullOrWhiteSpace(newPostContent) || currentUser == null)
@@ -505,10 +559,7 @@
             var createRequest = new CreatePostRequest
             {
                 Content = newPostContent,
-                Tags = newPostTags?.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                  .Select(t => t.Trim())
-                                  .Where(t => !string.IsNullOrWhiteSpace(t))
-                                  .ToArray()
+                Tags = Array.Empty<string>() // Por enquanto sem tags, implementar quando necessário
             };
 
             var newPost = await PostService.CreatePostAsync(createRequest);
@@ -517,7 +568,6 @@
             {
                 posts.Insert(0, newPost);
                 newPostContent = string.Empty;
-                newPostTags = string.Empty;
 
                 Console.WriteLine($"[FEED] Post criado com sucesso via API: {newPost.Content}");
             }
@@ -584,10 +634,10 @@
         }
     }
 
-    private async Task ShowComments(Guid postId)
+    private void ShowComments(Guid postId)
     {
         Console.WriteLine($"[BLAZOR] [FEED] Mostrar comentários do post {postId}");
-        await Task.CompletedTask;
+        // TODO: Implementar modal de comentários
     }
 
     private async Task SharePost(Guid postId)
@@ -605,7 +655,6 @@
             await JS.InvokeVoidAsync("showShareOptions", postId);
             
             // Simular API call para registrar compartilhamento
-            // TODO: Implementar endpoint real de compartilhamento
             await Task.Delay(100);
             
             await JS.InvokeVoidAsync("showNotification", "Post compartilhado com sucesso!", "success");
@@ -708,24 +757,49 @@
     private void OnFilterPosts() => SetSearchFilter("posts");
     private void OnFilterPeople() => SetSearchFilter("people");
 
-    // Método para inicializar serviço de notificações
+    // Método para inicializar serviço de notificações com retry logic
     private async Task InitializeNotificationServiceAsync()
     {
         try
         {
-            if (isLocalAuthenticated)
+            if (!isLocalAuthenticated)
+                return;
+
+            const int maxRetries = 3;
+            const int delayMs = 1000;
+
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                var accessToken = await LocalAuthService.GetAccessTokenAsync();
-                if (!string.IsNullOrEmpty(accessToken))
+                try
                 {
-                    await NotificationService.StartAsync(accessToken);
-                    Console.WriteLine("[FEED] NotificationService inicializado com sucesso");
+                    var accessToken = await LocalAuthService.GetAccessTokenAsync();
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        Console.WriteLine($"[FEED] Tentativa {attempt}: Inicializando NotificationService com token disponível");
+                        await NotificationService.StartAsync(accessToken);
+                        Console.WriteLine("[FEED] NotificationService inicializado com sucesso");
+                        return; // Sucesso - sair do loop
+                    }
+                    else
+                    {
+                        Console.WriteLine($"[FEED] Tentativa {attempt}: Token ainda não disponível, aguardando...");
+                        if (attempt < maxRetries)
+                            await Task.Delay(delayMs);
+                    }
                 }
-                else
+                catch (HttpRequestException ex) when (ex.Message.Contains("401"))
                 {
-                    Console.WriteLine("[FEED] Token de acesso não encontrado para NotificationService");
+                    Console.WriteLine($"[FEED] Tentativa {attempt}: Erro 401 - Token pode estar expirado ou indisponível");
+                    if (attempt < maxRetries)
+                    {
+                        await Task.Delay(delayMs);
+                        continue;
+                    }
+                    throw;
                 }
             }
+
+            Console.WriteLine("[FEED] Token de acesso não disponível após todas as tentativas");
         }
         catch (Exception ex)
         {
@@ -733,12 +807,10 @@
         }
     }
 
-    private async Task ShowMessages()
+    private void ShowMessages()
     {
         Console.WriteLine("[MESSAGES] Abrindo mensagens");
         // TODO: Implementar painel de mensagens
-        Console.WriteLine($"[BLAZOR] [FEED] Mostrar mensagens");
-        await Task.CompletedTask;
     }
 
     private void ShowCreatePostModal()
@@ -763,7 +835,6 @@
     {
         Console.WriteLine("[BLAZOR] [FEED] Fechar modal de criação de post");
         newPostContent = string.Empty;
-        newPostTags = string.Empty;
         StateHasChanged();
     }
 
@@ -866,35 +937,6 @@
         }
     }
 
-    // Métodos de teste para TestPostCard
-    private void HandleEditPostTest(TestPostCard.PostModel post)
-    {
-        Console.WriteLine($"[FEED TEST] Editando post: {post.Id} - {post.Title}");
-    }
-
-    private async Task HandleDeletePostTest(TestPostCard.PostModel post)
-    {
-        try
-        {
-            Console.WriteLine($"[FEED TEST] Excluindo post: {post.Id} - {post.Title}");
-            
-            // Chamar serviço para excluir post
-            await PostService.DeletePostAsync(post.Id);
-            
-            // Remover da lista local
-            posts.RemoveAll(p => p.Id == post.Id);
-            
-            // Forçar re-render
-            StateHasChanged();
-            
-            Console.WriteLine($"[FEED TEST] Post {post.Id} excluído com sucesso");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[FEED TEST] Erro ao excluir post {post.Id}: {ex.Message}");
-        }
-    }
-
     private void NavigateToResult(SearchResultDto result)
     {
         // Gerar URL baseada no tipo de conteúdo
@@ -911,18 +953,9 @@
         
         Navigation.NavigateTo(url);
     }
-}
 
-private void NavigateToResult(SearchResultDto result)
+    public void Dispose()
     {
-        // Gerar URL baseada no tipo de conteúdo
-        var url = result.Type switch
-        {
-            "Employee" => $"/profile/{result.Id}",
-            "Post" => $"/post/{result.Id}",
-            "Document" => $"/document/{result.Id}",
-            "Discussion" => $"/discussion/{result.Id}",
-            "MediaAsset" => $"/media/{result.Id}",
-            "KnowledgeBase" => $"/knowledge/{result.Id}",
-            _ => $"/content/{result.Id}"
-        };
+        searchTimer?.Dispose();
+    }
+}

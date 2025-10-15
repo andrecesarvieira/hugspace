@@ -83,7 +83,7 @@ public class DocumentAccessConfiguration : IEntityTypeConfiguration<DocumentAcce
         builder.HasQueryFilter(da => !da.IsDeleted);
 
         // Configuração da tabela com constraint
-        builder.ToTable("DocumentAccesses", t => 
+        builder.ToTable("DocumentAccesses", t =>
             t.HasCheckConstraint("CK_DocumentAccesses_OneAccessType",
                 "((\"EmployeeId\" IS NOT NULL) AND (\"DepartmentId\" IS NULL) AND (\"Role\" IS NULL)) OR " +
                 "((\"EmployeeId\" IS NULL) AND (\"DepartmentId\" IS NOT NULL) AND (\"Role\" IS NULL)) OR " +

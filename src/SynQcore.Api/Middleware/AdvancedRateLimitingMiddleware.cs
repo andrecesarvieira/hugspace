@@ -6,10 +6,10 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
+using System.Globalization;
+using System.Text.Json;
 using Microsoft.Extensions.Options;
 using SynQcore.Application.Services;
-using System.Text.Json;
-using System.Globalization;
 
 namespace SynQcore.Api.Middleware;
 

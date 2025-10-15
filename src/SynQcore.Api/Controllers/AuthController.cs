@@ -1,9 +1,9 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using MediatR;
+using SynQcore.Api.Hubs;
 using SynQcore.Application.Commands.Auth;
 using SynQcore.Application.DTOs.Auth;
-using SynQcore.Api.Hubs;
 
 namespace SynQcore.Api.Controllers;
 
@@ -13,9 +13,9 @@ namespace SynQcore.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
     {
         var command = new LoginCommand(request.Email, request.Password);
-        
+
         var response = await _mediator.Send(command);
 
         if (!response.Success)
@@ -99,7 +99,8 @@ public class AuthController : ControllerBase
             // Enviar para todos os clientes conectados
             await _notificationHub.Clients.All.SendAsync("ReceberNotificacao", notification);
 
-            return Ok(new { 
+            return Ok(new
+            {
                 success = true,
                 message = "Notificação enviada com sucesso via SignalR",
                 notification = notification,
@@ -108,7 +109,8 @@ public class AuthController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest(new { 
+            return BadRequest(new
+            {
                 success = false,
                 message = $"Erro ao enviar notificação: {ex.Message}",
                 timestamp = DateTime.UtcNow

@@ -1,5 +1,5 @@
-using SynQcore.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Features.MediaAssets.DTOs;
 

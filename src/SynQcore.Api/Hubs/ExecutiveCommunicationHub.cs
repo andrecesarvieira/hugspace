@@ -1,6 +1,6 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Security.Claims;
 
 namespace SynQcore.Api.Hubs;
 
@@ -148,7 +148,7 @@ public partial class ExecutiveCommunicationHub : Hub
     public async Task JoinDepartmentCommunications(string departmentId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(departmentId))
         {
             return;
@@ -161,7 +161,7 @@ public partial class ExecutiveCommunicationHub : Hub
     public async Task LeaveDepartmentCommunications(string departmentId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(departmentId))
         {
             return;
@@ -178,7 +178,7 @@ public partial class ExecutiveCommunicationHub : Hub
         var userEmail = Context.User?.FindFirst(ClaimTypes.Email)?.Value;
         var userRole = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
 
-        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(departmentId) || 
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(departmentId) ||
             string.IsNullOrEmpty(title) || string.IsNullOrEmpty(message))
         {
             return;

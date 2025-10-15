@@ -2,8 +2,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Fluxor;
-using SynQcore.BlazorApp.Store.User;
 using SynQcore.BlazorApp.Store.UI;
+using SynQcore.BlazorApp.Store.User;
 
 namespace SynQcore.BlazorApp.Services;
 

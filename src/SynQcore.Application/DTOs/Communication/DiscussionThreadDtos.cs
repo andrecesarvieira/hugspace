@@ -9,21 +9,21 @@ public class DiscussionCommentDto
     public string AuthorName { get; set; } = string.Empty;
     public string AuthorJobTitle { get; set; } = string.Empty;
     public string? AuthorProfilePhotoUrl { get; set; }
-    
+
     // Thread hierarchy
     public Guid? ParentCommentId { get; set; }
     public int ThreadLevel { get; set; }
     public string ThreadPath { get; set; } = string.Empty;
     public int ReplyCount { get; set; }
     public List<DiscussionCommentDto> Replies { get; set; } = [];
-    
+
     // Discussion features
     public string Type { get; set; } = string.Empty;
     public bool IsResolved { get; set; }
     public string? ResolvedByName { get; set; }
     public DateTime? ResolvedAt { get; set; }
     public string? ResolutionNote { get; set; }
-    
+
     // Moderation
     public bool IsEdited { get; set; }
     public DateTime? EditedAt { get; set; }
@@ -31,22 +31,22 @@ public class DiscussionCommentDto
     public string ModerationStatus { get; set; } = string.Empty;
     public string? ModerationReason { get; set; }
     public DateTime? ModeratedAt { get; set; }
-    
+
     // Visibility and priority
     public string Visibility { get; set; } = string.Empty;
     public bool IsConfidential { get; set; }
     public bool IsHighlighted { get; set; }
     public string Priority { get; set; } = string.Empty;
-    
+
     // Engagement metrics
     public int LikeCount { get; set; }
     public int EndorsementCount { get; set; }
     public bool IsLikedByCurrentUser { get; set; }
     public DateTime LastActivityAt { get; set; }
-    
+
     // Mentions
     public List<CommentMentionDto> Mentions { get; set; } = [];
-    
+
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

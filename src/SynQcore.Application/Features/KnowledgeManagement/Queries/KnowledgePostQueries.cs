@@ -1,11 +1,11 @@
-using MediatR;
-using SynQcore.Application.Features.KnowledgeManagement.DTOs;
-using SynQcore.Application.Common.Exceptions;
-using SynQcore.Application.Common.Interfaces;
-using SynQcore.Application.Common.DTOs;
-using SynQcore.Application.Common.Extensions;
-using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Common.Exceptions;
+using SynQcore.Application.Common.Extensions;
+using SynQcore.Application.Common.Interfaces;
+using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Queries;
 
@@ -41,7 +41,7 @@ public class GetKnowledgePostsQueryHandler : IRequestHandler<GetKnowledgePostsQu
         if (!string.IsNullOrEmpty(searchRequest.SearchTerm))
         {
             var searchTerm = searchRequest.SearchTerm.ToLower(CultureInfo.InvariantCulture);
-            query = query.Where(p => 
+            query = query.Where(p =>
                 p.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 p.Content.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                 (p.Summary != null && p.Summary.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));

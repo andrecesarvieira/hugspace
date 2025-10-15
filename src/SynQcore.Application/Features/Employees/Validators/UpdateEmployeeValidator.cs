@@ -1,5 +1,5 @@
-using MediatR;
 using FluentValidation;
+using MediatR;
 using SynQcore.Application.Features.Employees.Commands;
 
 namespace SynQcore.Application.Features.Employees.Validators;

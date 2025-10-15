@@ -1,11 +1,11 @@
-using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Features.Collaboration.Queries;
-using SynQcore.Application.Common.DTOs;
 
 namespace SynQcore.Application.Features.Collaboration.Handlers;
 
@@ -95,14 +95,14 @@ public partial class GetEndorsementsQueryHandler : IRequestHandler<GetEndorsemen
             var sortBy = search.SortBy ?? "EndorsedAt";
             query = sortBy.ToLowerInvariant() switch
             {
-                "endorsedat" => search.SortDescending 
-                    ? query.OrderByDescending(e => e.EndorsedAt) 
+                "endorsedat" => search.SortDescending
+                    ? query.OrderByDescending(e => e.EndorsedAt)
                     : query.OrderBy(e => e.EndorsedAt),
-                "type" => search.SortDescending 
-                    ? query.OrderByDescending(e => e.Type) 
+                "type" => search.SortDescending
+                    ? query.OrderByDescending(e => e.Type)
                     : query.OrderBy(e => e.Type),
-                "endorser" => search.SortDescending 
-                    ? query.OrderByDescending(e => e.Endorser.FullName) 
+                "endorser" => search.SortDescending
+                    ? query.OrderByDescending(e => e.Endorser.FullName)
                     : query.OrderBy(e => e.Endorser.FullName),
                 _ => query.OrderByDescending(e => e.EndorsedAt)
             };

@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Interfaces;
-using SynQcore.Application.Features.Departments.DTOs;
 using SynQcore.Application.Features.Departments.Commands;
+using SynQcore.Application.Features.Departments.DTOs;
 
 namespace SynQcore.Application.Features.Departments.Handlers;
 

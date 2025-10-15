@@ -1,9 +1,9 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
 using SynQcore.Application.Commands.Communication.DiscussionThreads;
-using SynQcore.Application.Queries.Communication.DiscussionThreads;
 using SynQcore.Application.DTOs.Communication;
+using SynQcore.Application.Queries.Communication.DiscussionThreads;
 
 namespace SynQcore.Api.Controllers;
 
@@ -40,7 +40,7 @@ public partial class DiscussionThreadsController : ControllerBase
         try
         {
             var result = await _mediator.Send(request);
-            
+
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message, errors = result.ValidationErrors });
@@ -66,7 +66,7 @@ public partial class DiscussionThreadsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CommentOperationResponse>> UpdateComment(
-        Guid commentId, 
+        Guid commentId,
         [FromBody] UpdateDiscussionCommentDto dto)
     {
         try
@@ -81,7 +81,7 @@ public partial class DiscussionThreadsController : ControllerBase
             );
 
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message, errors = result.ValidationErrors });
@@ -111,7 +111,7 @@ public partial class DiscussionThreadsController : ControllerBase
         {
             var command = new DeleteDiscussionCommentCommand(commentId);
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -145,7 +145,7 @@ public partial class DiscussionThreadsController : ControllerBase
         {
             var query = new GetDiscussionCommentQuery(commentId, includeReplies, maxReplyDepth);
             var result = await _mediator.Send(query);
-            
+
             if (result == null)
             {
                 return NotFound(new { message = "Comentário não encontrado" });
@@ -170,14 +170,14 @@ public partial class DiscussionThreadsController : ControllerBase
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CommentOperationResponse>> ResolveComment(
-        Guid commentId, 
+        Guid commentId,
         [FromBody] ResolveCommentDto dto)
     {
         try
         {
             var command = new ResolveDiscussionCommentCommand(commentId, dto.ResolutionNote);
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -203,14 +203,14 @@ public partial class DiscussionThreadsController : ControllerBase
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CommentOperationResponse>> ModerateComment(
-        Guid commentId, 
+        Guid commentId,
         [FromBody] ModerateCommentDto dto)
     {
         try
         {
             var command = new ModerateDiscussionCommentCommand(commentId, dto.ModerationStatus, dto.ModerationReason);
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -235,14 +235,14 @@ public partial class DiscussionThreadsController : ControllerBase
     [ProducesResponseType(typeof(CommentOperationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CommentOperationResponse>> HighlightComment(
-        Guid commentId, 
+        Guid commentId,
         [FromQuery] bool highlight = true)
     {
         try
         {
             var command = new HighlightDiscussionCommentCommand(commentId, highlight);
             var result = await _mediator.Send(command);
-            
+
             if (!result.Success)
             {
                 return BadRequest(new { message = result.Message });
@@ -278,7 +278,7 @@ public partial class DiscussionThreadsController : ControllerBase
         {
             var query = new GetDiscussionThreadQuery(postId, includeModerated, filterByType, orderBy);
             var result = await _mediator.Send(query);
-            
+
             return Ok(result);
         }
         catch (Exception ex)
@@ -315,9 +315,9 @@ public partial class DiscussionThreadsController : ControllerBase
         try
         {
             var query = new SearchDiscussionCommentsQuery(
-                searchTerm, postId, commentType, moderationStatus, 
+                searchTerm, postId, commentType, moderationStatus,
                 fromDate, toDate, page, pageSize);
-                
+
             var result = await _mediator.Send(query);
             return Ok(result);
         }
@@ -375,7 +375,7 @@ public partial class DiscussionThreadsController : ControllerBase
         try
         {
             var targetEmployeeId = employeeId ?? Guid.Empty;
-            
+
             var query = new GetUserMentionsQuery(targetEmployeeId, onlyUnread, page, pageSize);
             var result = await _mediator.Send(query);
             return Ok(result);

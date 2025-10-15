@@ -1,10 +1,10 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Application.Queries.Communication.DiscussionThreads;
-using SynQcore.Application.Common.Extensions;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -16,7 +16,7 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
 
     public GetDiscussionThreadQueryHandler(
         ISynQcoreDbContext context,
-        
+
         ICurrentUserService currentUserService,
         ILogger<GetDiscussionThreadQueryHandler> logger)
     {
@@ -99,7 +99,7 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
             var commentDtos = comments.Select(c => MapToDiscussionCommentDto(c, currentUserId)).ToList();
 
             // Organiza hierarquia se ordenação por thread
-            if (!string.Equals(request.OrderBy, "priority", StringComparison.OrdinalIgnoreCase) && 
+            if (!string.Equals(request.OrderBy, "priority", StringComparison.OrdinalIgnoreCase) &&
                 !string.Equals(request.OrderBy, "likes", StringComparison.OrdinalIgnoreCase))
             {
                 commentDtos = OrganizeCommentsHierarchy(commentDtos);
@@ -136,7 +136,7 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
             (c.Visibility == Domain.Entities.Communication.CommentVisibility.Internal) ||
             (c.Visibility == Domain.Entities.Communication.CommentVisibility.Private && c.AuthorId == currentUserId) ||
             (c.Visibility == Domain.Entities.Communication.CommentVisibility.Confidential && c.AuthorId == currentUserId)
-            // Aqui seria necessário verificar roles para Confidential
+        // Aqui seria necessário verificar roles para Confidential
         );
     }
 
@@ -185,7 +185,7 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
     private static List<DiscussionCommentDto> OrganizeCommentsHierarchy(List<DiscussionCommentDto> comments)
     {
         var rootComments = comments.Where(c => !c.ParentCommentId.HasValue).ToList();
-        
+
         foreach (var rootComment in rootComments)
         {
             PopulateReplies(rootComment, comments);
@@ -213,10 +213,10 @@ public partial class GetDiscussionThreadQueryHandler : IRequestHandler<GetDiscus
         List<Domain.Entities.Communication.Comment> comments)
     {
         var totalComments = comments.Count;
-        
-        var unresolvedQuestions = comments.Count(c => 
-            (c.Type == Domain.Entities.Communication.CommentType.Question || 
-             c.Type == Domain.Entities.Communication.CommentType.Concern) && 
+
+        var unresolvedQuestions = comments.Count(c =>
+            (c.Type == Domain.Entities.Communication.CommentType.Question ||
+             c.Type == Domain.Entities.Communication.CommentType.Concern) &&
             !c.IsResolved);
 
         var flaggedComments = comments.Count(c => c.IsFlagged);

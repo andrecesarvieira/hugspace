@@ -1,14 +1,14 @@
 using System.Linq.Expressions;
-using SynQcore.Domain.Common;
-using Microsoft.EntityFrameworkCore;
-using SynQcore.Domain.Entities.Organization;
-using SynQcore.Domain.Entities.Communication;
-using SynQcore.Domain.Entities.Relationships;
-using SynQcore.Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using SynQcore.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SynQcore.Application.Common.Interfaces;
+using SynQcore.Domain.Common;
+using SynQcore.Domain.Entities;
+using SynQcore.Domain.Entities.Communication;
+using SynQcore.Domain.Entities.Organization;
+using SynQcore.Domain.Entities.Relationships;
+using SynQcore.Infrastructure.Identity;
 
 namespace SynQcore.Infrastructure.Data;
 

@@ -6,12 +6,12 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
+using System.Collections.Concurrent;
+using System.Net;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SynQcore.Application.Services;
-using System.Collections.Concurrent;
-using System.Net;
 
 namespace SynQcore.Infrastructure.Services;
 

@@ -1,6 +1,6 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Security.Claims;
 
 namespace SynQcore.Api.Hubs;
 
@@ -122,7 +122,7 @@ public partial class CorporateNotificationHub : Hub
     {
         var userId = GetUserId();
         var userEmail = Context.User?.FindFirst(ClaimTypes.Email)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(topic)) return;
 
         try

@@ -15,78 +15,76 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Microsoft.AspNetCore.Identity;
+using AspNetCoreRateLimit;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
-using SynQcore.Infrastructure.Data;
 using SynQcore.Api.Middleware;
-using AspNetCoreRateLimit;
-using SynQcore.Infrastructure.Services.Auth;
-using SynQcore.Application.Services;
-using SynQcore.Infrastructure.Services;
-using SynQcore.Common;
-using SynQcore.Infrastructure.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using SynQcore.Application.Commands.Auth;
-using MediatR;
-using SynQcore.Application.Features.Privacy.DTOs;
-using SynQcore.Application.Features.Privacy.Queries;
-using SynQcore.Application.Features.Privacy.Commands;
-using SynQcore.Application.Features.Privacy.Handlers;
-using FluentValidation;
 using SynQcore.Application.Behaviors;
+using SynQcore.Application.Commands.Auth;
+using SynQcore.Application.Commands.Communication.DiscussionThreads;
 using SynQcore.Application.Common.DTOs;
-using SynQcore.Application.Features.MediaAssets.Queries;
-using SynQcore.Application.Features.MediaAssets.Commands;
-using SynQcore.Application.Features.MediaAssets.DTOs;
-using SynQcore.Application.Features.MediaAssets.Handlers;
-using SynQcore.Application.Features.DocumentTemplates.Queries;
+using SynQcore.Application.DTOs;
+using SynQcore.Application.DTOs.Communication;
+using SynQcore.Application.Features.Collaboration.Commands;
+using SynQcore.Application.Features.Collaboration.DTOs;
+using SynQcore.Application.Features.Collaboration.Handlers;
+using SynQcore.Application.Features.Collaboration.Queries;
+using SynQcore.Application.Features.CorporateDocuments.Commands;
+using SynQcore.Application.Features.CorporateDocuments.DTOs;
+using SynQcore.Application.Features.CorporateDocuments.Handlers;
+using SynQcore.Application.Features.CorporateDocuments.Queries;
+using SynQcore.Application.Features.CorporateSearch.DTOs;
+using SynQcore.Application.Features.CorporateSearch.Handlers;
+using SynQcore.Application.Features.CorporateSearch.Queries;
+using SynQcore.Application.Features.Departments.Commands;
+// DEPARTMENTS IMPORTS
+using SynQcore.Application.Features.Departments.DTOs;
+using SynQcore.Application.Features.Departments.Handlers;
+using SynQcore.Application.Features.Departments.Queries;
 using SynQcore.Application.Features.DocumentTemplates.Commands;
 using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.Features.DocumentTemplates.Handlers;
-using SynQcore.Application.Features.CorporateSearch.DTOs;
-using SynQcore.Application.Features.CorporateSearch.Queries;
-using SynQcore.Application.Features.CorporateSearch.Handlers;
-using SynQcore.Application.Features.Moderation.DTOs;
-using SynQcore.Application.Features.Moderation.Queries;
-using SynQcore.Application.Features.Moderation.Commands;
-using SynQcore.Application.Features.Moderation.Handlers;
-using SynQcore.Application.Features.Collaboration.DTOs;
-using SynQcore.Application.Features.Collaboration.Queries;
-using SynQcore.Application.Features.Collaboration.Commands;
-using SynQcore.Application.Features.Collaboration.Handlers;
-using SynQcore.Application.Features.Feed.Queries;
-using SynQcore.Application.Features.Feed.Commands;
-using SynQcore.Application.Features.Feed.Handlers;
-using SynQcore.Application.Features.Feed.DTOs;
-using SynQcore.Application.DTOs;
-using SynQcore.Application.Features.CorporateDocuments.DTOs;
-using SynQcore.Application.Features.CorporateDocuments.Queries;
-using SynQcore.Application.Features.CorporateDocuments.Commands;
-using SynQcore.Application.Features.CorporateDocuments.Handlers;
-using SynQcore.Application.Features.Employees.DTOs;
-using SynQcore.Application.Features.Employees.Queries;
+using SynQcore.Application.Features.DocumentTemplates.Queries;
 using SynQcore.Application.Features.Employees.Commands;
+using SynQcore.Application.Features.Employees.DTOs;
 using SynQcore.Application.Features.Employees.Handlers;
-using SynQcore.Application.Commands.Communication.DiscussionThreads;
-using SynQcore.Application.Queries.Communication.DiscussionThreads;
-using SynQcore.Application.DTOs.Communication;
-using SynQcore.Application.Handlers.Communication.DiscussionThreads;
-
+using SynQcore.Application.Features.Employees.Queries;
+using SynQcore.Application.Features.Feed.Commands;
+using SynQcore.Application.Features.Feed.DTOs;
+using SynQcore.Application.Features.Feed.Handlers;
+using SynQcore.Application.Features.Feed.Queries;
+using SynQcore.Application.Features.KnowledgeManagement.Commands;
 // KNOWLEDGE MANAGEMENT IMPORTS
 using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 using SynQcore.Application.Features.KnowledgeManagement.Queries;
-using SynQcore.Application.Features.KnowledgeManagement.Commands;
-
-// DEPARTMENTS IMPORTS
-using SynQcore.Application.Features.Departments.DTOs;
-using SynQcore.Application.Features.Departments.Queries;
-using SynQcore.Application.Features.Departments.Commands;
-using SynQcore.Application.Features.Departments.Handlers;
+using SynQcore.Application.Features.MediaAssets.Commands;
+using SynQcore.Application.Features.MediaAssets.DTOs;
+using SynQcore.Application.Features.MediaAssets.Handlers;
+using SynQcore.Application.Features.MediaAssets.Queries;
+using SynQcore.Application.Features.Moderation.Commands;
+using SynQcore.Application.Features.Moderation.DTOs;
+using SynQcore.Application.Features.Moderation.Handlers;
+using SynQcore.Application.Features.Moderation.Queries;
+using SynQcore.Application.Features.Privacy.Commands;
+using SynQcore.Application.Features.Privacy.DTOs;
+using SynQcore.Application.Features.Privacy.Handlers;
+using SynQcore.Application.Features.Privacy.Queries;
+using SynQcore.Application.Handlers.Communication.DiscussionThreads;
+using SynQcore.Application.Queries.Communication.DiscussionThreads;
+using SynQcore.Application.Services;
+using SynQcore.Common;
+using SynQcore.Infrastructure.Data;
+using SynQcore.Infrastructure.Identity;
+using SynQcore.Infrastructure.Services;
+using SynQcore.Infrastructure.Services.Auth;
 
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
@@ -135,6 +133,14 @@ builder.Services.AddScoped<SynQcore.Application.Services.IAuditService, SynQcore
 
 // Feed Post Cache Service (Fase 8 - Performance & Cache)
 builder.Services.AddScoped<SynQcore.Application.Common.Interfaces.IFeedPostCacheService, SynQcore.Infrastructure.Services.FeedPostCacheService>();
+
+// === EMPLOYEE SYNC SERVICE ===
+builder.Services.AddScoped<SynQcore.Application.Services.IEmployeeSyncService, SynQcore.Infrastructure.Services.EmployeeSyncService>();
+
+// Event Handlers
+builder.Services.AddScoped<SynQcore.Infrastructure.EventHandlers.UserRegistrationService>();
+
+// === MIDDLEWARE DE SEGURANÇA (HABILITADO POR ENQUANTO) ===
 
 // Use Serilog as the logging provider
 builder.Host.UseSerilog();
@@ -620,6 +626,10 @@ app.UseCors("CorporatePolicy");
 
 // Add authentication & authorization middleware
 app.UseAuthentication();
+
+// Employee sync middleware - garantir sincronização AspNetUsers <-> Employees
+app.UseMiddleware<EmployeeSyncMiddleware>();
+
 app.UseAuthorization();
 
 // Map SignalR Hubs

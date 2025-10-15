@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using SynQcore.Domain.Entities.Organization;
-using SynQcore.Domain.Entities.Communication;
-using SynQcore.Domain.Entities.Relationships;
 using SynQcore.Domain.Entities;
+using SynQcore.Domain.Entities.Communication;
+using SynQcore.Domain.Entities.Organization;
+using SynQcore.Domain.Entities.Relationships;
 
 namespace SynQcore.Application.Common.Interfaces;
 

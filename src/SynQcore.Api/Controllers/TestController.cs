@@ -5,8 +5,8 @@
  * Licensed under the MIT License
  */
 
-using Microsoft.AspNetCore.Mvc;
 using Asp.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using SynQcore.Common;
 
 namespace SynQcore.Api.Controllers;

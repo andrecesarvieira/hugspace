@@ -1,16 +1,16 @@
-using SynQcore.Application.Features.Employees.DTOs;
-using SynQcore.Application.Features.Collaboration.DTOs;
-using SynQcore.Application.Features.KnowledgeManagement.DTOs;
-using SynQcore.Application.Features.CorporateDocuments.DTOs;
-using SynQcore.Application.Features.MediaAssets.DTOs;
-using SynQcore.Application.Features.DocumentTemplates.DTOs;
-using SynQcore.Application.DTOs.Communication;
-using SynQcore.Application.DTOs;
+using Microsoft.EntityFrameworkCore;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.DTOs;
+using SynQcore.Application.DTOs.Communication;
+using SynQcore.Application.Features.Collaboration.DTOs;
+using SynQcore.Application.Features.CorporateDocuments.DTOs;
+using SynQcore.Application.Features.DocumentTemplates.DTOs;
+using SynQcore.Application.Features.Employees.DTOs;
+using SynQcore.Application.Features.KnowledgeManagement.DTOs;
+using SynQcore.Application.Features.MediaAssets.DTOs;
+using SynQcore.Domain.Entities;
 using SynQcore.Domain.Entities.Communication;
 using SynQcore.Domain.Entities.Organization;
-using SynQcore.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace SynQcore.Application.Common.Extensions;
 

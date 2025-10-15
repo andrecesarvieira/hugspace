@@ -1,6 +1,6 @@
 using MediatR;
-using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Domain.Entities;
 
 namespace SynQcore.Application.Features.CorporateSearch.Commands;

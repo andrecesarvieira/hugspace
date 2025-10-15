@@ -1,9 +1,9 @@
 using MediatR;
-using SynQcore.Application.Features.KnowledgeManagement.DTOs;
-using SynQcore.Application.Common.Exceptions;
-using SynQcore.Application.Common.Interfaces;
-using SynQcore.Application.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
+using SynQcore.Application.Common.Exceptions;
+using SynQcore.Application.Common.Extensions;
+using SynQcore.Application.Common.Interfaces;
+using SynQcore.Application.Features.KnowledgeManagement.DTOs;
 
 namespace SynQcore.Application.Features.KnowledgeManagement.Queries;
 

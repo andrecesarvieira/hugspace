@@ -6,8 +6,8 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
-using SynQcore.Domain.Common;
 using System.ComponentModel.DataAnnotations;
+using SynQcore.Domain.Common;
 using SynQcore.Domain.Entities.Organization;
 
 namespace SynQcore.Domain.Entities;

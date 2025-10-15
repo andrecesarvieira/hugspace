@@ -1,9 +1,9 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using SynQcore.Application.Queries.Communication.DiscussionThreads;
 using SynQcore.Application.DTOs.Communication;
 using SynQcore.Application.Handlers.Communication.DiscussionThreads;
+using SynQcore.Application.Queries.Communication.DiscussionThreads;
 
 namespace SynQcore.Api.Controllers;
 
@@ -237,12 +237,12 @@ public partial class DiscussionAnalyticsController : ControllerBase
                 ReportPeriod = new { FromDate = fromDate, ToDate = toDate },
                 DepartmentId = departmentId,
                 GeneratedAt = DateTime.UtcNow,
-                
+
                 TotalDiscussions = discussionAnalytics.TotalThreads,
                 TotalComments = discussionAnalytics.TotalComments,
                 UniqueParticipants = engagementStats.UniqueParticipants,
                 EngagementScore = engagementStats.TimeSeries.LastOrDefault()?.EngagementScore ?? 0,
-                
+
                 ModerationHealth = new ModerationHealthDto
                 {
                     TotalModerated = moderationMetrics.TotalCommentsModerated,
@@ -250,10 +250,10 @@ public partial class DiscussionAnalyticsController : ControllerBase
                     ApprovalRate = moderationMetrics.ApprovalRate,
                     PendingCount = discussionAnalytics.PendingModeration
                 },
-                
+
                 TopContributors = discussionAnalytics.TopContributors.Take(5).ToList(),
                 MostActiveThreads = discussionAnalytics.MostActiveThreads.Take(5).ToList(),
-                
+
                 EngagementTrend = engagementStats.TimeSeries,
                 ModerationTrends = moderationMetrics.Trends
             };
@@ -292,7 +292,7 @@ public partial class DiscussionAnalyticsController : ControllerBase
             var fileName = $"discussion_analytics_{reportType}_{fromDate:yyyyMMdd}_{toDate:yyyyMMdd}.csv";
             var csvContent = "Implementação de export CSV seria feita aqui";
             var bytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
-            
+
             return Task.FromResult<IActionResult>(File(bytes, "text/csv", fileName));
         }
         catch (Exception ex)
@@ -344,9 +344,9 @@ public partial class DiscussionAnalyticsController : ControllerBase
 }
 
 // DTO para relatório executivo consolidado
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class ExecutiveDiscussionReportDto
 {
     /// <summary>Propriedade do sistema</summary>
@@ -361,7 +361,7 @@ public class ExecutiveDiscussionReportDto
     /// </summary>
     /// <summary>Propriedade do sistema</summary>
     public DateTime GeneratedAt { get; set; }
-    
+
     /// <summary>
     /// Propriedade da requisição
     /// </summary>
@@ -382,15 +382,15 @@ public class ExecutiveDiscussionReportDto
     /// </summary>
     /// <summary>Propriedade do sistema</summary>
     public double EngagementScore { get; set; }
-    
+
     /// <summary>Propriedade do sistema</summary>
     public ModerationHealthDto ModerationHealth { get; set; } = new();
-    
+
     /// <summary>Propriedade do sistema</summary>
     public List<TopContributor> TopContributors { get; set; } = [];
     /// <summary>Propriedade do sistema</summary>
     public List<ActiveThread> MostActiveThreads { get; set; } = [];
-    
+
     /// <summary>Propriedade do sistema</summary>
     public List<EngagementDataPoint> EngagementTrend { get; set; } = [];
     /// <summary>Propriedade do sistema</summary>
@@ -398,9 +398,9 @@ public class ExecutiveDiscussionReportDto
 }
 
 // DTO para saúde da moderação
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class ModerationHealthDto
 {
     /// <summary>

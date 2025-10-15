@@ -44,7 +44,7 @@ public partial class AdminBootstrapService
 
         // Verificar se o usuário já existe (caso tenha sido criado sem role)
         var existingUser = await _userManager.FindByEmailAsync(adminEmail);
-        
+
         if (existingUser == null)
         {
             // Criar novo usuário administrador
@@ -56,7 +56,7 @@ public partial class AdminBootstrapService
             };
 
             var createResult = await _userManager.CreateAsync(adminUser, adminPassword);
-            
+
             if (!createResult.Succeeded)
             {
                 var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
@@ -84,7 +84,7 @@ public partial class AdminBootstrapService
         if (!await _userManager.IsInRoleAsync(existingUser, "Admin"))
         {
             var roleResult = await _userManager.AddToRoleAsync(existingUser, "Admin");
-            
+
             if (roleResult.Succeeded)
             {
                 LogAdminBootstrapCompleted(_logger, adminEmail, null);

@@ -1,7 +1,7 @@
-using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Collaboration.Commands;
 using SynQcore.Application.Features.Collaboration.DTOs;
@@ -41,7 +41,7 @@ public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEnd
     private static partial void LogEndorsementCreationError(ILogger logger, Guid userId, Exception ex);
 
     public CreateEndorsementCommandHandler(
-        ISynQcoreDbContext context, 
+        ISynQcoreDbContext context,
         ILogger<CreateEndorsementCommandHandler> logger)
     {
         _context = context;
@@ -98,7 +98,7 @@ public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEnd
 
             // Verificar se já existe endorsement do mesmo tipo pelo mesmo usuário
             var existingEndorsement = await _context.Endorsements
-                .Where(e => e.EndorserId == request.EndorserId && 
+                .Where(e => e.EndorserId == request.EndorserId &&
                            e.Type == data.Type &&
                            ((data.PostId.HasValue && e.PostId == data.PostId) ||
                             (data.CommentId.HasValue && e.CommentId == data.CommentId)))
@@ -137,7 +137,7 @@ public partial class CreateEndorsementCommandHandler : IRequestHandler<CreateEnd
 
             // Mapear para DTO com informações de display
             var result = createdEndorsement.ToEndorsementDto();
-            
+
             // Adicionar informações de display do tipo
             var typeInfo = EndorsementTypeHelper.GetTypeInfo(result.Type);
             result.TypeDisplayName = typeInfo.DisplayName;

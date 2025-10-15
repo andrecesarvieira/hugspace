@@ -177,11 +177,12 @@ html {
   --form-input-radius: var(--synq-radius);
 }
 
-/* === MODO ESCURO (DESABILITADO) === */
-/* Mantemos as variáveis para futuro, mas forçamos light mode */
-:root[data-theme="dark"] {
+/* === FORÇA MODO CLARO === */
+/* Sistema configurado para usar APENAS modo claro */
+:root,
+:root[data-theme="dark"],
+:root[data-theme="light"] {
   color-scheme: light only;
-  /* Todas as cores permanecem do tema claro */
 }
 
 @media (prefers-color-scheme: dark) {

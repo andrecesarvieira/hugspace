@@ -1,10 +1,10 @@
-using Xunit;
-using Moq;
+using MediatR;
 using Microsoft.Extensions.Logging;
+using Moq;
 using SynQcore.Application.Features.Feed.Commands;
 using SynQcore.Application.Features.Feed.DTOs;
 using SynQcore.Application.Features.Feed.Validators;
-using MediatR;
+using Xunit;
 
 namespace SynQcore.UnitTests.Application.Features.Feed.Handlers;
 
@@ -209,9 +209,9 @@ public class UpdateFeedPostRequestValidatorTests
     public void DeveValidarTagsValidas()
     {
         // Arrange
-        var request = new UpdateFeedPostRequest 
-        { 
-            Tags = new[] { "tecnologia", "desenvolvimento" } 
+        var request = new UpdateFeedPostRequest
+        {
+            Tags = new[] { "tecnologia", "desenvolvimento" }
         };
 
         // Act
@@ -225,9 +225,9 @@ public class UpdateFeedPostRequestValidatorTests
     public void DeveRejeitarTagsInvalidas()
     {
         // Arrange
-        var request = new UpdateFeedPostRequest 
-        { 
-            Tags = new[] { "tag com espaço", "a", "" } 
+        var request = new UpdateFeedPostRequest
+        {
+            Tags = new[] { "tag com espaço", "a", "" }
         };
 
         // Act
@@ -286,7 +286,7 @@ public class UpdateFeedPostRequestValidatorTests
 
         // Assert
         Assert.True(result.IsValid);
-        Assert.True(stopwatch.ElapsedMilliseconds < 100, 
+        Assert.True(stopwatch.ElapsedMilliseconds < 100,
             $"Validação levou {stopwatch.ElapsedMilliseconds}ms, esperado < 100ms");
     }
 }

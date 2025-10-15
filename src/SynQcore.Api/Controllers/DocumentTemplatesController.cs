@@ -1,11 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using SynQcore.Application.Features.DocumentTemplates.Commands;
-using SynQcore.Application.Features.DocumentTemplates.Queries;
-using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.Common.DTOs;
-using System.ComponentModel.DataAnnotations;
+using SynQcore.Application.Features.DocumentTemplates.Commands;
+using SynQcore.Application.Features.DocumentTemplates.DTOs;
+using SynQcore.Application.Features.DocumentTemplates.Queries;
 
 namespace SynQcore.Api.Controllers;
 
@@ -17,9 +17,9 @@ namespace SynQcore.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize]
 [Produces("application/json")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class DocumentTemplatesController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -9,26 +9,26 @@ public class NotificationConfiguration : IEntityTypeConfiguration<Notification>
     public void Configure(EntityTypeBuilder<Notification> builder)
     {
         builder.ToTable("Notifications");
-        
+
         // Chave primária
         builder.HasKey(n => n.Id);
-        
+
         // Propriedades obrigatórias
         builder.Property(n => n.Title)
             .IsRequired()
             .HasMaxLength(200);
-            
+
         builder.Property(n => n.Message)
             .IsRequired()
             .HasMaxLength(1000);
-            
+
         builder.Property(n => n.ActionUrl)
             .HasMaxLength(500);
 
         // Enums
         builder.Property(n => n.Type)
             .HasConversion<int>();
-            
+
         builder.Property(n => n.Priority)
             .HasConversion<int>();
 

@@ -1,12 +1,12 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using MediatR;
-using SynQcore.Application.DTOs.Auth;
-using SynQcore.Application.DTOs.Admin;
-using SynQcore.Application.Commands.Admin;
-using SynQcore.Application.Queries.Admin;
 using SynQcore.Api.Hubs;
+using SynQcore.Application.Commands.Admin;
+using SynQcore.Application.DTOs.Admin;
+using SynQcore.Application.DTOs.Auth;
+using SynQcore.Application.Queries.Admin;
 
 namespace SynQcore.Api.Controllers;
 
@@ -17,9 +17,9 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize(Roles = "Admin")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class AdminController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -79,8 +79,8 @@ public class AdminController : ControllerBase
             return BadRequest(new { message = response.Message });
 
         return CreatedAtAction(
-            nameof(GetUsers), 
-            new { searchTerm = response.Email }, 
+            nameof(GetUsers),
+            new { searchTerm = response.Email },
             response);
     }
 
@@ -129,7 +129,8 @@ public class AdminController : ControllerBase
             // Enviar para todos os usuários conectados
             await _notificationHub.Clients.All.SendAsync("ReceberNotificacao", notification);
 
-            return Ok(new { 
+            return Ok(new
+            {
                 message = "Notificação enviada com sucesso",
                 notification = notification
             });

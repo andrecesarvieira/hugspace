@@ -14,12 +14,16 @@ public static class UserReducers
     public static UserState ReduceStartLoginAction(UserState state, UserActions.StartLoginAction action)
     {
         Console.WriteLine($"[UserReducer] TESTE: Processando StartLoginAction para: {action.Email}");
+        Console.WriteLine($"[UserReducer] TESTE: Estado atual - IsAuthenticated: {state.IsAuthenticated}");
 
-        return state with
+        var newState = state with
         {
             Status = LoginStatus.LoggingIn,
             LastAuthError = null
         };
+
+        Console.WriteLine($"[UserReducer] TESTE: Estado após StartLogin - Status: {newState.Status}");
+        return newState;
     }
 
     /// <summary>
@@ -28,7 +32,9 @@ public static class UserReducers
     [ReducerMethod]
     public static UserState ReduceLoginSuccessAction(UserState state, UserActions.LoginSuccessAction action)
     {
-        Console.WriteLine($"[UserReducer] Processando LoginSuccessAction para: {action.User.Nome}");
+        Console.WriteLine($"[UserReducer] ENTRADA: LoginSuccessAction - Estado atual IsAuthenticated: {state.IsAuthenticated}");
+        Console.WriteLine($"[UserReducer] ENTRADA: LoginSuccessAction - Usuario: {action.User.Nome}");
+        Console.WriteLine($"[UserReducer] ENTRADA: LoginSuccessAction - Token existe: {!string.IsNullOrEmpty(action.AccessToken)}");
 
         var newState = state with
         {
@@ -44,7 +50,11 @@ public static class UserReducers
             Permissions = action.User.Roles
         };
 
-        Console.WriteLine($"[UserReducer] Estado atualizado - IsAuthenticated: {newState.IsAuthenticated}");
+        Console.WriteLine($"[UserReducer] SAÍDA: Estado criado - IsAuthenticated: {newState.IsAuthenticated}");
+        Console.WriteLine($"[UserReducer] SAÍDA: CurrentUser: {newState.CurrentUser?.Nome}");
+        Console.WriteLine($"[UserReducer] SAÍDA: Status: {newState.Status}");
+        Console.WriteLine($"[UserReducer] SAÍDA: Token definido: {!string.IsNullOrEmpty(newState.AccessToken)}");
+
         return newState;
     }
 

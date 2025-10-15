@@ -1,6 +1,6 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Security.Claims;
 
 namespace SynQcore.Api.Hubs;
 
@@ -66,7 +66,7 @@ public partial class CorporateCollaborationHub : Hub
     public async Task JoinTeamChannel(string teamId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(teamId))
         {
             return;
@@ -87,7 +87,7 @@ public partial class CorporateCollaborationHub : Hub
     public async Task LeaveTeamChannel(string teamId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(teamId))
         {
             return;
@@ -108,7 +108,7 @@ public partial class CorporateCollaborationHub : Hub
     public async Task JoinProjectChannel(string projectId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
         {
             return;
@@ -129,7 +129,7 @@ public partial class CorporateCollaborationHub : Hub
     public async Task LeaveProjectChannel(string projectId)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
         {
             return;
@@ -151,7 +151,7 @@ public partial class CorporateCollaborationHub : Hub
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var userEmail = Context.User?.FindFirst(ClaimTypes.Email)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(teamId) || string.IsNullOrEmpty(message))
         {
             return;
@@ -174,7 +174,7 @@ public partial class CorporateCollaborationHub : Hub
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var userEmail = Context.User?.FindFirst(ClaimTypes.Email)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(message))
         {
             return;
@@ -196,7 +196,7 @@ public partial class CorporateCollaborationHub : Hub
     public async Task UpdatePresenceStatus(string status)
     {
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(status))
         {
             return;

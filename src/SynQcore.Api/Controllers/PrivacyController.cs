@@ -1,10 +1,10 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
-using SynQcore.Application.Features.Privacy.Queries;
+using SynQcore.Application.Common.DTOs;
 using SynQcore.Application.Features.Privacy.Commands;
 using SynQcore.Application.Features.Privacy.DTOs;
-using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Privacy.Queries;
 
 namespace SynQcore.Api.Controllers;
 

@@ -10,7 +10,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
         builder.ToTable("Comments", "Communication");
-        
+
         // Configuração da chave primária
         builder.HasKey(c => c.Id);
 
@@ -82,7 +82,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 
         // Índice composto para queries de threads
         builder.HasIndex(c => new { c.PostId, c.ParentCommentId, c.CreatedAt });
-        
+
         // Soft delete
         builder.HasQueryFilter(c => !c.IsDeleted);
     }

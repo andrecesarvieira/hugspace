@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
-using SynQcore.Application.Features.Departments.DTOs;
-using SynQcore.Application.Common.DTOs;
 using System.Text.Json;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Departments.DTOs;
 
 namespace SynQcore.BlazorApp.Services;
 

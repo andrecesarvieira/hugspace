@@ -1,12 +1,12 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.MediaAssets.DTOs;
 using SynQcore.Application.Features.MediaAssets.Queries;
-using SynQcore.Application.Common.Extensions;
-using System.Globalization;
 
 namespace SynQcore.Application.Features.MediaAssets.Handlers;
 
@@ -74,7 +74,7 @@ public class GetMediaAssetsQueryHandler : IRequestHandler<GetMediaAssetsQuery, P
             if (request.DepartmentId.HasValue)
             {
                 // Filtrar por departamento do autor
-                query = query.Where(m => m.UploadedByEmployee != null && 
+                query = query.Where(m => m.UploadedByEmployee != null &&
                     m.UploadedByEmployee.EmployeeDepartments.Any(ed => ed.DepartmentId == request.DepartmentId));
             }
 
@@ -92,20 +92,20 @@ public class GetMediaAssetsQueryHandler : IRequestHandler<GetMediaAssetsQuery, P
             // Aplicar ordenação
             query = request.SortBy?.ToLower(CultureInfo.InvariantCulture) switch
             {
-                "name" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(m => m.Name) 
+                "name" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(m => m.Name)
                     : query.OrderByDescending(m => m.Name),
-                "type" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(m => m.Type) 
+                "type" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(m => m.Type)
                     : query.OrderByDescending(m => m.Type),
-                "size" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(m => m.FileSizeBytes) 
+                "size" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(m => m.FileSizeBytes)
                     : query.OrderByDescending(m => m.FileSizeBytes),
-                "downloads" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(m => m.DownloadCount) 
+                "downloads" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(m => m.DownloadCount)
                     : query.OrderByDescending(m => m.DownloadCount),
-                _ => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(m => m.CreatedAt) 
+                _ => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(m => m.CreatedAt)
                     : query.OrderByDescending(m => m.CreatedAt)
             };
 

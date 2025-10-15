@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SynQcore.Application.Features.KnowledgeManagement.Commands;
-using SynQcore.Application.Features.KnowledgeManagement.Queries;
 using SynQcore.Application.Features.KnowledgeManagement.DTOs;
+using SynQcore.Application.Features.KnowledgeManagement.Queries;
 
 namespace SynQcore.Api.Controllers;
 
@@ -13,9 +13,9 @@ namespace SynQcore.Api.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class KnowledgeCategoriesController : ControllerBase
 {
     private readonly IMediator _mediator;

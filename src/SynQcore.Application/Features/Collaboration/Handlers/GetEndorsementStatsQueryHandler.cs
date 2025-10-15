@@ -31,7 +31,7 @@ public partial class GetEndorsementStatsQueryHandler : IRequestHandler<GetEndors
     private static partial void LogStatsError(ILogger logger, string contentType, Guid contentId, Exception ex);
 
     public GetEndorsementStatsQueryHandler(
-        ISynQcoreDbContext context, 
+        ISynQcoreDbContext context,
         ILogger<GetEndorsementStatsQueryHandler> logger)
     {
         _context = context;

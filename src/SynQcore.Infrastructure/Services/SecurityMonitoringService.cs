@@ -6,13 +6,13 @@
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  */
 
+using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Services;
 using SynQcore.Domain.Entities;
 using SynQcore.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Concurrent;
 
 namespace SynQcore.Infrastructure.Services;
 

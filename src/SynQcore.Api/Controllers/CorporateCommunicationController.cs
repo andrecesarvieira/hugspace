@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using SynQcore.Api.Hubs;
 using SynQcore.Application.Common.Interfaces;
-using System.Security.Claims;
 
 namespace SynQcore.Api.Controllers;
 
@@ -46,7 +46,7 @@ public partial class CorporateCommunicationController : ControllerBase
     public IActionResult GetOnlineUsers()
     {
         var currentUserId = _currentUserService.UserId;
-        
+
         LogGettingOnlineUsers(_logger, currentUserId.ToString());
 
         // Em uma implementação real, isso viria de um cache Redis ou serviço de presença
@@ -202,7 +202,7 @@ public partial class CorporateCommunicationController : ControllerBase
     public IActionResult GetTeamMessageHistory(string teamId, int page = 1, int pageSize = 50)
     {
         var currentUserId = _currentUserService.UserId;
-        
+
         LogGettingTeamMessages(_logger, currentUserId.ToString(), teamId, page);
 
         // Em implementação real, buscar do banco de dados
@@ -240,7 +240,7 @@ public partial class CorporateCommunicationController : ControllerBase
     {
         var currentUserId = _currentUserService.UserId;
         var userRole = User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown";
-        
+
         LogGettingCommunicationStats(_logger, currentUserId.ToString(), userRole);
 
         // Em implementação real, calcular do banco de dados e cache
@@ -286,25 +286,25 @@ public partial class CorporateCommunicationController : ControllerBase
         /// <summary>
         /// Título da notificação
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Conteúdo da mensagem
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Prioridade da notificação (Low, Normal, High, Critical)
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Priority { get; set; } = "Normal";
 
         /// <summary>
         /// Tipo de notificação (Announcement, Policy, Emergency, Update)
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Type { get; set; } = "Announcement";
     }
 
@@ -319,7 +319,7 @@ public partial class CorporateCommunicationController : ControllerBase
         /// <summary>
         /// Conteúdo da mensagem
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Message { get; set; } = string.Empty;
     }
 
@@ -334,19 +334,19 @@ public partial class CorporateCommunicationController : ControllerBase
         /// <summary>
         /// Título do comunicado
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// Conteúdo da mensagem
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Message { get; set; } = string.Empty;
 
         /// <summary>
         /// Prioridade do comunicado (Low, Normal, High, Urgent)
         /// </summary>
-    /// <summary>Propriedade do sistema</summary>
+        /// <summary>Propriedade do sistema</summary>
         public string Priority { get; set; } = "Normal";
     }
 

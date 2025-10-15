@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Fluxor;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using SynQcore.BlazorApp.Store.User;
 using static SynQcore.BlazorApp.Store.User.UserActions;
 
@@ -28,7 +28,7 @@ public partial class CookieAuthService : ICookieAuthService
     private readonly IDispatcher _dispatcher;
     private readonly ILogger<CookieAuthService> _logger;
 
-        // LoggerMessage delegates para alta performance
+    // LoggerMessage delegates para alta performance
     [LoggerMessage(LogLevel.Information, "Iniciando processo de login para {Email}")]
     private static partial void LogLoginStarted(ILogger logger, string email);
 

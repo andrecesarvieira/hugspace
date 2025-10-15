@@ -1,12 +1,12 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Application.Features.DocumentTemplates.Queries;
-using SynQcore.Application.Common.Extensions;
-using System.Globalization;
 
 namespace SynQcore.Application.Features.DocumentTemplates.Handlers;
 
@@ -58,7 +58,7 @@ public class GetTemplatesQueryHandler : IRequestHandler<GetTemplatesQuery, Paged
             if (request.DepartmentId.HasValue)
             {
                 // Filtrar por departamento do criador
-                query = query.Where(t => t.CreatedByEmployee != null && 
+                query = query.Where(t => t.CreatedByEmployee != null &&
                     t.CreatedByEmployee.EmployeeDepartments.Any(ed => ed.DepartmentId == request.DepartmentId));
             }
 
@@ -72,20 +72,20 @@ public class GetTemplatesQueryHandler : IRequestHandler<GetTemplatesQuery, Paged
             // Aplicar ordenação
             query = request.SortBy?.ToLower(CultureInfo.InvariantCulture) switch
             {
-                "name" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(t => t.Name) 
+                "name" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(t => t.Name)
                     : query.OrderByDescending(t => t.Name),
-                "category" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(t => t.DefaultCategory) 
+                "category" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(t => t.DefaultCategory)
                     : query.OrderByDescending(t => t.DefaultCategory),
-                "usage" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(t => t.UsageCount) 
+                "usage" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(t => t.UsageCount)
                     : query.OrderByDescending(t => t.UsageCount),
-                "version" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(t => t.Version) 
+                "version" => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(t => t.Version)
                     : query.OrderByDescending(t => t.Version),
-                _ => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc" 
-                    ? query.OrderBy(t => t.CreatedAt) 
+                _ => request.SortOrder?.ToLower(CultureInfo.InvariantCulture) == "asc"
+                    ? query.OrderBy(t => t.CreatedAt)
                     : query.OrderByDescending(t => t.CreatedAt)
             };
 

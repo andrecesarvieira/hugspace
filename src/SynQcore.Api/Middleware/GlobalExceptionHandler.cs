@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Diagnostics;
 using System.Net;
 using System.Text.Json;
+using Microsoft.AspNetCore.Diagnostics;
 using Serilog;
 using Serilog.Context;
 
@@ -9,7 +9,7 @@ namespace SynQcore.Api.Middleware;
 public class GlobalExceptionHandler : IExceptionHandler
 {
     private readonly ILogger<GlobalExceptionHandler> _logger;
-    
+
     // Cached JsonSerializerOptions for performance
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -23,15 +23,15 @@ public class GlobalExceptionHandler : IExceptionHandler
             Microsoft.Extensions.Logging.LogLevel.Error,
             new EventId(1001, "CorporateApiException"),
             "Corporate API Exception: {Title} | StatusCode: {StatusCode} | Detail: {Detail}");
-    
+
     public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
     {
         _logger = logger;
     }
 
     public async ValueTask<bool> TryHandleAsync(
-        HttpContext httpContext, 
-        Exception exception, 
+        HttpContext httpContext,
+        Exception exception,
         CancellationToken cancellationToken)
     {
         // Enrich logging context with corporate audit information
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         using var logContext6 = LogContext.PushProperty("ClientIP", GetClientIpAddress(httpContext));
 
         var (statusCode, title, detail) = GetErrorDetails(exception);
-        
+
         // Log structured error for corporate audit trails using high-performance LoggerMessage
         LogCorporateException(_logger, title, (int)statusCode, detail, exception);
 
@@ -64,7 +64,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         var json = JsonSerializer.Serialize(problemDetails, JsonOptions);
 
         await httpContext.Response.WriteAsync(json, cancellationToken);
-        
+
         return true;
     }
 
@@ -78,17 +78,17 @@ public class GlobalExceptionHandler : IExceptionHandler
             InvalidOperationException => (HttpStatusCode.BadRequest, "Invalid Operation", exception.Message),
             NotSupportedException => (HttpStatusCode.BadRequest, "Not Supported", exception.Message),
             TimeoutException => (HttpStatusCode.RequestTimeout, "Request Timeout", "The request timed out"),
-            
+
             // Corporate specific exceptions
-            _ when exception.Message.Contains("Employee not found") => 
+            _ when exception.Message.Contains("Employee not found") =>
                 (HttpStatusCode.NotFound, "Employee Not Found", "The requested employee could not be found"),
-            _ when exception.Message.Contains("Department not found") => 
+            _ when exception.Message.Contains("Department not found") =>
                 (HttpStatusCode.NotFound, "Department Not Found", "The requested department could not be found"),
-            _ when exception.Message.Contains("Insufficient permissions") => 
+            _ when exception.Message.Contains("Insufficient permissions") =>
                 (HttpStatusCode.Forbidden, "Insufficient Permissions", "Access denied for this corporate resource"),
-            
+
             // Generic server error for unhandled exceptions (don't expose internal details)
-            _ => (HttpStatusCode.InternalServerError, "Internal Server Error", 
+            _ => (HttpStatusCode.InternalServerError, "Internal Server Error",
                 "An internal server error occurred. Please contact IT support if the problem persists.")
         };
     }
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         return statusCode switch
         {
             HttpStatusCode.BadRequest => "https://tools.ietf.org/html/rfc7231#section-6.5.1",
-            HttpStatusCode.Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1", 
+            HttpStatusCode.Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1",
             HttpStatusCode.Forbidden => "https://tools.ietf.org/html/rfc7231#section-6.5.3",
             HttpStatusCode.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
             HttpStatusCode.RequestTimeout => "https://tools.ietf.org/html/rfc7231#section-6.5.7",
@@ -110,8 +110,8 @@ public class GlobalExceptionHandler : IExceptionHandler
     private static string? GetUserId(HttpContext context)
     {
         // Extract user ID from JWT claims when authentication is implemented
-        return context.User?.FindFirst("sub")?.Value ?? 
-               context.User?.FindFirst("employee_id")?.Value ?? 
+        return context.User?.FindFirst("sub")?.Value ??
+               context.User?.FindFirst("employee_id")?.Value ??
                "anonymous";
     }
 

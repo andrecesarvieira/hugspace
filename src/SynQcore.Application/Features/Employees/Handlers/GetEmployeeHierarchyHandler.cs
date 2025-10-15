@@ -50,8 +50,8 @@ public class GetEmployeeHierarchyHandler : IRequestHandler<GetEmployeeHierarchyQ
                     .ThenInclude(ed => ed.Department)
                 .Include(e => e.TeamMemberships.Where(tm => !tm.IsDeleted))
                     .ThenInclude(tm => tm.Team)
-                .Where(e => e.ManagerId == employee.ManagerId.Value && 
-                           e.Id != request.EmployeeId && 
+                .Where(e => e.ManagerId == employee.ManagerId.Value &&
+                           e.Id != request.EmployeeId &&
                            !e.IsDeleted)
                 .OrderBy(e => e.FirstName)
                 .ThenBy(e => e.LastName)

@@ -1,9 +1,9 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
-using System.Globalization;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;
 
@@ -46,8 +46,8 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
 
             // Query base para comentários do usuário no período
             var userComments = await _context.Comments
-                .Where(c => c.AuthorId == userId && 
-                           c.CreatedAt >= fromDate && 
+                .Where(c => c.AuthorId == userId &&
+                           c.CreatedAt >= fromDate &&
                            c.CreatedAt <= toDate)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
@@ -118,7 +118,7 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
     }
 
     private async Task<(int LikesReceived, int EndorsementsReceived)> CalculateEngagementMetricsAsync(
-        List<Domain.Entities.Communication.Comment> comments, 
+        List<Domain.Entities.Communication.Comment> comments,
         CancellationToken cancellationToken)
     {
         var commentIds = comments.Select(c => c.Id).ToList();
@@ -191,8 +191,8 @@ public partial class GetUserDiscussionAnalyticsQueryHandler : IRequestHandler<Ge
     }
 
     private static Dictionary<string, int> CalculateActivityByDay(
-        List<Domain.Entities.Communication.Comment> comments, 
-        DateTime fromDate, 
+        List<Domain.Entities.Communication.Comment> comments,
+        DateTime fromDate,
         DateTime toDate)
     {
         var result = new Dictionary<string, int>();

@@ -50,7 +50,7 @@ public partial class UnlikePostHandler : IRequestHandler<UnlikePostCommand, Post
             if (existingLike == null)
             {
                 LogLikeNotFound(_logger, request.PostId, request.UserId);
-                
+
                 // Retornar contagem atual mesmo se não havia like
                 var currentLikeCount = await _context.PostLikes
                     .CountAsync(l => l.PostId == request.PostId, cancellationToken);
@@ -70,7 +70,7 @@ public partial class UnlikePostHandler : IRequestHandler<UnlikePostCommand, Post
             // Atualizar contador no post
             var likeCount = await _context.PostLikes
                 .CountAsync(l => l.PostId == request.PostId && l.Id != existingLike.Id, cancellationToken);
-            
+
             post.LikeCount = likeCount;
             post.UpdatedAt = DateTime.UtcNow;
 

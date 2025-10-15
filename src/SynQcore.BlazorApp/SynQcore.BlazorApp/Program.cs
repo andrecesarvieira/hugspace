@@ -1,10 +1,10 @@
-using SynQcore.BlazorApp.Components;
+using Blazored.LocalStorage;
+using Fluxor;
+using MudBlazor.Services;
 using SynQcore.BlazorApp.Client.Services;
+using SynQcore.BlazorApp.Components;
 using SynQcore.BlazorApp.Services;
 using SynQcore.BlazorApp.Store.Effects;
-using Blazored.LocalStorage;
-using MudBlazor.Services;
-using Fluxor;
 
 var builder = WebApplication.CreateBuilder(args);
 

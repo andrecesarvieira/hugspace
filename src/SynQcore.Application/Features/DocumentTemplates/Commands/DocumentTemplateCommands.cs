@@ -1,7 +1,7 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
 using SynQcore.Application.Features.DocumentTemplates.DTOs;
 using SynQcore.Domain.Entities;
-using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Application.Features.DocumentTemplates.Commands;
 

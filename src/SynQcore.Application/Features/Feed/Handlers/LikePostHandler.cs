@@ -67,7 +67,7 @@ public partial class LikePostHandler : IRequestHandler<LikePostCommand, PostLike
             if (existingLike != null)
             {
                 LogLikeAlreadyExists(_logger, request.PostId, request.UserId);
-                
+
                 // Se é o mesmo tipo de reação, retorna sucesso
                 if (existingLike.ReactionType.ToString().Equals(request.ReactionType, StringComparison.OrdinalIgnoreCase))
                 {
@@ -88,7 +88,7 @@ public partial class LikePostHandler : IRequestHandler<LikePostCommand, PostLike
                 // Atualizar tipo de reação
                 existingLike.ReactionType = Enum.Parse<ReactionType>(request.ReactionType, true);
                 existingLike.LikedAt = DateTime.UtcNow;
-                
+
                 LogLikeUpdated(_logger, request.PostId, request.UserId, request.ReactionType);
             }
             else
@@ -108,14 +108,14 @@ public partial class LikePostHandler : IRequestHandler<LikePostCommand, PostLike
 
                 _context.PostLikes.Add(newLike);
                 existingLike = newLike;
-                
+
                 LogLikeCreated(_logger, request.PostId, request.UserId, request.ReactionType);
             }
 
             // Atualizar contador no post
             var likeCount = await _context.PostLikes
                 .CountAsync(l => l.PostId == request.PostId, cancellationToken);
-            
+
             post.LikeCount = likeCount;
             post.UpdatedAt = DateTime.UtcNow;
 

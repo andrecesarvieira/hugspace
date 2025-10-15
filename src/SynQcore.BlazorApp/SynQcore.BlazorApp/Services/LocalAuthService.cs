@@ -162,11 +162,17 @@ public partial class LocalAuthService : ILocalAuthService
                 Console.WriteLine($"[LOCAL AUTH] IsAuthenticatedAsync - LocalStorage: {isAuthenticated}, Cache atualizado: {_isAuthenticated}");
                 return isAuthenticated;
             }
-            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop") || jsInteropEx.Message.Contains("JavaScript runtime"))
             {
                 // Durante renderização estática, não podemos acessar localStorage
-                // Usar apenas cache em memória
-                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível durante renderização - usando cache: {_isAuthenticated}");
+                // Usar apenas cache em memória - comportamento esperado na renderização inicial
+                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível durante renderização inicial - usando cache: {_isAuthenticated}");
+                return _isAuthenticated;
+            }
+            catch (Exception unexpectedEx) when (unexpectedEx.Message.Contains("not available") || unexpectedEx.Message.Contains("interop") || unexpectedEx.Message.Contains("runtime"))
+            {
+                // Outros tipos de erro relacionados ao JavaScript Interop durante inicialização
+                Console.WriteLine($"[LOCAL AUTH] JavaScript não disponível (renderização SSR) - usando cache: {_isAuthenticated}");
                 return _isAuthenticated;
             }
         }
@@ -275,7 +281,7 @@ public partial class LocalAuthService : ILocalAuthService
             {
                 // Buscar no LocalStorage
                 var token = await _localStorage.GetItemAsync<string>(AUTH_TOKEN_KEY);
-                
+
                 if (!string.IsNullOrEmpty(token))
                 {
                     _cachedToken = token;
@@ -284,10 +290,16 @@ public partial class LocalAuthService : ILocalAuthService
 
                 return null;
             }
-            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
+            catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop") || jsInteropEx.Message.Contains("JavaScript runtime"))
             {
-                // Durante renderização estática, retornar token do cache
-                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível - retornando token do cache: {!string.IsNullOrEmpty(_cachedToken)}");
+                // Durante renderização estática, retornar token do cache - comportamento normal
+                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível (renderização inicial) - usando token em cache: {!string.IsNullOrEmpty(_cachedToken)}");
+                return _cachedToken;
+            }
+            catch (Exception unexpectedEx) when (unexpectedEx.Message.Contains("not available") || unexpectedEx.Message.Contains("interop"))
+            {
+                // Outros erros relacionados ao JS Interop durante inicialização
+                Console.WriteLine($"[LOCAL AUTH] JavaScript não disponível durante inicialização - token cache: {!string.IsNullOrEmpty(_cachedToken)}");
                 return _cachedToken;
             }
         }

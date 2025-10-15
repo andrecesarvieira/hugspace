@@ -13,7 +13,7 @@ public record FeedItemDto
     public DateTime? ViewedAt { get; init; }
     public bool IsRead { get; init; }
     public bool IsBookmarked { get; init; }
-    
+
     // Post information
     public string Title { get; init; } = string.Empty;
     public string Content { get; init; } = string.Empty;
@@ -22,24 +22,24 @@ public record FeedItemDto
     public string? ImageUrl { get; init; }
     public bool IsPinned { get; init; }
     public bool IsOfficial { get; init; }
-    
+
     // Author information
     public Guid AuthorId { get; init; }
     public string AuthorName { get; init; } = string.Empty;
     public string AuthorEmail { get; init; } = string.Empty;
     public string? AuthorAvatarUrl { get; init; }
     public string? AuthorDepartment { get; init; }
-    
+
     // Engagement metrics
     public int LikeCount { get; init; }
     public int CommentCount { get; init; }
     public int ViewCount { get; init; }
-    
+
     // User interaction
     public bool HasLiked { get; init; }
     public bool HasCommented { get; init; }
     public string? ReactionType { get; init; }
-    
+
     // Tags and categories
     public List<string> Tags { get; init; } = [];
     public string? Category { get; init; }
@@ -54,7 +54,7 @@ public record CorporateFeedResponseDto
     public bool HasNextPage { get; init; }
     public bool HasPreviousPage { get; init; }
     public string? NextPageToken { get; init; }
-    
+
     // Feed metadata
     public DateTime GeneratedAt { get; init; } = DateTime.UtcNow;
     public int UnreadCount { get; init; }

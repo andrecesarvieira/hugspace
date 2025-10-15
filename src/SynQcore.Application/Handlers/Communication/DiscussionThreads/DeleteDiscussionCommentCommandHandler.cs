@@ -2,8 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Commands.Communication.DiscussionThreads;
-using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Common.Helpers;
+using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.DTOs.Communication;
 
 namespace SynQcore.Application.Handlers.Communication.DiscussionThreads;

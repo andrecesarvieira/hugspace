@@ -9,7 +9,7 @@ public class ReportingRelationshipConfiguration : IEntityTypeConfiguration<Repor
     public void Configure(EntityTypeBuilder<ReportingRelationship> builder)
     {
         builder.ToTable("ReportingRelationships");
-        
+
         // Chave primária
         builder.HasKey(r => r.Id);
 

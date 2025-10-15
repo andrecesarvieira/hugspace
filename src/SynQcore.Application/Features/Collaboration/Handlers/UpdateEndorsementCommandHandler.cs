@@ -1,7 +1,7 @@
-using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Collaboration.Commands;
 using SynQcore.Application.Features.Collaboration.DTOs;
@@ -40,8 +40,8 @@ public partial class UpdateEndorsementCommandHandler : IRequestHandler<UpdateEnd
     private static partial void LogEndorsementUpdateError(ILogger logger, Guid endorsementId, Exception ex);
 
     public UpdateEndorsementCommandHandler(
-        ISynQcoreDbContext context, 
-        
+        ISynQcoreDbContext context,
+
         ILogger<UpdateEndorsementCommandHandler> logger)
     {
         _context = context;
@@ -81,10 +81,10 @@ public partial class UpdateEndorsementCommandHandler : IRequestHandler<UpdateEnd
 
                 var duplicateExists = await _context.Endorsements
                     .AnyAsync(e => e.Id != request.Id && // Excluir o próprio endorsement
-                              e.EndorserId == endorsement.EndorserId && 
+                              e.EndorserId == endorsement.EndorserId &&
                               e.Type == data.Type.Value &&
                               ((endorsement.PostId.HasValue && e.PostId == endorsement.PostId) ||
-                               (endorsement.CommentId.HasValue && e.CommentId == endorsement.CommentId)), 
+                               (endorsement.CommentId.HasValue && e.CommentId == endorsement.CommentId)),
                               cancellationToken);
 
                 if (duplicateExists)
@@ -123,7 +123,7 @@ public partial class UpdateEndorsementCommandHandler : IRequestHandler<UpdateEnd
 
             // Mapear para DTO com informações de display
             var result = updatedEndorsement.ToEndorsementDto();
-            
+
             // Adicionar informações de display do tipo
             var typeInfo = EndorsementTypeHelper.GetTypeInfo(result.Type);
             result.TypeDisplayName = typeInfo.DisplayName;

@@ -3,13 +3,12 @@ using Microsoft.JSInterop;
 namespace SynQcore.BlazorApp.Client.Services;
 
 /// <summary>
-/// Serviço para gerenciamento de temas corporativos (claro/escuro)
+/// Serviço de tema simplificado - SEMPRE MODO CLARO
 /// </summary>
 public class ThemeService
 {
     private readonly IJSRuntime _jsRuntime;
-    private readonly string _themeKey = "synqcore-theme";
-    private string _currentTheme = "light";
+    private const string CurrentTheme = "light"; // FORÇADO PARA SEMPRE SER CLARO
 
     public ThemeService(IJSRuntime jsRuntime)
     {
@@ -17,89 +16,43 @@ public class ThemeService
     }
 
     /// <summary>
-    /// Evento disparado quando o tema é alterado
+    /// Tema atual - sempre "light"
     /// </summary>
-    public event Action<string>? ThemeChanged;
+    public static string GetCurrentTheme() => CurrentTheme;
 
     /// <summary>
-    /// Tema atual
+    /// Verifica se o tema atual é escuro - sempre false
     /// </summary>
-    public string CurrentTheme => _currentTheme;
+    public static bool IsDarkTheme => false;
 
     /// <summary>
-    /// Verifica se o tema atual é escuro
-    /// </summary>
-    public bool IsDarkTheme => _currentTheme == "dark";
-
-    /// <summary>
-    /// Inicializa o serviço de tema carregando o tema salvo
+    /// Inicializa o serviço - força tema claro
     /// </summary>
     public async Task InitializeAsync()
     {
-        try
-        {
-            // Tentar carregar tema salvo do localStorage
-            var savedTheme = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", _themeKey);
-
-            if (!string.IsNullOrEmpty(savedTheme) && (savedTheme == "light" || savedTheme == "dark"))
-            {
-                _currentTheme = savedTheme;
-            }
-            else
-            {
-                // Detectar preferência do sistema
-                var prefersDark = await _jsRuntime.InvokeAsync<bool>("window.matchMedia", "(prefers-color-scheme: dark)");
-                _currentTheme = prefersDark ? "dark" : "light";
-            }
-
-            await ApplyThemeAsync(_currentTheme);
-        }
-        catch
-        {
-            // Em caso de erro, usar tema claro por padrão
-            _currentTheme = "light";
-            await ApplyThemeAsync(_currentTheme);
-        }
+        await ApplyLightThemeAsync();
     }
 
     /// <summary>
-    /// Alterna entre tema claro e escuro
+    /// Toggle desabilitado - sempre mantém modo claro
     /// </summary>
-    public async Task ToggleThemeAsync()
+    public static async Task ToggleThemeAsync()
     {
-        var newTheme = _currentTheme == "light" ? "dark" : "light";
-        await SetThemeAsync(newTheme);
+        // Não faz nada - sempre modo claro
+        await Task.CompletedTask;
     }
 
     /// <summary>
-    /// Define um tema específico
+    /// Força tema claro no DOM
     /// </summary>
-    public async Task SetThemeAsync(string theme)
-    {
-        if (theme != "light" && theme != "dark")
-            throw new ArgumentException("Tema deve ser 'light' ou 'dark'", nameof(theme));
-
-        if (_currentTheme == theme)
-            return;
-
-        _currentTheme = theme;
-
-        await ApplyThemeAsync(theme);
-        await SaveThemeAsync(theme);
-
-        ThemeChanged?.Invoke(theme);
-    }
-
-    /// <summary>
-    /// Aplica o tema no DOM
-    /// </summary>
-    private async Task ApplyThemeAsync(string theme)
+    private async Task ApplyLightThemeAsync()
     {
         try
         {
-            await _jsRuntime.InvokeVoidAsync("eval", $@"
-                document.documentElement.setAttribute('data-theme', '{theme}');
-                document.body.className = document.body.className.replace(/\btheme-\w+\b/g, '') + ' theme-{theme}';
+            await _jsRuntime.InvokeVoidAsync("eval", @"
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.documentElement.style.colorScheme = 'light only';
+                document.body.className = document.body.className.replace(/\btheme-\w+\b/g, '') + ' theme-light';
             ");
         }
         catch
@@ -109,47 +62,32 @@ public class ThemeService
     }
 
     /// <summary>
-    /// Salva o tema no localStorage
+    /// Classe CSS - sempre tema claro
     /// </summary>
-    private async Task SaveThemeAsync(string theme)
-    {
-        try
-        {
-            await _jsRuntime.InvokeVoidAsync("localStorage.setItem", _themeKey, theme);
-        }
-        catch
-        {
-            // Silenciar erros se localStorage não estiver disponível
-        }
-    }
+    public static string GetThemeClass() => "theme-light";
 
     /// <summary>
-    /// Obtém a classe CSS para o tema atual
+    /// Ícone - sempre sol (tema claro ativo)
     /// </summary>
-    public string GetThemeClass() => $"theme-{_currentTheme}";
+    public static string GetThemeToggleIcon() => "☀️";
 
     /// <summary>
-    /// Obtém o ícone apropriado para o botão de alternância de tema
+    /// Nome - sempre tema claro
     /// </summary>
-    public string GetThemeToggleIcon() => _currentTheme == "light" ? "🌙" : "☀️";
+    public static string GetThemeDisplayName() => "Tema Claro";
 
     /// <summary>
-    /// Obtém o texto descritivo do tema atual
+    /// Cor primária - tema claro
     /// </summary>
-    public string GetThemeDisplayName() => _currentTheme == "light" ? "Tema Claro" : "Tema Escuro";
+    public static string GetPrimaryColor() => "#1976d2";
 
     /// <summary>
-    /// Obtém a cor primária do tema atual
+    /// Cor de fundo - tema claro
     /// </summary>
-    public string GetPrimaryColor() => _currentTheme == "light" ? "#1976d2" : "#42a5f5";
+    public static string GetBackgroundColor() => "#ffffff";
 
     /// <summary>
-    /// Obtém a cor de fundo do tema atual
+    /// Cor do texto - tema claro
     /// </summary>
-    public string GetBackgroundColor() => _currentTheme == "light" ? "#fafafa" : "#1a1a1a";
-
-    /// <summary>
-    /// Obtém a cor do texto do tema atual
-    /// </summary>
-    public string GetTextColor() => _currentTheme == "light" ? "#212121" : "#ffffff";
+    public static string GetTextColor() => "#212121";
 }

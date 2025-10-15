@@ -1,6 +1,6 @@
+using System.Text.RegularExpressions;
 using FluentValidation;
 using SynQcore.Application.Features.Feed.DTOs;
-using System.Text.RegularExpressions;
 
 namespace SynQcore.Application.Features.Feed.Validators;
 
@@ -62,7 +62,7 @@ public partial class UpdateFeedPostRequestValidator : AbstractValidator<UpdateFe
                 return false;
 
             var trimmedTag = tag.Trim();
-            
+
             // Tag deve ter entre 2 e 50 caracteres
             if (trimmedTag.Length < 2 || trimmedTag.Length > 50)
                 return false;

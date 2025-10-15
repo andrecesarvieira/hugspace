@@ -1,8 +1,8 @@
+using System.Text.Json;
 using Fluxor;
 using Microsoft.JSInterop;
-using SynQcore.BlazorApp.Store.User;
 using SynQcore.BlazorApp.Store.UI;
-using System.Text.Json;
+using SynQcore.BlazorApp.Store.User;
 
 namespace SynQcore.BlazorApp.Services;
 

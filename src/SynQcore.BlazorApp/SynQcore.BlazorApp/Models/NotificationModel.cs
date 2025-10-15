@@ -63,7 +63,7 @@ public class NotificationModel
         get
         {
             var timeSpan = DateTimeOffset.UtcNow - Timestamp;
-            
+
             if (timeSpan.TotalMinutes < 1)
                 return "agora";
             if (timeSpan.TotalMinutes < 60)
@@ -72,7 +72,7 @@ public class NotificationModel
                 return $"{(int)timeSpan.TotalHours}h";
             if (timeSpan.TotalDays < 7)
                 return $"{(int)timeSpan.TotalDays}d";
-            
+
             return Timestamp.ToString("dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
         }
     }

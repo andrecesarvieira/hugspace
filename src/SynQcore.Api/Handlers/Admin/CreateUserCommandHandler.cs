@@ -34,10 +34,10 @@ public partial class CreateUserCommandHandler : IRequestHandler<CreateUserComman
             if (existingUser != null)
             {
                 LogUserAlreadyExists(_logger, request.Email);
-                return new CreateUserResponse 
-                { 
-                    Success = false, 
-                    Message = $"Usuário com email '{request.Email}' já existe no sistema" 
+                return new CreateUserResponse
+                {
+                    Success = false,
+                    Message = $"Usuário com email '{request.Email}' já existe no sistema"
                 };
             }
 
@@ -46,10 +46,10 @@ public partial class CreateUserCommandHandler : IRequestHandler<CreateUserComman
             if (!roleExists)
             {
                 LogRoleNotFound(_logger, request.Role);
-                return new CreateUserResponse 
-                { 
-                    Success = false, 
-                    Message = $"Papel '{request.Role}' não existe no sistema" 
+                return new CreateUserResponse
+                {
+                    Success = false,
+                    Message = $"Papel '{request.Role}' não existe no sistema"
                 };
             }
 
@@ -68,10 +68,10 @@ public partial class CreateUserCommandHandler : IRequestHandler<CreateUserComman
             {
                 var errors = string.Join(", ", createResult.Errors.Select(e => e.Description));
                 LogUserCreationFailed(_logger, request.Email, errors);
-                return new CreateUserResponse 
-                { 
-                    Success = false, 
-                    Message = $"Falha ao criar usuário: {errors}" 
+                return new CreateUserResponse
+                {
+                    Success = false,
+                    Message = $"Falha ao criar usuário: {errors}"
                 };
             }
 
@@ -81,14 +81,14 @@ public partial class CreateUserCommandHandler : IRequestHandler<CreateUserComman
             {
                 var roleErrors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
                 LogRoleAssignmentFailed(_logger, request.Email, request.Role, roleErrors);
-                
+
                 // Se falhou ao atribuir o papel, remover o usuário criado
                 await _userManager.DeleteAsync(user);
-                
-                return new CreateUserResponse 
-                { 
-                    Success = false, 
-                    Message = $"Falha ao atribuir papel '{request.Role}': {roleErrors}" 
+
+                return new CreateUserResponse
+                {
+                    Success = false,
+                    Message = $"Falha ao atribuir papel '{request.Role}': {roleErrors}"
                 };
             }
 
@@ -107,10 +107,10 @@ public partial class CreateUserCommandHandler : IRequestHandler<CreateUserComman
         catch (Exception ex)
         {
             LogUnexpectedError(_logger, request.Email, ex.Message);
-            return new CreateUserResponse 
-            { 
-                Success = false, 
-                Message = "Erro interno do servidor ao criar usuário" 
+            return new CreateUserResponse
+            {
+                Success = false,
+                Message = "Erro interno do servidor ao criar usuário"
             };
         }
     }

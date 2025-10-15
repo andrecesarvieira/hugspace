@@ -35,7 +35,7 @@ public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<G
     private static partial void LogTrendingError(ILogger logger, Exception ex);
 
     public GetTrendingEndorsementTypesQueryHandler(
-        ISynQcoreDbContext context, 
+        ISynQcoreDbContext context,
         ILogger<GetTrendingEndorsementTypesQueryHandler> logger)
     {
         _context = context;
@@ -56,8 +56,8 @@ public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<G
             if (request.DepartmentId.HasValue)
             {
                 LogTrendingDepartmentFilter(_logger, request.DepartmentId.Value);
-                
-                endorsementsQuery = endorsementsQuery.Where(e => 
+
+                endorsementsQuery = endorsementsQuery.Where(e =>
                     (e.Post != null && e.Post.DepartmentId == request.DepartmentId.Value) ||
                     (e.Comment != null && e.Comment.Post.DepartmentId == request.DepartmentId.Value) ||
                     (e.Endorser.EmployeeDepartments.Any(ed => ed.DepartmentId == request.DepartmentId.Value)));
@@ -73,7 +73,7 @@ public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<G
 
             // Calcular período anterior para growth rate
             LogCalculatingGrowthRate(_logger);
-            
+
             var periodDuration = request.EndDate - request.StartDate;
             var previousPeriodStart = request.StartDate - periodDuration;
             var previousPeriodEnd = request.StartDate;
@@ -84,7 +84,7 @@ public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<G
             // Aplicar o mesmo filtro de departamento no período anterior
             if (request.DepartmentId.HasValue)
             {
-                previousEndorsementsQuery = previousEndorsementsQuery.Where(e => 
+                previousEndorsementsQuery = previousEndorsementsQuery.Where(e =>
                     (e.Post != null && e.Post.DepartmentId == request.DepartmentId.Value) ||
                     (e.Comment != null && e.Comment.Post.DepartmentId == request.DepartmentId.Value) ||
                     (e.Endorser.EmployeeDepartments.Any(ed => ed.DepartmentId == request.DepartmentId.Value)));
@@ -102,7 +102,7 @@ public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<G
             {
                 var typeInfo = EndorsementTypeHelper.GetTypeInfo(type);
                 var previousCount = previousPeriodStats.GetValueOrDefault(type, 0);
-                
+
                 // Calcular growth rate
                 double growthRate = 0;
                 if (previousCount > 0)
@@ -120,7 +120,7 @@ public partial class GetTrendingEndorsementTypesQueryHandler : IRequestHandler<G
                     TypeDisplayName = typeInfo.DisplayName,
                     TypeIcon = typeInfo.Icon,
                     Count = currentCount,
-                    PercentageOfTotal = totalCurrentEndorsements > 0 ? 
+                    PercentageOfTotal = totalCurrentEndorsements > 0 ?
                         Math.Round(((double)currentCount / totalCurrentEndorsements) * 100, 2) : 0,
                     GrowthRate = Math.Round(growthRate, 2)
                 };

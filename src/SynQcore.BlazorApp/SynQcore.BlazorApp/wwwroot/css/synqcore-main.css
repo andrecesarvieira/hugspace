@@ -20,6 +20,7 @@
 @import url('./components/create-post-modal.css');
 
 /* === PÁGINAS === */
+@import url('./pages/home.css');
 @import url('./pages/login.css');
 @import url('./pages/feed.css');
 @import url('./pages/dashboard.css');

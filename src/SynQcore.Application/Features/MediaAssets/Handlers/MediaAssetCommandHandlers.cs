@@ -1,12 +1,12 @@
+using System.Globalization;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using SynQcore.Application.Common.Interfaces;
-using SynQcore.Application.Features.MediaAssets.DTOs;
-using SynQcore.Application.Features.MediaAssets.Commands;
 using SynQcore.Application.Common.Extensions;
+using SynQcore.Application.Common.Interfaces;
+using SynQcore.Application.Features.MediaAssets.Commands;
+using SynQcore.Application.Features.MediaAssets.DTOs;
 using SynQcore.Domain.Entities;
-using System.Globalization;
 
 namespace SynQcore.Application.Features.MediaAssets.Handlers;
 

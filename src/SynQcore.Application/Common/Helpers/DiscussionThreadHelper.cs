@@ -33,7 +33,7 @@ public class DiscussionThreadHelper
         }
 
         var newLevel = parentComment.ThreadLevel + 1;
-        
+
         // Conta quantos replies já existem para o comentário pai
         var siblingCount = await _context.Comments
             .Where(c => c.ParentCommentId == parentCommentId.Value)
@@ -85,7 +85,7 @@ public class DiscussionThreadHelper
 
             // Aqui você poderia resolver o username para Employee ID
             // Por simplicidade, vou assumir que o frontend já passou os IDs corretos
-            
+
             mentions.Add(new CommentMention
             {
                 Id = Guid.NewGuid(),
@@ -140,7 +140,7 @@ public class DiscussionThreadHelper
     }
 
     public async Task<(int LikeCount, int EndorsementCount)> CalculateEngagementMetricsAsync(
-        Guid commentId, 
+        Guid commentId,
         CancellationToken cancellationToken = default)
     {
         var likeCount = await _context.CommentLikes

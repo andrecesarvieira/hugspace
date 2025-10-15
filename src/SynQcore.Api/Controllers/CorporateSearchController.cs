@@ -1,12 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MediatR;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.CorporateSearch.Commands;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Queries;
-using SynQcore.Application.Features.CorporateSearch.Commands;
-using System.ComponentModel.DataAnnotations;
 
 namespace SynQcore.Api.Controllers;
 

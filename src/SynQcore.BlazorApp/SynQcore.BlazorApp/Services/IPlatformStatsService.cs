@@ -1,5 +1,5 @@
-using SynQcore.BlazorApp.Services;
 using System.Text.Json;
+using SynQcore.BlazorApp.Services;
 
 namespace SynQcore.BlazorApp.Services;
 

@@ -1,7 +1,7 @@
+using System.Text.Json;
 using Fluxor;
 using Microsoft.JSInterop;
 using SynQcore.BlazorApp.Store.User;
-using System.Text.Json;
 
 namespace SynQcore.BlazorApp.Store.Effects;
 

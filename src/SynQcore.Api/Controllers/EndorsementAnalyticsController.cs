@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using MediatR;
-using SynQcore.Application.Features.Collaboration.Queries;
-using SynQcore.Application.Features.Collaboration.DTOs;
-using SynQcore.Application.Common.DTOs;
 using System.Security.Claims;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Features.Collaboration.DTOs;
+using SynQcore.Application.Features.Collaboration.Queries;
 
 namespace SynQcore.Api.Controllers;
 
@@ -22,19 +22,19 @@ public partial class EndorsementAnalyticsController : ControllerBase
 
     // LoggerMessage delegates para performance otimizada
     private static readonly Action<ILogger, Exception?> LogProcessingAnalyticsRequest =
-        LoggerMessage.Define(LogLevel.Information, new EventId(5001, nameof(LogProcessingAnalyticsRequest)), 
+        LoggerMessage.Define(LogLevel.Information, new EventId(5001, nameof(LogProcessingAnalyticsRequest)),
             "Processando requisição de analytics de endorsements");
 
     private static readonly Action<ILogger, int, Exception?> LogRankingGenerated =
-        LoggerMessage.Define<int>(LogLevel.Information, new EventId(5002, nameof(LogRankingGenerated)), 
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(5002, nameof(LogRankingGenerated)),
             "Ranking gerado com {Count} funcionários");
 
     private static readonly Action<ILogger, int, Exception?> LogTrendingGenerated =
-        LoggerMessage.Define<int>(LogLevel.Information, new EventId(5003, nameof(LogTrendingGenerated)), 
+        LoggerMessage.Define<int>(LogLevel.Information, new EventId(5003, nameof(LogTrendingGenerated)),
             "Trending gerado com {Count} tipos");
 
     private static readonly Action<ILogger, Guid, Exception?> LogEmployeeAnalyticsRequest =
-        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(5004, nameof(LogEmployeeAnalyticsRequest)), 
+        LoggerMessage.Define<Guid>(LogLevel.Information, new EventId(5004, nameof(LogEmployeeAnalyticsRequest)),
             "Gerando analytics para funcionário: {EmployeeId}");
 
     // LoggerMessage delegates para erros
@@ -108,7 +108,7 @@ public partial class EndorsementAnalyticsController : ControllerBase
                 RankingType = rankingType
             };
             var result = await _mediator.Send(query);
-            
+
             LogRankingGenerated(_logger, result.Count, null);
             return Ok(result);
         }
@@ -149,7 +149,7 @@ public partial class EndorsementAnalyticsController : ControllerBase
                 TopCount = Math.Min(topCount, 10) // Limitar para performance
             };
             var result = await _mediator.Send(query);
-            
+
             LogTrendingGenerated(_logger, result.Count, null);
             return Ok(result);
         }
@@ -289,7 +289,7 @@ public partial class EndorsementAnalyticsController : ControllerBase
                 SpecificType = specificType
             };
             var result = await _mediator.Send(query);
-            
+
             if (result != null)
             {
                 return Ok(result);

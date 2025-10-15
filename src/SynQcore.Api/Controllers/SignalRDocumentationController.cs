@@ -8,9 +8,9 @@ namespace SynQcore.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-    /// <summary>
-    /// Classe para operações do sistema
-    /// </summary>
+/// <summary>
+/// Classe para operações do sistema
+/// </summary>
 public class SignalRDocumentationController : ControllerBase
 {
     /// <summary>
@@ -36,7 +36,7 @@ public class SignalRDocumentationController : ControllerBase
             },
             ExecutiveCommunicationHub = new
             {
-                Name = "ExecutiveCommunicationHub", 
+                Name = "ExecutiveCommunicationHub",
                 Endpoint = "/hubs/executive-communication",
                 Description = "Hub especializado para comunicações executivas e anúncios corporativos",
                 Authentication = "JWT Bearer Token via query string (?access_token=TOKEN)",

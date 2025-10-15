@@ -1,9 +1,9 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Services;
 using SynQcore.Domain.Entities;
 using SynQcore.Infrastructure.Data;
-using System.Text.Json;
 
 namespace SynQcore.Infrastructure.Services;
 

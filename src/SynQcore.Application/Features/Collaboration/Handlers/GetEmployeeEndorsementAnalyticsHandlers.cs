@@ -1,8 +1,8 @@
-using SynQcore.Application.Common.Extensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SynQcore.Application.Common.DTOs;
+using SynQcore.Application.Common.Extensions;
 using SynQcore.Application.Common.Interfaces;
 using SynQcore.Application.Features.Collaboration.DTOs;
 using SynQcore.Application.Features.Collaboration.Helpers;
@@ -33,8 +33,8 @@ public partial class GetEmployeeEndorsementsGivenQueryHandler : IRequestHandler<
     private static partial void LogGivenEndorsementsError(ILogger logger, Guid employeeId, Exception ex);
 
     public GetEmployeeEndorsementsGivenQueryHandler(
-        ISynQcoreDbContext context, 
-        
+        ISynQcoreDbContext context,
+
         ILogger<GetEmployeeEndorsementsGivenQueryHandler> logger)
     {
         _context = context;
@@ -141,8 +141,8 @@ public partial class GetEmployeeEndorsementsReceivedQueryHandler : IRequestHandl
     private static partial void LogReceivedEndorsementsError(ILogger logger, Guid employeeId, Exception ex);
 
     public GetEmployeeEndorsementsReceivedQueryHandler(
-        ISynQcoreDbContext context, 
-        
+        ISynQcoreDbContext context,
+
         ILogger<GetEmployeeEndorsementsReceivedQueryHandler> logger)
     {
         _context = context;
