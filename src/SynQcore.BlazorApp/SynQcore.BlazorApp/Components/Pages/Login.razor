@@ -1,14 +1,11 @@
 @page "/login"
 @rendermode InteractiveServer
-@using Fluxor
-@using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Services
-@inject IDispatcher Dispatcher
-@inject IState<UserState> UserState
+@using SynQcore.BlazorApp.Services.StateManagement
+@inject StateManager StateManager
 @inject IAuthService AuthService
-@inject ICookieAuthService CookieAuthService
-@inject ILocalAuthService LocalAuthService
 @inject NavigationManager Navigation
+@implements IDisposable
 
 <PageTitle>Login - SynQcore</PageTitle>
 
@@ -130,11 +127,31 @@
     protected override void OnInitialized()
     {
         // Verificar se já está autenticado
-        if (UserState.Value.IsAuthenticated)
+        if (StateManager.User.IsAuthenticated)
         {
             Navigation.NavigateTo("/");
             return;
         }
+
+        // Inscrever-se nas mudanças do estado do usuário
+        StateManager.User.PropertyChanged += OnUserStateChanged;
+        StateManager.UI.PropertyChanged += OnUIStateChanged;
+    }
+
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnUIStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnUserStateChanged;
+        StateManager.UI.PropertyChanged -= OnUIStateChanged;
     }
 
     private async Task HandleSubmit()
@@ -153,41 +170,24 @@
 
         try
         {
-            // Usar LocalAuthService que não depende de cookies
-            var success = await LocalAuthService.LoginAsync(Email, Password);
+            // Usar AuthService que já foi migrado para StateManager
+            var success = await AuthService.LoginAsync(Email, Password);
 
             if (success)
             {
-                // Buscar os dados reais do usuário do LocalAuthService
-                var currentUser = await LocalAuthService.GetCurrentUserAsync();
+                // O AuthService já atualiza o StateManager automaticamente
+                // Aguardar processamento
+                await Task.Delay(500);
+                StateHasChanged();
 
-                if (currentUser != null)
+                // Redirecionar para o Feed após login bem-sucedido
+                try
                 {
-                    // Atualizar o estado do usuário via Fluxor
-                    Dispatcher.Dispatch(new UserActions.LoginSuccessAction(
-                    currentUser,
-                    AccessToken: "token-from-api", // Será sobrescrito pelo token real
-                    RefreshToken: null,
-                    ExpiresAt: DateTime.UtcNow.AddHours(24)
-                    ));
-
-                    // Aguardar processamento no Windows
-                    await Task.Delay(500);
-                    StateHasChanged();
-
-                    // Redirecionar para o Feed após login bem-sucedido
-                    try
-                    {
-                        Navigation.NavigateTo("/feed");
-                    }
-                    catch (Exception)
-                    {
-                        Navigation.NavigateTo("/feed", forceLoad: true);
-                    }
+                    Navigation.NavigateTo("/feed");
                 }
-                else
+                catch (Exception)
                 {
-                    ErrorMessage = "Erro ao obter dados do usuário após login.";
+                    Navigation.NavigateTo("/feed", forceLoad: true);
                 }
             }
             else

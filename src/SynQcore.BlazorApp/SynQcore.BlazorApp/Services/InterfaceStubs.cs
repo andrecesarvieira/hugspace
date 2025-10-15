@@ -1,0 +1,1 @@
+namespace SynQcore.BlazorApp.Services;

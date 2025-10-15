@@ -9,6 +9,10 @@ namespace SynQcore.BlazorApp.Store.User;
 public record UserState
 {
     /// <summary>
+    /// Inicializador do estado padrão do usuário
+    /// </summary>
+    public static UserState InitialState => new UserState();
+    /// <summary>
     /// Usuário está autenticado
     /// </summary>
     public bool IsAuthenticated { get; init; }

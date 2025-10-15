@@ -1,9 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Fluxor;
-using SynQcore.BlazorApp.Store.UI;
-using SynQcore.BlazorApp.Store.User;
+using SynQcore.BlazorApp.Services.StateManagement;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -23,18 +21,18 @@ public interface IApiService
 }
 
 /// <summary>
-/// Implementação do serviço de API
+/// Implementação do serviço de API usando StateManager
 /// </summary>
 public class ApiService : IApiService
 {
     private readonly HttpClient _httpClient;
-    private readonly IDispatcher _dispatcher;
+    private readonly StateManager _stateManager;
     private readonly JsonSerializerOptions _jsonOptions;
 
-    public ApiService(HttpClient httpClient, IDispatcher dispatcher)
+    public ApiService(HttpClient httpClient, StateManager stateManager)
     {
         _httpClient = httpClient;
-        _dispatcher = dispatcher;
+        _stateManager = stateManager;
 
         _jsonOptions = new JsonSerializerOptions
         {
@@ -58,8 +56,8 @@ public class ApiService : IApiService
     {
         try
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(true));
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connecting));
+            _stateManager.UI.IsLoading = true;
+            Console.WriteLine($"🌐 [ApiService] GET {endpoint}");
 
             var response = await _httpClient.GetAsync(endpoint);
 
@@ -68,23 +66,23 @@ public class ApiService : IApiService
                 var content = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<T>(content, _jsonOptions);
 
-                _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connected));
+                Console.WriteLine($"✅ [ApiService] GET {endpoint} - Sucesso");
                 return result;
             }
             else
             {
-                await HandleErrorResponse(response);
+                await HandleErrorResponse(response, $"GET {endpoint}");
                 return default;
             }
         }
         catch (Exception ex)
         {
-            await HandleException(ex, $"GET {endpoint}");
+            HandleException(ex, $"GET {endpoint}");
             return default;
         }
         finally
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(false));
+            _stateManager.UI.IsLoading = false;
         }
     }
 
@@ -95,31 +93,31 @@ public class ApiService : IApiService
     {
         try
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(true));
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connecting));
+            _stateManager.UI.IsLoading = true;
+            Console.WriteLine($"🌐 [ApiService] GET {endpoint}");
 
             var response = await _httpClient.GetAsync(endpoint);
 
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connected));
+                Console.WriteLine($"✅ [ApiService] GET {endpoint} - Sucesso");
                 return content;
             }
             else
             {
-                await HandleErrorResponse(response);
+                await HandleErrorResponse(response, $"GET {endpoint}");
                 return null;
             }
         }
         catch (Exception ex)
         {
-            await HandleException(ex, $"GET {endpoint}");
+            HandleException(ex, $"GET {endpoint}");
             return null;
         }
         finally
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(false));
+            _stateManager.UI.IsLoading = false;
         }
     }
 
@@ -130,8 +128,8 @@ public class ApiService : IApiService
     {
         try
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(true));
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connecting));
+            _stateManager.UI.IsLoading = true;
+            Console.WriteLine($"🌐 [ApiService] POST {endpoint}");
 
             var json = JsonSerializer.Serialize(data, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -143,23 +141,23 @@ public class ApiService : IApiService
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<T>(responseContent, _jsonOptions);
 
-                _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connected));
+                Console.WriteLine($"✅ [ApiService] POST {endpoint} - Sucesso");
                 return result;
             }
             else
             {
-                await HandleErrorResponse(response);
+                await HandleErrorResponse(response, $"POST {endpoint}");
                 return default;
             }
         }
         catch (Exception ex)
         {
-            await HandleException(ex, $"POST {endpoint}");
+            HandleException(ex, $"POST {endpoint}");
             return default;
         }
         finally
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(false));
+            _stateManager.UI.IsLoading = false;
         }
     }
 
@@ -170,8 +168,8 @@ public class ApiService : IApiService
     {
         try
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(true));
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connecting));
+            _stateManager.UI.IsLoading = true;
+            Console.WriteLine($"🌐 [ApiService] POST {endpoint}");
 
             var json = JsonSerializer.Serialize(data, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -180,23 +178,23 @@ public class ApiService : IApiService
 
             if (response.IsSuccessStatusCode)
             {
-                _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connected));
+                Console.WriteLine($"✅ [ApiService] POST {endpoint} - Sucesso");
                 return true;
             }
             else
             {
-                await HandleErrorResponse(response);
+                await HandleErrorResponse(response, $"POST {endpoint}");
                 return false;
             }
         }
         catch (Exception ex)
         {
-            await HandleException(ex, $"POST {endpoint}");
+            HandleException(ex, $"POST {endpoint}");
             return false;
         }
         finally
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(false));
+            _stateManager.UI.IsLoading = false;
         }
     }
 
@@ -207,8 +205,8 @@ public class ApiService : IApiService
     {
         try
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(true));
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connecting));
+            _stateManager.UI.IsLoading = true;
+            Console.WriteLine($"🌐 [ApiService] PUT {endpoint}");
 
             var json = JsonSerializer.Serialize(data, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -220,23 +218,23 @@ public class ApiService : IApiService
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var result = JsonSerializer.Deserialize<T>(responseContent, _jsonOptions);
 
-                _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connected));
+                Console.WriteLine($"✅ [ApiService] PUT {endpoint} - Sucesso");
                 return result;
             }
             else
             {
-                await HandleErrorResponse(response);
+                await HandleErrorResponse(response, $"PUT {endpoint}");
                 return default;
             }
         }
         catch (Exception ex)
         {
-            await HandleException(ex, $"PUT {endpoint}");
+            HandleException(ex, $"PUT {endpoint}");
             return default;
         }
         finally
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(false));
+            _stateManager.UI.IsLoading = false;
         }
     }
 
@@ -247,30 +245,30 @@ public class ApiService : IApiService
     {
         try
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(true));
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connecting));
+            _stateManager.UI.IsLoading = true;
+            Console.WriteLine($"🌐 [ApiService] DELETE {endpoint}");
 
             var response = await _httpClient.DeleteAsync(endpoint);
 
             if (response.IsSuccessStatusCode)
             {
-                _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Connected));
+                Console.WriteLine($"✅ [ApiService] DELETE {endpoint} - Sucesso");
                 return true;
             }
             else
             {
-                await HandleErrorResponse(response);
+                await HandleErrorResponse(response, $"DELETE {endpoint}");
                 return false;
             }
         }
         catch (Exception ex)
         {
-            await HandleException(ex, $"DELETE {endpoint}");
+            HandleException(ex, $"DELETE {endpoint}");
             return false;
         }
         finally
         {
-            _dispatcher.Dispatch(new UIActions.SetLoadingAction(false));
+            _stateManager.UI.IsLoading = false;
         }
     }
 
@@ -294,7 +292,7 @@ public class ApiService : IApiService
     /// <summary>
     /// Trata erros de resposta HTTP
     /// </summary>
-    private async Task HandleErrorResponse(HttpResponseMessage response)
+    private async Task HandleErrorResponse(HttpResponseMessage response, string operation)
     {
         var content = await response.Content.ReadAsStringAsync();
         var errorMessage = $"Erro {(int)response.StatusCode}: {response.ReasonPhrase}";
@@ -315,42 +313,32 @@ public class ApiService : IApiService
             }
         }
 
-        _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Error));
-        _dispatcher.Dispatch(new UIActions.ShowErrorMessageAction("Erro de API", errorMessage));
+        Console.WriteLine($"❌ [ApiService] Erro {operation}: {errorMessage}");
 
-        // Se for erro de autenticação, limpa a sessão
+        // Se for erro de autenticação, fazer logout
         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            _dispatcher.Dispatch(new UserActions.LogoutAction());
+            Console.WriteLine($"🚫 [ApiService] Erro 401 - Fazendo logout");
+            _stateManager.User.Logout();
         }
     }
 
     /// <summary>
     /// Trata exceções
     /// </summary>
-    private async Task HandleException(Exception ex, string operation)
+    private static void HandleException(Exception ex, string operation)
     {
-        await Task.Delay(1); // Para manter método async
-
         var errorMessage = ex.Message;
 
         if (ex is HttpRequestException)
         {
             errorMessage = "Erro de conexão com o servidor";
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Disconnected));
         }
         else if (ex is TaskCanceledException)
         {
             errorMessage = "Operação cancelada ou timeout";
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Disconnected));
-        }
-        else
-        {
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Error));
         }
 
-        _dispatcher.Dispatch(new UIActions.ShowErrorMessageAction($"Erro em {operation}", errorMessage));
-
-        Console.WriteLine($"[ApiService] Erro em {operation}: {ex.Message}");
+        Console.WriteLine($"❌ [ApiService] Erro em {operation}: {errorMessage}");
     }
 }

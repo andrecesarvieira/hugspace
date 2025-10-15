@@ -1,6 +1,6 @@
 using Blazored.LocalStorage;
 using SynQcore.BlazorApp.Store.User;
-using static SynQcore.BlazorApp.Services.AuthService;
+// COMENTADO TEMPORARIAMENTE: using static SynQcore.BlazorApp.Services.AuthService;
 
 namespace SynQcore.BlazorApp.Services;
 

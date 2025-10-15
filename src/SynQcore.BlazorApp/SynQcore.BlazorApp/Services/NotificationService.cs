@@ -118,6 +118,9 @@ public partial class NotificationService : INotificationService
     [LoggerMessage(Level = LogLevel.Information, Message = "Nova notificação processada: {title} - Tipo: {type}")]
     private static partial void LogNotificationProcessed(ILogger logger, string title, NotificationType type);
 
+    [LoggerMessage(Level = LogLevel.Information, Message = "Iniciando conexão SignalR: {tokenInfo}")]
+    private static partial void LogHubConnectionStarting(ILogger logger, string tokenInfo);
+
     public event Func<NotificationModel, Task>? NotificationReceived;
     public event Func<int, Task>? UnreadCountUpdated;
 
@@ -136,11 +139,19 @@ public partial class NotificationService : INotificationService
     {
         try
         {
-            // Configurar conexão SignalR
+            LogHubConnectionStarting(_logger, $"Token com {accessToken.Length} caracteres - Inicia com: {accessToken.Substring(0, Math.Min(50, accessToken.Length))}");
+            
+            // Configurar conexão SignalR usando Authorization header (testado e funcionando)
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl("http://localhost:5005/hubs/corporate-notifications", options =>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult<string?>(accessToken);
+                    // Usar Authorization header em vez de query string
+                    options.Headers["Authorization"] = $"Bearer {accessToken}";
+                    
+                    // Configurações para debug
+                    options.SkipNegotiation = false;
+                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets | 
+                                       Microsoft.AspNetCore.Http.Connections.HttpTransportType.LongPolling;
                 })
                 .WithAutomaticReconnect(new[] { TimeSpan.Zero, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
                 .Build();

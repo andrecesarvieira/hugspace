@@ -1,15 +1,15 @@
 @page "/dashboard"
 @rendermode InteractiveServer
-@using Fluxor
-@using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Services.StateManagement
+@using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Models
-@inject IState<UserState> UserState
-@inject ILocalAuthService LocalAuthService
+@inject StateManager StateManager
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 @inject IEmployeeService EmployeeService
 @inject IPlatformStatsService PlatformStatsService
+@implements IDisposable
 
 <div class="dashboard-page">
     <!-- Header do Dashboard -->
@@ -338,7 +338,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Inscrever-se nas mudanças do estado
+        StateManager.User.PropertyChanged += OnStateChanged;
+
         await LoadDashboardData();
+    }
+
+    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnStateChanged;
     }
 
     private async Task LoadDashboardData()
@@ -346,7 +359,7 @@
         try
         {
             // Carregar usuário atual
-            currentUser = UserState.Value.CurrentUser;
+            currentUser = StateManager.User.CurrentUser;
 
             // Carregar estatísticas da plataforma
             platformStats = await PlatformStatsService.GetPlatformStatsAsync();

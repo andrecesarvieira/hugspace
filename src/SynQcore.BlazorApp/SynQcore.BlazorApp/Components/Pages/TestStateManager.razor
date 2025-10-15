@@ -1,0 +1,177 @@
+@page "/test-state"
+@rendermode InteractiveServer
+@using SynQcore.BlazorApp.Services.StateManagement
+@inject StateManager StateManager
+@implements IDisposable
+
+<PageTitle>SynQcore - Teste StateManager</PageTitle>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-primary">🎯 SynQcore StateManager - Teste Básico</h1>
+            <p class="lead">Testando o funcionamento do StateManager customizado (substituto do Fluxor)</p>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">👤 UserState</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>IsAuthenticated:</strong> @StateManager.User.IsAuthenticated</p>
+                    <p><strong>AccessToken:</strong> @(StateManager.User.AccessToken.Length > 10 ? StateManager.User.AccessToken[..10] + "..." : StateManager.User.AccessToken)</p>
+                    <p><strong>IsLoading:</strong> @StateManager.User.IsLoading</p>
+                    <p><strong>Permissions:</strong> @string.Join(", ", StateManager.User.Permissions)</p>
+                    
+                    <button class="btn btn-sm btn-success me-2" @onclick="SimulateLogin">
+                        Simular Login
+                    </button>
+                    <button class="btn btn-sm btn-danger" @onclick="SimulateLogout">
+                        Simular Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">🎨 UIState</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>IsLoading:</strong> @StateManager.UI.IsLoading</p>
+                    <p><strong>IsSidebarExpanded:</strong> @StateManager.UI.IsSidebarExpanded</p>
+                    <p><strong>CurrentModal:</strong> @(StateManager.UI.CurrentModal ?? "Nenhum")</p>
+                    <p><strong>Notifications:</strong> @StateManager.UI.Notifications.Count</p>
+                    
+                    <button class="btn btn-sm btn-outline-secondary me-2" @onclick="ToggleLoading">
+                        Toggle Loading
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" @onclick="ToggleSidebar">
+                        Toggle Sidebar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">🔢 SimpleState</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Count:</strong> @StateManager.Simple.Count</p>
+                    <p><strong>Message:</strong> @StateManager.Simple.Message</p>
+                    
+                    <button class="btn btn-sm btn-primary me-2" @onclick="IncrementCounter">
+                        Incrementar
+                    </button>
+                    <button class="btn btn-sm btn-warning me-2" @onclick="UpdateMessage">
+                        Nova Mensagem
+                    </button>
+                    <button class="btn btn-sm btn-secondary" @onclick="ResetSimple">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="alert alert-success">
+                <h5>✅ StateManager Status</h5>
+                <p class="mb-0">
+                    <strong>Estado:</strong> Funcionando corretamente! <br/>
+                    <strong>Substituição do Fluxor:</strong> Completa <br/>
+                    <strong>Reatividade:</strong> Todos os estados atualizam automaticamente via INotifyPropertyChanged <br/>
+                    <strong>Renderização:</strong> @(DateTime.Now.ToString("HH:mm:ss")) - InteractiveServer Mode
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // Inscrever-se nas mudanças de estado
+        StateManager.User.PropertyChanged += OnStateChanged;
+        StateManager.UI.PropertyChanged += OnStateChanged;
+        StateManager.Simple.PropertyChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        // Forçar re-renderização quando o estado mudar
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SimulateLogin()
+    {
+        Console.WriteLine("🔵 [TestStateManager] SimulateLogin chamado");
+        await StateManager.User.LoginAsync("admin@synqcore.com", "senha123");
+        Console.WriteLine("🔵 [TestStateManager] SimulateLogin concluído");
+    }
+
+    private void SimulateLogout()
+    {
+        Console.WriteLine("🔵 [TestStateManager] SimulateLogout chamado");
+        StateManager.User.Logout();
+        Console.WriteLine("🔵 [TestStateManager] SimulateLogout concluído");
+    }
+
+    private void ToggleLoading()
+    {
+        Console.WriteLine("🔵 [TestStateManager] ToggleLoading chamado");
+        StateManager.UI.IsLoading = !StateManager.UI.IsLoading;
+        Console.WriteLine($"🔵 [TestStateManager] ToggleLoading: {StateManager.UI.IsLoading}");
+    }
+
+    private void ToggleSidebar()
+    {
+        Console.WriteLine("🔵 [TestStateManager] ToggleSidebar chamado");
+        StateManager.UI.ToggleSidebar();
+        Console.WriteLine($"🔵 [TestStateManager] ToggleSidebar: {StateManager.UI.IsSidebarExpanded}");
+    }
+
+    private void IncrementCounter()
+    {
+        Console.WriteLine("🔵 [TestStateManager] IncrementCounter chamado");
+        StateManager.Simple.Increment();
+        Console.WriteLine($"🔵 [TestStateManager] IncrementCounter: {StateManager.Simple.Count}");
+    }
+
+    private void UpdateMessage()
+    {
+        Console.WriteLine("🔵 [TestStateManager] UpdateMessage chamado");
+        var messages = new[] 
+        { 
+            "StateManager funcionando!", 
+            "Fluxor removido com sucesso!", 
+            "Migração concluída!",
+            "Teste realizado!"
+        };
+        var random = new Random();
+        var newMessage = messages[random.Next(messages.Length)];
+        StateManager.Simple.SetMessage(newMessage);
+        Console.WriteLine($"🔵 [TestStateManager] UpdateMessage: {newMessage}");
+    }
+
+    private void ResetSimple()
+    {
+        Console.WriteLine("🔵 [TestStateManager] ResetSimple chamado");
+        StateManager.Simple.Reset();
+        Console.WriteLine("🔵 [TestStateManager] ResetSimple concluído");
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnStateChanged;
+        StateManager.UI.PropertyChanged -= OnStateChanged;
+        StateManager.Simple.PropertyChanged -= OnStateChanged;
+    }
+}

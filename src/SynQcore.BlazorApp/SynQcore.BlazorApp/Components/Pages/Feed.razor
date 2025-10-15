@@ -1,28 +1,27 @@
 @page "/feed"
 @rendermode InteractiveServer
-@using Fluxor
-@using SynQcore.BlazorApp.Store.User
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
 @using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Services.StateManagement
+@using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Models
 @using SynQcore.BlazorApp.Components.Social
 @using SynQcore.BlazorApp.Components.Shared
 @using SynQcore.Application.Features.CorporateSearch.DTOs
 @using SynQcore.Application.Features.Departments.DTOs
 @implements IDisposable
-@inject IState<UserState> UserState
-@inject IDispatcher Dispatcher
-@inject ILocalAuthService LocalAuthService
+@inject StateManager StateManager
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
-@inject IUserPermissionService UserPermissionService
-@inject IPostService PostService
 @inject INotificationService NotificationService
+@inject IPostService PostService
 @inject ISearchService SearchService
-@inject IDepartmentService DepartmentService
+@inject IUserPermissionService UserPermissionService
 
 <div class="feed-container">
     <!-- Header Principal -->
-        <!-- Header Principal -->
     <header class="feed-header">
         <!-- Logo e Branding -->
         <div class="header-brand">
@@ -373,10 +372,6 @@
     private bool isCreatingPost = false;
     private string newPostContent = string.Empty;
     private bool canModerate = false;
-    
-    // Flag para evitar múltiplas sincronizações
-    private bool isAuthSyncInProgress = false;
-    private bool hasAuthSyncCompleted = false;
 
     // Navegação
     private string activeTab = "feed";
@@ -404,90 +399,28 @@
             isLoading = true;
             StateHasChanged();
 
-            // Verificar autenticação
-            isLocalAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
+            // Verificar autenticação via StateManager
+            isLocalAuthenticated = StateManager.User.IsAuthenticated;
 
-            Console.WriteLine($"[FEED] Status de autenticação verificado - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
+            Console.WriteLine($"[FEED] Status de autenticação verificado - StateManager: {StateManager.User.IsAuthenticated}");
 
             // Verificar se está autenticado
-            if (!UserState.Value.IsAuthenticated && !isLocalAuthenticated)
+            if (!StateManager.User.IsAuthenticated)
             {
                 Console.WriteLine("[FEED] Usuário não autenticado, redirecionando para login");
                 Navigation.NavigateTo("/login", true);
                 return;
             }
 
-            Console.WriteLine($"[FEED] Autenticação OK - Fluxor: {UserState.Value.IsAuthenticated}, LocalAuth: {isLocalAuthenticated}");
-            Console.WriteLine($"[FEED] Estado Fluxor - CurrentUser: {UserState.Value.CurrentUser?.Nome}, Status: {UserState.Value.Status}");
+            Console.WriteLine($"[FEED] Autenticação OK - StateManager: {StateManager.User.IsAuthenticated}");
+            Console.WriteLine($"[FEED] Estado StateManager - CurrentUser: {StateManager.User.CurrentUser?.Nome}");
 
-            // SINCRONIZAÇÃO OTIMIZADA: Se LocalAuth está autenticado mas Fluxor não, sincronizar apenas uma vez
-            if (isLocalAuthenticated && !UserState.Value.IsAuthenticated && !isAuthSyncInProgress && !hasAuthSyncCompleted)
-            {
-                isAuthSyncInProgress = true;
-                Console.WriteLine("[FEED] SINCRONIZANDO: LocalAuth=True mas Fluxor=False - Atualizando estado do Fluxor");
-                
-                try
-                {
-                    var localUser = await LocalAuthService.GetCurrentUserAsync();
-                    if (localUser != null)
-                    {
-                        var localAccessToken = await LocalAuthService.GetAccessTokenAsync() ?? "local-token";
-                        
-                        Console.WriteLine($"[FEED] PRÉ-DISPATCH: Fluxor.IsAuthenticated = {UserState.Value.IsAuthenticated}");
-                        Console.WriteLine($"[FEED] DISPATCH: Enviando LoginSuccessAction - User: {localUser.Nome}, Token: {!string.IsNullOrEmpty(localAccessToken)}");
-                        
-                        // TESTE: Primeiro vamos testar um action mais simples
-                        Console.WriteLine("[FEED] TESTE: Despachando StartLoginAction primeiro");
-                        Dispatcher.Dispatch(new UserActions.StartLoginAction(localUser.Email, "test-password"));
-                        
-                        await Task.Delay(100); // Aguardar processamento
-                        
-                        Console.WriteLine($"[FEED] TESTE PÓS-StartLogin: Status = {UserState.Value.Status}");
-                        
-                        // Agora o LoginSuccessAction
-                        Dispatcher.Dispatch(new UserActions.LoginSuccessAction(
-                            localUser,
-                            AccessToken: localAccessToken,
-                            RefreshToken: null,
-                            ExpiresAt: DateTime.UtcNow.AddHours(24)
-                        ));
-                        
-                        // Aguardar um ciclo de renderização para o estado ser atualizado
-                        await Task.Delay(100);
-                        
-                        Console.WriteLine($"[FEED] PÓS-DISPATCH: Fluxor.IsAuthenticated = {UserState.Value.IsAuthenticated}");
-                        Console.WriteLine($"[FEED] PÓS-DISPATCH: CurrentUser = {UserState.Value.CurrentUser?.Nome}");
-                        Console.WriteLine($"[FEED] PÓS-DISPATCH: Status = {UserState.Value.Status}");
-                        
-                        hasAuthSyncCompleted = true;
-                        Console.WriteLine($"[FEED] Estado do Fluxor sincronizado para usuário: {localUser.Nome}");
-                        StateHasChanged();
-                    }
-                }
-                finally
-                {
-                    isAuthSyncInProgress = false;
-                }
-            }
-            else if (hasAuthSyncCompleted)
-            {
-                Console.WriteLine("[FEED] Sincronização já concluída anteriormente - pulando");
-            }
+            // Skip sincronização - agora usamos apenas StateManager
 
-            // Verificar token de acesso
-            var accessToken = await LocalAuthService.GetAccessTokenAsync();
-            Console.WriteLine($"[FEED] Token de acesso encontrado: {!string.IsNullOrEmpty(accessToken)}");
-            Console.WriteLine($"[FEED] Token (primeiros 20 chars): {accessToken?.Substring(0, Math.Min(20, accessToken.Length))}...");
-
-            // Carregar dados do usuário
-            if (UserState.Value.IsAuthenticated && UserState.Value.CurrentUser != null)
+            // Carregar dados do usuário via StateManager
+            if (StateManager.User.IsAuthenticated && StateManager.User.CurrentUser != null)
             {
-                currentUser = UserState.Value.CurrentUser;
-            }
-            else if (isLocalAuthenticated)
-            {
-                // Buscar dados do LocalAuth
-                currentUser = await LocalAuthService.GetCurrentUserAsync();
+                currentUser = StateManager.User.CurrentUser;
             }
 
             Console.WriteLine($"[FEED] Feed carregado - User: {currentUser?.Nome}");
@@ -685,10 +618,12 @@
         StateHasChanged();
     }
 
-    private async Task HandleLogout()
+    private Task HandleLogout()
     {
-        await LocalAuthService.LogoutAsync();
+        // Usar StateManager para logout 
+        StateManager.User.Logout();
         Navigation.NavigateTo("/login", true);
+        return Task.CompletedTask;
     }
 
     private async Task HandleSearch()
@@ -772,20 +707,21 @@
             {
                 try
                 {
-                    var accessToken = await LocalAuthService.GetAccessTokenAsync();
-                    if (!string.IsNullOrEmpty(accessToken))
+                    // Obter token JWT real do StateManager
+                    var accessToken = StateManager.User.AccessToken ?? string.Empty;
+                    if (!string.IsNullOrEmpty(accessToken) && accessToken != "statemanager-token")
                     {
-                        Console.WriteLine($"[FEED] Tentativa {attempt}: Inicializando NotificationService com token disponível");
+                        Console.WriteLine($"[FEED] Tentativa {attempt}: Inicializando NotificationService com token JWT real");
                         await NotificationService.StartAsync(accessToken);
                         Console.WriteLine("[FEED] NotificationService inicializado com sucesso");
                         return; // Sucesso - sair do loop
                     }
                     else
                     {
-                        Console.WriteLine($"[FEED] Tentativa {attempt}: Token ainda não disponível, aguardando...");
-                        if (attempt < maxRetries)
-                            await Task.Delay(delayMs);
+                        Console.WriteLine($"[FEED] Tentativa {attempt}: Token JWT ainda não disponível, aguardando...");
                     }
+                    
+                    await Task.Delay(delayMs);
                 }
                 catch (HttpRequestException ex) when (ex.Message.Contains("401"))
                 {
@@ -954,8 +890,23 @@
         Navigation.NavigateTo(url);
     }
 
+    protected override void OnInitialized()
+    {
+        // Inscrever-se nas mudanças do estado
+        StateManager.User.PropertyChanged += OnStateChanged;
+        StateManager.UI.PropertyChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     public void Dispose()
     {
+        // Remove event handlers para evitar memory leaks
+        StateManager.User.PropertyChanged -= OnStateChanged;
+        StateManager.UI.PropertyChanged -= OnStateChanged;
         searchTimer?.Dispose();
     }
 }

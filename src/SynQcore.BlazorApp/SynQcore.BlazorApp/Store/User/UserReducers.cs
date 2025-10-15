@@ -13,8 +13,8 @@ public static class UserReducers
     [ReducerMethod]
     public static UserState ReduceStartLoginAction(UserState state, UserActions.StartLoginAction action)
     {
-        Console.WriteLine($"[UserReducer] TESTE: Processando StartLoginAction para: {action.Email}");
-        Console.WriteLine($"[UserReducer] TESTE: Estado atual - IsAuthenticated: {state.IsAuthenticated}");
+        Console.WriteLine($"🔄 [UserReducer] REDUCER EXECUTADO: StartLoginAction para: {action.Email}");
+        Console.WriteLine($"🔄 [UserReducer] Estado atual - IsAuthenticated: {state.IsAuthenticated}");
 
         var newState = state with
         {
@@ -22,7 +22,7 @@ public static class UserReducers
             LastAuthError = null
         };
 
-        Console.WriteLine($"[UserReducer] TESTE: Estado após StartLogin - Status: {newState.Status}");
+        Console.WriteLine($"🔄 [UserReducer] Estado após StartLogin - Status: {newState.Status}");
         return newState;
     }
 
@@ -32,9 +32,9 @@ public static class UserReducers
     [ReducerMethod]
     public static UserState ReduceLoginSuccessAction(UserState state, UserActions.LoginSuccessAction action)
     {
-        Console.WriteLine($"[UserReducer] ENTRADA: LoginSuccessAction - Estado atual IsAuthenticated: {state.IsAuthenticated}");
-        Console.WriteLine($"[UserReducer] ENTRADA: LoginSuccessAction - Usuario: {action.User.Nome}");
-        Console.WriteLine($"[UserReducer] ENTRADA: LoginSuccessAction - Token existe: {!string.IsNullOrEmpty(action.AccessToken)}");
+        Console.WriteLine($"✅ [UserReducer] REDUCER EXECUTADO: LoginSuccessAction - Estado atual IsAuthenticated: {state.IsAuthenticated}");
+        Console.WriteLine($"✅ [UserReducer] LoginSuccessAction - Usuario: {action.User.Nome}");
+        Console.WriteLine($"✅ [UserReducer] LoginSuccessAction - Token existe: {!string.IsNullOrEmpty(action.AccessToken)}");
 
         var newState = state with
         {
@@ -50,10 +50,10 @@ public static class UserReducers
             Permissions = action.User.Roles
         };
 
-        Console.WriteLine($"[UserReducer] SAÍDA: Estado criado - IsAuthenticated: {newState.IsAuthenticated}");
-        Console.WriteLine($"[UserReducer] SAÍDA: CurrentUser: {newState.CurrentUser?.Nome}");
-        Console.WriteLine($"[UserReducer] SAÍDA: Status: {newState.Status}");
-        Console.WriteLine($"[UserReducer] SAÍDA: Token definido: {!string.IsNullOrEmpty(newState.AccessToken)}");
+        Console.WriteLine($"✅ [UserReducer] Estado criado - IsAuthenticated: {newState.IsAuthenticated}");
+        Console.WriteLine($"✅ [UserReducer] CurrentUser: {newState.CurrentUser?.Nome}");
+        Console.WriteLine($"✅ [UserReducer] Status: {newState.Status}");
+        Console.WriteLine($"✅ [UserReducer] Token definido: {!string.IsNullOrEmpty(newState.AccessToken)}");
 
         return newState;
     }

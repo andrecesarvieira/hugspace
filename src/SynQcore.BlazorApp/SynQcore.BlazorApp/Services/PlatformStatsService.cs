@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using SynQcore.BlazorApp.Services.StateManagement;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -9,7 +10,7 @@ namespace SynQcore.BlazorApp.Services;
 public partial class PlatformStatsService : IPlatformStatsService
 {
     private readonly IApiService _apiService;
-    private readonly ILocalAuthService _authService;
+    private readonly StateManager _stateManager;
     private readonly ILogger<PlatformStatsService> _logger;
 
     // LoggerMessage delegates para performance otimizada
@@ -22,10 +23,10 @@ public partial class PlatformStatsService : IPlatformStatsService
     [LoggerMessage(Level = LogLevel.Error, Message = "Erro ao buscar estatísticas de conteúdo")]
     private static partial void LogErrorContentStats(ILogger logger, Exception ex);
 
-    public PlatformStatsService(IApiService apiService, ILocalAuthService authService, ILogger<PlatformStatsService> logger)
+    public PlatformStatsService(IApiService apiService, StateManager stateManager, ILogger<PlatformStatsService> logger)
     {
         _apiService = apiService;
-        _authService = authService;
+        _stateManager = stateManager;
         _logger = logger;
     }
 
@@ -43,7 +44,7 @@ public partial class PlatformStatsService : IPlatformStatsService
             }
 
             // Verificar se o usuário está autenticado (apenas no cliente)
-            var isAuthenticated = await _authService.IsAuthenticatedAsync();
+            var isAuthenticated = _stateManager.User.CurrentUser != null;
             if (!isAuthenticated)
             {
                 // Retornar dados mock se não estiver autenticado
@@ -93,7 +94,7 @@ public partial class PlatformStatsService : IPlatformStatsService
             }
 
             // Verificar se o usuário está autenticado
-            var isAuthenticated = await _authService.IsAuthenticatedAsync();
+            var isAuthenticated = _stateManager.User.CurrentUser != null;
             if (!isAuthenticated)
             {
                 return GetFallbackCommunicationStats();
@@ -145,7 +146,7 @@ public partial class PlatformStatsService : IPlatformStatsService
             }
 
             // Verificar se o usuário está autenticado
-            var isAuthenticated = await _authService.IsAuthenticatedAsync();
+            var isAuthenticated = _stateManager.User.CurrentUser != null;
             if (!isAuthenticated)
             {
                 return GetFallbackContentStats();

@@ -1,7 +1,9 @@
+@* COMENTADO - usando StateManager
 @using Fluxor
 @using SynQcore.BlazorApp.Services
 @inject IStateInitializationService StateInitialization
 @inject IDispatcher Dispatcher
+*@
 @implements IAsyncDisposable
 
 @* Renderiza sempre o conteúdo - sem loading state *@
@@ -17,7 +19,7 @@
         // Inicialização básica sem JavaScript interop
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !hasRendered)
         {
@@ -25,19 +27,22 @@
 
             try
             {
-                // Agora é seguro usar JavaScript interop
-                await StateInitialization.InitializeAfterRenderAsync();
+                // COMENTADO - usando StateManager
+                // await StateInitialization.InitializeAfterRenderAsync();
+                Console.WriteLine("[AppInitializer] Inicialização com StateManager");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[AppInitializer] Erro na inicialização: {ex.Message}");
             }
         }
+        
+        return Task.CompletedTask;
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         // Cleanup se necessário
-        await Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

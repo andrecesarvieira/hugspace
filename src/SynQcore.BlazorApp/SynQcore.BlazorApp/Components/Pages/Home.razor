@@ -1,14 +1,14 @@
 ﻿@page "/"
 @page "/home"
-@using Fluxor
-@using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Services.StateManagement
 @using Microsoft.AspNetCore.Components.Web
-@inject IState<UserState> UserState
+@inject StateManager StateManager
 @inject NavigationManager Navigation
 @inject IPlatformStatsService PlatformStatsService
 @inject ILocalAuthService LocalAuthService
 @rendermode InteractiveServer
+@implements IDisposable
 
 <PageTitle>SynQcore - Rede Social Corporativa</PageTitle>
 
@@ -45,7 +45,7 @@
                     promove colaboração e constrói conhecimento coletivo.
                 </p>
 
-                @if (UserState.Value.IsAuthenticated)
+                @if (StateManager.User.IsAuthenticated)
                 {
                     <div class="hero-actions authenticated">
                         <button class="btn btn-primary large" @onclick="NavigateToFeed">
@@ -53,7 +53,7 @@
                             Acessar Feed
                         </button>
                         <div class="welcome-message">
-                            <p>Bem-vindo de volta, <strong>@UserState.Value.CurrentUser?.Nome</strong>!</p>
+                            <p>Bem-vindo de volta, <strong>@StateManager.User.CurrentUser?.Nome</strong>!</p>
                         </div>
                     </div>
                 }
@@ -213,7 +213,7 @@
                 <h2>Pronto para Transformar sua Comunicação Corporativa?</h2>
                 <p>Junte-se a centenas de empresas que já revolucionaram sua cultura organizacional</p>
                 <div class="cta-actions">
-                    @if (!UserState.Value.IsAuthenticated)
+                    @if (!StateManager.User.IsAuthenticated)
                     {
                         <button class="btn btn-primary large" @onclick="NavigateToLogin">
                             <i class="fas fa-rocket"></i>
@@ -237,20 +237,31 @@
     private bool isLoadingStats = true;
     private PlatformStatsDto? platformStats;
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
-        // Verificar autenticação tanto no Fluxor quanto no LocalAuthService
-        var isLocallyAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
-        
+        // Inscrever-se nas mudanças do estado
+        StateManager.User.PropertyChanged += OnStateChanged;
+
         // Se já estiver autenticado, redirecionar automaticamente para o feed
-        if (UserState.Value.IsAuthenticated || isLocallyAuthenticated)
+        if (StateManager.User.IsAuthenticated)
         {
             Navigation.NavigateTo("/feed");
-            return;
+            return Task.CompletedTask;
         }
 
         // Carregar estatísticas da plataforma em paralelo
         _ = Task.Run(LoadPlatformStats);
+        return Task.CompletedTask;
+    }
+
+    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnStateChanged;
     }
 
     private async Task LoadPlatformStats()

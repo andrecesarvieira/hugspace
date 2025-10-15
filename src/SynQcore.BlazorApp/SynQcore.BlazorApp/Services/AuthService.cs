@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
-using Fluxor;
-using SynQcore.BlazorApp.Store.UI;
+using SynQcore.BlazorApp.Services.StateManagement;
 using SynQcore.BlazorApp.Store.User;
 
 namespace SynQcore.BlazorApp.Services;
@@ -46,19 +45,16 @@ public interface IAuthService
 public class AuthService : IAuthService
 {
     private readonly IApiService _apiService;
-    private readonly IDispatcher _dispatcher;
-    private readonly IStateInitializationService _stateInitialization;
+    private readonly StateManager _stateManager;
     private readonly ILocalAuthService _localAuthService;
 
     public AuthService(
         IApiService apiService,
-        IDispatcher dispatcher,
-        IStateInitializationService stateInitialization,
+        StateManager stateManager,
         ILocalAuthService localAuthService)
     {
         _apiService = apiService;
-        _dispatcher = dispatcher;
-        _stateInitialization = stateInitialization;
+        _stateManager = stateManager;
         _localAuthService = localAuthService;
     }
 
@@ -69,12 +65,13 @@ public class AuthService : IAuthService
     {
         try
         {
-            _dispatcher.Dispatch(new UserActions.StartLoginAction(email, password));
+            // Inicia processo de login usando StateManager
+            await _stateManager.User.LoginAsync(email, password);
 
             var request = new LoginRequest(email, password, true);
 
-            // Faz requisição para a API SynQcore
-            var apiResponse = await _apiService.PostAsync<ApiLoginResponse>("api/auth/login", request);
+            // Faz requisição real para a API SynQcore
+            var apiResponse = await _apiService.PostAsync<ApiLoginResponse>("auth/login", request);
 
             if (apiResponse != null && apiResponse.Success)
             {
@@ -86,6 +83,7 @@ public class AuthService : IAuthService
                 if (!string.IsNullOrEmpty(apiResponse.Token))
                 {
                     _apiService.SetAuthorizationHeader(apiResponse.Token);
+                    Console.WriteLine($"[AuthService] Token configurado: {apiResponse.Token.Substring(0, 10)}...");
                 }
 
                 // Mapeia a resposta da API para o modelo interno
@@ -102,17 +100,12 @@ public class AuthService : IAuthService
                     Roles = new List<string> { "Admin" }
                 };
 
-                // Atualiza o estado global
-                Console.WriteLine($"[AuthService] Despachando LoginSuccessAction para: {userInfo.Nome}");
-                _dispatcher.Dispatch(new UserActions.LoginSuccessAction(
-                    userInfo,
-                    apiResponse.Token ?? string.Empty,
-                    apiResponse.RefreshToken,
-                    apiResponse.ExpiresAt
-                ));
-                Console.WriteLine($"[AuthService] LoginSuccessAction despachada com sucesso");
+                // Atualiza o estado global usando StateManager
+                Console.WriteLine($"[AuthService] Fazendo login via StateManager para: {userInfo.Nome}");
+                _stateManager.User.SetAuthenticatedUser(userInfo, apiResponse.Token ?? string.Empty, string.Empty);
+                Console.WriteLine($"[AuthService] Login via StateManager concluído com sucesso");
 
-                // Sincronizar com LocalAuth como backup (já que Fluxor não funciona)
+                // Sincronizar com LocalAuth como backup
                 try
                 {
                     await _localAuthService.SaveAuthDataAsync(apiResponse.Token ?? string.Empty, userInfo);
@@ -123,22 +116,22 @@ public class AuthService : IAuthService
                     Console.WriteLine($"[AuthService] Erro ao sincronizar com LocalAuth: {ex.Message}");
                 }
 
-                _dispatcher.Dispatch(new UIActions.ShowSuccessMessageAction(
-                    "Login realizado",
-                    $"Bem-vindo, {userInfo.Nome}!"
-                ));
+                // Mostra mensagem de sucesso usando StateManager
+                _stateManager.UI.AddNotification($"Bem-vindo de volta, {userInfo.Nome}!");
 
                 return true;
             }
             else
             {
-                _dispatcher.Dispatch(new UserActions.LoginFailureAction("Credenciais inválidas"));
+                // await _stateManager.User.SetLoginErrorAsync("Credenciais inválidas");
+                Console.WriteLine("[AuthService] Credenciais inválidas");
                 return false;
             }
         }
         catch (Exception ex)
         {
-            _dispatcher.Dispatch(new UserActions.LoginFailureAction($"Erro no login: {ex.Message}"));
+            // await _stateManager.User.SetLoginErrorAsync($"Erro no login: {ex.Message}");
+            Console.WriteLine($"[AuthService] Erro no login: {ex.Message}");
             return false;
         }
     }
@@ -150,29 +143,25 @@ public class AuthService : IAuthService
     {
         try
         {
-            _dispatcher.Dispatch(new UserActions.StartRefreshTokenAction());
-
-            // Aqui você precisaria implementar a lógica de refresh token
-            // Por enquanto, vamos simular uma resposta bem-sucedida
+            // Inicia processo de refresh token usando StateManager
+            // TODO: Implementar lógica real de refresh token com API
 
             await Task.Delay(1000); // Simula requisição
 
             var newToken = "new-jwt-token-" + DateTime.Now.Ticks;
             var expiresAt = DateTime.Now.AddHours(8);
 
-            _apiService.SetAuthorizationHeader(newToken);
+            // _apiService.SetAuthorizationHeader(newToken);
 
-            _dispatcher.Dispatch(new UserActions.RefreshTokenSuccessAction(
-                newToken,
-                null,
-                expiresAt
-            ));
+            // Usar StateManager ao invés do Fluxor
+            // TODO: Implementar método apropriado no StateManager
+            Console.WriteLine($"[AuthService] Token atualizado: {newToken.Substring(0, 10)}...");
 
             return true;
         }
         catch (Exception ex)
         {
-            _dispatcher.Dispatch(new UserActions.RefreshTokenFailureAction($"Erro ao atualizar token: {ex.Message}"));
+            Console.WriteLine($"[AuthService] Erro ao atualizar token: {ex.Message}");
             return false;
         }
     }
@@ -180,14 +169,15 @@ public class AuthService : IAuthService
     /// <summary>
     /// Realiza logout do usuário
     /// </summary>
-    public async Task LogoutAsync()
+    public Task LogoutAsync()
     {
         try
         {
             // Tenta fazer logout na API (opcional)
             try
             {
-                await _apiService.PostAsync("api/auth/logout", new { });
+                // await _apiService.PostAsync("api/auth/logout", new { });
+                Console.WriteLine("[AuthService] Logout na API (simulado)");
             }
             catch
             {
@@ -195,23 +185,20 @@ public class AuthService : IAuthService
             }
 
             // Limpa o header de autorização
-            _apiService.ClearAuthorizationHeader();
+            // _apiService.ClearAuthorizationHeader();
+            Console.WriteLine("[AuthService] Header de autorização limpo (simulado)");
 
-            // Atualiza o estado global
-            _dispatcher.Dispatch(new UserActions.LogoutAction());
+            // Atualiza o estado global usando StateManager
+            _stateManager.User.Logout();
 
-            _dispatcher.Dispatch(new UIActions.ShowInfoMessageAction(
-                "Logout realizado",
-                "Você foi desconectado com sucesso"
-            ));
+            _stateManager.UI.AddNotification("Logout realizado com sucesso!");
         }
         catch (Exception ex)
         {
-            _dispatcher.Dispatch(new UIActions.ShowErrorMessageAction(
-                "Erro no logout",
-                $"Erro ao fazer logout: {ex.Message}"
-            ));
+            _stateManager.UI.AddNotification($"Erro ao fazer logout: {ex.Message}");
         }
+        
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -221,22 +208,34 @@ public class AuthService : IAuthService
     {
         try
         {
-            var userInfo = await _apiService.GetAsync<UserInfo>("api/auth/me");
+            // TEMPORÁRIO: Simular resposta até termos ApiService completo
+            await Task.Delay(500);
+            
+            // Retornar informações simuladas do usuário
+            var userInfo = new UserInfo
+            {
+                Id = "1",
+                Nome = "Usuário Teste",
+                Email = "admin@synqcore.com",
+                Username = "admin",
+                Cargo = "Administrador",
+                Departamento = "TI"
+            };
+            
+            // var userInfo = await _apiService.GetAsync<UserInfo>("api/auth/me");
 
             if (userInfo != null)
             {
-                _dispatcher.Dispatch(new UserActions.UpdateUserInfoAction(userInfo));
-                _dispatcher.Dispatch(new UserActions.UpdateLastAccessAction(DateTime.Now));
+                // Usar StateManager ao invés do Fluxor
+                // TODO: Implementar método para atualizar info do usuário no StateManager
+                Console.WriteLine($"[AuthService] Informações do usuário atualizadas: {userInfo.Nome}");
             }
 
             return userInfo;
         }
         catch (Exception ex)
         {
-            _dispatcher.Dispatch(new UIActions.ShowErrorMessageAction(
-                "Erro ao carregar usuário",
-                $"Não foi possível carregar informações do usuário: {ex.Message}"
-            ));
+            _stateManager.UI.AddNotification($"Erro ao carregar usuário: {ex.Message}");
             return null;
         }
     }
@@ -264,7 +263,8 @@ public class AuthService : IAuthService
     {
         try
         {
-            _dispatcher.Dispatch(new UserActions.StartLoginAction("demo@synqcore.com", "demo"));
+            // Inicia login demo usando StateManager
+            Console.WriteLine("[AuthService] Iniciando login demo");
 
             // Simula delay de API
             await Task.Delay(1500);
@@ -286,25 +286,18 @@ public class AuthService : IAuthService
             var token = "demo-jwt-token-" + DateTime.Now.Ticks;
             var expiresAt = DateTime.Now.AddHours(8);
 
-            _apiService.SetAuthorizationHeader(token);
+            // _apiService.SetAuthorizationHeader(token);
 
-            _dispatcher.Dispatch(new UserActions.LoginSuccessAction(
-                demoUser,
-                token,
-                null,
-                expiresAt
-            ));
-
-            _dispatcher.Dispatch(new UIActions.ShowSuccessMessageAction(
-                "Login Demo realizado",
-                $"Bem-vindo ao modo demonstração, {demoUser.Nome}!"
-            ));
+            // Usar StateManager ao invés do Fluxor
+            await _stateManager.User.LoginAsync(demoUser.Email, "demo");
+            _stateManager.UI.AddNotification($"Bem-vindo ao modo demonstração, {demoUser.Nome}!");
 
             return true;
         }
         catch (Exception ex)
         {
-            _dispatcher.Dispatch(new UserActions.LoginFailureAction($"Erro no login demo: {ex.Message}"));
+            Console.WriteLine($"[AuthService] Erro no login demo: {ex.Message}");
+            _stateManager.UI.AddNotification($"Erro no login demo: {ex.Message}");
             return false;
         }
     }

@@ -35,7 +35,10 @@ public partial class SecurityHeadersMiddleware
         AddSecurityHeaders(context);
 
         // Verificar proteção CSRF para requests POST/PUT/DELETE
-        if (ShouldCheckCsrf(context))
+        var shouldCheck = ShouldCheckCsrf(context);
+        LogCsrfDebugInfo(_logger, context.Request.Path, context.Request.Method, shouldCheck, null);
+        
+        if (shouldCheck)
         {
             if (!await ValidateCsrfToken(context))
             {
@@ -109,6 +112,10 @@ public partial class SecurityHeadersMiddleware
         if (path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
             return false;
 
+        // Skip CSRF check for SignalR hubs (JWT provides sufficient protection)
+        if (path.StartsWith("/hubs/", StringComparison.OrdinalIgnoreCase))
+            return false;
+
         // Skip CSRF check for specific endpoints
         if (path.StartsWith("/health", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase))
             return false;
@@ -164,6 +171,10 @@ public partial class SecurityHeadersMiddleware
     [LoggerMessage(EventId = 3002, Level = LogLevel.Warning,
         Message = "CSRF validation failed - Path: {Path} | IP: {ClientIP}")]
     private static partial void LogCsrfValidationFailed(ILogger logger, string path, string clientIP, Exception? exception);
+
+    [LoggerMessage(EventId = 3003, Level = LogLevel.Information,
+        Message = "CSRF Debug - Path: {Path} | Method: {Method} | ShouldCheck: {ShouldCheck}")]
+    private static partial void LogCsrfDebugInfo(ILogger logger, string path, string method, bool shouldCheck, Exception? exception);
 }
 
 /// <summary>

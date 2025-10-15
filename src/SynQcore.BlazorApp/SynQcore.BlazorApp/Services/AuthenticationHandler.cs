@@ -1,32 +1,49 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using Fluxor;
-using SynQcore.BlazorApp.Store.UI;
-using SynQcore.BlazorApp.Store.User;
+using SynQcore.BlazorApp.Services.StateManagement;
 
 namespace SynQcore.BlazorApp.Services;
 
 /// <summary>
 /// Handler HTTP para interceptar requisições e automatizar autenticação
 /// </summary>
-public class AuthenticationHandler : DelegatingHandler
+public partial class AuthenticationHandler : DelegatingHandler
 {
-    private readonly IDispatcher _dispatcher;
-    private readonly IState<UserState> _userState;
+    private readonly StateManager _stateManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<AuthenticationHandler> _logger;
+
+    // LoggerMessage delegates para alta performance
+    [LoggerMessage(LogLevel.Error, "Erro de conectividade HTTP: {Message}")]
+    private static partial void LogHttpConnectionError(ILogger logger, string message, Exception exception);
+
+    [LoggerMessage(LogLevel.Warning, "Timeout na requisição HTTP")]
+    private static partial void LogHttpTimeout(ILogger logger, Exception exception);
+
+    [LoggerMessage(LogLevel.Information, "Tentando renovar token de acesso...")]
+    private static partial void LogTokenRefreshAttempt(ILogger logger);
+
+    [LoggerMessage(LogLevel.Warning, "Falha na renovação do token - forçando logout")]
+    private static partial void LogTokenRefreshFailure(ILogger logger);
+
+    [LoggerMessage(LogLevel.Error, "Erro durante tentativa de renovação de token")]
+    private static partial void LogTokenRefreshError(ILogger logger, Exception exception);
+
+    [LoggerMessage(LogLevel.Warning, "Não há refresh token disponível - forçando logout")]
+    private static partial void LogNoRefreshToken(ILogger logger);
 
     public AuthenticationHandler(
-        IDispatcher dispatcher,
-        IState<UserState> userState,
+        StateManager stateManager,
         IHttpContextAccessor httpContextAccessor,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        ILogger<AuthenticationHandler> logger)
     {
-        _dispatcher = dispatcher;
-        _userState = userState;
+        _stateManager = stateManager;
         _httpContextAccessor = httpContextAccessor;
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(
@@ -60,10 +77,10 @@ public class AuthenticationHandler : DelegatingHandler
             }
         }
 
-        // Fallback final para Fluxor
+        // Fallback final para StateManager
         if (string.IsNullOrEmpty(token))
         {
-            token = _userState.Value.AccessToken;
+            token = _stateManager.User.AccessToken;
         }
 
         // Adiciona token automaticamente se disponível
@@ -89,7 +106,7 @@ public class AuthenticationHandler : DelegatingHandler
 
             // Verifica se o token expirou
             if (response.StatusCode == HttpStatusCode.Unauthorized &&
-                _userState.Value.IsAuthenticated)
+                _stateManager.User.IsAuthenticated)
             {
                 // Tenta renovar o token automaticamente
                 await HandleUnauthorized();
@@ -99,22 +116,16 @@ public class AuthenticationHandler : DelegatingHandler
         }
         catch (HttpRequestException ex)
         {
-            // Dispara ação de erro de conectividade
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Disconnected));
-            _dispatcher.Dispatch(new UIActions.ShowErrorMessageAction(
-                "Erro de Conectividade",
-                $"Não foi possível conectar ao servidor: {ex.Message}"
-            ));
+            // Atualiza status de conectividade via StateManager
+            _stateManager.UI.SetConnectivityStatus(false);
+            LogHttpConnectionError(_logger, ex.Message, ex);
             throw;
         }
         catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
         {
-            // Dispara ação de timeout
-            _dispatcher.Dispatch(new UIActions.SetApiConnectionStatusAction(ConnectionStatus.Error));
-            _dispatcher.Dispatch(new UIActions.ShowWarningMessageAction(
-                "Timeout",
-                "A requisição demorou muito para responder"
-            ));
+            // Atualiza status via StateManager
+            _stateManager.UI.SetConnectivityStatus(false);
+            LogHttpTimeout(_logger, ex);
             throw;
         }
     }
@@ -124,37 +135,32 @@ public class AuthenticationHandler : DelegatingHandler
     /// </summary>
     private async Task HandleUnauthorized()
     {
-        var refreshToken = _userState.Value.RefreshToken;
+        var refreshToken = _stateManager.User.RefreshToken;
 
         if (!string.IsNullOrEmpty(refreshToken))
         {
             try
             {
-                _dispatcher.Dispatch(new UserActions.StartRefreshTokenAction());
+                LogTokenRefreshAttempt(_logger);
 
                 // Simula tentativa de refresh (em produção seria uma chamada real à API)
                 await Task.Delay(1000);
 
                 // Por enquanto, força logout se não conseguir renovar
-                _dispatcher.Dispatch(new UserActions.RefreshTokenFailureAction("Token expirado"));
-                _dispatcher.Dispatch(new UIActions.ShowWarningMessageAction(
-                    "Sessão Expirada",
-                    "Sua sessão expirou. Por favor, faça login novamente."
-                ));
+                LogTokenRefreshFailure(_logger);
+                _stateManager.User.Logout();
             }
             catch (Exception ex)
             {
-                _dispatcher.Dispatch(new UserActions.RefreshTokenFailureAction(ex.Message));
+                LogTokenRefreshError(_logger, ex);
+                _stateManager.User.Logout();
             }
         }
         else
         {
             // Força logout se não há refresh token
-            _dispatcher.Dispatch(new UserActions.LogoutAction());
-            _dispatcher.Dispatch(new UIActions.ShowWarningMessageAction(
-                "Sessão Inválida",
-                "Sua sessão é inválida. Por favor, faça login novamente."
-            ));
+            LogNoRefreshToken(_logger);
+            _stateManager.User.Logout();
         }
     }
 }

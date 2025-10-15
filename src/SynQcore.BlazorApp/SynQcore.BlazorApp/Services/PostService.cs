@@ -1,7 +1,6 @@
 using System.Text.Json;
-using Fluxor;
 using SynQcore.BlazorApp.Components.Social;
-using SynQcore.BlazorApp.Store.User;
+using SynQcore.BlazorApp.Services.StateManagement;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -26,7 +25,7 @@ public partial class PostService : IPostService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<PostService> _logger;
-    private readonly IState<UserState> _userState;
+    private readonly StateManager _stateManager;
 
     // Cache de JsonSerializerOptions para performance
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -80,11 +79,11 @@ public partial class PostService : IPostService
     [LoggerMessage(LogLevel.Warning, "Erro no like - PostId: {PostId}, Status: {StatusCode}, Error: {Error}")]
     private static partial void LogLikeError(ILogger logger, Guid postId, System.Net.HttpStatusCode statusCode, string error);
 
-    public PostService(HttpClient httpClient, ILogger<PostService> logger, IState<UserState> userState)
+    public PostService(HttpClient httpClient, ILogger<PostService> logger, StateManager stateManager)
     {
         _httpClient = httpClient;
         _logger = logger;
-        _userState = userState;
+        _stateManager = stateManager;
     }
 
     public async Task<List<SimplePostCard.PostModel>> GetFeedPostsAsync(int page = 1, int pageSize = 10)
@@ -164,15 +163,16 @@ public partial class PostService : IPostService
         Console.WriteLine($"[POST SERVICE] FALLBACK: Retornando post em memória - NÃO SERÁ PERSISTIDO!");
 
         // Fallback: criar post usando dados reais do usuário autenticado
-        var userId = _userState.Value.CurrentUser?.Id ?? "anonymous";
-        var userName = _userState.Value.CurrentUser?.Nome ?? "Usuário";
+        var currentUser = _stateManager.User.CurrentUser;
+        var userId = currentUser?.Id ?? "anonymous";
+        var userName = currentUser?.Nome ?? "Usuário";
 
         return new SimplePostCard.PostModel
         {
             Id = Guid.NewGuid(),
             AuthorName = userName,
-            AuthorRole = _userState.Value.CurrentUser?.Cargo ?? "Funcionário",
-            AuthorAvatar = _userState.Value.CurrentUser?.FotoUrl ?? "/images/default-avatar.png",
+            AuthorRole = currentUser?.Cargo ?? "Funcionário",
+            AuthorAvatar = currentUser?.FotoUrl ?? "/images/default-avatar.png",
             Content = request.Content,
             Title = ExtractTitleFromContent(request.Content),
             CreatedAt = DateTime.Now,
@@ -391,13 +391,14 @@ public partial class PostService : IPostService
         }
 
         // Fallback: criar comentário usando dados reais do usuário autenticado
-        var userName = _userState.Value.CurrentUser?.Nome ?? "Usuário";
+        var currentUser = _stateManager.User.CurrentUser;
+        var userName = currentUser?.Nome ?? "Usuário";
 
         return new SimplePostCard.CommentModel
         {
             Id = Guid.NewGuid(),
             AuthorName = userName,
-            AuthorAvatar = _userState.Value.CurrentUser?.FotoUrl ?? "/images/default-avatar.png",
+            AuthorAvatar = currentUser?.FotoUrl ?? "/images/default-avatar.png",
             Content = content,
             CreatedAt = DateTime.Now,
             LikeCount = 0,

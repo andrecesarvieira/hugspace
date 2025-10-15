@@ -1,10 +1,9 @@
 @namespace SynQcore.BlazorApp.Components.Social
 @using Microsoft.AspNetCore.Components
 @using SynQcore.BlazorApp.Services
-@using SynQcore.BlazorApp.Store.User
-@using Fluxor
+@using SynQcore.BlazorApp.Services.StateManagement
 @inject IPostService PostService
-@inject IState<UserState> UserState
+@inject StateManager StateManager
 @inject IJSRuntime JS
 
 <article class="simple-post-card" data-post-id="@Post.Id">
@@ -172,7 +171,7 @@
 
     private bool IsCurrentUserPost()
     {
-        var currentUser = UserState.Value.CurrentUser;
+        var currentUser = StateManager.User.CurrentUser;
         if (currentUser == null) return false;
         
         // Comparar pelo nome do autor (futuramente usar ID)

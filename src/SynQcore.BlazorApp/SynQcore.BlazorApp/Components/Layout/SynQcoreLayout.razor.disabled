@@ -1,9 +1,8 @@
 @using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Models
-@using Fluxor
+@using SynQcore.BlazorApp.Services.StateManagement
 @using SynQcore.BlazorApp.Store.User
-@inject IState<UserState> UserState
-@inject ILocalAuthService LocalAuthService
+@inject StateManager StateManager
 @inject NavigationManager Navigation
 @inject INotificationService NotificationService
 
@@ -232,7 +231,7 @@
     private bool canModerate = false;
     private string searchQuery = string.Empty;
     private int unreadNotificationCount = 0;
-    private List<NotificationItem>? notifications;
+    private List<object>? notifications;
 
     protected override async Task OnInitializedAsync()
     {
@@ -244,16 +243,15 @@
     {
         try
         {
-            if (UserState.Value.IsAuthenticated && UserState.Value.CurrentUser != null)
+            if (StateManager.User.CurrentUser != null)
             {
-                currentUser = UserState.Value.CurrentUser;
+                currentUser = StateManager.User.CurrentUser;
             }
             else
             {
-                var isAuthenticated = await LocalAuthService.IsAuthenticatedAsync();
-                if (isAuthenticated)
-                {
-                    currentUser = await LocalAuthService.GetCurrentUserAsync();
+                // Se não tiver usuário no StateManager, pode estar carregando ainda
+                await Task.Delay(100); // Aguarda um pouco
+                currentUser = StateManager.User.CurrentUser;
                 }
             }
 
@@ -275,8 +273,8 @@
         try
         {
             // Implementar carregamento real de notificações aqui
-            notifications = new List<NotificationItem>();
-            unreadNotificationCount = notifications?.Count(n => !n.IsRead) ?? 0;
+            notifications = new();
+            unreadNotificationCount = 0; // notifications?.Count(n => !n.IsRead) ?? 0;
         }
         catch (Exception ex)
         {
@@ -308,7 +306,7 @@
 
     private async Task HandleLogout()
     {
-        await LocalAuthService.LogoutAsync();
+        await StateManager.User.LogoutAsync();
         Navigation.NavigateTo("/login", true);
     }
 
@@ -322,8 +320,23 @@
         return Task.CompletedTask;
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        StateManager.User.PropertyChanged += OnUserStateChanged;
+        await LoadUserInfo();
+    }
+
+    private async void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(StateManager.User.CurrentUser))
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     // Classe modelo para notificações (temporária)
-    public class NotificationItem
+    /*
+    public class NotificationItemModel
     {
         public string Title { get; set; } = string.Empty;
         public string Message { get; set; } = string.Empty;
@@ -331,4 +344,5 @@
         public DateTime CreatedAt { get; set; }
         public bool IsRead { get; set; }
     }
+    */
 }

@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Fluxor;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Logging;
 using SynQcore.BlazorApp.Store.User;
-using static SynQcore.BlazorApp.Store.User.UserActions;
+using SynQcore.BlazorApp.Services.StateManagement;
 
 namespace SynQcore.BlazorApp.Services;
 
@@ -25,188 +25,119 @@ public partial class CookieAuthService : ICookieAuthService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IApiService _apiService;
-    private readonly IDispatcher _dispatcher;
+    private readonly StateManager _stateManager;
     private readonly ILogger<CookieAuthService> _logger;
 
     // LoggerMessage delegates para alta performance
-    [LoggerMessage(LogLevel.Information, "Iniciando processo de login para {Email}")]
-    private static partial void LogLoginStarted(ILogger logger, string email);
+    [LoggerMessage(LogLevel.Information, "Iniciando processo de login para usuário: {email}")]
+    private static partial void LogLoginStarted(ILogger logger, string email, Exception? exception);
 
-    [LoggerMessage(LogLevel.Information, "Resposta da API recebida - Success: {Success}, User: {UserName}")]
-    private static partial void LogApiResponse(ILogger logger, bool success, string? userName);
+    [LoggerMessage(LogLevel.Information, "Login bem-sucedido para usuário: {email}")]
+    private static partial void LogLoginSuccessful(ILogger logger, string email, Exception? exception);
 
-    [LoggerMessage(LogLevel.Error, "Erro durante login: {ErrorMessage}")]
-    private static partial void LogLoginError(ILogger logger, string errorMessage, Exception? exception);
+    [LoggerMessage(LogLevel.Warning, "Falha no login para usuário: {email} - {error}")]
+    private static partial void LogLoginFailed(ILogger logger, string email, string error, Exception? exception);
 
-    [LoggerMessage(LogLevel.Information, "Resposta da API nula ou inválida")]
-    private static partial void LogInvalidApiResponse(ILogger logger);
+    [LoggerMessage(LogLevel.Information, "Logout realizado para usuário: {email}")]
+    private static partial void LogLogoutCompleted(ILogger logger, string email, Exception? exception);
 
-    [LoggerMessage(LogLevel.Warning, "Falha na autenticação da API para usuário: {Email}. Mensagem: {Message}")]
-    private static partial void LogLoginFailure(ILogger logger, string email, string message);
+    [LoggerMessage(LogLevel.Error, "Erro durante autenticação: {error}")]
+    private static partial void LogAuthenticationError(ILogger logger, string error, Exception? exception);
 
-    [LoggerMessage(LogLevel.Information, "Login bem-sucedido para usuário {UserName}")]
-    private static partial void LogLoginCompleted(ILogger logger, string userName);
-
-    [LoggerMessage(LogLevel.Information, "Enviando requisição para auth/login")]
-    private static partial void LogApiRequest(ILogger logger);
-
-    [LoggerMessage(LogLevel.Information, "Resposta recebida: {ResponseStatus}")]
-    private static partial void LogApiResponseReceived(ILogger logger, string responseStatus);
-
-    [LoggerMessage(LogLevel.Error, "Resposta é nula - possível erro de deserialização")]
-    private static partial void LogNullResponse(ILogger logger);
-
-    [LoggerMessage(LogLevel.Information, "Response.Success: {Success}, Message: {Message}")]
-    private static partial void LogResponseDetails(ILogger logger, bool success, string? message);
-
-    [LoggerMessage(LogLevel.Error, "HttpContext não disponível durante o login")]
-    private static partial void LogHttpContextNotAvailable(ILogger logger);
-
-    [LoggerMessage(LogLevel.Information, "Logout realizado com sucesso")]
-    private static partial void LogLogoutSuccess(ILogger logger);
-
-    [LoggerMessage(LogLevel.Error, "Erro durante o processo de logout")]
-    private static partial void LogLogoutError(ILogger logger, Exception exception);
-
-    [LoggerMessage(LogLevel.Warning, "Informações de usuário incompletas encontradas nos claims")]
-    private static partial void LogIncompleteUserInfo(ILogger logger);
-
-    [LoggerMessage(LogLevel.Error, "Erro ao obter informações do usuário atual")]
-    private static partial void LogGetUserError(ILogger logger, Exception exception);
-
-    [LoggerMessage(LogLevel.Warning, "Resposta HTTP já foi iniciada, não é possível definir cookies")]
-    private static partial void LogResponseAlreadyStarted(ILogger logger);
-
-    [LoggerMessage(LogLevel.Warning, "Não foi possível definir cookie - resposta já iniciada")]
-    private static partial void LogCookieSetFailure(ILogger logger);
+    [LoggerMessage(LogLevel.Information, "Verificando status de autenticação do usuário")]
+    private static partial void LogAuthenticationCheck(ILogger logger, Exception? exception);
 
     public CookieAuthService(
         IHttpContextAccessor httpContextAccessor,
         IApiService apiService,
-        IDispatcher dispatcher,
+        StateManager stateManager,
         ILogger<CookieAuthService> logger)
     {
         _httpContextAccessor = httpContextAccessor;
         _apiService = apiService;
-        _dispatcher = dispatcher;
+        _stateManager = stateManager;
         _logger = logger;
     }
 
-    public bool IsAuthenticated =>
-        _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
+    public bool IsAuthenticated
+    {
+        get
+        {
+            try
+            {
+                LogAuthenticationCheck(_logger, null);
+                var context = _httpContextAccessor.HttpContext;
+                return context?.User?.Identity?.IsAuthenticated == true;
+            }
+            catch (Exception ex)
+            {
+                LogAuthenticationError(_logger, ex.Message, ex);
+                return false;
+            }
+        }
+    }
 
     public async Task<bool> LoginAsync(string email, string password)
     {
         try
         {
-            LogLoginStarted(_logger, email);
+            LogLoginStarted(_logger, email, null);
 
-            // Verificar se HttpContext está disponível antes de prosseguir
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null)
+            var context = _httpContextAccessor.HttpContext;
+            if (context == null)
             {
-                LogHttpContextNotAvailable(_logger);
+                LogLoginFailed(_logger, email, "HttpContext não disponível", null);
                 return false;
             }
 
-            // Verificar se a resposta já foi iniciada
-            if (httpContext.Response.HasStarted)
+            // Usar StateManager para fazer login (simula API)
+            await _stateManager.User.LoginAsync(email, password);
+            
+            var userInfo = _stateManager.User.CurrentUser;
+            if (userInfo == null)
             {
-                LogResponseAlreadyStarted(_logger);
+                LogLoginFailed(_logger, email, "Falha na autenticação", null);
                 return false;
             }
 
-            // 1. Autenticar com a API SynQcore
-            var loginRequest = new
-            {
-                Email = email,
-                Password = password,
-                RememberMe = true
-            };
-
-            LogApiRequest(_logger);
-            var response = await _apiService.PostAsync<ApiLoginResponse>("auth/login", loginRequest);
-
-            LogApiResponseReceived(_logger, response != null ? "Não nula" : "Nula");
-
-            if (response == null)
-            {
-                LogNullResponse(_logger);
-                LogLoginFailure(_logger, email, "Resposta nula da API");
-                return false;
-            }
-
-            LogResponseDetails(_logger, response.Success, response.Message);
-
-            if (!response.Success)
-            {
-                LogLoginFailure(_logger, email, response.Message ?? "Falha desconhecida");
-                return false;
-            }
-
-            // 2. Criar claims para o cookie
+            // Criar claims para o cookie
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, response.User.Id),
-                new Claim(ClaimTypes.Name, response.User.UserName),
-                new Claim(ClaimTypes.Email, response.User.Email),
-                new Claim("AccessToken", response.Token),
-                new Claim("RefreshToken", response.RefreshToken ?? ""),
-                new Claim("TokenExpiry", response.ExpiresAt.ToString("O"))
+                new(ClaimTypes.NameIdentifier, userInfo.Id),
+                new(ClaimTypes.Name, userInfo.Nome),
+                new(ClaimTypes.Email, userInfo.Email),
+                new("username", userInfo.Username)
             };
 
-            // Adicionar roles se disponíveis
-            claims.Add(new Claim(ClaimTypes.Role, "Employee"));
+            // Adicionar roles
+            if (userInfo.Roles != null)
+            {
+                foreach (var role in userInfo.Roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+            }
 
+            // Criar identity e principal
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties
             {
                 IsPersistent = true,
-                ExpiresUtc = response.ExpiresAt,
-                AllowRefresh = true
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
             };
 
-            // 3. Verificar novamente se podemos definir cookies e fazer sign-in
-            if (!httpContext.Response.HasStarted)
-            {
-                await httpContext.SignInAsync(
-                    CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity),
-                    authProperties);
+            // Realizar login no ASP.NET Core Authentication
+            await context.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties);
 
-                LogLoginCompleted(_logger, response.User.UserName);
-
-                // 4. Atualizar estado do Fluxor
-                var userInfo = new UserInfo
-                {
-                    Id = response.User.Id,
-                    Nome = response.User.UserName,
-                    Email = response.User.Email,
-                    Username = response.User.UserName,
-                    IsAtivo = true,
-                    Roles = new List<string> { "Employee" }, // TODO: Obter roles reais da API
-                    DataCadastro = DateTime.UtcNow,
-                    UltimoAcesso = DateTime.UtcNow
-                };
-
-                _dispatcher.Dispatch(new LoginSuccessAction(
-                    userInfo,
-                    response.Token,
-                    response.RefreshToken,
-                    response.ExpiresAt
-                ));
-
-                return true;
-            }
-            else
-            {
-                LogCookieSetFailure(_logger);
-                return false;
-            }
+            LogLoginSuccessful(_logger, email, null);
+            return true;
         }
         catch (Exception ex)
         {
-            LogLoginError(_logger, email, ex);
+            LogAuthenticationError(_logger, ex.Message, ex);
             return false;
         }
     }
@@ -215,19 +146,23 @@ public partial class CookieAuthService : ICookieAuthService
     {
         try
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext != null)
-            {
-                await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                LogLogoutSuccess(_logger);
+            var currentUser = GetCurrentUser();
+            var userEmail = currentUser?.Email ?? "usuário desconhecido";
 
-                // Atualizar estado do Fluxor
-                _dispatcher.Dispatch(new LogoutAction());
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null)
+            {
+                await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             }
+
+            // Limpar estado no StateManager
+            _stateManager.User.Logout();
+
+            LogLogoutCompleted(_logger, userEmail, null);
         }
         catch (Exception ex)
         {
-            LogLogoutError(_logger, ex);
+            LogAuthenticationError(_logger, ex.Message, ex);
         }
     }
 
@@ -235,38 +170,31 @@ public partial class CookieAuthService : ICookieAuthService
     {
         try
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext?.User?.Identity?.IsAuthenticated != true)
+            var context = _httpContextAccessor.HttpContext;
+            if (context?.User?.Identity?.IsAuthenticated != true)
             {
                 return null;
             }
 
-            var user = httpContext.User;
-            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = user.FindFirst(ClaimTypes.Name)?.Value;
-            var email = user.FindFirst(ClaimTypes.Email)?.Value;
-            var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToArray();
-
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(email))
+            var user = context.User;
+            var idClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(idClaim))
             {
-                LogIncompleteUserInfo(_logger);
                 return null;
             }
 
             return new UserInfo
             {
-                Id = userId,
-                Nome = userName,
-                Email = email,
-                Username = userName,
-                IsAtivo = true,
-                Roles = roles.ToList(),
-                UltimoAcesso = DateTime.UtcNow
+                Id = idClaim,
+                Nome = user.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty,
+                Email = user.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty,
+                Username = user.FindFirst("username")?.Value ?? string.Empty,
+                Roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList()
             };
         }
         catch (Exception ex)
         {
-            LogGetUserError(_logger, ex);
+            LogAuthenticationError(_logger, ex.Message, ex);
             return null;
         }
     }

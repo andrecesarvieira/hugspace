@@ -1,12 +1,14 @@
 /*
  * SynQcore - Corporate Social Network API
- *
+ * 
+ * Program.cs - Configuração principal da aplicação (748 linhas)
+ * Organizado em seções para melhor navegação e manutenibilidade
+ * 
  * Copyright (c) 2025 André César Vieira
- *
  * Licensed under the MIT License
  * Author: André César Vieira <andrecesarvieira@hotmail.com>
  * GitHub: https://github.com/andrecesarvieira/synqcore
- *
+ * 
  * This file is part of SynQcore, an open-source corporate social network API
  * built with Clean Architecture, .NET 9, and PostgreSQL.
  */
@@ -86,6 +88,10 @@ using SynQcore.Infrastructure.Identity;
 using SynQcore.Infrastructure.Services;
 using SynQcore.Infrastructure.Services.Auth;
 
+// ============================================================================
+// CONFIGURAÇÃO SERILOG - Logging corporativo com trilhas de auditoria
+// ============================================================================
+
 // Configure Serilog for corporate logging with audit trails
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -110,6 +116,11 @@ Log.Logger = new LoggerConfiguration()
             "| CorrelationId: {CorrelationId} | UserId: {UserId} | IP: {ClientIP} " +
             "| {SourceContext}{NewLine}{Exception}")
     .CreateLogger();
+
+// ============================================================================
+// CONFIGURAÇÃO WEBAPPLICATION BUILDER - Serviços principais
+// ============================================================================
+
 var builder = WebApplication.CreateBuilder(args);
 
 // JWT Service
@@ -142,8 +153,16 @@ builder.Services.AddScoped<SynQcore.Infrastructure.EventHandlers.UserRegistratio
 
 // === MIDDLEWARE DE SEGURANÇA (HABILITADO POR ENQUANTO) ===
 
+// ============================================================================
+// CONFIGURAÇÃO SERILOG HOST - Provider de logging
+// ============================================================================
+
 // Use Serilog as the logging provider
 builder.Host.UseSerilog();
+
+// ============================================================================
+// CONFIGURAÇÃO CONTROLADORES E JSON - Serialização corporativa
+// ============================================================================
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -153,6 +172,10 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
         options.JsonSerializerOptions.WriteIndented = false;
     });
+
+// ============================================================================
+// CONFIGURAÇÃO SWAGGER/OPENAPI - Documentação corporativa
+// ============================================================================
 
 // Configure Swagger/OpenAPI Corporate
 builder.Services.AddEndpointsApiExplorer();
@@ -214,6 +237,10 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+// ============================================================================
+// CONFIGURAÇÃO ENTITY FRAMEWORK - Banco PostgreSQL
+// ============================================================================
+
 // Add DbContext (Unified with Identity)
 builder.Services.AddDbContext<SynQcoreDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -234,6 +261,11 @@ builder.Services.AddIdentity<ApplicationUserEntity, IdentityRole<Guid>>(options 
 })
 .AddEntityFrameworkStores<SynQcoreDbContext>()
 .AddDefaultTokenProviders();
+
+// ============================================================================
+// CONFIGURAÇÃO JWT - Autenticação corporativa
+// ============================================================================
+
 // JWT Configuration
 builder.Services.AddAuthentication(options =>
 {
@@ -286,6 +318,10 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
+
+// ============================================================================
+// CONFIGURAÇÃO CORS - Política corporativa
+// ============================================================================
 
 // Configure CORS for Corporate environment
 builder.Services.AddCors(options =>
@@ -371,6 +407,10 @@ if (!builder.Environment.EnvironmentName.Equals("Testing", StringComparison.Ordi
 // Add security headers configuration
 builder.Services.AddSecurityHeaders(builder.Configuration);
 
+// ============================================================================
+// CONFIGURAÇÃO MEDIATR - CQRS e registro de handlers
+// ============================================================================
+
 // Security Services (comentado temporariamente até resolver conflitos)
 // builder.Services.AddScoped<IInputSanitizationService, InputSanitizationService>();
 // builder.Services.AddScoped<ISecurityMonitoringService, SecurityMonitoringService>();
@@ -385,9 +425,13 @@ builder.Services.AddMediatR(cfg =>
     cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 });
 
+// ============================================================================
+// REGISTRO MANUAL DE HANDLERS - Para garantir que sejam encontrados
+// ============================================================================
+
 // Registrar handlers manualmente para garantir que sejam encontrados
 
-// === MEDIA ASSETS HANDLERS ===
+// --- MEDIA ASSETS HANDLERS ---
 builder.Services.AddScoped<IRequestHandler<GetMediaAssetsQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetMediaAssetByIdQuery, MediaAssetDetailDto?>, GetMediaAssetByIdQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetMediaAssetsByTypeQuery, PagedResult<MediaAssetDto>>, GetMediaAssetsByTypeQueryHandler>();
@@ -407,7 +451,7 @@ builder.Services.AddScoped<IRequestHandler<BulkUploadMediaAssetsCommand, List<Me
 builder.Services.AddScoped<IRequestHandler<RegisterMediaAssetAccessCommand, bool>, RegisterMediaAssetAccessCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<GenerateThumbnailCommand, bool>, GenerateThumbnailCommandHandler>();
 
-// === DOCUMENT TEMPLATES HANDLERS ===
+// --- DOCUMENT TEMPLATES HANDLERS ---
 builder.Services.AddScoped<IRequestHandler<GetTemplatesQuery, PagedResult<DocumentTemplateDto>>, GetTemplatesQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetTemplateByIdQuery, DocumentTemplateDetailDto?>, GetTemplateByIdQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetTemplateUsageStatsQuery, TemplateUsageStatsDto?>, GetTemplateUsageStatsQueryHandler>();
@@ -425,7 +469,7 @@ builder.Services.AddScoped<IRequestHandler<CreateDocumentFromTemplateCommand, Cr
 builder.Services.AddScoped<IRequestHandler<DuplicateTemplateCommand, DocumentTemplateDto?>, DuplicateTemplateCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<ToggleTemplateStatusCommand, DocumentTemplateDto?>, ToggleTemplateStatusCommandHandler>();
 
-// === CORPORATE SEARCH HANDLERS ===
+// --- CORPORATE SEARCH HANDLERS ---
 builder.Services.AddScoped<IRequestHandler<CorporateSearchQuery, PagedResult<SearchResultDto>>, CorporateSearchQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<AdvancedSearchQuery, PagedResult<SearchResultDto>>, AdvancedSearchQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchSuggestionsQuery, List<SearchSuggestionDto>>, GetSearchSuggestionsQueryHandler>();
@@ -434,7 +478,7 @@ builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<Trending
 builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto>, GetContentStatsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
 
-// === MODERATION HANDLERS ===
+// --- MODERATION HANDLERS ---
 // Moderation Query Handlers
 builder.Services.AddScoped<IRequestHandler<GetModerationQueueQuery, PagedResult<ModerationDto>>, ModerationQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetModerationStatsQuery, ModerationStatsDto>, ModerationQueryHandler>();
@@ -570,6 +614,10 @@ builder.Services.AddScoped<IRequestHandler<CreateDepartmentCommand, DepartmentDt
 builder.Services.AddScoped<IRequestHandler<UpdateDepartmentCommand, DepartmentDto>, UpdateDepartmentCommandHandler>();
 builder.Services.AddScoped<IRequestHandler<DeleteDepartmentCommand, Unit>, DeleteDepartmentHandler>();
 
+// ============================================================================
+// CONFIGURAÇÃO VALIDAÇÃO E SIGNALR - Validação e comunicação em tempo real
+// ============================================================================
+
 // Configure rate limiting with corporate thresholds
 
 // Add FluentValidation
@@ -586,7 +634,13 @@ builder.Services.AddSignalR(options =>
 
 // Mapeamento manual implementado via extensions - sem AutoMapper
 
+// ============================================================================
+// CONFIGURAÇÃO WEBAPPLICATION - Pipeline de middleware
+// ============================================================================
+
 var app = builder.Build();
+
+// --- DESENVOLVIMENTO - Swagger e documentação ---
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker" || app.Environment.EnvironmentName == "Testing")
@@ -600,6 +654,8 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
         options.DefaultModelsExpandDepth(-1); // Hide schemas by default
     });
 }
+
+// --- PRODUÇÃO - HTTPS e segurança ---
 
 // HTTPS redirection apenas em produção para evitar warnings em desenvolvimento
 if (app.Environment.IsProduction())
