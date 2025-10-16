@@ -1,0 +1,79 @@
+/* ================================================
+   SYNQCORE - RESPONSIVE
+   ================================================ */
+
+/* ===== TABLET (≥640px) ===== */
+@media (min-width: 640px) {
+    .navbar-nav {
+        gap: var(--spacing-6);
+    }
+    
+    .main-content {
+        padding: var(--spacing-12) var(--spacing-8);
+    }
+    
+    .grid-cols-sm-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .text-sm-left { text-align: left; }
+    .text-sm-center { text-align: center; }
+    .text-sm-right { text-align: right; }
+}
+
+/* ===== DESKTOP (≥1024px) ===== */
+@media (min-width: 1024px) {
+    h1 { font-size: var(--font-size-5xl); }
+    h2 { font-size: var(--font-size-4xl); }
+    
+    .navbar {
+        padding: var(--spacing-4) var(--spacing-8);
+    }
+    
+    .main-content {
+        padding: var(--spacing-16) var(--spacing-8);
+    }
+    
+    .grid-cols-md-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .grid-cols-md-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .modal-content {
+        max-width: 600px;
+    }
+}
+
+/* ===== LARGE DESKTOP (≥1280px) ===== */
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1280px;
+    }
+    
+    .grid-cols-lg-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .modal-content {
+        max-width: 700px;
+    }
+}
+
+/* ===== MOBILE ONLY ===== */
+@media (max-width: 639px) {
+    .navbar-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .hide-mobile {
+        display: none;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}

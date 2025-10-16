@@ -1,182 +1,97 @@
-@using Microsoft.AspNetCore.Components
-@inject IJSRuntime JSRuntime
+@* Toast Notifications - CSS Moderno *@
 
-<div class="toast-container">
-    @foreach (var notification in notifications)
+<div style="position: fixed; top: 20px; right: 20px; z-index: var(--z-toast); max-width: 400px;">
+    @foreach (var notification in Notifications)
     {
-        <div class="toast @GetToastClass(notification.Type) @(notification.IsVisible ? "show" : "")"
-            style="@GetToastStyle(notification)">
-            <div class="toast-header">
-                <i class="fas @GetToastIcon(notification.Type)"></i>
-                <strong class="toast-title">@notification.Title</strong>
-                <button type="button" class="toast-close" @onclick="() => RemoveNotification(notification.Id)">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            @if (!string.IsNullOrEmpty(notification.Message))
-            {
-                <div class="toast-body">
-                    @notification.Message
+        @if (notification.IsVisible)
+        {
+            <div class="alert alert-@notification.Type mb-4 shadow-lg" style="animation: slideIn 0.3s ease-out;">
+                <div class="flex justify-between align-center">
+                    <div>
+                        <strong class="block font-bold mb-1">@notification.Title</strong>
+                        <p class="mb-0">@notification.Message</p>
+                    </div>
+                    <button @onclick="@(() => RemoveNotification(notification.Id))" class="btn btn-sm ml-4">×</button>
                 </div>
-            }
-        </div>
+            </div>
+        }
     }
 </div>
 
-@code {
-    private List<ToastNotification> notifications = new();
-    private int nextId = 1;
+<style>
+    @@keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
 
-    public enum NotificationType
+@code {
+    [Parameter]
+    public List<ToastNotification> Notifications { get; set; } = new();
+
+    public void ShowSuccess(string message)
     {
-        Success,
-        Error,
-        Warning,
-        Info
+        AddNotification("Sucesso", message, "success");
+    }
+
+    public void ShowError(string message)
+    {
+        AddNotification("Erro", message, "danger");
+    }
+
+    public void ShowWarning(string message)
+    {
+        AddNotification("Aviso", message, "warning");
+    }
+
+    public void ShowInfo(string message)
+    {
+        AddNotification("Info", message, "info");
+    }
+
+    private void AddNotification(string title, string message, string type)
+    {
+        var notification = new ToastNotification
+        {
+            Title = title,
+            Message = message,
+            Type = type
+        };
+        Notifications.Add(notification);
+        StateHasChanged();
+
+        // Auto-remove after 3 seconds
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                RemoveNotification(notification.Id);
+            });
+        });
+    }
+
+    private void RemoveNotification(Guid id)
+    {
+        var notification = Notifications.FirstOrDefault(n => n.Id == id);
+        if (notification != null)
+        {
+            notification.IsVisible = false;
+            StateHasChanged();
+        }
     }
 
     public class ToastNotification
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string Title { get; set; } = "";
         public string Message { get; set; } = "";
-        public NotificationType Type { get; set; }
-        public bool IsVisible { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public int DurationMs { get; set; } = 5000;
-    }
-
-    /// <summary>
-    /// Exibe uma notificação de sucesso
-    /// </summary>
-    public void ShowSuccess(string title, string message = "", int durationMs = 5000)
-    {
-        ShowNotification(title, message, NotificationType.Success, durationMs);
-    }
-
-    /// <summary>
-    /// Exibe uma notificação de erro
-    /// </summary>
-    public void ShowError(string title, string message = "", int durationMs = 8000)
-    {
-        ShowNotification(title, message, NotificationType.Error, durationMs);
-    }
-
-    /// <summary>
-    /// Exibe uma notificação de aviso
-    /// </summary>
-    public void ShowWarning(string title, string message = "", int durationMs = 6000)
-    {
-        ShowNotification(title, message, NotificationType.Warning, durationMs);
-    }
-
-    /// <summary>
-    /// Exibe uma notificação informativa
-    /// </summary>
-    public void ShowInfo(string title, string message = "", int durationMs = 5000)
-    {
-        ShowNotification(title, message, NotificationType.Info, durationMs);
-    }
-
-    /// <summary>
-    /// Método principal para exibir notificações
-    /// </summary>
-    private void ShowNotification(string title, string message, NotificationType type, int durationMs)
-    {
-        var notification = new ToastNotification
-        {
-            Id = nextId++,
-            Title = title,
-            Message = message,
-            Type = type,
-            IsVisible = false,
-            CreatedAt = DateTime.Now,
-            DurationMs = durationMs
-        };
-
-        notifications.Add(notification);
-        StateHasChanged();
-
-        // Animar entrada após um pequeno delay
-        _ = Task.Delay(50).ContinueWith(_ =>
-        {
-            notification.IsVisible = true;
-            InvokeAsync(StateHasChanged);
-        });
-
-        // Auto-remover após o tempo especificado
-        _ = Task.Delay(durationMs).ContinueWith(_ =>
-        {
-            RemoveNotification(notification.Id);
-        });
-    }
-
-    /// <summary>
-    /// Remove uma notificação específica
-    /// </summary>
-    public void RemoveNotification(int id)
-    {
-        var notification = notifications.FirstOrDefault(n => n.Id == id);
-        if (notification != null)
-        {
-            notification.IsVisible = false;
-            InvokeAsync(StateHasChanged);
-
-            // Aguardar animação de saída antes de remover
-            _ = Task.Delay(300).ContinueWith(_ =>
-            {
-                notifications.Remove(notification);
-                InvokeAsync(StateHasChanged);
-            });
-        }
-    }
-
-    /// <summary>
-    /// Remove todas as notificações
-    /// </summary>
-    public void ClearAll()
-    {
-        foreach (var notification in notifications)
-        {
-            notification.IsVisible = false;
-        }
-        InvokeAsync(StateHasChanged);
-
-        _ = Task.Delay(300).ContinueWith(_ =>
-        {
-            notifications.Clear();
-            InvokeAsync(StateHasChanged);
-        });
-    }
-
-    private string GetToastClass(NotificationType type)
-    {
-        return type switch
-        {
-            NotificationType.Success => "toast-success",
-            NotificationType.Error => "toast-error",
-            NotificationType.Warning => "toast-warning",
-            NotificationType.Info => "toast-info",
-            _ => "toast-info"
-        };
-    }
-
-    private string GetToastIcon(NotificationType type)
-    {
-        return type switch
-        {
-            NotificationType.Success => "fa-check-circle",
-            NotificationType.Error => "fa-exclamation-triangle",
-            NotificationType.Warning => "fa-exclamation-circle",
-            NotificationType.Info => "fa-info-circle",
-            _ => "fa-info-circle"
-        };
-    }
-
-    private string GetToastStyle(ToastNotification notification)
-    {
-        var index = notifications.IndexOf(notification);
-        var topOffset = index * 80; // Espaçamento entre toasts
-        return $"top: {topOffset}px;";
+        public string Type { get; set; } = "info";
+        public bool IsVisible { get; set; } = true;
     }
 }

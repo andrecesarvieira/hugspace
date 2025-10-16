@@ -1,18 +1,90 @@
-﻿@using SynQcore.BlazorApp.Components
+@using SynQcore.BlazorApp.Components
+@using SynQcore.BlazorApp.Services.StateManagement
+@inject StateManager StateManager
+@inject NavigationManager Navigation
 @inherits LayoutComponentBase
+@implements IDisposable
 
 <AppInitializer>
-    <div class="page">
-        <main>
-            <article class="content px-4">
-                @Body
-            </article>
+    <div class="app-layout">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <a href="/" class="navbar-brand">SynQcore</a>
+                
+                <ul class="navbar-nav">
+                    <li><a href="/" class="navbar-link @GetActiveClass("/")">Início</a></li>
+                    
+                    @if (StateManager.User.IsAuthenticated)
+                    {
+                        <li><a href="/dashboard" class="navbar-link @GetActiveClass("/dashboard")">Dashboard</a></li>
+                        <li><a href="/feed" class="navbar-link @GetActiveClass("/feed")">Feed</a></li>
+                        <li><a href="/employees" class="navbar-link @GetActiveClass("/employees")">Colaboradores</a></li>
+                        <li><a href="/knowledge" class="navbar-link @GetActiveClass("/knowledge")">Conhecimento</a></li>
+                        <li><a href="/messages" class="navbar-link @GetActiveClass("/messages")">Mensagens</a></li>
+                    }
+                </ul>
+                
+                <div class="navbar-user">
+                    @if (StateManager.User.IsAuthenticated)
+                    {
+                        <a href="/profile" class="navbar-link">
+                            <span>@(StateManager.User.CurrentUser?.Nome ?? "Usuário")</span>
+                        </a>
+                        <button @onclick="HandleLogout" class="btn btn-sm btn-danger">Sair</button>
+                    }
+                    else
+                    {
+                        <a href="/login" class="btn btn-primary">Entrar</a>
+                    }
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            @Body
         </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; @DateTime.Now.Year SynQcore - Rede Social Corporativa</p>
+        </footer>
     </div>
 </AppInitializer>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+@code {
+    protected override void OnInitialized()
+    {
+        StateManager.User.PropertyChanged += OnUserStateChanged;
+    }
+
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetActiveClass(string path)
+    {
+        var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        
+        if (path == "/" && (currentPath == "" || currentPath == "/" || currentPath == "home"))
+            return "active";
+            
+        if (path != "/" && currentPath.StartsWith(path.TrimStart('/'), StringComparison.OrdinalIgnoreCase))
+            return "active";
+            
+        return "";
+    }
+
+    private void HandleLogout()
+    {
+        StateManager.User.Logout();
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnUserStateChanged;
+    }
+}

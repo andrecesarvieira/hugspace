@@ -1,0 +1,986 @@
+@page "/"@page "/"
+
+@page "/home"@page "/home"
+
+@using SynQcore.BlazorApp.Services.StateManagement@using SynQcore.BlazorApp.Services
+
+@inject StateManager StateManager@using SynQcore.BlazorApp.Services.StateManagement
+
+@inject NavigationManager Navigation@inject StateManager StateManager
+
+@rendermode InteractiveServer@inject NavigationManager Navigation
+
+@implements IDisposable@rendermode InteractiveServer
+
+
+
+<PageTitle>SynQcore - Rede Social Corporativa</PageTitle><PageTitle>SynQcore - Rede Social Corporativa</PageTitle>
+
+
+
+@if (StateManager.User.IsAuthenticated)@if (StateManager.User.IsAuthenticated)
+
+{{
+
+    <h1>Dashboard - Bem-vindo @StateManager.User.CurrentUser?.Nome</h1>    <h1>Dashboard - Bem-vindo @StateManager.User.CurrentUser?.Nome</h1>
+
+    <p>Você está autenticado!</p>    <p>Você está autenticado!</p>
+
+}}
+
+elseelse
+
+{{
+
+    <div>    <div>
+
+        <h1>SynQcore - Rede Social Corporativa</h1>        <h1>SynQcore - Rede Social Corporativa</h1>
+
+        <h2>🇧🇷 Primeira Rede Social Corporativa Open Source Brasileira</h2>        <h2>Primeira Rede Social Corporativa Open Source Brasileira 🇧🇷</h2>
+
+                
+
+        <p>        <p>
+
+            Conecte sua empresa em uma rede social corporativa completa.            Conecte sua empresa em uma rede social corporativa completa.
+
+            Feed social, colaboração em equipe, gestão de conhecimento e documentos corporativos.            Feed social, colaboração em equipe, gestão de conhecimento e documentos corporativos.
+
+        </p>        </p>
+
+                
+
+        <p>        <p>
+
+            Desenvolvida em .NET 9.0 com Clean Architecture.            Desenvolvida em .NET 9.0 com Clean Architecture.
+
+        </p>        </p>
+
+                
+
+        <div>        <div>
+
+            <button @onclick="GoToLogin">Acessar Plataforma</button>            <button @onclick="NavigateToLogin">Acessar Plataforma</button>
+
+            <a href="https://github.com/andrecesarvieira/synqcore" target="_blank">Ver no GitHub</a>            <a href="https://github.com/andrecesarvieira/synqcore" target="_blank">Ver no GitHub</a>
+
+        </div>        </div>
+
+                
+
+        <hr>        <hr>
+
+                
+
+        <h3>Recursos Principais</h3>        <h3>Recursos Principais</h3>
+
+                
+
+        <div>        <div>
+
+            <h4>📱 Feed Social Corporativo</h4>            <h4>Feed Social Corporativo</h4>
+
+            <p>Posts, comentários, reações, compartilhamentos e hashtags.</p>            <p>Posts, comentários, reações, compartilhamentos e hashtags.</p>
+
+        </div>        </div>
+
+                
+
+        <div>        <div>
+
+            <h4>👥 Colaboração em Equipe</h4>            <h4>Colaboração em Equipe</h4>
+
+            <p>Workspaces, quadros Kanban, tarefas e projetos colaborativos.</p>            <p>Workspaces, quadros Kanban, tarefas e projetos colaborativos.</p>
+
+        </div>        </div>
+
+                
+
+        <div>        <div>
+
+            <h4>📚 Gestão de Conhecimento</h4>            <h4>Gestão de Conhecimento</h4>
+
+            <p>Base de conhecimento, artigos, wikis e categorias.</p>            <p>Base de conhecimento, artigos, wikis e categorias.</p>
+
+        </div>        </div>
+
+                
+
+        <div>        <div>
+
+            <h4>📄 Documentos Corporativos</h4>            <h4>Documentos Corporativos</h4>
+
+            <p>Templates, workflow de aprovação e controle de versão.</p>            <p>Templates, workflow de aprovação e controle de versão.</p>
+
+        </div>        </div>
+
+                
+
+        <hr>        <hr>
+
+                
+
+        <h3>Stack Tecnológica</h3>        <h3>Stack Tecnológica</h3>
+
+        <ul>        <ul>
+
+            <li>.NET 9.0</li>            <li>.NET 9.0</li>
+
+            <li>Blazor Server</li>            <li>Blazor Server</li>
+
+            <li>PostgreSQL</li>            <li>PostgreSQL</li>
+
+            <li>Redis</li>            <li>Redis</li>
+
+            <li>Clean Architecture</li>            <li>Clean Architecture</li>
+
+        </ul>        </ul>
+
+                
+
+        <hr>        <hr>
+
+                
+
+        <h3>Estatísticas do Projeto</h3>        <h3>Estatísticas</h3>
+
+        <ul>        <ul>
+
+            <li><strong>25+</strong> Entidades Domain</li>            <li>25+ Entidades Domain</li>
+
+            <li><strong>150+</strong> Endpoints API</li>            <li>150+ Endpoints API</li>
+
+            <li><strong>75%</strong> Conclusão Fase 4.3</li>            <li>75% Conclusão Fase 4.3</li>
+
+            <li><strong>MIT License</strong> - 100% Open Source</li>            <li>MIT License - 100% Open Source</li>
+
+        </ul>        </ul>
+
+                
+
+        <hr>        <hr>
+
+                
+
+        <footer>        <footer>
+
+            <p><strong>SynQcore</strong> - Rede Social Corporativa</p>            <p>© 2025 SynQcore - André César Vieira</p>
+
+            <p>© 2025 André César Vieira | Licença MIT | LGPD Compliant</p>            <p>Licença MIT | LGPD Compliant</p>
+
+            <p>        </footer>
+
+                <a href="https://github.com/andrecesarvieira/synqcore" target="_blank">GitHub</a> |    </div>
+
+                <a href="https://github.com/andrecesarvieira" target="_blank">Autor</a>}
+
+            </p>
+
+        </footer>@code {
+
+    </div>    private void NavigateToLogin()
+
+}    {
+
+        Navigation.NavigateTo("/login");
+
+@code {    }
+
+    private void GoToLogin()    
+
+    {    protected override void OnInitialized()
+
+        Navigation.NavigateTo("/login");    {
+
+    }        StateManager.User.PropertyChanged += OnUserStateChanged;
+
+        }
+
+    protected override void OnInitialized()    
+
+    {    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+
+        StateManager.User.PropertyChanged += OnUserStateChanged;    {
+
+    }        InvokeAsync(() => StateHasChanged());
+
+        }
+
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)    
+
+    {    public void Dispose()
+
+        InvokeAsync(() => StateHasChanged());    {
+
+    }        StateManager.User.PropertyChanged -= OnUserStateChanged;
+
+        }
+
+    public void Dispose()}
+
+    {{
+
+        StateManager.User.PropertyChanged -= OnUserStateChanged;    <!-- ===== AUTHENTICATED USER DASHBOARD ===== -->
+
+    }    <div class="row">
+
+}        <div class="col-12">
+
+            <div class="page-title-box d-sm-flex align-items-center justify-content-between mb-4">
+                <h4 class="mb-sm-0 fw-semibold text-dark">Dashboard</h4>
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="/" class="text-muted">SynQcore</a></li>
+                        <li class="breadcrumb-item active">Início</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="card-body p-4" style="background: linear-gradient(135deg, #405189 0%, #5a67ba 100%);">
+                    <div class="row align-items-center">
+                        <div class="col-lg-8">
+                            <div class="text-white">
+                                <h3 class="fw-semibold mb-2">Olá, @StateManager.User.CurrentUser?.Nome!</h3>
+                                <p class="mb-3 opacity-75 fs-15">
+                                    @DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("pt-BR"))
+                                </p>
+                                <p class="mb-4 opacity-75">
+                                    Bem-vindo ao seu hub de produtividade corporativa.
+                                </p>
+                                
+                                <div class="d-flex flex-wrap gap-3">
+                                    <button type="button" class="btn btn-light fw-medium px-4" @onclick="NavigateToFeed">
+                                        <i class="ri-chat-3-line me-2"></i> 
+                                        Feed
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light fw-medium px-4" @onclick="NavigateToDashboard">
+                                        <i class="ri-dashboard-3-line me-2"></i> 
+                                        Analytics
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center bg-white bg-opacity-20 rounded-circle" style="width: 80px; height: 80px;">
+                                    <i class="ri-dashboard-line fs-24 text-white"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-primary rounded fs-18">
+                                <i class="ri-message-3-line"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 fs-13 fw-medium text-uppercase">Posts</p>
+                            <h4 class="mb-0 fw-semibold">@(stats?.TotalPosts ?? 0)</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-success rounded fs-18">
+                                <i class="ri-team-line"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 fs-13 fw-medium text-uppercase">Colaboradores</p>
+                            <h4 class="mb-0 fw-semibold">@(stats?.TotalEmployees ?? 0)</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-info rounded fs-18">
+                                <i class="ri-file-text-line"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 fs-13 fw-medium text-uppercase">Documentos</p>
+                            <h4 class="mb-0 fw-semibold">@(stats?.TotalDocuments ?? 0)</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar-sm flex-shrink-0">
+                            <span class="avatar-title bg-warning rounded fs-18">
+                                <i class="ri-bar-chart-line"></i>
+                            </span>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-muted mb-1 fs-13 fw-medium text-uppercase">Comentários</p>
+                            <h4 class="mb-0 fw-semibold">@(stats?.TotalComments ?? 0)</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="ri-grid-line text-primary me-2"></i>
+                        Ações Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="text-center p-3 rounded border border-dashed border-primary">
+                                <div class="avatar-md mx-auto mb-3">
+                                    <div class="avatar-title bg-primary-subtle text-primary rounded fs-20">
+                                        <i class="ri-add-circle-line"></i>
+                                    </div>
+                                </div>
+                                <h6 class="mb-2 fw-semibold">Novo Post</h6>
+                                <p class="text-muted mb-3 fs-13">Compartilhar atualizações</p>
+                                <button class="btn btn-primary btn-sm">Criar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="text-center p-3 rounded border border-dashed border-success">
+                                <div class="avatar-md mx-auto mb-3">
+                                    <div class="avatar-title bg-success-subtle text-success rounded fs-20">
+                                        <i class="ri-upload-cloud-line"></i>
+                                    </div>
+                                </div>
+                                <h6 class="mb-2 fw-semibold">Upload</h6>
+                                <p class="text-muted mb-3 fs-13">Enviar documentos</p>
+                                <button class="btn btn-success btn-sm">Enviar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="text-center p-3 rounded border border-dashed border-info">
+                                <div class="avatar-md mx-auto mb-3">
+                                    <div class="avatar-title bg-info-subtle text-info rounded fs-20">
+                                        <i class="ri-search-line"></i>
+                                    </div>
+                                </div>
+                                <h6 class="mb-2 fw-semibold">Buscar</h6>
+                                <p class="text-muted mb-3 fs-13">Encontrar recursos</p>
+                                <button class="btn btn-info btn-sm">Pesquisar</button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-sm-6">
+                            <div class="text-center p-3 rounded border border-dashed border-warning">
+                                <div class="avatar-md mx-auto mb-3">
+                                    <div class="avatar-title bg-warning-subtle text-warning rounded fs-20">
+                                        <i class="ri-team-line"></i>
+                                    </div>
+                                </div>
+                                <h6 class="mb-2 fw-semibold">Equipe</h6>
+                                <p class="text-muted mb-3 fs-13">Gerenciar pessoas</p>
+                                <button class="btn btn-warning btn-sm">Acessar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0 fw-semibold">
+                        <i class="ri-pulse-line text-success me-2"></i>
+                        Atividade Recente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="avatar-xs">
+                                <div class="avatar-title bg-success-subtle text-success rounded-circle fs-12">
+                                    <i class="ri-user-add-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1 fs-14 fw-semibold">Nova contratação</h6>
+                            <p class="mb-1 text-muted fs-13">Ana Silva se juntou ao time</p>
+                            <small class="text-muted">2 min atrás</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="avatar-xs">
+                                <div class="avatar-title bg-primary-subtle text-primary rounded-circle fs-12">
+                                    <i class="ri-file-text-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1 fs-14 fw-semibold">Documento compartilhado</h6>
+                            <p class="mb-1 text-muted fs-13">Estratégia Q1 2026.pdf</p>
+                            <small class="text-muted">15 min atrás</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <div class="avatar-xs">
+                                <div class="avatar-title bg-warning-subtle text-warning rounded-circle fs-12">
+                                    <i class="ri-chat-3-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1 fs-14 fw-semibold">Nova discussão</h6>
+                            <p class="mb-1 text-muted fs-13">"Inovação em IA" - 24 comentários</p>
+                            <small class="text-muted">1 h atrás</small>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-primary btn-sm" @onclick="NavigateToFeed">
+                            Ver mais atividades
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- ===== CORPORATE SOCIAL NETWORK HOME - CLEAN BOOTSTRAP ===== -->
+    <div class="landing-page-wrapper" style="margin-left: calc(-1 * var(--synq-sidebar-width, 260px)); width: 100vw; position: relative; left: 0;">
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="bg-overlay bg-overlay-pattern"></div>
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center text-white">
+                    <!-- Badge -->
+                    <div class="mb-4">
+                        <span class="badge bg-light text-primary fs-6 px-4 py-2 rounded-pill">
+                            <i class="ri-sparkling-fill me-2"></i>
+                            🇧🇷 Primeira Rede Social Corporativa Open Source Brasileira
+                        </span>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="display-3 fw-bold mb-4">
+                        Conecte sua empresa em uma 
+                        <span style="color: #fbbf24;">rede social corporativa</span>
+                    </h1>
+                    
+                    <!-- Description -->
+                    <p class="lead mb-5 fs-5" style="max-width: 800px; margin-left: auto; margin-right: auto;">
+                        Feed social, colaboração em equipe, gestão de conhecimento e documentos corporativos. 
+                        Tudo em uma plataforma Open Source desenvolvida em .NET com Clean Architecture.
+                    </p>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="d-flex gap-3 justify-content-center flex-wrap mb-5">
+                        <button type="button" class="btn btn-light btn-lg px-5 py-3 fw-semibold" @onclick="NavigateToLogin">
+                            <i class="ri-login-box-line me-2"></i>
+                            Acessar Plataforma
+                        </button>
+                        <a href="https://github.com/andrecesarvieira/synqcore" target="_blank" class="btn btn-outline-light btn-lg px-5 py-3 fw-semibold">
+                            <i class="ri-github-fill me-2"></i>
+                            Ver no GitHub
+                        </a>
+                    </div>
+                    
+                    <!-- Tech Stack -->
+                    <div class="d-flex gap-4 justify-content-center flex-wrap small">
+                        <span><i class="ri-code-s-slash-line me-1"></i> .NET 9.0</span>
+                        <span><i class="ri-palette-line me-1"></i> Blazor Server</span>
+                        <span><i class="ri-database-2-line me-1"></i> PostgreSQL</span>
+                        <span><i class="ri-rocket-line me-1"></i> Redis</span>
+                        <span><i class="ri-award-line me-1"></i> Clean Architecture</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SVG Wave -->
+        <div class="hero-shape-svg position-absolute start-0 end-0 bottom-0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120">
+                <path fill="#f8f9fa" d="M 0,118 C 288,98.6 1152,40.4 1440,21L1440 140L0 140z"></path>
+            </svg>
+        </div>
+    </section>
+    
+    <!-- Core Features -->
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">Recursos Principais</span>
+                    <h2 class="fw-bold mb-3">Tudo que sua empresa precisa em <span class="text-primary">uma plataforma</span></h2>
+                    <p class="text-muted">Funcionalidades completas para colaboração, comunicação e gestão corporativa</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <!-- Feed Social -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="services-box text-center h-100">
+                        <div class="services-icon mx-auto">
+                            <i class="ri-discuss-line"></i>
+                        </div>
+                        <h5 class="fw-semibold mb-3">Feed Social Corporativo</h5>
+                        <p class="text-muted small mb-0">
+                            Posts, comentários, reações, compartilhamentos e hashtags. Sistema completo de interação social.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Collaboration -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="services-box text-center h-100">
+                        <div class="services-icon mx-auto" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <i class="ri-team-line"></i>
+                        </div>
+                        <h5 class="fw-semibold mb-3">Colaboração em Equipe</h5>
+                        <p class="text-muted small mb-0">
+                            Workspaces, quadros Kanban, tarefas, etiquetas e gestão completa de projetos colaborativos.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Knowledge -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="services-box text-center h-100">
+                        <div class="services-icon mx-auto" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                            <i class="ri-book-3-line"></i>
+                        </div>
+                        <h5 class="fw-semibold mb-3">Gestão de Conhecimento</h5>
+                        <p class="text-muted small mb-0">
+                            Base de conhecimento, artigos, wikis, categorias hierárquicas e sistema de busca avançado.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Documents -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="services-box text-center h-100">
+                        <div class="services-icon mx-auto" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+                            <i class="ri-file-text-line"></i>
+                        </div>
+                        <h5 class="fw-semibold mb-3">Documentos Corporativos</h5>
+                        <p class="text-muted small mb-0">
+                            Templates, workflow de aprovação, controle de versão e auditoria completa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Secondary Features -->
+            <div class="row g-4 mt-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded p-3">
+                                <i class="ri-organization-chart fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Estrutura Organizacional</h6>
+                            <p class="text-muted small mb-0">Departamentos e hierarquias</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="bg-success bg-opacity-10 text-success rounded p-3">
+                                <i class="ri-shield-check-line fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Moderação Robusta</h6>
+                            <p class="text-muted small mb-0">Sistema de moderação completo</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="bg-warning bg-opacity-10 text-warning rounded p-3">
+                                <i class="ri-search-line fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Busca Corporativa</h6>
+                            <p class="text-muted small mb-0">Busca unificada em todos módulos</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-shrink-0">
+                            <div class="bg-info bg-opacity-10 text-info rounded p-3">
+                                <i class="ri-lock-password-line fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h6 class="mb-1">Compliance LGPD</h6>
+                            <p class="text-muted small mb-0">Privacidade e consentimento</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technical Excellence -->
+    <section class="py-5">
+        <div class="container py-5">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 mb-3">Excelência Técnica</span>
+                    <h2 class="fw-bold mb-3">Desenvolvido com as <span class="text-success">melhores práticas</span></h2>
+                    <p class="text-muted">Clean Architecture, CQRS, MediatR e zero dependências comerciais</p>
+                </div>
+            </div>
+            
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4">
+                            <h4 class="mb-4">
+                                <i class="ri-code-box-line text-primary me-2"></i>
+                                Stack Tecnológica
+                            </h4>
+                            
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="mb-1 text-primary">.NET 9.0</h6>
+                                        <small class="text-muted">Framework principal</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="mb-1 text-success">Blazor Server</h6>
+                                        <small class="text-muted">Interface moderna</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="mb-1 text-info">PostgreSQL</h6>
+                                        <small class="text-muted">Banco de dados</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="mb-1 text-warning">Redis</h6>
+                                        <small class="text-muted">Cache + Sessions</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ri-check-double-line text-success fs-4 me-2"></i>
+                            <h6 class="mb-0">Clean Architecture</h6>
+                        </div>
+                        <p class="text-muted mb-0 ms-5">Separação clara de responsabilidades com Domain, Application, Infrastructure</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ri-check-double-line text-success fs-4 me-2"></i>
+                            <h6 class="mb-0">CQRS + MediatR</h6>
+                        </div>
+                        <p class="text-muted mb-0 ms-5">Commands, Queries e Handlers para operações desacopladas</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ri-check-double-line text-success fs-4 me-2"></i>
+                            <h6 class="mb-0">Zero Dependências Comerciais</h6>
+                        </div>
+                        <p class="text-muted mb-0 ms-5">Sem AutoMapper ou similares, mapeamento manual otimizado</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <i class="ri-check-double-line text-success fs-4 me-2"></i>
+                            <h6 class="mb-0">100% Open Source</h6>
+                        </div>
+                        <p class="text-muted mb-0 ms-5">Licença MIT, código aberto completo no GitHub</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Stats -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-3 col-6 mb-4 mb-lg-0">
+                    <div class="stats-box">
+                        <div class="stats-number text-primary">25+</div>
+                        <div class="stats-label">Entidades Domain</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6 mb-4 mb-lg-0">
+                    <div class="stats-box">
+                        <div class="stats-number text-success">150+</div>
+                        <div class="stats-label">Endpoints API</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="stats-box">
+                        <div class="stats-number text-warning">75%</div>
+                        <div class="stats-label">Conclusão Fase 4.3</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-6">
+                    <div class="stats-box">
+                        <div class="stats-number text-info">MIT</div>
+                        <div class="stats-label">Licença Open Source</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="bg-overlay"></div>
+        <div class="container position-relative" style="z-index: 2;">
+            <div class="row justify-content-center text-center text-white">
+                <div class="col-lg-8">
+                    <i class="ri-open-source-line display-4 mb-4"></i>
+                    <h2 class="display-5 fw-bold mb-4">
+                        Primeira Rede Social Corporativa Open Source do Brasil
+                    </h2>
+                    <p class="lead mb-5 opacity-75">
+                        Desenvolvida em .NET com Clean Architecture. 
+                        Contribua, customize e adapte para sua empresa.
+                    </p>
+                    
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <button type="button" class="btn btn-light btn-lg px-5 fw-semibold" @onclick="NavigateToLogin">
+                            <i class="ri-login-box-line me-2"></i>
+                            Acessar Plataforma
+                        </button>
+                        <a href="https://github.com/andrecesarvieira/synqcore" target="_blank" class="btn btn-outline-light btn-lg px-5 fw-semibold">
+                            <i class="ri-github-fill me-2"></i>
+                            Ver Código Fonte
+                        </a>
+                    </div>
+                    
+                    <p class="mt-4 mb-0 small">
+                        <i class="ri-shield-check-line me-1"></i>
+                        Licença MIT • LGPD Compliant • ISO 27001 Ready
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="ri-at-line me-1"></i>
+                        Syn<span class="text-primary">Q</span>core
+                    </h5>
+                    <p class="mb-3">
+                        Rede Social Corporativa Open Source brasileira desenvolvida em .NET 9.0 com Clean Architecture.
+                    </p>
+                    <p class="small mb-3">
+                        <i class="ri-copyright-line"></i> 2025 André César Vieira<br>
+                        Licenciado sob MIT License
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="https://github.com/andrecesarvieira/synqcore" target="_blank" class="btn btn-sm btn-soft-primary rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <i class="ri-github-fill"></i>
+                        </a>
+                        <a href="https://github.com/andrecesarvieira" target="_blank" class="btn btn-sm btn-soft-primary rounded-circle" style="width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <i class="ri-user-line"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="mb-3">Recursos</h6>
+                    <ul>
+                        <li><a href="#" class="small">Feed Social</a></li>
+                        <li><a href="#" class="small">Colaboração</a></li>
+                        <li><a href="#" class="small">Conhecimento</a></li>
+                        <li><a href="#" class="small">Documentos</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="mb-3">Tecnologia</h6>
+                    <ul>
+                        <li><a href="#" class="small">.NET 9.0</a></li>
+                        <li><a href="#" class="small">Blazor Server</a></li>
+                        <li><a href="#" class="small">PostgreSQL</a></li>
+                        <li><a href="#" class="small">Redis</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="mb-3">Documentação</h6>
+                    <ul>
+                        <li><a href="https://github.com/andrecesarvieira/synqcore" target="_blank" class="small">README</a></li>
+                        <li><a href="#" class="small">API Docs</a></li>
+                        <li><a href="#" class="small">Arquitetura</a></li>
+                        <li><a href="#" class="small">Roadmap</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-2 col-6 mb-4">
+                    <h6 class="mb-3">Legal</h6>
+                    <ul>
+                        <li><a href="#" class="small">MIT License</a></li>
+                        <li><a href="#" class="small">LGPD</a></li>
+                        <li><a href="#" class="small">Privacidade</a></li>
+                        <li><a href="#" class="small">Termos</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-top border-secondary pt-4 mt-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        <p class="mb-0 small">
+                            🇧🇷 Desenvolvido com <i class="ri-heart-fill text-danger"></i> no Brasil
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <p class="mb-0 small">
+                            <strong class="text-primary">SynQcore</strong> - Open Source Corporate Social Network
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    </div><!-- End landing-page-wrapper -->
+}
+
+@code {
+    private PlatformStatsDto? stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Subscribe to state changes
+        StateManager.User.PropertyChanged += OnStateChanged;
+
+        // Load stats only if authenticated
+        if (StateManager.User.IsAuthenticated)
+        {
+            await LoadStats();
+        }
+    }
+
+    private async Task LoadStats()
+    {
+        try
+        {
+            stats = await PlatformStatsService.GetPlatformStatsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar estatísticas: {ex.Message}");
+            // Fallback to mock data
+            stats = new PlatformStatsDto
+            {
+                TotalEmployees = 2543,
+                TotalPosts = 18934,
+                TotalDocuments = 5672,
+                TotalComments = 12450
+            };
+        }
+    }
+
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+
+    private void NavigateToFeed()
+    {
+        Navigation.NavigateTo("/feed");
+    }
+
+    private void NavigateToDashboard()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+
+    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(async () =>
+        {
+            if (e.PropertyName == "IsAuthenticated" && StateManager.User.IsAuthenticated)
+            {
+                await LoadStats();
+            }
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnStateChanged;
+    }
+}

@@ -1,333 +1,150 @@
-﻿@page "/"
+@page "/"
 @page "/home"
-@using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Services.StateManagement
-@using Microsoft.AspNetCore.Components.Web
 @inject StateManager StateManager
 @inject NavigationManager Navigation
-@inject IPlatformStatsService PlatformStatsService
-@inject ILocalAuthService LocalAuthService
 @rendermode InteractiveServer
 @implements IDisposable
 
 <PageTitle>SynQcore - Rede Social Corporativa</PageTitle>
 
-<div class="home-container">
-    <!-- Hero Section Principal -->
-    <section class="hero-section">
-        <div class="hero-background">
-            <div class="floating-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-                <div class="shape shape-4"></div>
-            </div>
-        </div>
-
-        <div class="hero-content">
-            <div class="hero-main">
-                <div class="logo-container">
-                    <div class="logo-circle">
-                        <i class="fas fa-at logo-icon"></i>
-                    </div>
-                </div>
-
-                <h1 class="hero-title">
-                    <span class="brand-highlight">Syn</span>Qcore
-                </h1>
-
-                <p class="hero-subtitle">
-                    Conecte-se, colabore e cresça com sua equipe
-                </p>
-
-                <p class="hero-description">
-                    A rede social corporativa que transforma a comunicação interna,
-                    promove colaboração e constrói conhecimento coletivo.
-                </p>
-
-                @if (StateManager.User.IsAuthenticated)
-                {
-                    <div class="hero-actions authenticated">
-                        <button class="btn btn-primary large" @onclick="NavigateToFeed">
-                            <i class="fas fa-stream"></i>
-                            Acessar Feed
-                        </button>
-                        <div class="welcome-message">
-                            <p>Bem-vindo de volta, <strong>@StateManager.User.CurrentUser?.Nome</strong>!</p>
+@if (StateManager.User.IsAuthenticated)
+{
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1>Bem-vindo, @StateManager.User.CurrentUser?.Nome!</h1>
+                <p>Você está autenticado no SynQcore.</p>
+                
+                <div class="grid grid-cols-1 grid-cols-md-3 gap-4 mt-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary">Feed</h3>
+                            <p>Acompanhe as atualizações da empresa</p>
+                            <a href="/feed" class="btn btn-primary">Acessar Feed</a>
                         </div>
                     </div>
-                }
-                else
-                {
-                    <div class="hero-actions">
-                        <button class="btn btn-primary large" @onclick="NavigateToLogin">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Começar Agora
-                        </button>
-                        <button class="btn btn-secondary large" @onclick="ScrollToFeatures">
-                            <i class="fas fa-info-circle"></i>
-                            Saiba Mais
-                        </button>
-                    </div>
-                }
-            </div>
-
-            <div class="hero-visual">
-                <div class="dashboard-mockup">
-                    <div class="mockup-header">
-                        <div class="mockup-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                    
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-success">Colaboradores</h3>
+                            <p>Veja a equipe da empresa</p>
+                            <a href="/employees" class="btn btn-success">Ver Equipe</a>
                         </div>
                     </div>
-                    <div class="mockup-content">
-                        <div class="mockup-sidebar"></div>
-                        <div class="mockup-main">
-                            <div class="mockup-card"></div>
-                            <div class="mockup-card"></div>
-                            <div class="mockup-card"></div>
+                    
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-warning">Conhecimento</h3>
+                            <p>Acesse a base de conhecimento</p>
+                            <a href="/knowledge" class="btn btn-warning">Explorar</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            @if (isLoadingStats)
-            {
-                <div class="stats-loading">
-                    <div class="spinner"></div>
-                    <p>Carregando estatísticas...</p>
-                </div>
-            }
-            else
-            {
-<<<<<<< Updated upstream
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-number">@FormatNumber(platformStats?.TotalEmployees ?? 500)+</div>
-                        <div class="stat-label">Colaboradores Conectados</div>
-=======
-                <div class="row g-4">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="border-0 shadow-sm h-100 text-center position-relative overflow-hidden stats-card-primary">
-                            
-                            <div class="stats-glow-effect"></div>
-                            
-                            <div class="p-4 position-relative">
-                                <div class="mb-3">
-                                    <i class="fas fa-users stats-icon-primary"></i>
-                                </div>
-                                <h3 class="fw-bold text-white mb-2 stats-number">
-                                    @FormatNumber(platformStats?.TotalEmployees ?? 500)<span class="stats-number-accent">+</span>
-                                </h3>
-                                <p class="text-white-50 mb-0 fw-semibold">👥 Colaboradores Ativos</p>
-                                <div class="stats-bottom-bar"></div>
-                            </div>
-                        </div>
->>>>>>> Stashed changes
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">@FormatNumber(platformStats?.TotalPosts ?? 1200)</div>
-                        <div class="stat-label">Posts Compartilhados</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">@(platformStats?.EngagementRate.ToString("F0") ?? "95")%</div>
-                        <div class="stat-label">Taxa de Engajamento</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">
-                            @if (platformStats?.ActiveUsersToday > 0)
-                            {
-                                <span>@platformStats.ActiveUsersToday</span>
-                                <small>/@platformStats.TotalEmployees</small>
-                            }
-                            else
-                            {
-                                <span>24/7</span>
-                            }
-                        </div>
-                        <div class="stat-label">@(platformStats?.ActiveUsersToday > 0 ? "Usuários Ativos Hoje" : "Colaboração Ativa")</div>
-                    </div>
-                </div>
-
-                @if (!string.IsNullOrEmpty(platformStats?.LastUpdated))
-                {
-                    <div class="stats-updated">
-                        <small>Atualizado às @platformStats.LastUpdated</small>
-                    </div>
-                }
-            }
+    </div>
+}
+else
+{
+    <div class="container">
+        <div class="text-center mb-6">
+            <h1 class="text-5xl font-bold mb-4">SynQcore</h1>
+            <h2 class="text-2xl text-gray-600 mb-6">Primeira Rede Social Corporativa Open Source do Brasil 🇧🇷</h2>
+            <p class="text-lg mb-6">
+                Conecte sua empresa em uma rede social corporativa completa.
+                Feed social, colaboração em equipe, gestão de conhecimento e documentos corporativos.
+            </p>
+            <button @onclick="NavigateToLogin" class="btn btn-lg btn-primary">Acessar Plataforma</button>
         </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features-section" id="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Recursos que Transformam</h2>
-                <p>Descubra como o SynQcore revoluciona a comunicação corporativa</p>
+        
+        <div class="grid grid-cols-1 grid-cols-md-4 gap-6 mt-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">📱 Feed Social Corporativo</h4>
+                    <p class="text-sm text-gray-600">Posts, comentários, reações, compartilhamentos e hashtags.</p>
+                </div>
             </div>
-
-            <div class="features-grid">
-                <div class="feature-card primary">
-                    <div class="feature-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Colaboração em Tempo Real</h3>
-                    <p>Conecte equipes distribuídas, compartilhe conhecimento e trabalhe em projetos colaborativos com ferramentas integradas.</p>
-                    <div class="feature-badge">Popular</div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">👥 Colaboração em Equipe</h4>
+                    <p class="text-sm text-gray-600">Workspaces, quadros Kanban, tarefas e projetos colaborativos.</p>
                 </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3>Gestão Inteligente de Conhecimento</h3>
-                    <p>Construa uma base de conhecimento organizacional com IA que sugere conteúdos relevantes e conecta especialistas.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">📚 Gestão de Conhecimento</h4>
+                    <p class="text-sm text-gray-600">Base de conhecimento, artigos, wikis e categorias.</p>
                 </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Analytics Avançados</h3>
-                    <p>Métricas detalhadas de engajamento, produtividade e bem-estar da equipe com dashboards personalizáveis.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-medal"></i>
-                    </div>
-                    <h3>Sistema de Reconhecimento</h3>
-                    <p>Valorize talentos com endorsements peer-to-peer, badges de conquistas e rankings de colaboração.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Segurança Enterprise</h3>
-                    <p>Criptografia end-to-end, compliance com LGPD e controles avançados de privacidade para dados corporativos.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Experiência Mobile-First</h3>
-                    <p>Interface responsiva e apps nativos para iOS e Android, mantendo sua equipe conectada em qualquer lugar.</p>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">📄 Documentos Corporativos</h4>
+                    <p class="text-sm text-gray-600">Templates, workflow de aprovação e controle de versão.</p>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Pronto para Transformar sua Comunicação Corporativa?</h2>
-                <p>Junte-se a centenas de empresas que já revolucionaram sua cultura organizacional</p>
-                <div class="cta-actions">
-                    @if (!StateManager.User.IsAuthenticated)
-                    {
-                        <button class="btn btn-primary large" @onclick="NavigateToLogin">
-                            <i class="fas fa-rocket"></i>
-                            Começar Gratuitamente
-                        </button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-primary large" @onclick="NavigateToFeed">
-                            <i class="fas fa-stream"></i>
-                            Ir para o Feed
-                        </button>
-                    }
+        
+        <div class="card mt-8">
+            <div class="card-body">
+                <h3 class="font-bold mb-4">Stack Tecnológica</h3>
+                <div class="flex flex-wrap gap-4">
+                    <span class="badge badge-primary">.NET 9.0</span>
+                    <span class="badge badge-success">Blazor Server</span>
+                    <span class="badge badge-warning">PostgreSQL</span>
+                    <span class="badge badge-danger">Redis</span>
+                    <span class="badge badge-primary">Clean Architecture</span>
                 </div>
             </div>
         </div>
-    </section>
-</div>
+        
+        <div class="card mt-6">
+            <div class="card-body">
+                <h3 class="font-bold mb-4">Estatísticas do Projeto</h3>
+                <div class="grid grid-cols-2 grid-cols-md-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">25+</div>
+                        <div class="text-sm text-gray-600">Entidades Domain</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-success">150+</div>
+                        <div class="text-sm text-gray-600">Endpoints API</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-warning">75%</div>
+                        <div class="text-sm text-gray-600">Conclusão Fase 4.3</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-danger">MIT</div>
+                        <div class="text-sm text-gray-600">Licença Open Source</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
-    private bool isLoadingStats = true;
-    private PlatformStatsDto? platformStats;
-
-    protected override Task OnInitializedAsync()
-    {
-        // Inscrever-se nas mudanças do estado
-        StateManager.User.PropertyChanged += OnStateChanged;
-
-        // Se já estiver autenticado, redirecionar automaticamente para o feed
-        if (StateManager.User.IsAuthenticated)
-        {
-            Navigation.NavigateTo("/feed");
-            return Task.CompletedTask;
-        }
-
-        // Carregar estatísticas da plataforma em paralelo
-        _ = Task.Run(LoadPlatformStats);
-        return Task.CompletedTask;
-    }
-
-    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        StateManager.User.PropertyChanged -= OnStateChanged;
-    }
-
-    private async Task LoadPlatformStats()
-    {
-        try
-        {
-            platformStats = await PlatformStatsService.GetPlatformStatsAsync();
-        }
-        catch (Exception ex)
-        {
-            // Log silencioso - fallback será usado automaticamente
-            Console.WriteLine($"[HOME] Erro ao carregar estatísticas: {ex.Message}");
-        }
-        finally
-        {
-            isLoadingStats = false;
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
     private void NavigateToLogin()
     {
         Navigation.NavigateTo("/login");
     }
-
-    private void NavigateToFeed()
+    
+    protected override void OnInitialized()
     {
-        Navigation.NavigateTo("/feed");
+        StateManager.User.PropertyChanged += OnUserStateChanged;
     }
-
-    private async Task ScrollToFeatures()
+    
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        await Task.Delay(100); // Pequeno delay para garantir que o DOM esteja pronto
-        // Para implementação futura com IJSRuntime para scroll suave
+        InvokeAsync(() => StateHasChanged());
     }
-
-    /// <summary>
-    /// Formata números grandes com sufixos (K, M)
-    /// </summary>
-    private static string FormatNumber(int number)
+    
+    public void Dispose()
     {
-        return number switch
-        {
-            >= 1000000 => $"{number / 1000000.0:F1}M",
-            >= 1000 => $"{number / 1000.0:F1}K",
-            _ => number.ToString()
-        };
+        StateManager.User.PropertyChanged -= OnUserStateChanged;
     }
 }

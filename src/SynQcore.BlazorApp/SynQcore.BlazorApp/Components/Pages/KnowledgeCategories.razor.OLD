@@ -1,0 +1,953 @@
+@*
+ * SynQcore - Corporate Social Network
+ *
+ * Página de Gestão de Categorias de Conhecimento
+ * Interface para criar, editar e gerenciar categorias hierárquicas
+ *
+ * Author: André César Vieira <andrecesarvieira@hotmail.com>
+*@
+
+@page "/knowledge/categories"
+@page "/knowledge/categories/create"
+@page "/knowledge/categories/edit/{CategoryId:guid}"
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Models
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Forms
+@inject IKnowledgeService KnowledgeService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<HeadContent>
+    <title>Gestão de Categorias - SynQcore</title>
+</HeadContent>
+
+<div class="categories-container">
+    <!-- Header -->
+    <div class="header-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="page-title">
+                    <i class="bi bi-folder-fill text-primary"></i>
+                    Gestão de Categorias
+                </h2>
+                <p class="text-muted mb-0">Organize a base de conhecimento com categorias hierárquicas</p>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary" @onclick="GoBack">
+                    <i class="bi bi-arrow-left"></i>
+                    Voltar
+                </button>
+                @if (!IsCreating && !IsEditing)
+                {
+                    <button class="btn btn-primary" @onclick="ShowCreateForm">
+                        <i class="bi bi-plus-lg"></i>
+                        Nova Categoria
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        @if (categories != null && !IsCreating && !IsEditing)
+        {
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card bg-primary">
+                        <div class="stat-icon">
+                            <i class="bi bi-folder"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@categories.Count.ToString("N0")</h4>
+                            <p>Categorias Totais</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-success">
+                        <div class="stat-icon">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@categories.Where(c => c.ParentCategoryId == null).Count().ToString("N0")</h4>
+                            <p>Categorias Principais</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-info">
+                        <div class="stat-icon">
+                            <i class="bi bi-folder-plus"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@categories.Where(c => c.SubCategories?.Count > 0).Count().ToString("N0")</h4>
+                            <p>Com Subcategorias</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-warning">
+                        <div class="stat-icon">
+                            <i class="bi bi-files"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@categories.Sum(c => c.PostsCount).ToString("N0")</h4>
+                            <p>Artigos Totais</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (IsCreating || IsEditing)
+    {
+        <!-- Formulário de Criação/Edição -->
+        <div class="form-section">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi @(IsEditing ? "bi-pencil-fill" : "bi-plus-circle-fill") text-primary"></i>
+                        @(IsEditing ? "Editar Categoria" : "Nova Categoria")
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <EditForm Model="categoryRequest" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <!-- Informações Básicas -->
+                                <div class="mb-3">
+                                    <label class="form-label required">Nome da Categoria</label>
+                                    <InputText class="form-control" @bind-Value="categoryRequest.Name"
+                                              placeholder="Digite o nome da categoria..." />
+                                    <ValidationMessage For="@(() => categoryRequest.Name)" class="invalid-feedback" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Descrição</label>
+                                    <InputTextArea class="form-control" @bind-Value="categoryRequest.Description"
+                                                  rows="3" placeholder="Descreva o propósito desta categoria..." />
+                                    <div class="form-text">Descrição opcional que ajuda usuários a entender o propósito da categoria</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Categoria Pai</label>
+                                        <InputSelect class="form-select" @bind-Value="categoryRequest.ParentCategoryId">
+                                            <option value="">Categoria Principal</option>
+                                            @if (availableParentCategories != null)
+                                            {
+                                                @foreach (var parent in availableParentCategories)
+                                                {
+                                                    <option value="@parent.Id">@parent.Name</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                        <div class="form-text">Deixe em branco para criar uma categoria principal</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <!-- Personalização Visual -->
+                                <div class="visual-settings">
+                                    <h6 class="mb-3">
+                                        <i class="bi bi-palette"></i>
+                                        Personalização Visual
+                                    </h6>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Ícone</label>
+                                        <div class="icon-selector">
+                                            <input type="text" class="form-control" @bind="categoryRequest.Icon"
+                                                   placeholder="📁" />
+                                            <div class="icon-preview">
+                                                @categoryRequest.Icon
+                                            </div>
+                                        </div>
+                                        <div class="form-text">Use um emoji ou ícone para representar a categoria</div>
+
+                                        <!-- Ícones Sugeridos -->
+                                        <div class="suggested-icons">
+                                            @foreach (var icon in suggestedIcons)
+                                            {
+                                                <button type="button" class="icon-option"
+                                                        @onclick="() => SelectIcon(icon)">
+                                                    @icon
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Cor</label>
+                                        <div class="color-selector">
+                                            <input type="color" class="form-control form-control-color"
+                                                   @bind="categoryRequest.Color" />
+                                            <input type="text" class="form-control color-input"
+                                                   @bind="categoryRequest.Color" placeholder="#007ACC" />
+                                        </div>
+
+                                        <!-- Cores Sugeridas -->
+                                        <div class="suggested-colors">
+                                            @foreach (var color in suggestedColors)
+                                            {
+                                                <button type="button" class="color-option"
+                                                        style="background-color: @color;"
+                                                        @onclick="() => SelectColor(color)">
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- Preview -->
+                                    <div class="category-preview">
+                                        <h6>Preview</h6>
+                                        <div class="preview-item" style="border-left-color: @categoryRequest.Color;">
+                                            <span class="preview-icon" style="color: @categoryRequest.Color;">
+                                                @(string.IsNullOrEmpty(categoryRequest.Icon) ? "📁" : categoryRequest.Icon)
+                                            </span>
+                                            <div class="preview-content">
+                                                <div class="preview-name">
+                                                    @(string.IsNullOrEmpty(categoryRequest.Name) ? "Nome da Categoria" : categoryRequest.Name)
+                                                </div>
+                                                <div class="preview-description">
+                                                    @(string.IsNullOrEmpty(categoryRequest.Description) ? "Descrição da categoria" : categoryRequest.Description)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configurações Avançadas -->
+                        <div class="advanced-settings">
+                            <h6 class="mb-3">
+                                <i class="bi bi-gear"></i>
+                                Configurações Avançadas
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <InputCheckbox class="form-check-input" @bind-Value="categoryRequest.IsActive" id="isActive" />
+                                        <label class="form-check-label" for="isActive">
+                                            Categoria ativa
+                                        </label>
+                                    </div>
+                                    <div class="form-text">Categorias inativas não aparecem na listagem pública</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ações do Formulário -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" @onclick="CancelForm">
+                                <i class="bi bi-x-lg"></i>
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                }
+                                <i class="bi bi-check-lg"></i>
+                                @(IsEditing ? "Atualizar" : "Criar") Categoria
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Lista de Categorias -->
+        <div class="categories-list">
+            @if (isLoadingCategories)
+            {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Carregando categorias...</p>
+                </div>
+            }
+            else if (categories?.Count > 0)
+            {
+                <div class="categories-tree">
+                    @foreach (var category in categories.Where(c => c.ParentCategoryId == null).OrderBy(c => c.Name))
+                    {
+                        <div class="category-node">
+                            @RenderCategoryCard(category)
+
+                            @if (category.SubCategories?.Count > 0)
+                            {
+                                <div class="subcategories">
+                                    @foreach (var subCategory in category.SubCategories.OrderBy(c => c.Name))
+                                    {
+                                        <div class="subcategory-node">
+                                            @RenderCategoryCard(subCategory, true)
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="text-center py-5">
+                        <i class="bi bi-folder-x display-1 text-muted"></i>
+                        <h4 class="mt-3">Nenhuma categoria encontrada</h4>
+                        <p class="text-muted">Crie a primeira categoria para organizar a base de conhecimento.</p>
+                        <button class="btn btn-primary" @onclick="ShowCreateForm">
+                            <i class="bi bi-plus-lg"></i>
+                            Criar Primeira Categoria
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Guid? CategoryId { get; set; }
+
+    private List<KnowledgeCategoryDto>? categories;
+    private List<KnowledgeCategoryDto>? availableParentCategories;
+    private CreateKnowledgeCategoryRequest categoryRequest = new();
+    private bool isLoading = false;
+    private bool isLoadingCategories = true;
+
+    private bool IsCreating => Navigation.Uri.Contains("/create");
+    private bool IsEditing => CategoryId.HasValue;
+
+    private readonly string[] suggestedIcons = { "📁", "📂", "📋", "📄", "📝", "💼", "🏢", "⚙️", "🔧", "💡", "📊", "📈", "🎯", "🔍", "📚", "🎓" };
+    private readonly string[] suggestedColors = { "#007ACC", "#28A745", "#DC3545", "#FFC107", "#6F42C1", "#FD7E14", "#20C997", "#6C757D" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategories();
+
+        if (IsEditing && CategoryId.HasValue)
+        {
+            await LoadCategory();
+        }
+        else if (IsCreating)
+        {
+            InitializeNewCategory();
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        isLoadingCategories = true;
+        StateHasChanged();
+
+        try
+        {
+            categories = await KnowledgeService.GetCategoriesAsync(includeInactive: true, includeHierarchy: true);
+
+            // Carregar categorias disponíveis como pai (excluindo a categoria atual se editando)
+            availableParentCategories = categories?
+                .Where(c => c.ParentCategoryId == null && (!IsEditing || c.Id != CategoryId))
+                .ToList();
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("console.error", "Erro ao carregar categorias:", ex.Message);
+        }
+        finally
+        {
+            isLoadingCategories = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        if (!CategoryId.HasValue) return;
+
+        try
+        {
+            var category = categories?.FirstOrDefault(c => c.Id == CategoryId.Value);
+
+            if (category != null)
+            {
+                categoryRequest.Name = category.Name;
+                categoryRequest.Description = category.Description;
+                categoryRequest.Icon = category.Icon;
+                categoryRequest.Color = category.Color;
+                categoryRequest.ParentCategoryId = category.ParentCategoryId;
+                categoryRequest.IsActive = category.IsActive;
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Erro ao carregar categoria: {ex.Message}");
+            Navigation.NavigateTo("/knowledge/categories");
+        }
+    }
+
+    private void InitializeNewCategory()
+    {
+        categoryRequest = new CreateKnowledgeCategoryRequest
+        {
+            Icon = "📁",
+            Color = "#007ACC",
+            IsActive = true
+        };
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (isLoading) return;
+
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            bool success;
+
+            if (IsEditing && CategoryId.HasValue)
+            {
+                var updateRequest = new UpdateKnowledgeCategoryRequest
+                {
+                    Name = categoryRequest.Name,
+                    Description = categoryRequest.Description,
+                    Icon = categoryRequest.Icon,
+                    Color = categoryRequest.Color,
+                    ParentCategoryId = categoryRequest.ParentCategoryId,
+                    IsActive = categoryRequest.IsActive
+                };
+
+                var updateResult = await KnowledgeService.UpdateCategoryAsync(CategoryId.Value, updateRequest);
+                success = updateResult != null;
+            }
+            else
+            {
+                var result = await KnowledgeService.CreateCategoryAsync(categoryRequest);
+                success = result != null;
+            }
+
+            if (success)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", IsEditing ? "Categoria atualizada com sucesso!" : "Categoria criada com sucesso!");
+                Navigation.NavigateTo("/knowledge/categories");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Erro ao salvar categoria.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Erro: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ShowCreateForm()
+    {
+        Navigation.NavigateTo("/knowledge/categories/create");
+    }
+
+    private void CancelForm()
+    {
+        Navigation.NavigateTo("/knowledge/categories");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/knowledge");
+    }
+
+    private void SelectIcon(string icon)
+    {
+        categoryRequest.Icon = icon;
+        StateHasChanged();
+    }
+
+    private void SelectColor(string color)
+    {
+        categoryRequest.Color = color;
+        StateHasChanged();
+    }
+
+    private void EditCategory(Guid categoryId)
+    {
+        Navigation.NavigateTo($"/knowledge/categories/edit/{categoryId}");
+    }
+
+    private async Task DeleteCategory(Guid categoryId)
+    {
+        var category = categories?.FirstOrDefault(c => c.Id == categoryId);
+        if (category == null) return;
+
+        string message = category.PostsCount > 0
+            ? $"Esta categoria possui {category.PostsCount} artigos. Tem certeza que deseja excluí-la? Os artigos serão movidos para 'Sem categoria'."
+            : "Tem certeza que deseja excluir esta categoria?";
+
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", message);
+
+        if (confirmed)
+        {
+            try
+            {
+                bool success = await KnowledgeService.DeleteCategoryAsync(categoryId);
+
+                if (success)
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Categoria excluída com sucesso!");
+                    await LoadCategories();
+                }
+                else
+                {
+                    await JSRuntime.InvokeVoidAsync("alert", "Erro ao excluir categoria.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", $"Erro: {ex.Message}");
+            }
+        }
+    }
+
+    private RenderFragment RenderCategoryCard(KnowledgeCategoryDto category, bool isSubcategory = false) => __builder =>
+    {
+        <div class="category-card @(isSubcategory ? "subcategory" : "")">
+            <div class="category-header" style="border-left-color: @category.Color;">
+                <div class="category-icon" style="color: @category.Color;">
+                    @category.Icon
+                </div>
+                <div class="category-info">
+                    <div class="category-name">@category.Name</div>
+                    @if (!string.IsNullOrEmpty(category.Description))
+                    {
+                        <div class="category-description">@category.Description</div>
+                    }
+                    <div class="category-meta">
+                        <span class="posts-count">
+                            <i class="bi bi-file-text"></i>
+                            @category.PostsCount artigos
+                        </span>
+                        @if (category.SubCategories?.Count > 0)
+                        {
+                            <span class="subcategories-count">
+                                <i class="bi bi-folder"></i>
+                                @category.SubCategories.Count subcategorias
+                            </span>
+                        }
+                        <span class="status-badge @(category.IsActive ? "active" : "inactive")">
+                            @(category.IsActive ? "Ativa" : "Inativa")
+                        </span>
+                    </div>
+                </div>
+                <div class="category-actions">
+                    <button class="btn btn-outline-primary btn-sm" @onclick="() => EditCategory(category.Id)">
+                        <i class="bi bi-pencil"></i>
+                        Editar
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" @onclick="() => DeleteCategory(category.Id)">
+                        <i class="bi bi-trash"></i>
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    };
+}
+
+<style>
+    .categories-container {
+        padding: 1.5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #1a365d;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, var(--bs-primary) 0%, rgba(var(--bs-primary-rgb), 0.8) 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        color: white;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stat-card.bg-success {
+        background: linear-gradient(135deg, var(--bs-success) 0%, rgba(var(--bs-success-rgb), 0.8) 100%);
+    }
+
+    .stat-card.bg-info {
+        background: linear-gradient(135deg, var(--bs-info) 0%, rgba(var(--bs-info-rgb), 0.8) 100%);
+    }
+
+    .stat-card.bg-warning {
+        background: linear-gradient(135deg, var(--bs-warning) 0%, rgba(var(--bs-warning-rgb), 0.8) 100%);
+        color: #000;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+        margin-right: 1rem;
+    }
+
+    .stat-content h4 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-content p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+        opacity: 0.9;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: #2d3748;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #e53e3e;
+    }
+
+    .visual-settings {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .icon-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .icon-preview {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        font-size: 1.5rem;
+    }
+
+    .suggested-icons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .icon-option {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1.2rem;
+    }
+
+    .icon-option:hover {
+        border-color: #667eea;
+        transform: scale(1.1);
+    }
+
+    .color-selector {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-control-color {
+        width: 50px;
+        height: 38px;
+        border-radius: 6px;
+    }
+
+    .color-input {
+        flex: 1;
+    }
+
+    .suggested-colors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-top: 0.5rem;
+    }
+
+    .color-option {
+        width: 24px;
+        height: 24px;
+        border: 2px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .color-option:hover {
+        transform: scale(1.2);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .category-preview {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .preview-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-left: 4px solid;
+        background: #f8fafc;
+        border-radius: 0 6px 6px 0;
+    }
+
+    .preview-icon {
+        font-size: 1.5rem;
+    }
+
+    .preview-name {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .preview-description {
+        font-size: 0.9rem;
+        color: #4a5568;
+    }
+
+    .advanced-settings {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .categories-tree {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .category-node {
+        position: relative;
+    }
+
+    .subcategories {
+        margin-left: 2rem;
+        margin-top: 1rem;
+        padding-left: 1rem;
+        border-left: 2px dashed #e2e8f0;
+    }
+
+    .subcategory-node {
+        margin-bottom: 1rem;
+    }
+
+    .category-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e2e8f0;
+        transition: all 0.2s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .category-card.subcategory {
+        background: #f8fafc;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-left: 4px solid;
+    }
+
+    .category-icon {
+        font-size: 2rem;
+        min-width: 2.5rem;
+        text-align: center;
+    }
+
+    .category-info {
+        flex-grow: 1;
+    }
+
+    .category-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .category-description {
+        color: #4a5568;
+        line-height: 1.5;
+        margin-bottom: 0.75rem;
+    }
+
+    .category-meta {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .posts-count,
+    .subcategories-count {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background: #f0fff4;
+        color: #22543d;
+    }
+
+    .status-badge.inactive {
+        background: #fed7d7;
+        color: #9b2c2c;
+    }
+
+    .category-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .empty-state {
+        background: white;
+        border-radius: 12px;
+        border: 2px dashed #e2e8f0;
+        margin-top: 2rem;
+    }
+
+    @@media (max-width: 768px) {
+        .categories-container {
+            padding: 1rem;
+        }
+
+        .stat-card {
+            height: auto;
+            padding: 1rem;
+        }
+
+        .category-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .category-actions {
+            align-self: flex-end;
+            width: 100%;
+        }
+
+        .category-actions .btn {
+            flex: 1;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+
+        .visual-settings {
+            margin-top: 2rem;
+        }
+    }
+</style>

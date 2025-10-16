@@ -6,32 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
     
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <!-- Preconnect Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
-    <!-- Font Awesome para ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    
-<<<<<<< Updated upstream
-    <!-- SYNQCORE DESIGN SYSTEM - ARQUIVO PRINCIPAL -->
-    <link rel="stylesheet" href="css/synqcore-main.css" />
-    
-    <!-- Blazor Generated Styles -->
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="css/synqcore.css" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
     <link rel="stylesheet" href="@Assets["SynQcore.BlazorApp.styles.css"]" />
-=======
-    <!-- Professional Theme CSS -->
-    <link rel="stylesheet" href="css/professional-theme.css?v=10">
-    
-    <!-- Home Page Specific CSS -->
-    <link rel="stylesheet" href="css/home-page.css?v=10">
-    
-    <!-- Feed Page Specific CSS -->
-    <link rel="stylesheet" href="css/feed-page.css?v=10">
-    
-    <!-- Login Page Specific CSS -->
-    <link rel="stylesheet" href="css/login-page.css?v=10">
->>>>>>> Stashed changes
     
     <ImportMap />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -40,16 +22,9 @@
 
 <body>
     <Routes />
+    
+    <!-- Blazor Framework -->
     <script src="_framework/blazor.web.js"></script>
-    
-    <!-- Bootstrap JavaScript Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Fluxor ReduxDevTools - REMOVIDO - usando StateManager customizado -->
-    
-    <script src="js/feed-minimal.js"></script>
-    <script src="js/feed-functions.js"></script>
-    <script src="js/feed-menu-manager.js"></script>
 </body>
 
 </html>

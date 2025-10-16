@@ -1,0 +1,305 @@
+﻿@using SynQcore.BlazorApp.Components
+@using Microsoft.AspNetCore.Components.Web
+@using SynQcore.BlazorApp.Services.StateManagement
+@inject StateManager StateManager
+@inject NavigationManager Navigation
+@inherits LayoutComponentBase
+@implements IDisposable
+
+<AppInitializer>
+    <!-- Sidebar -->
+    <div class="synq-sidebar" id="sidebar">
+        <div class="sidebar-content">
+            <!-- Logo -->
+            <div class="sidebar-brand p-4 border-bottom">
+                <h4 class="text-gradient-primary mb-0 fw-bold">
+                    <i class="ri ri-at-line me-2"></i>
+                    SynQcore
+                </h4>
+                <small class="text-muted">Plataforma Corporativa</small>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="sidebar-menu">
+                <ul class="nav flex-column">
+                    <li class="nav-item menu-item">
+                        <a href="/" class="nav-link menu-link @GetActiveClass("/")">
+                            <i class="ri ri-home-line menu-icon"></i>
+                            <span class="menu-text">Início</span>
+                        </a>
+                    </li>
+                    
+                    @if (StateManager.User.IsAuthenticated)
+                    {
+                        <li class="nav-item menu-item">
+                            <a href="/dashboard" class="nav-link menu-link @GetActiveClass("/dashboard")">
+                                <i class="ri ri-dashboard-line menu-icon"></i>
+                                <span class="menu-text">Dashboard</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item menu-item">
+                            <a href="/feed" class="nav-link menu-link @GetActiveClass("/feed")">
+                                <i class="ri ri-message-line menu-icon"></i>
+                                <span class="menu-text">Feed</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item menu-item">
+                            <a href="#" class="nav-link menu-link" data-bs-toggle="collapse" data-bs-target="#employeesMenu">
+                                <i class="ri ri-team-line menu-icon"></i>
+                                <span class="menu-text">Colaboradores</span>
+                                <i class="ri ri-arrow-right-s-line ms-auto"></i>
+                            </a>
+                            <div class="collapse menu-dropdown" id="employeesMenu">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="/employees" class="nav-link">
+                                            <i class="ri ri-team-line"></i>
+                                            Listar Funcionários
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/departments" class="nav-link">
+                                            <i class="ri ri-building-line"></i>
+                                            Departamentos
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                        
+                        <li class="nav-item menu-item">
+                            <a href="#" class="nav-link menu-link" data-bs-toggle="collapse" data-bs-target="#documentsMenu">
+                                <i class="ri ri-file-text-line menu-icon"></i>
+                                <span class="menu-text">Documentos</span>
+                                <i class="ri ri-arrow-right-s-line ms-auto"></i>
+                            </a>
+                            <div class="collapse menu-dropdown" id="documentsMenu">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="/documents" class="nav-link">
+                                            <i class="ri ri-folder-line"></i>
+                                            Meus Documentos
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/templates" class="nav-link">
+                                            <i class="ri ri-file-copy-line"></i>
+                                            Templates
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item menu-item">
+                            <a href="/login" class="nav-link menu-link @GetActiveClass("/login")">
+                                <i class="ri ri-login-box-line menu-icon"></i>
+                                <span class="menu-text">Entrar</span>
+                            </a>
+                        </li>
+                    }
+                    
+                    <li class="nav-item menu-item">
+                        <a href="/velzon-demo" class="nav-link menu-link @GetActiveClass("/velzon-demo")">
+                            <i class="ri ri-palette-line menu-icon"></i>
+                            <span class="menu-text">Demo Interface</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="synq-sidebar-overlay"></div>
+
+    <!-- Top Bar -->
+    <header class="synq-topbar">
+        <div class="topbar-left">
+            <button type="button" class="btn btn-link" data-sidebar-toggle>
+                <i class="ri ri-menu-line ri-lg"></i>
+            </button>
+            
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <i class="ri ri-home-line"></i>
+                        <a href="/">SynQcore</a>
+                    </li>
+                    <li class="breadcrumb-item active">@GetPageTitle()</li>
+                </ol>
+            </nav>
+        </div>
+        
+        <div class="topbar-actions">
+            <!-- Search -->
+            <div class="input-group me-3" style="max-width: 300px;">
+                <span class="input-group-text bg-transparent border-end-0">
+                    <i class="ri ri-search-line text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0 ps-0" placeholder="Buscar...">
+            </div>
+            
+            @if (StateManager.User.IsAuthenticated)
+            {
+                <!-- Notifications -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary position-relative me-2" data-bs-toggle="dropdown">
+                        <i class="ri ri-notification-line"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @notificationCount
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end p-0" style="min-width: 320px;">
+                        <div class="p-3 border-bottom">
+                            <h6 class="mb-0">Notificações</h6>
+                        </div>
+                        
+                        <div class="p-3">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ri ri-user-add-line text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">Novo colaborador</h6>
+                                    <p class="text-muted mb-1 fs-sm">João Silva foi adicionado à equipe</p>
+                                    <small class="text-muted">2 minutos atrás</small>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                    <i class="ri ri-arrow-right-line me-1"></i>
+                                    Ver todas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="ri ri-user-line me-1"></i>
+                        @(StateManager.User.CurrentUser?.Nome ?? "Usuário")
+                        <i class="ri ri-arrow-down-s-line ms-1"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <div class="dropdown-header">
+                            <h6 class="mb-0">@StateManager.User.CurrentUser?.Nome</h6>
+                            <small class="text-muted">@StateManager.User.CurrentUser?.Email</small>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/profile">
+                            <i class="ri ri-user-line me-2"></i>
+                            Meu Perfil
+                        </a>
+                        <a class="dropdown-item" href="/settings">
+                            <i class="ri ri-settings-line me-2"></i>
+                            Configurações
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item text-danger" @onclick="HandleLogout">
+                            <i class="ri ri-logout-box-line me-2"></i>
+                            Sair
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a href="/login" class="btn btn-primary">
+                    <i class="ri ri-login-box-line me-1"></i>
+                    Entrar
+                </a>
+            }
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="synq-main-content">
+        @Body
+    </main>
+
+    <!-- Back to Top Button -->
+    <button class="btn btn-primary position-fixed" 
+            style="bottom: 2rem; right: 2rem; z-index: 1000; border-radius: 50%; width: 50px; height: 50px; display: none;"
+            data-back-to-top
+            data-bs-toggle="tooltip"
+            title="Voltar ao topo">
+        <i class="ri ri-arrow-up-line"></i>
+    </button>
+</AppInitializer>
+
+<div id="blazor-error-ui" data-nosnippet>
+    <div class="alert alert-danger m-3 rounded">
+        <i class="ri ri-error-warning-line me-2"></i>
+        Ocorreu um erro inesperado.
+        <a href="." class="alert-link ms-2">Recarregar</a>
+        <button class="btn-close ms-auto" aria-label="Fechar"></button>
+    </div>
+</div>
+
+@code {
+    private int notificationCount = 3;
+
+    protected override void OnInitialized()
+    {
+        StateManager.User.PropertyChanged += OnUserStateChanged;
+    }
+
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string GetActiveClass(string path)
+    {
+        var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        
+        if (path == "/" && (currentPath == "" || currentPath == "/" || currentPath == "home"))
+            return "active";
+            
+        if (path != "/" && currentPath.StartsWith(path.TrimStart('/'), StringComparison.OrdinalIgnoreCase))
+            return "active";
+            
+        return "";
+    }
+
+    private string GetPageTitle()
+    {
+        var currentPath = Navigation.ToBaseRelativePath(Navigation.Uri);
+        
+        return currentPath switch
+        {
+            "" or "/" or "home" => "Início",
+            "dashboard" => "Dashboard",
+            "feed" => "Feed",
+            "login" => "Login",
+            "employees" => "Funcionários",
+            "departments" => "Departamentos",
+            "documents" => "Documentos",
+            "templates" => "Templates",
+            "velzon-demo" => "Demo Interface",
+            _ => "SynQcore"
+        };
+    }
+
+    private void HandleLogout()
+    {
+        // Implementar logout
+        StateManager.User.Logout();
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnUserStateChanged;
+    }
+}

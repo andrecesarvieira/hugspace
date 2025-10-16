@@ -1,709 +1,106 @@
 @page "/login"
-@rendermode InteractiveServer
-@using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Services.StateManagement
+@using SynQcore.BlazorApp.Services
 @inject StateManager StateManager
-@inject IAuthService AuthService
 @inject NavigationManager Navigation
-@implements IDisposable
+@inject IAuthService AuthService
+@inject ILocalAuthService LocalAuthService
+@layout Components.Layout.MainLayout
 
 <PageTitle>Login - SynQcore</PageTitle>
 
-<<<<<<< Updated upstream
-<div class="page-login">
-    <div class="page-login__hero">
-        <div class="page-login__hero-content">
-            <div class="login-logo">
-                <i class="fas fa-at"></i>
-            </div>
-            <h1 class="page-login__hero-title">SynQcore</h1>
-            <p class="page-login__hero-tagline">
-                Conecte-se, colabore e cresça com sua equipe
-            </p>
-            <p class="page-login__hero-description">
-                A rede social corporativa que transforma a comunicação interna,
-                promove colaboração e constrói conhecimento coletivo.
-            </p>
-
-            <div class="login-features">
-                <div class="login-feature">
-                    <i class="fas fa-users"></i>
-                    <span>Colaboração em Tempo Real</span>
-                </div>
-                <div class="login-feature">
-                    <i class="fas fa-brain"></i>
-                    <span>Gestão de Conhecimento</span>
-                </div>
-                <div class="login-feature">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Analytics Avançados</span>
-                </div>
-                <div class="login-feature">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Segurança Enterprise</span>
-=======
-<div class="login-wrapper">
-    <div class="container-fluid">
-        <div class="row min-vh-100">
-            <!-- Lado esquerdo - Informações -->
-            <div class="col-lg-6 login-brand-section d-flex align-items-center">
-                <div class="login-brand-container container-fluid p-5">
-                    <div class="text-center text-lg-start">
-                        <div class="mb-4">
-                            <div class="login-brand-logo">
-                                <i class="fas fa-at"></i>
-                            </div>
-                        </div>
-                        <h1 class="login-brand-title display-3 professional-title" style="font-family: var(--font-family) !important; font-weight: 700 !important; color: white !important; font-size: 3rem !important; letter-spacing: -0.02em !important; line-height: 1.1 !important;">SynQcore</h1>
-                        <p class="login-brand-subtitle lead professional-subtitle" style="font-family: var(--font-family) !important; font-weight: 600 !important; color: rgba(255,255,255,0.95) !important; font-size: 1.25rem !important; letter-spacing: -0.01em !important; line-height: 1.4 !important;">
-                            Conecte-se, colabore e cresça com sua equipe
-                        </p>
-                        <p class="login-brand-description professional-body" style="font-family: var(--font-family) !important; font-weight: 400 !important; color: rgba(255,255,255,0.8) !important; font-size: 1rem !important; line-height: 1.6 !important; margin-bottom: 2rem !important;">
-                            A rede social corporativa que transforma a comunicação interna,
-                            promove colaboração e constrói conhecimento coletivo.
-                        </p>
-
-                        <!-- Features Premium Cards -->
-                        <div class="login-features-premium" style="margin-top: 3rem !important;">
-                            <div class="row g-4">
-                                <!-- Colaboração em Tempo Real -->
-                                <div class="col-md-6 col-12">
-                                    <div class="feature-card-premium" 
-                                         style="background: rgba(255,255,255,0.08) !important; 
-                                                backdrop-filter: blur(10px) !important; 
-                                                border: 1px solid rgba(255,255,255,0.12) !important; 
-                                                border-radius: 16px !important; 
-                                                padding: 1.75rem !important; 
-                                                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                                                cursor: pointer !important;">
-                                        <div class="feature-icon-container" 
-                                             style="width: 48px !important; 
-                                                    height: 48px !important; 
-                                                    background: rgba(255,255,255,0.15) !important; 
-                                                    border-radius: 12px !important; 
-                                                    display: flex !important; 
-                                                    align-items: center !important; 
-                                                    justify-content: center !important; 
-                                                    margin-bottom: 1rem !important;">
-                                            <i class="fas fa-users" 
-                                               style="font-size: 1.5rem !important; 
-                                                      color: rgba(255,255,255,0.95) !important;"></i>
-                                        </div>
-                                        <h4 class="feature-title" 
-                                            style="font-family: var(--font-family) !important; 
-                                                   font-weight: 600 !important; 
-                                                   font-size: 1.1rem !important; 
-                                                   color: rgba(255,255,255,0.95) !important; 
-                                                   margin-bottom: 0.5rem !important; 
-                                                   line-height: 1.3 !important;">
-                                            Colaboração em Tempo Real
-                                        </h4>
-                                        <p class="feature-description" 
-                                           style="font-family: var(--font-family) !important; 
-                                                  font-weight: 400 !important; 
-                                                  font-size: 0.875rem !important; 
-                                                  color: rgba(255,255,255,0.75) !important; 
-                                                  margin: 0 !important; 
-                                                  line-height: 1.5 !important;">
-                                            Conecte-se instantaneamente com sua equipe através de threads dinâmicas e notificações inteligentes.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Gestão de Conhecimento -->
-                                <div class="col-md-6 col-12">
-                                    <div class="feature-card-premium" 
-                                         style="background: rgba(255,255,255,0.08) !important; 
-                                                backdrop-filter: blur(10px) !important; 
-                                                border: 1px solid rgba(255,255,255,0.12) !important; 
-                                                border-radius: 16px !important; 
-                                                padding: 1.75rem !important; 
-                                                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                                                cursor: pointer !important;">
-                                        <div class="feature-icon-container" 
-                                             style="width: 48px !important; 
-                                                    height: 48px !important; 
-                                                    background: rgba(255,255,255,0.15) !important; 
-                                                    border-radius: 12px !important; 
-                                                    display: flex !important; 
-                                                    align-items: center !important; 
-                                                    justify-content: center !important; 
-                                                    margin-bottom: 1rem !important;">
-                                            <i class="fas fa-brain" 
-                                               style="font-size: 1.5rem !important; 
-                                                      color: rgba(255,255,255,0.95) !important;"></i>
-                                        </div>
-                                        <h4 class="feature-title" 
-                                            style="font-family: var(--font-family) !important; 
-                                                   font-weight: 600 !important; 
-                                                   font-size: 1.1rem !important; 
-                                                   color: rgba(255,255,255,0.95) !important; 
-                                                   margin-bottom: 0.5rem !important; 
-                                                   line-height: 1.3 !important;">
-                                            Gestão de Conhecimento
-                                        </h4>
-                                        <p class="feature-description" 
-                                           style="font-family: var(--font-family) !important; 
-                                                  font-weight: 400 !important; 
-                                                  font-size: 0.875rem !important; 
-                                                  color: rgba(255,255,255,0.75) !important; 
-                                                  margin: 0 !important; 
-                                                  line-height: 1.5 !important;">
-                                            Centralize e organize o conhecimento corporativo com sistema de endorsements entre especialistas.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Analytics Avançados -->
-                                <div class="col-md-6 col-12">
-                                    <div class="feature-card-premium" 
-                                         style="background: rgba(255,255,255,0.08) !important; 
-                                                backdrop-filter: blur(10px) !important; 
-                                                border: 1px solid rgba(255,255,255,0.12) !important; 
-                                                border-radius: 16px !important; 
-                                                padding: 1.75rem !important; 
-                                                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                                                cursor: pointer !important;">
-                                        <div class="feature-icon-container" 
-                                             style="width: 48px !important; 
-                                                    height: 48px !important; 
-                                                    background: rgba(255,255,255,0.15) !important; 
-                                                    border-radius: 12px !important; 
-                                                    display: flex !important; 
-                                                    align-items: center !important; 
-                                                    justify-content: center !important; 
-                                                    margin-bottom: 1rem !important;">
-                                            <i class="fas fa-chart-line" 
-                                               style="font-size: 1.5rem !important; 
-                                                      color: rgba(255,255,255,0.95) !important;"></i>
-                                        </div>
-                                        <h4 class="feature-title" 
-                                            style="font-family: var(--font-family) !important; 
-                                                   font-weight: 600 !important; 
-                                                   font-size: 1.1rem !important; 
-                                                   color: rgba(255,255,255,0.95) !important; 
-                                                   margin-bottom: 0.5rem !important; 
-                                                   line-height: 1.3 !important;">
-                                            Analytics Avançados
-                                        </h4>
-                                        <p class="feature-description" 
-                                           style="font-family: var(--font-family) !important; 
-                                                  font-weight: 400 !important; 
-                                                  font-size: 0.875rem !important; 
-                                                  color: rgba(255,255,255,0.75) !important; 
-                                                  margin: 0 !important; 
-                                                  line-height: 1.5 !important;">
-                                            Insights poderosos sobre engajamento, tendências e performance da sua equipe corporativa.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Segurança Enterprise -->
-                                <div class="col-md-6 col-12">
-                                    <div class="feature-card-premium" 
-                                         style="background: rgba(255,255,255,0.08) !important; 
-                                                backdrop-filter: blur(10px) !important; 
-                                                border: 1px solid rgba(255,255,255,0.12) !important; 
-                                                border-radius: 16px !important; 
-                                                padding: 1.75rem !important; 
-                                                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                                                cursor: pointer !important;">
-                                        <div class="feature-icon-container" 
-                                             style="width: 48px !important; 
-                                                    height: 48px !important; 
-                                                    background: rgba(255,255,255,0.15) !important; 
-                                                    border-radius: 12px !important; 
-                                                    display: flex !important; 
-                                                    align-items: center !important; 
-                                                    justify-content: center !important; 
-                                                    margin-bottom: 1rem !important;">
-                                            <i class="fas fa-shield-alt" 
-                                               style="font-size: 1.5rem !important; 
-                                                      color: rgba(255,255,255,0.95) !important;"></i>
-                                        </div>
-                                        <h4 class="feature-title" 
-                                            style="font-family: var(--font-family) !important; 
-                                                   font-weight: 600 !important; 
-                                                   font-size: 1.1rem !important; 
-                                                   color: rgba(255,255,255,0.95) !important; 
-                                                   margin-bottom: 0.5rem !important; 
-                                                   line-height: 1.3 !important;">
-                                            Segurança Enterprise
-                                        </h4>
-                                        <p class="feature-description" 
-                                           style="font-family: var(--font-family) !important; 
-                                                  font-weight: 400 !important; 
-                                                  font-size: 0.875rem !important; 
-                                                  color: rgba(255,255,255,0.75) !important; 
-                                                  margin: 0 !important; 
-                                                  line-height: 1.5 !important;">
-                                            Proteção corporativa de alto nível com criptografia, controle de acesso e auditoria completa.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
->>>>>>> Stashed changes
-                </div>
-            </div>
+<div class="container container-sm">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h1 class="text-2xl font-bold text-primary">Login - SynQcore</h1>
+            <p class="text-sm text-gray-600">Entre com suas credenciais</p>
         </div>
-    </div>
-
-<<<<<<< Updated upstream
-    <div class="page-login__form-section">
-        <div class="page-login__form-container">
-            <div class="page-login__form-card">
-                <div class="page-login__form-card-body">
-                    <div class="page-login__form-title">Bem-vindo de volta!</div>
-                    <div class="page-login__form-subtitle">Faça login para acessar sua conta</div>
-
-                    @* Mensagem de erro *@
-                    @if (!string.IsNullOrEmpty(ErrorMessage))
-                    {
-                        <div class="login-error-message">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            @ErrorMessage
-                        </div>
-                    }
-
-                    @* Formulário *@
-                    <form @onsubmit="HandleSubmit" @onsubmit:preventDefault="true" class="page-login__form">
-                        <div class="page-login__field">
-                            <label for="email" class="page-login__label">E-mail</label>
-                            <div class="login-input-group">
-                                <i class="fas fa-envelope login-input-icon"></i>
-                                <input id="email" type="email" @bind="Email" @bind:event="oninput"
-                                    class="login-input" placeholder="admin@synqcore.com" disabled="@IsLoading"
-                                    required autocomplete="email" />
-=======
-            <!-- Lado direito - Formulário -->
-            <div class="col-lg-6 login-form-section">
-                <div class="login-form-container" style="max-width: 700px !important; width: 100% !important; margin: 0 auto !important; padding: 2rem !important;">
-                    <div class="row justify-content-center">
-                        <div class="col-12" style="max-width: none !important; flex: none !important; width: 100% !important;">
-                            <div class="login-form-card" style="padding: 4rem 3rem !important; max-width: 600px !important; margin: 0 auto !important; width: 100% !important; min-height: 600px !important;">
-                                <div class="card-body" style="padding: 0 !important; margin: 0 !important; width: 100% !important;">
-                                    <div class="login-form-header">
-                                        <h1 class="display-4 professional-title mb-4" style="font-size: 2.25rem !important; font-weight: 700 !important; color: var(--slate-900) !important; line-height: 1.2 !important; letter-spacing: -0.02em !important;">Bem-vindo de volta!</h1>
-                                        <p class="lead professional-body text-muted" style="font-size: 1.125rem !important; color: var(--slate-600) !important; font-weight: 400 !important; line-height: 1.6 !important;">Faça login para acessar sua conta</p>
-                                    </div>
-
-                                    @* Mensagem de erro *@
-                                    @if (!string.IsNullOrEmpty(ErrorMessage))
-                                    {
-                                        <div class="login-error-alert professional-caption" role="alert" style="font-family: var(--font-family) !important; font-weight: 500 !important; font-size: 0.875rem !important;">
-                                            <i class="fas fa-exclamation-triangle login-error-icon"></i>
-                                            @ErrorMessage
-                                            <button type="button" class="close-error-btn" @onclick="ClearError">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    }
-
-                                    @* Formulário *@
-                                    <form @onsubmit="HandleSubmit" @onsubmit:preventDefault="true" 
-                                          role="form" aria-label="Formulário de login">
-                                        <div class="login-form-group" style="margin-bottom: 2rem !important;">
-                                            <label for="email" class="login-form-label" style="font-family: var(--font-family) !important; font-weight: 600 !important; color: var(--slate-700) !important; font-size: 0.875rem !important;">E-mail</label>
-                                            <div class="login-input-group @(GetValidationClass("email"))" 
-                                                 role="group" aria-label="Campo de e-mail">
-                                                <span class="login-input-icon" aria-hidden="true" style="height: 52px !important; min-width: 52px !important; font-size: 1rem !important; background: var(--slate-50) !important; color: var(--slate-500) !important;">
-                                                    <i class="fas fa-envelope"></i>
-                                                </span>
-                                                <input id="email" type="email" @bind="Email" @bind:event="oninput"
-                                                    @onblur="ValidateEmail" @onfocus="@(() => OnFieldFocus("email"))"
-                                                    class="login-input" placeholder="Digite seu e-mail corporativo" 
-                                                    style="height: 52px !important; font-size: 1rem !important; padding: 0 1.25rem !important; font-family: var(--font-family) !important;"
-                                                    disabled="@IsLoading" required autocomplete="email"
-                                                    aria-describedby="@(HasEmailError ? "email-error" : "")" 
-                                                    aria-invalid="@HasEmailError.ToString().ToLower()" />
-                                                @if (HasEmailError)
-                                                {
-                                                    <span class="login-validation-icon" aria-hidden="true">
-                                                        <i class="fas fa-exclamation-circle"></i>
-                                                    </span>
-                                                }
-                                                else if (IsEmailValid)
-                                                {
-                                                    <span class="login-validation-icon login-valid" aria-hidden="true">
-                                                        <i class="fas fa-check-circle"></i>
-                                                    </span>
-                                                }
-                                            </div>
-                                            @if (HasEmailError)
-                                            {
-                                                <div id="email-error" class="login-field-error" role="alert">
-                                                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
-                                                    @EmailErrorMessage
-                                                </div>
-                                            }
-                                        </div>
-
-                                        <div class="login-form-group" style="margin-bottom: 2rem !important;">
-                                            <label for="password" class="login-form-label" style="font-family: var(--font-family) !important; font-weight: 600 !important; color: var(--slate-700) !important; font-size: 0.875rem !important;">Senha</label>
-                                            <div class="login-input-group @(GetValidationClass("password"))">
-                                                <span class="login-input-icon" style="height: 52px !important; min-width: 52px !important; font-size: 1rem !important; background: var(--slate-50) !important; color: var(--slate-500) !important;">
-                                                    <i class="fas fa-lock"></i>
-                                                </span>
-                                                <input id="password" type="@(ShowPassword ? "text" : "password")" @bind="Password"
-                                                    @bind:event="oninput" @onblur="ValidatePassword" @onfocus="@(() => OnFieldFocus("password"))"
-                                                    class="login-input" placeholder="Digite sua senha corporativa" 
-                                                    style="height: 52px !important; font-size: 1rem !important; padding: 0 1.25rem !important; font-family: var(--font-family) !important;"
-                                                    disabled="@IsLoading" required autocomplete="current-password" />
-                                                <button type="button" class="login-password-toggle"
-                                                    @onclick="TogglePasswordVisibility" disabled="@IsLoading" tabindex="-1"
-                                                    style="height: 52px !important; min-width: 52px !important;"
-                                                    title="@(ShowPassword ? "Ocultar senha" : "Mostrar senha")">
-                                                    <i class="fas @(ShowPassword ? "fa-eye-slash" : "fa-eye")"></i>
-                                                </button>
-                                                @if (HasPasswordError)
-                                                {
-                                                    <span class="login-validation-icon">
-                                                        <i class="fas fa-exclamation-circle"></i>
-                                                    </span>
-                                                }
-                                                else if (IsPasswordValid)
-                                                {
-                                                    <span class="login-validation-icon login-valid">
-                                                        <i class="fas fa-check-circle"></i>
-                                                    </span>
-                                                }
-                                            </div>
-                                            @if (HasPasswordError)
-                                            {
-                                                <div class="login-field-error">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                    @PasswordErrorMessage
-                                                </div>
-                                            }
-                                            @if (IsPasswordValid && PasswordStrength > 0)
-                                            {
-                                                <div class="password-strength-indicator">
-                                                    <div class="strength-bar">
-                                                        <div class="strength-fill @PasswordStrengthClass" style="width: @(PasswordStrength * 20)%"></div>
-                                                    </div>
-                                                    <span class="strength-text @PasswordStrengthClass">@PasswordStrengthText</span>
-                                                </div>
-                                            }
-                                        </div>
-
-                                        <div class="login-checkbox-group" style="margin-bottom: 2rem !important; padding: 0.75rem 0 !important;">
-                                            <input type="checkbox" class="login-checkbox" id="rememberMe" @bind="RememberMe" disabled="@IsLoading" style="transform: scale(1.1) !important;" />
-                                            <label class="login-checkbox-label professional-caption" for="rememberMe" style="font-family: var(--font-family) !important; color: var(--slate-700) !important; font-size: 0.875rem !important; font-weight: 400 !important; cursor: pointer !important;">
-                                                Lembrar-me
-                                            </label>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-primary btn-lg login-btn-primary @(IsLoading ? "loading" : "")"
-                                            style="font-family: var(--font-family) !important; height: 56px !important; font-size: 1.125rem !important; font-weight: 600 !important; padding: 0.875rem 1.5rem !important; letter-spacing: 0.025em !important; border-radius: var(--border-radius) !important; width: 100% !important;"
-                                            disabled="@(IsLoading || !IsFormValid())" @onclick="HandleLogin">
-                                            @if (IsLoading)
-                                            {
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <div class="login-loading-spinner" role="status">
-                                                        <span class="visually-hidden">Carregando...</span>
-                                                    </div>
-                                                    <span>Entrando...</span>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <span><i class="fas fa-sign-in-alt me-2"></i>Entrar</span>
-                                            }
-                                        </button>
-                                        
-                                        <!-- Indicador de sucesso -->
-                                        @if (LoginSuccess)
-                                        {
-                                            <div class="login-success-message professional-body" style="font-family: var(--font-family) !important; font-weight: 500 !important; font-size: 0.875rem !important;">
-                                                <i class="fas fa-check-circle"></i>
-                                                Login realizado com sucesso! Redirecionando...
-                                            </div>
-                                        }
-                                    </form>
-                                </div>
->>>>>>> Stashed changes
-                            </div>
-                        </div>
-
-                        <div class="page-login__field">
-                            <label for="password" class="page-login__label">Senha</label>
-                            <div class="login-input-group">
-                                <i class="fas fa-lock login-input-icon"></i>
-                                <input id="password" type="@(ShowPassword ? "text" : "password")" @bind="Password"
-                                    @bind:event="oninput" class="login-input" placeholder="Digite sua senha"
-                                    disabled="@IsLoading" required autocomplete="current-password" />
-                                <button type="button" class="login-toggle-password"
-                                    @onclick="TogglePasswordVisibility" disabled="@IsLoading" tabindex="-1">
-                                    <i class="fas @(ShowPassword ? "fa-eye-slash" : "fa-eye")"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="login-options">
-                            <label class="login-checkbox">
-                                <input type="checkbox" @bind="RememberMe" disabled="@IsLoading" />
-                                <span class="login-checkbox-text">Lembrar-me</span>
-                            </label>
-                        </div>
-
-                        <button type="submit" class="login-submit-btn"
-                            disabled="@(IsLoading || !IsFormValid())" @onclick="HandleLogin">
-                            @if (IsLoading)
-                            {
-                                <div class="login-btn-loading">
-                                    <div class="login-btn-spinner"></div>
-                                    <span>Entrando...</span>
-                                </div>
-                            }
-                            else
-                            {
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span>Entrar</span>
-                            }
-                        </button>
-                    </form>
+        
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
                 </div>
+            }
+
+            <form @onsubmit="HandleLogin">
+                <div class="form-group">
+                    <label class="form-label">Email:</label>
+                    <input type="email" @bind="email" class="form-input" placeholder="seu@email.com" required />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Senha:</label>
+                    <input type="password" @bind="password" class="form-input" placeholder="••••••••" required />
+                </div>
+                
+                <div class="form-group">
+                    <label class="flex align-center gap-2">
+                        <input type="checkbox" @bind="rememberMe" />
+                        <span class="text-sm">Lembrar-me</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-full" disabled="@isLoading">
+                    @(isLoading ? "Entrando..." : "Entrar")
+                </button>
+            </form>
+        </div>
+        
+        <div class="card-footer">
+            <div class="text-sm text-gray-600">
+                <p class="font-semibold mb-2">Credenciais padrão:</p>
+                <ul class="pl-4">
+                    <li>Email: <code>admin@synqcore.com</code></li>
+                    <li>Senha: <code>SynQcore@Admin123!</code></li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
 
 @code {
-    private string Email = string.Empty;
-    private string Password = string.Empty;
-    private bool RememberMe = false;
-    private bool IsLoading = false;
-    private bool ShowPassword = false;
-    private string ErrorMessage = string.Empty;
-    
-    // Validação em tempo real
-    private bool HasEmailError = false;
-    private bool HasPasswordError = false;
-    private bool IsEmailValid = false;
-    private bool IsPasswordValid = false;
-    private string EmailErrorMessage = string.Empty;
-    private string PasswordErrorMessage = string.Empty;
-    private string LastFocusedField = string.Empty;
-    
-    // Força da senha
-    private int PasswordStrength = 0;
-    private string PasswordStrengthText = string.Empty;
-    private string PasswordStrengthClass = string.Empty;
-    
-    // Estados visuais
-    private bool LoginSuccess = false;
+    private string email = "admin@synqcore.com";
+    private string password = "SynQcore@Admin123!";
+    private bool rememberMe = true;
+    private bool isLoading = false;
+    private string errorMessage = "";
 
     protected override void OnInitialized()
     {
-        // Verificar se já está autenticado
         if (StateManager.User.IsAuthenticated)
         {
             Navigation.NavigateTo("/");
-            return;
         }
-
-        // Inscrever-se nas mudanças do estado do usuário
-        StateManager.User.PropertyChanged += OnUserStateChanged;
-        StateManager.UI.PropertyChanged += OnUIStateChanged;
-    }
-
-    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    private void OnUIStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        StateManager.User.PropertyChanged -= OnUserStateChanged;
-        StateManager.UI.PropertyChanged -= OnUIStateChanged;
-    }
-
-    private async Task HandleSubmit()
-    {
-        await HandleLogin();
     }
 
     private async Task HandleLogin()
     {
-        if (!IsFormValid() || IsLoading)
-            return;
-
-        IsLoading = true;
-        ErrorMessage = string.Empty;
-        StateHasChanged();
-
+        isLoading = true;
+        errorMessage = "";
+        
         try
         {
-            // Usar AuthService que já foi migrado para StateManager
-            var success = await AuthService.LoginAsync(Email, Password);
-
-            if (success)
+            var result = await AuthService.LoginAsync(email, password);
+            
+            if (result)
             {
-                // O AuthService já atualiza o StateManager automaticamente
-                // Manter loading = true durante redirecionamento para evitar flickering
-                
-                // Mostrar sucesso antes de redirecionar
-                LoginSuccess = true;
-                StateHasChanged();
-                
-                // Delay para mostrar o feedback visual
-                await Task.Delay(800);
-                
-                // Redirecionar para o Feed após login bem-sucedido
-                Console.WriteLine("[LOGIN] Redirecionando para /feed após login bem-sucedido");
-                Navigation.NavigateTo("/feed", forceLoad: true);
-                
-                // NÃO definir IsLoading = false aqui para evitar flickering
-                return;
+                await Task.Delay(500);
+                Navigation.NavigateTo("/", true);
             }
             else
             {
-                ErrorMessage = "Credenciais inválidas. Verifique seu e-mail e senha.";
-                IsLoading = false;
-                StateHasChanged();
+                errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            ErrorMessage = "Erro interno do sistema. Tente novamente.";
-            IsLoading = false;
-            StateHasChanged();
+            errorMessage = ex.Message;
         }
-    }
-
-    private void TogglePasswordVisibility()
-    {
-        ShowPassword = !ShowPassword;
-    }
-
-    private bool IsFormValid()
-    {
-        return !string.IsNullOrWhiteSpace(Email) &&
-        !string.IsNullOrWhiteSpace(Password) &&
-        Email.Contains("@") &&
-        !HasEmailError &&
-        !HasPasswordError;
-    }
-    
-    // Métodos de validação em tempo real
-    private void ValidateEmail()
-    {
-        HasEmailError = false;
-        IsEmailValid = false;
-        EmailErrorMessage = string.Empty;
-        
-        if (string.IsNullOrWhiteSpace(Email))
+        finally
         {
-            HasEmailError = true;
-            EmailErrorMessage = "E-mail é obrigatório";
+            isLoading = false;
         }
-        else if (!Email.Contains("@") || !Email.Contains("."))
-        {
-            HasEmailError = true;
-            EmailErrorMessage = "E-mail deve ter um formato válido";
-        }
-        else if (Email.Length < 5)
-        {
-            HasEmailError = true;
-            EmailErrorMessage = "E-mail muito curto";
-        }
-        else
-        {
-            IsEmailValid = true;
-        }
-        
-        StateHasChanged();
-    }
-    
-    private void ValidatePassword()
-    {
-        HasPasswordError = false;
-        IsPasswordValid = false;
-        PasswordErrorMessage = string.Empty;
-        
-        if (string.IsNullOrWhiteSpace(Password))
-        {
-            HasPasswordError = true;
-            PasswordErrorMessage = "Senha é obrigatória";
-        }
-        else if (Password.Length < 6)
-        {
-            HasPasswordError = true;
-            PasswordErrorMessage = "Senha deve ter pelo menos 6 caracteres";
-        }
-        else
-        {
-            IsPasswordValid = true;
-            CalculatePasswordStrength();
-        }
-        
-        StateHasChanged();
-    }
-    
-    private void CalculatePasswordStrength()
-    {
-        PasswordStrength = 0;
-        
-        if (Password.Length >= 8) PasswordStrength++;
-        if (Password.Any(char.IsUpper)) PasswordStrength++;
-        if (Password.Any(char.IsLower)) PasswordStrength++;
-        if (Password.Any(char.IsDigit)) PasswordStrength++;
-        if (Password.Any(c => "!@#$%^&*()_+-=[]{}|;:,.<>?".Contains(c))) PasswordStrength++;
-        
-        (PasswordStrengthText, PasswordStrengthClass) = PasswordStrength switch
-        {
-            0 or 1 => ("Muito fraca", "strength-very-weak"),
-            2 => ("Fraca", "strength-weak"),
-            3 => ("Média", "strength-medium"),
-            4 => ("Forte", "strength-strong"),
-            5 => ("Muito forte", "strength-very-strong"),
-            _ => ("", "")
-        };
-    }
-    
-    private string GetValidationClass(string field)
-    {
-        return field switch
-        {
-            "email" when HasEmailError => "login-input-error",
-            "email" when IsEmailValid => "login-input-valid",
-            "password" when HasPasswordError => "login-input-error", 
-            "password" when IsPasswordValid => "login-input-valid",
-            _ => ""
-        };
-    }
-    
-    private void ClearFieldError()
-    {
-        // Limpar erros quando o usuário começar a digitar novamente
-        if (LastFocusedField == "email")
-        {
-            HasEmailError = false;
-            EmailErrorMessage = string.Empty;
-        }
-        else if (LastFocusedField == "password")
-        {
-            HasPasswordError = false;
-            PasswordErrorMessage = string.Empty;
-        }
-        StateHasChanged();
-    }
-    
-    private void OnFieldFocus(string fieldName)
-    {
-        LastFocusedField = fieldName;
-    }
-    
-    private void ClearError()
-    {
-        ErrorMessage = string.Empty;
-        StateHasChanged();
     }
 }
