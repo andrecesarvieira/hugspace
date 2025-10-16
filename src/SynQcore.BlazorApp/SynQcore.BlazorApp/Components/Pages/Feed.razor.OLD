@@ -1,0 +1,1023 @@
+@page "/feed"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Services.StateManagement
+@using SynQcore.BlazorApp.Store.User
+@using SynQcore.BlazorApp.Models
+@using SynQcore.BlazorApp.Components.Social
+@using SynQcore.BlazorApp.Components.Shared
+@using SynQcore.Application.Features.CorporateSearch.DTOs
+@using SynQcore.Application.Features.Departments.DTOs
+@using SynQcore.Application.Common.DTOs
+@implements IDisposable
+@inject StateManager StateManager
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject INotificationService NotificationService
+@inject IPostService PostService
+@inject ISearchService SearchService
+@inject IUserPermissionService UserPermissionService
+@inject IAuthService AuthService
+@inject IEmployeeService EmployeeService
+
+<div class="feed-wrapper">
+    <!-- Header Principal -->
+    <header class="feed-header" style="background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%); border-bottom: none; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <div class="container-fluid p-3">
+            <!-- Logo e Branding -->
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <div class="feed-logo-container" style="display: flex; align-items: center;">
+                        <div class="feed-logo-icon-container" 
+                             style="background: rgba(255,255,255,0.95); 
+                                    color: var(--primary-600); 
+                                    width: 48px; 
+                                    height: 48px; 
+                                    border-radius: 12px; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    margin-right: 0.75rem; 
+                                    box-shadow: 0 4px 12px rgba(255,255,255,0.2);">
+                            <i class="fas fa-at" style="font-size: 1.25rem; font-weight: 700;"></i>
+                        </div>
+                        <div>
+                            <h1 class="feed-brand-title display-6 professional-title" 
+                                style="font-family: var(--font-family); 
+                                       font-size: 1.5rem; 
+                                       margin-bottom: 0; 
+                                       font-weight: 700; 
+                                       color: white; 
+                                       letter-spacing: -0.02em; 
+                                       line-height: 1.2;">
+                                SynQcore
+                            </h1>
+                            <small class="feed-brand-subtitle professional-caption" 
+                                   style="font-family: var(--font-family); 
+                                          font-size: 0.75rem; 
+                                          color: rgba(255,255,255,0.8); 
+                                          font-weight: 500; 
+                                          letter-spacing: 0.025em; 
+                                          text-transform: uppercase;">
+                                Rede Social Corporativa
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra de Pesquisa Central -->
+                <div class="col-md-6">
+                    <div class="header-search">
+                        <div class="search-container position-relative">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text"
+                                   class="search-input"
+                                   placeholder="Buscar discussões, colegas, projetos..."
+                                   @bind="searchQuery"
+                                   @onkeypress="@(async (e) => { if (e.Key == "Enter") await HandleSearch(); })"
+                                   @oninput="OnSearchInput"
+                                   @onfocus="OnSearchFocus"
+                                   @onblur="OnSearchBlur"
+                                   @ref="searchInputRef"
+                                   autocomplete="off" />
+                            
+                            @if (!string.IsNullOrEmpty(searchQuery) || showSearchResults)
+                            {
+                                <button type="button" 
+                                        class="btn btn-sm search-clear-btn position-absolute"
+                                        @onclick="ClearSearch"
+                                        title="Limpar busca">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            }
+
+                            <!-- Filtros integrados como dropdown -->
+                            <div class="search-filters-dropdown">
+                                <select class="search-filter-select" @bind="searchFilter">
+                                    <option value="all">Tudo</option>
+                                    <option value="posts">Posts</option>
+                                    <option value="people">Pessoas</option>
+                                    <option value="tags">Tags</option>
+                                </select>
+                            </div>
+
+                            <!-- Sugestões de Busca -->
+                            @if (showSearchSuggestions && searchSuggestions.Any())
+                            {
+                                <div class="search-suggestions-dropdown">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="list-group list-group-flush">
+                                            @foreach (var suggestion in searchSuggestions.Take(6))
+                                            {
+                                                <button type="button" 
+                                                        class="list-group-item list-group-item-action border-0 d-flex align-items-center py-2"
+                                                        @onclick="() => SelectSuggestion(suggestion.Term)"
+                                                        @onmousedown:preventDefault="true">
+                                                    <i class="@GetSuggestionIcon(suggestion.Category) me-2 text-muted"></i>
+                                                    <span class="fw-normal">@suggestion.Term</span>
+                                                    @if (!string.IsNullOrEmpty(suggestion.Category))
+                                                    {
+                                                        <small class="text-muted ms-2">@suggestion.Category</small>
+                                                    }
+                                                    <span class="badge bg-primary ms-auto">@GetSuggestionBadge(suggestion.Category)</span>
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Área de Ações do Usuário -->
+                <div class="col-md-3">
+                    <div class="header-actions">
+                        <!-- Notificações -->
+                        <NotificationCenter />
+
+                        <!-- Perfil do Usuário -->
+                        @if (currentUser != null)
+                        {
+                            <div class="user-profile">
+                                <button class="synqcore-profile-btn" @onclick="ToggleProfileMenu">
+                                    <div class="synqcore-profile-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
+                                    <div class="synqcore-profile-info">
+                                        <span class="synqcore-profile-name">@currentUser.Nome</span>
+                                        <span class="synqcore-profile-role">@currentUser.Cargo</span>
+                                    </div>
+                                    <i class="fas fa-chevron-down synqcore-profile-arrow"></i>
+                                </button>
+
+                                @if (showProfileMenu)
+                                {
+                                    <div class="synqcore-profile-dropdown">
+                                        <a href="/profile" class="dropdown-item">
+                                            <i class="fas fa-user"></i>
+                                            Meu Perfil
+                                        </a>
+                                        <a href="/settings" class="dropdown-item">
+                                            <i class="fas fa-cog"></i>
+                                            Configurações
+                                        </a>
+                                        <hr class="dropdown-divider" />
+                                        <button class="dropdown-item" @onclick="Logout">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                            Sair
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="feed-content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar Esquerda - Navegação -->
+                <div class="col-md-3 col-lg-2">
+                    <div class="sidebar-left">
+                        <nav class="main-navigation">
+                            <ul class="nav-list">
+                                <li class="nav-item">
+                                    <a href="/feed" class="nav-link active">
+                                        <i class="fas fa-home"></i>
+                                        <span>Feed</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/messages" class="nav-link">
+                                        <i class="fas fa-envelope"></i>
+                                        <span>Mensagens</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/teams" class="nav-link">
+                                        <i class="fas fa-users"></i>
+                                        <span>Equipes</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="/projects" class="nav-link">
+                                        <i class="fas fa-project-diagram"></i>
+                                        <span>Projetos</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Conteúdo Central - Timeline -->
+                <div class="col-md-6 col-lg-8">
+                    <div class="feed-timeline">
+                        <!-- Criar Post -->
+                        <div class="create-post-card">
+                            <div class="create-post-header">
+                                <div class="user-avatar">
+                                    @if (currentUser != null)
+                                    {
+                                        <span>@currentUser.Nome?.Substring(0, 1).ToUpper()</span>
+                                    }
+                                </div>
+                                <input type="text"
+                                       class="create-post-input"
+                                       placeholder="O que você gostaria de compartilhar?"
+                                       @onclick="ShowCreatePostModal"
+                                       readonly />
+                            </div>
+                            <div class="create-post-actions">
+                                <button class="post-action-btn" @onclick="ShowCreatePostModal">
+                                    <i class="fas fa-edit"></i>
+                                    Publicar
+                                </button>
+                                <button class="post-action-btn">
+                                    <i class="fas fa-image"></i>
+                                    Foto
+                                </button>
+                                <button class="post-action-btn">
+                                    <i class="fas fa-video"></i>
+                                    Vídeo
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Resultados de Busca -->
+                        @if (showSearchResults)
+                        {
+                            <div class="search-results-container">
+                                <div class="search-results-header">
+                                    <h5>
+                                        <i class="fas fa-search me-2"></i>
+                                        Resultados para "@searchQuery"
+                                        <span class="badge bg-primary ms-2">@searchResults.Count</span>
+                                    </h5>
+                                    <small class="text-muted">
+                                        Filtrado por: @(searchFilter switch 
+                                        {
+                                            "posts" => "Posts",
+                                            "people" => "Pessoas", 
+                                            "tags" => "Tags",
+                                            _ => "Todos"
+                                        })
+                                    </small>
+                                </div>
+
+                                @if (searchResults.Any())
+                                {
+                                    <div class="search-results-list">
+                                        @foreach (var result in searchResults)
+                                        {
+                                            <div class="search-result-item card mb-3">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-start">
+                                                        <div class="search-result-icon me-3">
+                                                            <i class="@GetResultIcon(result.Type)"></i>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="search-result-title">
+                                                                <a href="@GetResultUrl(result)" class="text-decoration-none">
+                                                                    @((MarkupString)HighlightSearchTerms(result.Title, searchQuery))
+                                                                </a>
+                                                                <span class="badge bg-light text-dark ms-2">@result.Type</span>
+                                                            </h6>
+                                                            <p class="search-result-excerpt text-muted mb-2">
+                                                                @((MarkupString)HighlightSearchTerms(result.Excerpt, searchQuery))
+                                                            </p>
+                                                            <div class="search-result-meta">
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-user me-1"></i>
+                                                                    @result.AuthorName
+                                                                    
+                                                                    @if (!string.IsNullOrEmpty(result.AuthorDepartment))
+                                                                    {
+                                                                        <span class="mx-2">•</span>
+                                                                        <i class="fas fa-building me-1"></i>
+                                                                        @result.AuthorDepartment
+                                                                    }
+                                                                    
+                                                                    <span class="mx-2">•</span>
+                                                                    <i class="fas fa-clock me-1"></i>
+                                                                    @result.CreatedAt.ToString("dd/MM/yyyy")
+                                                                    
+                                                                    <span class="mx-2">•</span>
+                                                                    <i class="fas fa-star me-1 text-warning"></i>
+                                                                    @result.RelevanceScore.ToString("F1")
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="no-search-results">
+                                        <i class="fas fa-search fa-3x text-muted"></i>
+                                        <h4 class="mt-3">Nenhum resultado encontrado</h4>
+                                        <p class="text-muted">Tente ajustar seus termos de busca ou filtros.</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Lista de Posts Normal -->
+                            <div class="posts-container">
+                                @if (posts != null && posts.Any())
+                                {
+                                    @foreach (var post in posts)
+                                    {
+                                        <div class="post-card">
+                                            <SimplePostCard Post="@post" />
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="empty-feed">
+                                        <i class="fas fa-comments"></i>
+                                        <h3>Bem-vindo ao SynQcore!</h3>
+                                        <p>Comece seguindo seus colegas ou criando sua primeira publicação.</p>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Sidebar Direita - Widgets -->
+                <div class="col-md-3 col-lg-2">
+                    <div class="sidebar-right">
+                        <!-- Sugestões de Conexão -->
+                        <div class="widget-card">
+                            <h4 class="widget-title">Sugestões para você</h4>
+                            <div class="suggestions-list">
+                                <!-- Implementar sugestões -->
+                            </div>
+                        </div>
+
+                        <!-- Trending Topics -->
+                        <div class="widget-card">
+                            <h4 class="widget-title">Tópicos em alta</h4>
+                            <div class="trending-list">
+                                <!-- Implementar trending topics -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Criar Post -->
+    @if (showCreatePostModal)
+    {
+        <div class="modal-overlay" @onclick="HideCreatePostModal">
+            <div class="create-post-modal" @onclick:stopPropagation="true">
+                <div class="modal-header">
+                    <h3>Criar publicação</h3>
+                    <button class="close-btn" @onclick="HideCreatePostModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="post-form">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                @if (currentUser != null)
+                                {
+                                    <span>@currentUser.Nome?.Substring(0, 1).ToUpper()</span>
+                                }
+                            </div>
+                            <div class="user-details">
+                                <span class="user-name">@currentUser?.Nome</span>
+                                <select class="privacy-selector" @bind="newPostPrivacy">
+                                    <option value="public">Público</option>
+                                    <option value="team">Equipe</option>
+                                    <option value="private">Privado</option>
+                                </select>
+                            </div>
+                        </div>
+                        <textarea class="post-content-input"
+                                  placeholder="O que você gostaria de compartilhar?"
+                                  @bind="newPostContent"
+                                  rows="4"></textarea>
+                        
+                        <!-- Anexos -->
+                        @if (postAttachments.Any())
+                        {
+                            <div class="attachments-preview">
+                                @foreach (var attachment in postAttachments)
+                                {
+                                    <div class="attachment-item">
+                                        <span>@attachment.FileName</span>
+                                        <button @onclick="() => RemoveAttachment(attachment)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="post-options">
+                        <button class="option-btn" @onclick="SelectFiles">
+                            <i class="fas fa-image"></i>
+                            Foto/Vídeo
+                        </button>
+                        <button class="option-btn">
+                            <i class="fas fa-at"></i>
+                            Mencionar
+                        </button>
+                        <button class="option-btn">
+                            <i class="fas fa-hashtag"></i>
+                            Tag
+                        </button>
+                    </div>
+                    <div class="post-actions">
+                        <button class="btn btn-secondary" @onclick="HideCreatePostModal">
+                            Cancelar
+                        </button>
+                        <button class="btn btn-primary" 
+                                @onclick="PublishPost" 
+                                disabled="@(string.IsNullOrWhiteSpace(newPostContent) && !postAttachments.Any())">
+                            Publicar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    // Estado do componente
+    private UserInfo? currentUser;
+    private List<SimplePostCard.PostModel> posts = new();
+    private List<SearchResultDto> searchResults = new();
+    
+    // Pesquisa
+    private string searchQuery = "";
+    private string searchFilter = "all";
+    private bool showSearchResults = false;
+    private bool showSearchSuggestions = false;
+    private List<SearchSuggestionDto> searchSuggestions = new();
+    private ElementReference searchInputRef;
+    private Timer? searchTimer;
+    private bool isSearchFocused = false;
+    
+    // UI State
+    private bool showProfileMenu = false;
+    private bool showCreatePostModal = false;
+    
+    // Criar Post
+    private string newPostContent = "";
+    private string newPostPrivacy = "public";
+    private List<AttachmentInfo> postAttachments = new();
+
+    // Modelo simples para anexos
+    public class AttachmentInfo
+    {
+        public string FileName { get; set; } = "";
+        public string FileType { get; set; } = "";
+        public long FileSize { get; set; }
+        public string Url { get; set; } = "";
+    }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Subscrever aos eventos do StateManager
+            StateManager.User.PropertyChanged += OnStateChanged;
+            StateManager.UI.PropertyChanged += OnStateChanged;
+            
+            // Carregar dados iniciais
+            LoadCurrentUser();
+            await LoadFeedPosts();
+            
+            Console.WriteLine("[FEED] Componente inicializado com sucesso");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro na inicialização: {ex.Message}");
+        }
+    }
+    
+    private async void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(StateManager.User.CurrentUser) || 
+            e.PropertyName == nameof(StateManager.UI.IsLoading))
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+    
+    private void LoadCurrentUser()
+    {
+        try
+        {
+            currentUser = StateManager.User.CurrentUser;
+            if (currentUser == null)
+            {
+                // Redirecionar para login se não autenticado
+                Navigation.NavigateTo("/login");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao carregar usuário: {ex.Message}");
+        }
+    }
+    
+    private async Task LoadFeedPosts()
+    {
+        try
+        {
+            if (currentUser != null)
+            {
+                // Implementar carregamento dos posts
+                posts = await PostService.GetFeedPostsAsync(1, 10);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao carregar posts: {ex.Message}");
+        }
+    }
+    
+    // Métodos de pesquisa
+    private async Task OnSearchInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        
+        // Debounce da pesquisa
+        searchTimer?.Dispose();
+        
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            showSearchSuggestions = false;
+            showSearchResults = false;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        // Mostrar sugestões após delay menor
+        searchTimer = new Timer(async _ => await ShowSearchSuggestions(), null, 150, Timeout.Infinite);
+    }
+    
+    private async Task OnSearchFocus()
+    {
+        isSearchFocused = true;
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            await ShowSearchSuggestions();
+        }
+    }
+    
+    private async Task OnSearchBlur()
+    {
+        // Delay para permitir clique em sugestões
+        await Task.Delay(200);
+        isSearchFocused = false;
+        showSearchSuggestions = false;
+        await InvokeAsync(StateHasChanged);
+    }
+    
+    private async Task HandleSearch()
+    {
+        showSearchSuggestions = false;
+        await PerformSearch();
+    }
+    
+    private async Task ShowSearchSuggestions()
+    {
+        try
+        {
+            if (isSearchFocused && !string.IsNullOrWhiteSpace(searchQuery))
+            {
+                // Buscar sugestões da API
+                var apiSuggestions = await SearchService.GetSearchSuggestionsAsync(searchQuery, 6);
+                
+                // Buscar sugestões do histórico local (implementação simples por enquanto)
+                var historySuggestions = new List<SearchSuggestionDto>();
+                
+                // Combinar as sugestões, priorizando histórico
+                var combinedSuggestions = new List<SearchSuggestionDto>();
+                
+                // Adicionar histórico primeiro (mais relevante para o usuário)
+                if (historySuggestions != null)
+                {
+                    combinedSuggestions.AddRange(historySuggestions);
+                }
+                
+                // Adicionar sugestões da API, evitando duplicatas
+                foreach (var apiSuggestion in apiSuggestions)
+                {
+                    if (!combinedSuggestions.Any(s => s.Term.Equals(apiSuggestion.Term, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        combinedSuggestions.Add(apiSuggestion);
+                    }
+                }
+                
+                searchSuggestions = combinedSuggestions.Take(8).ToList();
+                showSearchSuggestions = searchSuggestions.Any();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao buscar sugestões: {ex.Message}");
+            
+            // Fallback: mostrar apenas sugestões da API
+            try
+            {
+                searchSuggestions = await SearchService.GetSearchSuggestionsAsync(searchQuery, 8);
+                showSearchSuggestions = searchSuggestions.Any();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch
+            {
+                showSearchSuggestions = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+    
+    private async Task SelectSuggestion(string suggestion)
+    {
+        searchQuery = suggestion;
+        showSearchSuggestions = false;
+        await PerformSearch();
+    }
+    
+    private async Task PerformSearch()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                SynQcore.Application.Common.DTOs.PagedResult<SearchResultDto> searchResult;
+                
+                // Aplicar filtros baseados no tipo selecionado
+                switch (searchFilter)
+                {
+                    case "posts":
+                        var postFilters = new SearchFiltersDto { ContentTypes = new List<string> { "Post" } };
+                        searchResult = await SearchService.SearchAsync(searchQuery, 1, 20, postFilters);
+                        break;
+                    case "people":
+                        var peopleFilters = new SearchFiltersDto { ContentTypes = new List<string> { "Employee" } };
+                        searchResult = await SearchService.SearchAsync(searchQuery, 1, 20, peopleFilters);
+                        break;
+                    case "tags":
+                        searchResult = await SearchService.SearchByTagsAsync(new List<string> { searchQuery });
+                        break;
+                    default: // "all"
+                        searchResult = await SearchService.SearchAsync(searchQuery, 1, 20);
+                        break;
+                }
+                
+                searchResults = searchResult.Items;
+                showSearchResults = true;
+                
+                // Salvar histórico de busca
+                await JS.InvokeVoidAsync("saveSearchHistory", searchQuery);
+                
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                searchResults.Clear();
+                showSearchResults = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro na pesquisa: {ex.Message}");
+            
+            // Em caso de erro, limpar resultados
+            searchResults.Clear();
+            showSearchResults = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // Método para limpar busca e voltar ao feed normal
+    private async Task ClearSearch()
+    {
+        searchQuery = "";
+        searchResults.Clear();
+        showSearchResults = false;
+        showSearchSuggestions = false;
+        await LoadFeedPosts(); // Recarregar posts normais
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // Método para carregar conteúdo recente quando não há busca ativa
+    private async Task LoadRecentContent()
+    {
+        try
+        {
+            var recentContent = await SearchService.GetRecentContentAsync(24, null, 1, 10);
+            if (recentContent.Items.Any())
+            {
+                // Converter SearchResultDto para SimplePostCard.PostModel se necessário
+                // Por enquanto, apenas registrar que temos conteúdo recente
+                Console.WriteLine($"[FEED] Conteúdo recente carregado: {recentContent.Items.Count} items");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao carregar conteúdo recente: {ex.Message}");
+        }
+    }
+
+    // Método para obter conteúdo em tendência
+    private async Task LoadTrendingTopics()
+    {
+        try
+        {
+            var trending = await SearchService.GetTrendingTopicsAsync("day", 5);
+            if (trending.Any())
+            {
+                Console.WriteLine($"[FEED] Tópicos em tendência: {trending.Count}");
+                // Aqui você poderia atualizar uma variável para mostrar na UI
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao carregar tópicos em tendência: {ex.Message}");
+        }
+    }
+
+    // Método utilitário para destacar termos de busca nos resultados
+    private string HighlightSearchTerms(string text, string searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm) || string.IsNullOrWhiteSpace(text))
+            return text;
+
+        try
+        {
+            var terms = searchTerm.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var highlightedText = text;
+
+            foreach (var term in terms)
+            {
+                if (term.Length >= 2)
+                {
+                    highlightedText = System.Text.RegularExpressions.Regex.Replace(
+                        highlightedText,
+                        System.Text.RegularExpressions.Regex.Escape(term),
+                        $"<mark class='search-highlight'>$0</mark>",
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                }
+            }
+
+            return highlightedText;
+        }
+        catch
+        {
+            return text;
+        }
+    }
+
+    // Método para obter ícone baseado no tipo de resultado
+    private string GetResultIcon(string type)
+    {
+        return type?.ToLower() switch
+        {
+            "post" => "fas fa-comment text-primary",
+            "document" => "fas fa-file-alt text-success", 
+            "employee" => "fas fa-user text-info",
+            "mediaasset" => "fas fa-image text-warning",
+            "knowledge" => "fas fa-lightbulb text-warning",
+            "department" => "fas fa-building text-secondary",
+            "project" => "fas fa-project-diagram text-primary",
+            _ => "fas fa-file text-muted"
+        };
+    }
+
+    // Método para obter URL baseado no tipo de resultado
+    private string GetResultUrl(SearchResultDto result)
+    {
+        return result.Type?.ToLower() switch
+        {
+            "post" => $"/post/{result.Id}",
+            "document" => $"/document/{result.Id}",
+            "employee" => $"/profile/{result.AuthorId}",
+            "mediaasset" => $"/media/{result.Id}",
+            "knowledge" => $"/knowledge/{result.Id}",
+            "department" => $"/department/{result.AuthorId}",
+            _ => $"/content/{result.Id}"
+        };
+    }
+
+    private string GetSuggestionIcon(string category)
+    {
+        return category?.ToLower() switch
+        {
+            "posts" => "fas fa-comment",
+            "documentos" => "fas fa-file-alt",
+            "departamentos" => "fas fa-building",
+            "funcionários" => "fas fa-user",
+            "funcionarios" => "fas fa-user", 
+            "employees" => "fas fa-user",
+            "tags" => "fas fa-hashtag",
+            "projetos" => "fas fa-project-diagram",
+            "conhecimento" => "fas fa-lightbulb",
+            _ => "fas fa-search"
+        };
+    }
+
+    private string GetSuggestionBadge(string category)
+    {
+        return category?.ToLower() switch
+        {
+            "posts" => "POST",
+            "documentos" => "DOC",
+            "departamentos" => "DEPT",
+            "funcionários" => "@",
+            "funcionarios" => "@",
+            "employees" => "@",
+            "tags" => "#",
+            "projetos" => "PROJ",
+            "conhecimento" => "KB",
+            _ => ""
+        };
+    }
+    
+    // Métodos do perfil
+    private void ToggleProfileMenu()
+    {
+        showProfileMenu = !showProfileMenu;
+    }
+    
+    private void Logout()
+    {
+        try
+        {
+            StateManager.User.Logout();
+            Navigation.NavigateTo("/login");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao fazer logout: {ex.Message}");
+        }
+    }
+    
+    // Métodos para criar post
+    private void ShowCreatePostModal()
+    {
+        showCreatePostModal = true;
+        newPostContent = "";
+        newPostPrivacy = "public";
+        postAttachments.Clear();
+    }
+    
+    private void HideCreatePostModal()
+    {
+        showCreatePostModal = false;
+    }
+    
+    private async Task PublishPost()
+    {
+        try
+        {
+            if (currentUser != null && !string.IsNullOrWhiteSpace(newPostContent))
+            {
+                var createRequest = new CreatePostRequest
+                {
+                    Content = newPostContent,
+                    Tags = ExtractHashtags(newPostContent),
+                    IsPublic = newPostPrivacy == "public"
+                };
+                
+                var createdPost = await PostService.CreatePostAsync(createRequest);
+                
+                if (createdPost != null)
+                {
+                    // Adicionar ao feed
+                    posts.Insert(0, createdPost);
+                    HideCreatePostModal();
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao publicar post: {ex.Message}");
+        }
+    }
+    
+    private async Task SelectFiles()
+    {
+        try
+        {
+            // Implementar seleção de arquivos
+            await JS.InvokeVoidAsync("selectFiles");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao selecionar arquivos: {ex.Message}");
+        }
+    }
+    
+    private void RemoveAttachment(AttachmentInfo attachment)
+    {
+        postAttachments.Remove(attachment);
+    }
+    
+    // Métodos para interação com posts
+    private async Task HandleLike(SimplePostCard.PostModel post)
+    {
+        try
+        {
+            if (currentUser != null)
+            {
+                if (post.IsLiked)
+                {
+                    await PostService.UnlikePostAsync(post.Id);
+                }
+                else
+                {
+                    await PostService.LikePostAsync(post.Id);
+                }
+                // Atualizar estado do post
+                await LoadFeedPosts();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao curtir post: {ex.Message}");
+        }
+    }
+    
+    private async Task HandleComment(SimplePostCard.PostModel post)
+    {
+        try
+        {
+            // Implementar lógica de comentário
+            Console.WriteLine($"[FEED] Comentário no post {post.Id}");
+            await Task.CompletedTask; // Placeholder para implementação futura
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao comentar: {ex.Message}");
+        }
+    }
+
+    // Método auxiliar para extrair hashtags
+    private string[] ExtractHashtags(string content)
+    {
+        var hashtags = new List<string>();
+        var words = content.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var word in words)
+        {
+            if (word.StartsWith("#") && word.Length > 1)
+            {
+                hashtags.Add(word.Substring(1));
+            }
+        }
+
+        return hashtags.ToArray();
+    }
+    
+    public void Dispose()
+    {
+        try
+        {
+            // Remover event handlers
+            StateManager.User.PropertyChanged -= OnStateChanged;
+            StateManager.UI.PropertyChanged -= OnStateChanged;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao remover event handlers: {ex.Message}");
+        }
+        
+        // Dispose resources
+        try
+        {
+            searchTimer?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[FEED] Erro ao descartar recursos: {ex.Message}");
+        }
+    }
+}

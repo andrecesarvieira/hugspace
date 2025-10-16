@@ -119,7 +119,7 @@ public partial class LocalAuthService : ILocalAuthService
             catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
             {
                 // Durante renderização estática, cache já foi limpo
-                Console.WriteLine("[LOCAL AUTH] JavaScript Interop não disponível - logout realizado apenas em cache");
+                Console.WriteLine("[LOCAL AUTH] ✓ Logout em cache (renderização estática)");
                 LogLogoutSuccess(_logger);
             }
         }
@@ -166,13 +166,13 @@ public partial class LocalAuthService : ILocalAuthService
             {
                 // Durante renderização estática, não podemos acessar localStorage
                 // Usar apenas cache em memória - comportamento esperado na renderização inicial
-                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível durante renderização inicial - usando cache: {_isAuthenticated}");
+                Console.WriteLine($"[LOCAL AUTH] ✓ Renderização inicial: usando cache em memória (Auth: {_isAuthenticated})");
                 return _isAuthenticated;
             }
             catch (Exception unexpectedEx) when (unexpectedEx.Message.Contains("not available") || unexpectedEx.Message.Contains("interop") || unexpectedEx.Message.Contains("runtime"))
             {
                 // Outros tipos de erro relacionados ao JavaScript Interop durante inicialização
-                Console.WriteLine($"[LOCAL AUTH] JavaScript não disponível (renderização SSR) - usando cache: {_isAuthenticated}");
+                Console.WriteLine($"[LOCAL AUTH] ✓ Renderização SSR: usando cache (Auth: {_isAuthenticated})");
                 return _isAuthenticated;
             }
         }
@@ -214,7 +214,7 @@ public partial class LocalAuthService : ILocalAuthService
             catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
             {
                 // Durante renderização estática, retornar dados do cache
-                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível - retornando cache: {_cachedUserInfo?.Nome ?? "null"}");
+                Console.WriteLine($"[LOCAL AUTH] ✓ Cache de usuário: {_cachedUserInfo?.Nome ?? "null"}");
                 return _cachedUserInfo;
             }
         }
@@ -255,7 +255,7 @@ public partial class LocalAuthService : ILocalAuthService
             catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop"))
             {
                 // Durante renderização estática, dados já estão no cache
-                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível - dados mantidos em cache");
+                Console.WriteLine($"[LOCAL AUTH] ✓ Dados mantidos em cache (renderização inicial)");
                 LogLoginSuccess(_logger, userInfo.Email);
             }
         }
@@ -293,13 +293,13 @@ public partial class LocalAuthService : ILocalAuthService
             catch (InvalidOperationException jsInteropEx) when (jsInteropEx.Message.Contains("JavaScript interop") || jsInteropEx.Message.Contains("JavaScript runtime"))
             {
                 // Durante renderização estática, retornar token do cache - comportamento normal
-                Console.WriteLine($"[LOCAL AUTH] JavaScript Interop não disponível (renderização inicial) - usando token em cache: {!string.IsNullOrEmpty(_cachedToken)}");
+                Console.WriteLine($"[LOCAL AUTH] ✓ Token em cache: {!string.IsNullOrEmpty(_cachedToken)}");
                 return _cachedToken;
             }
             catch (Exception unexpectedEx) when (unexpectedEx.Message.Contains("not available") || unexpectedEx.Message.Contains("interop"))
             {
                 // Outros erros relacionados ao JS Interop durante inicialização
-                Console.WriteLine($"[LOCAL AUTH] JavaScript não disponível durante inicialização - token cache: {!string.IsNullOrEmpty(_cachedToken)}");
+                Console.WriteLine($"[LOCAL AUTH] ✓ Inicialização: token cache {!string.IsNullOrEmpty(_cachedToken)}");
                 return _cachedToken;
             }
         }

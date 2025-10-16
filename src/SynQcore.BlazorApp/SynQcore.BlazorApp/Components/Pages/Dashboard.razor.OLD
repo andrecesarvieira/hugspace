@@ -1,0 +1,615 @@
+@page "/dashboard"
+@rendermode InteractiveServer
+@using SynQcore.BlazorApp.Services
+@using SynQcore.BlazorApp.Services.StateManagement
+@using SynQcore.BlazorApp.Store.User
+@using SynQcore.BlazorApp.Models
+@inject StateManager StateManager
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject IEmployeeService EmployeeService
+@inject IPlatformStatsService PlatformStatsService
+@implements IDisposable
+
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+            <h4 class="mb-sm-0">Dashboard Corporativo</h4>
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="/">SynQcore</a></li>
+                    <li class="breadcrumb-item active">Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Welcome Section -->
+<div class="row">
+    <div class="col-xl-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h5 class="card-title mb-1">Bem-vindo de volta, @currentUser?.Nome! 👋</h5>
+                        <p class="text-muted mb-0">@DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy - HH:mm", new System.Globalization.CultureInfo("pt-BR"))</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-soft-primary btn-sm" @onclick="NavigateToSearch">
+                                <i class="ri-search-line align-bottom me-1"></i> Buscar
+                            </button>
+                            <button type="button" class="btn btn-soft-success btn-sm" @onclick="NavigateToFeed">
+                                <i class="ri-add-line align-bottom me-1"></i> Novo Post
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="avatar-sm flex-shrink-0 me-3">
+                        <span class="avatar-title bg-soft-info text-info rounded fs-3">
+                            <i class="ri-notification-line"></i>
+                        </span>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">3 notificações</h6>
+                        <p class="text-muted mb-0">Você tem novas atualizações</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <button type="button" class="btn btn-ghost-secondary btn-sm">Ver todas</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="synq-stat-card primary">
+            <div class="synq-stat-icon">
+                <i class="ri-team-line"></i>
+            </div>
+            <div class="synq-stat-content">
+                <div class="synq-stat-number">@(platformStats?.TotalEmployees ?? 0)</div>
+                <div class="synq-stat-label">Funcionários</div>
+                <div class="synq-stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>+12%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="synq-stat-card success">
+            <div class="synq-stat-icon">
+                <i class="ri-file-text-line"></i>
+            </div>
+            <div class="synq-stat-content">
+                <div class="synq-stat-number">@(platformStats?.TotalDocuments ?? 0)</div>
+                <div class="synq-stat-label">Documentos</div>
+                <div class="synq-stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>+25%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="synq-stat-card info">
+            <div class="synq-stat-icon">
+                <i class="ri-chat-3-line"></i>
+            </div>
+            <div class="synq-stat-content">
+                <div class="synq-stat-number">@(platformStats?.TotalPosts ?? 0)</div>
+                <div class="synq-stat-label">Posts Ativos</div>
+                <div class="synq-stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>+8%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="synq-stat-card warning">
+            <div class="synq-stat-icon">
+                <i class="ri-message-3-line"></i>
+            </div>
+            <div class="synq-stat-content">
+                <div class="synq-stat-number">@(platformStats?.TotalComments ?? 0)</div>
+                <div class="synq-stat-label">Comentários</div>
+                <div class="synq-stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>+18%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="row">
+    <!-- Recent Employees -->
+    <div class="col-xl-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="card-title mb-0 flex-grow-1">
+                    <i class="ri-user-add-line me-2 text-primary"></i>
+                    Funcionários Recentes
+                </h5>
+                <div class="flex-shrink-0">
+                    <button type="button" class="btn btn-soft-primary btn-sm" @onclick="NavigateToEmployees">
+                        Ver todos <i class="ri-arrow-right-line ms-1"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (recentEmployees?.Any() == true)
+                {
+                    <div class="synq-data-table">
+                        <div class="table-responsive">
+                            <table class="table table-nowrap align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Funcionário</th>
+                                        <th scope="col">Departamento</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var employee in recentEmployees.Take(5))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-xs me-3">
+                                                        @if (!string.IsNullOrEmpty(employee.Avatar))
+                                                        {
+                                                            <img src="@employee.Avatar" alt="@employee.FullName" class="img-fluid rounded-circle" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="avatar-title rounded-circle bg-soft-primary text-primary">
+                                                                @employee.FirstName.First()
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0">@employee.FullName</h6>
+                                                        <small class="text-muted">@employee.Email</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (employee.Departments.Any())
+                                                {
+                                                    <span class="badge bg-soft-info text-info">
+                                                        @employee.Departments.First().Name
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-soft-success text-success">Ativo</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-soft-primary btn-sm" @onclick="@(() => ViewEmployee(employee.Id))">
+                                                    <i class="ri-eye-line"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="py-4 text-center">
+                        <i class="ri-user-line display-5 text-muted"></i>
+                        <div class="mt-3">
+                            <h5 class="fs-16">Nenhum funcionário recente</h5>
+                            <p class="text-muted mb-0">Novos funcionários aparecerão aqui</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Performance -->
+    <div class="col-xl-4">
+        <!-- Quick Actions -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-links-line me-2 text-primary"></i>
+                    Ações Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-soft-primary w-100" @onclick="NavigateToEmployees">
+                            <i class="ri-team-line d-block fs-20 mb-1"></i>
+                            <small>Funcionários</small>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-soft-success w-100" @onclick="NavigateToKnowledge">
+                            <i class="ri-book-line d-block fs-20 mb-1"></i>
+                            <small>Conhecimento</small>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-soft-info w-100" @onclick="NavigateToSearch">
+                            <i class="ri-search-line d-block fs-20 mb-1"></i>
+                            <small>Buscar</small>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-soft-warning w-100" @onclick="NavigateToFeed">
+                            <i class="ri-chat-3-line d-block fs-20 mb-1"></i>
+                            <small>Feed</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Metrics -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="ri-line-chart-line me-2 text-primary"></i>
+                    Performance
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Engajamento</h6>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="text-success">87%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-primary" style="width: 87%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Satisfação</h6>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="text-success">92%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-success" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Colaboração</h6>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="text-info">78%</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-info" style="width: 78%"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-0">Tempo Médio</h6>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="text-warning">45min</span>
+                        </div>
+                    </div>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-warning" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Departments and Activities -->
+<div class="row">
+    <!-- Departments -->
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="card-title mb-0 flex-grow-1">
+                    <i class="ri-building-line me-2 text-primary"></i>
+                    Departamentos
+                </h5>
+                <div class="flex-shrink-0">
+                    <button type="button" class="btn btn-soft-primary btn-sm" @onclick="NavigateToOrganization">
+                        Ver organograma <i class="ri-arrow-right-line ms-1"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (departments?.Any() == true)
+                {
+                    <div class="row g-2">
+                        @foreach (var dept in departments.Take(6))
+                        {
+                            <div class="col-md-6">
+                                <div class="card border border-dashed mb-2 cursor-pointer" @onclick="@(() => ViewDepartment(dept.Id))">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-xs me-3">
+                                                <span class="avatar-title rounded bg-soft-primary text-primary">
+                                                    <i class="ri-@GetDepartmentIcon(dept.Name)"></i>
+                                                </span>
+                                            </div>
+                                            <div class="flex-grow-1 overflow-hidden">
+                                                <h6 class="mb-0 text-truncate">@dept.Name</h6>
+                                                <small class="text-muted">@dept.EmployeeCount funcionários</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="py-4 text-center">
+                        <i class="ri-building-line display-5 text-muted"></i>
+                        <div class="mt-3">
+                            <h5 class="fs-16">Nenhum departamento</h5>
+                            <p class="text-muted mb-0">Configure os departamentos da empresa</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="col-xl-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header d-flex align-items-center">
+                <h5 class="card-title mb-0 flex-grow-1">
+                    <i class="ri-time-line me-2 text-primary"></i>
+                    Atividades Recentes
+                </h5>
+                <div class="flex-shrink-0">
+                    <button type="button" class="btn btn-soft-primary btn-sm" @onclick="NavigateToFeed">
+                        Ver feed <i class="ri-arrow-right-line ms-1"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (recentActivities?.Any() == true)
+                {
+                    <div class="timeline-steps">
+                        @foreach (var activity in recentActivities.Take(8))
+                        {
+                            <div class="timeline-step">
+                                <div class="timeline-step-icon bg-soft-@GetActivityColorClass(activity.Type) text-@GetActivityColorClass(activity.Type)">
+                                    <i class="ri-@GetActivityIcon(activity.Type)"></i>
+                                </div>
+                                <div class="timeline-step-content">
+                                    <p class="mb-1">@activity.Description</p>
+                                    <small class="text-muted">@activity.TimeAgo</small>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="py-4 text-center">
+                        <i class="ri-time-line display-5 text-muted"></i>
+                        <div class="mt-3">
+                            <h5 class="fs-16">Nenhuma atividade</h5>
+                            <p class="text-muted mb-0">Atividades recentes aparecerão aqui</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private UserInfo? currentUser;
+    private PlatformStatsDto? platformStats;
+    private List<EmployeeDto>? recentEmployees;
+    private List<ActivityDto>? recentActivities;
+    private List<DepartmentDto>? departments;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Inscrever-se nas mudanças do estado
+        StateManager.User.PropertyChanged += OnStateChanged;
+
+        await LoadDashboardData();
+    }
+
+    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnStateChanged;
+    }
+
+    private async Task LoadDashboardData()
+    {
+        try
+        {
+            // Carregar usuário atual
+            currentUser = StateManager.User.CurrentUser;
+
+            // Carregar estatísticas da plataforma
+            platformStats = await PlatformStatsService.GetPlatformStatsAsync();
+
+            // Carregar funcionários recentes (mock data por enquanto)
+            var employeeSearchRequest = new EmployeeSearchRequest
+            {
+                Page = 1,
+                PageSize = 10,
+                SortBy = "CreatedAt",
+                SortDescending = true
+            };
+            var employeesResult = await EmployeeService.GetEmployeesAsync(employeeSearchRequest);
+            recentEmployees = employeesResult.Items;
+
+            // Carregar atividades recentes (mock data)
+            recentActivities = GetMockActivities();
+
+            // Carregar departamentos (mock data)
+            departments = GetMockDepartments();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro ao carregar dados do dashboard: {ex.Message}");
+        }
+    }
+
+    private List<ActivityDto> GetMockActivities()
+    {
+        return new List<ActivityDto>
+        {
+            new ActivityDto
+            {
+                Id = Guid.NewGuid(),
+                Type = "Knowledge",
+                Description = "João Silva criou um novo artigo sobre 'Boas Práticas de Desenvolvimento'",
+                TimeAgo = "5 minutos atrás"
+            },
+            new ActivityDto
+            {
+                Id = Guid.NewGuid(),
+                Type = "Endorsement",
+                Description = "Maria Santos recebeu um endorsement em 'Gestão de Projetos'",
+                TimeAgo = "15 minutos atrás"
+            },
+            new ActivityDto
+            {
+                Id = Guid.NewGuid(),
+                Type = "Discussion",
+                Description = "Carlos Oliveira iniciou uma discussão sobre 'Metodologias Ágeis'",
+                TimeAgo = "30 minutos atrás"
+            },
+            new ActivityDto
+            {
+                Id = Guid.NewGuid(),
+                Type = "Employee",
+                Description = "Ana Costa foi adicionada ao departamento de Marketing",
+                TimeAgo = "1 hora atrás"
+            }
+        };
+    }
+
+    private List<DepartmentDto> GetMockDepartments()
+    {
+        return new List<DepartmentDto>
+        {
+            new DepartmentDto { Id = Guid.NewGuid(), Name = "Desenvolvimento", EmployeeCount = 25 },
+            new DepartmentDto { Id = Guid.NewGuid(), Name = "Marketing", EmployeeCount = 12 },
+            new DepartmentDto { Id = Guid.NewGuid(), Name = "Recursos Humanos", EmployeeCount = 8 },
+            new DepartmentDto { Id = Guid.NewGuid(), Name = "Vendas", EmployeeCount = 18 },
+            new DepartmentDto { Id = Guid.NewGuid(), Name = "Suporte", EmployeeCount = 15 },
+            new DepartmentDto { Id = Guid.NewGuid(), Name = "Financeiro", EmployeeCount = 10 }
+        };
+    }
+
+    private string GetActivityIcon(string type)
+    {
+        return type.ToLowerInvariant() switch
+        {
+            "knowledge" => "book-line",
+            "endorsement" => "award-line", 
+            "discussion" => "chat-3-line",
+            "employee" => "user-add-line",
+            "document" => "file-text-line",
+            _ => "information-line"
+        };
+    }
+
+    private string GetActivityColorClass(string type)
+    {
+        return type.ToLowerInvariant() switch
+        {
+            "knowledge" => "primary",
+            "endorsement" => "warning",
+            "discussion" => "info",
+            "employee" => "success",
+            "document" => "secondary",
+            _ => "primary"
+        };
+    }
+
+    private string GetDepartmentIcon(string departmentName)
+    {
+        return departmentName.ToLowerInvariant() switch
+        {
+            "desenvolvimento" => "code-s-slash-line",
+            "marketing" => "megaphone-line", 
+            "recursos humanos" => "user-settings-line",
+            "vendas" => "line-chart-line",
+            "suporte" => "customer-service-line",
+            "financeiro" => "calculator-line",
+            _ => "building-line"
+        };
+    }
+
+    // Navegação
+    private void NavigateToSearch() => Navigation.NavigateTo("/search");
+    private void NavigateToEmployees() => Navigation.NavigateTo("/employees");
+    private void NavigateToKnowledge() => Navigation.NavigateTo("/knowledge");
+    private void NavigateToFeed() => Navigation.NavigateTo("/feed");
+    private void NavigateToOrganization() => Navigation.NavigateTo("/organization");
+    private void ViewEmployee(Guid id) => Navigation.NavigateTo($"/employees/{id}");
+    private void ViewDepartment(Guid id) => Navigation.NavigateTo($"/departments/{id}");
+
+    // Models
+    public class ActivityDto
+    {
+        public Guid Id { get; set; }
+        public string Type { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string TimeAgo { get; set; } = string.Empty;
+    }
+
+    public class DepartmentDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int EmployeeCount { get; set; }
+    }
+}

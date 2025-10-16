@@ -1,1767 +1,214 @@
 @page "/feed"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@using Microsoft.AspNetCore.Components
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.JSInterop
 @using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Services.StateManagement
-@using SynQcore.BlazorApp.Store.User
 @using SynQcore.BlazorApp.Models
-@using SynQcore.BlazorApp.Components.Social
-@using SynQcore.BlazorApp.Components.Shared
-@using SynQcore.Application.Features.CorporateSearch.DTOs
-@using SynQcore.Application.Features.Departments.DTOs
+@using SynQcore.Application.DTOs
 @implements IDisposable
 @inject StateManager StateManager
 @inject NavigationManager Navigation
-@inject IJSRuntime JS
-@inject INotificationService NotificationService
 @inject IPostService PostService
-@inject ISearchService SearchService
-@inject IUserPermissionService UserPermissionService
+@inject IAuthService AuthService
 
-<<<<<<< Updated upstream
-<div class="feed-container">
-    <!-- Header Principal -->
-    <header class="feed-header">
-        <!-- Logo e Branding -->
-        <div class="header-brand">
-            <div class="logo-section">
-                <i class="fas fa-network-wired logo-icon"></i>
-                <div class="logo-text">
-                    <h1>SynQcore</h1>
-                    <span class="logo-subtitle">Rede Social Corporativa</span>
-                </div>
+<PageTitle>Feed - SynQcore</PageTitle>
+
+<h1>Feed Social Corporativo</h1>
+
+@if (!StateManager.User.IsAuthenticated)
+{
+    <p>Você precisa estar autenticado para ver o feed.</p>
+    <button @onclick="GoToLogin">Fazer Login</button>
+}
+else
+{
+    <section>
+        <h2>Criar Post</h2>
+        <form @onsubmit="CreatePost">
+            <div>
+                <label>Conteúdo:</label>
+                <textarea @bind="newPostContent" rows="4" required></textarea>
             </div>
-        </div>
+            <button type="submit" disabled="@isCreating">
+                @(isCreating ? "Publicando..." : "Publicar")
+            </button>
+        </form>
+        
+        @if (!string.IsNullOrEmpty(createError))
+        {
+            <p style="color: red;">@createError</p>
+        }
+    </section>
 
-        <!-- Barra de Pesquisa Central -->
-        <div class="header-search">
-            <div class="search-container">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text"
-                       class="search-input"
-                       placeholder="Buscar discussões, colegas, projetos..."
-                       @bind="searchQuery"
-                       @onkeypress="@(async (e) => { if (e.Key == "Enter") await HandleSearch(); })"
-                       @oninput="OnSearchInput"
-                       @ref="searchInputRef" />
-
-                <!-- Filtros integrados como dropdown -->
-                <div class="search-filters-dropdown">
-                    <select class="search-filter-select" @bind="searchFilter">
-                        <option value="all">Tudo</option>
-                        <option value="posts">Posts</option>
-                        <option value="people">Pessoas</option>
-                        <option value="tags">Tags</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- Área de Ações do Usuário -->
-        <div class="header-actions">
-            <!-- Notificações -->
-            <NotificationCenter />
-
-            <!-- Perfil do Usuário -->
-            @if (currentUser != null)
+    <section>
+        <h2>Posts Recentes</h2>
+        
+        @if (isLoading)
+        {
+            <p>Carregando posts...</p>
+        }
+        else if (posts == null || !posts.Any())
+        {
+            <p>Nenhum post encontrado. Seja o primeiro a publicar!</p>
+        }
+        else
+        {
+            @foreach (var post in posts)
             {
-                <div class="user-profile">
-                    <button class="synqcore-profile-btn" @onclick="ToggleProfileMenu">
-                        <div class="synqcore-profile-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
-                        <div class="synqcore-profile-info">
-                            <span class="synqcore-profile-name">@currentUser.Nome</span>
-                            <span class="synqcore-profile-role">@currentUser.Cargo</span>
-=======
-<div class="feed-wrapper">
-    <!-- Header Principal -->
-    <header class="feed-header" style="background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%) !important; border-bottom: none !important; box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;">
-        <div class="container-fluid p-3">
-            <!-- Logo e Branding -->
-            <div class="row align-items-center">
-                <div class="col-md-3">
-                    <div class="feed-logo-container" style="display: flex !important; align-items: center !important;">
-                        <div class="feed-logo-icon-container" 
-                             style="background: rgba(255,255,255,0.95) !important; 
-                                    color: var(--primary-600) !important; 
-                                    width: 48px !important; 
-                                    height: 48px !important; 
-                                    border-radius: 12px !important; 
-                                    display: flex !important; 
-                                    align-items: center !important; 
-                                    justify-content: center !important; 
-                                    margin-right: 0.75rem !important; 
-                                    box-shadow: 0 4px 12px rgba(255,255,255,0.2) !important;">
-                            <i class="fas fa-at" style="font-size: 1.25rem !important; font-weight: 700 !important;"></i>
-                        </div>
-                        <div>
-                            <h1 class="feed-brand-title display-6 professional-title" 
-                                style="font-family: var(--font-family) !important; 
-                                       font-size: 1.5rem !important; 
-                                       margin-bottom: 0 !important; 
-                                       font-weight: 700 !important; 
-                                       color: white !important; 
-                                       letter-spacing: -0.02em !important; 
-                                       line-height: 1.2 !important;">
-                                SynQcore
-                            </h1>
-                            <small class="feed-brand-subtitle professional-caption" 
-                                   style="font-family: var(--font-family) !important; 
-                                          font-size: 0.75rem !important; 
-                                          color: rgba(255,255,255,0.8) !important; 
-                                          font-weight: 500 !important; 
-                                          letter-spacing: 0.025em !important; 
-                                          text-transform: uppercase !important;">
-                                Rede Social Corporativa
-                            </small>
->>>>>>> Stashed changes
-                        </div>
-                        <i class="fas fa-chevron-down synqcore-profile-arrow"></i>
-                    </button>
-
-<<<<<<< Updated upstream
-                    <!-- Menu Dropdown do Perfil -->
-                    @if (showProfileMenu)
-                    {
-                        <div class="synq-profile-menu show">
-                            <div class="synq-profile-menu-header">
-                                <div class="synq-profile-menu-avatar">@currentUser.Nome?.Substring(0, 1).ToUpper()</div>
-                                <div class="synq-profile-menu-name">@currentUser.Nome</div>
-                                <div class="synq-profile-menu-role">@currentUser.Cargo</div>
-                            </div>
-                            <div class="synq-profile-menu-body">
-                                <a href="/perfil" class="synq-profile-menu-item">
-                                    <i class="fas fa-user"></i>
-                                    Meu Perfil
-                                </a>
-                                <a href="/configuracoes" class="synq-profile-menu-item">
-                                    <i class="fas fa-cog"></i>
-                                    Configurações
-                                </a>
-                                <a href="/employees" class="synq-profile-menu-item">
-                                    <i class="fas fa-users"></i>
-                                    Funcionários
-                                </a>
-                                <a href="/endorsements" class="synq-profile-menu-item">
-                                    <i class="fas fa-award"></i>
-                                    Endorsements
-                                </a>
-                                @if (canModerate)
-                                {
-                                    <a href="/moderation" class="synq-profile-menu-item">
-                                        <i class="fas fa-shield-alt"></i>
-                                        Moderação
-                                    </a>
-                                }
-                                <a href="/ajuda" class="synq-profile-menu-item">
-                                    <i class="fas fa-question-circle"></i>
-                                    Ajuda
-                                </a>
-                                <div class="synq-profile-menu-divider"></div>
-                                <button class="synq-profile-menu-item danger" @onclick="HandleLogout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    Sair
-                                </button>
-                            </div>
-=======
-                <!-- Barra de Pesquisa Central -->
-                <div class="col-md-6">
-                    <div class="feed-search-container">
-                        <div class="input-group feed-search-input-group" 
-                             style="background: rgba(255,255,255,0.95) !important; 
-                                    border-radius: 12px !important; 
-                                    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important; 
-                                    border: 1px solid rgba(255,255,255,0.2) !important; 
-                                    backdrop-filter: blur(10px) !important; 
-                                    overflow: hidden !important;">
-                            <span class="input-group-text feed-search-icon" 
-                                  style="background: transparent !important; 
-                                         border: none !important; 
-                                         color: var(--slate-500) !important; 
-                                         padding: 0 1rem !important; 
-                                         font-size: 1rem !important;">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text"
-                                   class="form-control feed-search-input"
-                                   style="border: none !important; 
-                                          background: transparent !important; 
-                                          font-family: var(--font-family) !important; 
-                                          font-size: 0.9rem !important; 
-                                          padding: 0.75rem 0 !important; 
-                                          color: var(--slate-700) !important;"
-                                   placeholder="Buscar discussões, colegas, projetos..."
-                                   @bind="searchQuery"
-                                   @onkeypress="@(async (e) => { if (e.Key == "Enter") await HandleSearch(); })"
-                                   @oninput="OnSearchInput"
-                                   @ref="searchInputRef" />
-                            
-                            <!-- Filtros integrados como dropdown -->
-                            <select class="form-select feed-search-filter" 
-                                    style="max-width: 120px !important; 
-                                           border: none !important; 
-                                           background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%) !important; 
-                                           font-family: var(--font-family) !important; 
-                                           font-size: 0.875rem !important; 
-                                           font-weight: 500 !important;
-                                           color: var(--primary-700) !important;
-                                           border-radius: 8px !important;
-                                           padding: 0.5rem 0.75rem !important;
-                                           cursor: pointer !important;
-                                           transition: all 0.2s ease !important;" 
-                                    @bind="searchFilter">
-                                <option value="all" style="background: white !important; color: var(--slate-700) !important; font-family: var(--font-family) !important;">Tudo</option>
-                                <option value="posts" style="background: white !important; color: var(--slate-700) !important; font-family: var(--font-family) !important;">Posts</option>
-                                <option value="people" style="background: white !important; color: var(--slate-700) !important; font-family: var(--font-family) !important;">Pessoas</option>
-                                <option value="projects" style="background: white !important; color: var(--slate-700) !important; font-family: var(--font-family) !important;">Projetos</option>
-                                <option value="departments" style="background: white !important; color: var(--slate-700) !important; font-family: var(--font-family) !important;">Departamentos</option>
-                            </select>
-                        </div>
+                <article>
+                    <div>
+                        <strong>@post.EmployeeName</strong>
+                        <span>@post.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
                     </div>
-                </div>
-
-                <!-- Ações do usuário -->
-                <div class="col-md-3 text-end">
-                    <!-- Notificações -->
-                    <div class="d-inline-block me-3">
-                        <NotificationCenter />
-                    </div>
-
-                    <!-- Perfil do Usuário -->
-                    @if (currentUser != null)
-                    {
-                        <div class="dropdown d-inline-block">
-                            <button class="btn feed-user-profile-btn d-flex align-items-center" 
-                                    style="background: rgba(255,255,255,0.1) !important; 
-                                           border: 1px solid rgba(255,255,255,0.2) !important; 
-                                           color: white !important; 
-                                           border-radius: 10px !important; 
-                                           padding: 0.5rem 1rem !important; 
-                                           transition: all 0.3s ease !important; 
-                                           backdrop-filter: blur(10px) !important;"
-                                    type="button" 
-                                    data-bs-toggle="dropdown" 
-                                    aria-expanded="false">
-                                <div class="feed-user-avatar" 
-                                     style="background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-600) 100%) !important; 
-                                            color: white !important; 
-                                            width: 36px !important; 
-                                            height: 36px !important; 
-                                            border-radius: 8px !important; 
-                                            display: flex !important; 
-                                            align-items: center !important; 
-                                            justify-content: center !important; 
-                                            font-weight: 600 !important; 
-                                            font-size: 0.875rem !important; 
-                                            margin-right: 0.75rem !important; 
-                                            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;">
-                                    @currentUser.Nome?.Substring(0, 1).ToUpper()
-                                </div>
-                                <div class="feed-user-info" style="text-align: left !important;">
-                                    <div class="feed-user-name" 
-                                         style="font-family: var(--font-family) !important; 
-                                                font-weight: 600 !important; 
-                                                font-size: 0.875rem !important; 
-                                                color: white !important; 
-                                                line-height: 1.2 !important;">
-                                        @currentUser.Nome
-                                    </div>
-                                    <div class="feed-user-role" 
-                                         style="font-family: var(--font-family) !important; 
-                                                font-weight: 400 !important; 
-                                                font-size: 0.75rem !important; 
-                                                color: rgba(255,255,255,0.8) !important; 
-                                                line-height: 1.2 !important;">
-                                        @currentUser.Cargo
-                                    </div>
-                                </div>
-                                <i class="fas fa-chevron-down ms-2" style="color: rgba(255,255,255,0.7) !important; font-size: 0.75rem !important;"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end feed-dropdown-menu" 
-                                style="background: white !important; 
-                                       border: none !important; 
-                                       border-radius: 12px !important; 
-                                       box-shadow: 0 10px 40px rgba(0,0,0,0.15) !important; 
-                                       padding: 0.5rem 0 !important; 
-                                       min-width: 250px !important; 
-                                       backdrop-filter: blur(10px) !important;">
-                                <li>
-                                    <div class="feed-dropdown-header" 
-                                         style="padding: 1rem 1.25rem !important; 
-                                                border-bottom: 1px solid var(--slate-100) !important; 
-                                                margin-bottom: 0.5rem !important; 
-                                                display: flex !important; 
-                                                align-items: center !important;">
-                                        <div class="feed-user-avatar" 
-                                             style="background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important; 
-                                                    color: white !important; 
-                                                    width: 40px !important; 
-                                                    height: 40px !important; 
-                                                    border-radius: 10px !important; 
-                                                    display: flex !important; 
-                                                    align-items: center !important; 
-                                                    justify-content: center !important; 
-                                                    font-weight: 600 !important; 
-                                                    font-size: 1rem !important; 
-                                                    margin-right: 0.75rem !important; 
-                                                    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;">
-                                            @currentUser.Nome?.Substring(0, 1).ToUpper()
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold" 
-                                                 style="font-family: var(--font-family) !important; 
-                                                        font-weight: 600 !important; 
-                                                        font-size: 0.9rem !important; 
-                                                        color: var(--slate-900) !important; 
-                                                        line-height: 1.2 !important;">
-                                                @currentUser.Nome
-                                            </div>
-                                            <div class="text-muted small" 
-                                                 style="font-family: var(--font-family) !important; 
-                                                        font-weight: 400 !important; 
-                                                        font-size: 0.75rem !important; 
-                                                        color: var(--slate-500) !important; 
-                                                        line-height: 1.2 !important;">
-                                                @currentUser.Cargo
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li><hr class="dropdown-divider" style="margin: 0.5rem 0 !important; border-color: var(--slate-100) !important;"></li>
-                                <li><a class="dropdown-item" href="/perfil" 
-                                       style="font-family: var(--font-family) !important; 
-                                              padding: 0.75rem 1.25rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              transition: all 0.2s ease !important; 
-                                              border-radius: 8px !important; 
-                                              margin: 0 0.5rem !important;">
-                                    <i class="fas fa-user me-2" style="color: var(--slate-500) !important; width: 16px !important;"></i>Meu Perfil
-                                </a></li>
-                                <li><a class="dropdown-item" href="/configuracoes" 
-                                       style="font-family: var(--font-family) !important; 
-                                              padding: 0.75rem 1.25rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              transition: all 0.2s ease !important; 
-                                              border-radius: 8px !important; 
-                                              margin: 0 0.5rem !important;">
-                                    <i class="fas fa-cog me-2" style="color: var(--slate-500) !important; width: 16px !important;"></i>Configurações
-                                </a></li>
-                                <li><a class="dropdown-item" href="/employees" 
-                                       style="font-family: var(--font-family) !important; 
-                                              padding: 0.75rem 1.25rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              transition: all 0.2s ease !important; 
-                                              border-radius: 8px !important; 
-                                              margin: 0 0.5rem !important;">
-                                    <i class="fas fa-users me-2" style="color: var(--slate-500) !important; width: 16px !important;"></i>Funcionários
-                                </a></li>
-                                <li><a class="dropdown-item" href="/endorsements" 
-                                       style="font-family: var(--font-family) !important; 
-                                              padding: 0.75rem 1.25rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              transition: all 0.2s ease !important; 
-                                              border-radius: 8px !important; 
-                                              margin: 0 0.5rem !important;">
-                                    <i class="fas fa-award me-2" style="color: var(--slate-500) !important; width: 16px !important;"></i>Endorsements
-                                </a></li>
-                                @if (canModerate)
-                                {
-                                    <li><a class="dropdown-item" href="/moderation" 
-                                           style="font-family: var(--font-family) !important; 
-                                                  padding: 0.75rem 1.25rem !important; 
-                                                  color: var(--slate-700) !important; 
-                                                  font-weight: 500 !important; 
-                                                  font-size: 0.875rem !important; 
-                                                  transition: all 0.2s ease !important; 
-                                                  border-radius: 8px !important; 
-                                                  margin: 0 0.5rem !important;">
-                                        <i class="fas fa-shield-alt me-2" style="color: var(--slate-500) !important; width: 16px !important;"></i>Moderação
-                                    </a></li>
-                                }
-                                <li><a class="dropdown-item" href="/ajuda" 
-                                       style="font-family: var(--font-family) !important; 
-                                              padding: 0.75rem 1.25rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              transition: all 0.2s ease !important; 
-                                              border-radius: 8px !important; 
-                                              margin: 0 0.5rem !important;">
-                                    <i class="fas fa-question-circle me-2" style="color: var(--slate-500) !important; width: 16px !important;"></i>Ajuda
-                                </a></li>
-                                <li><hr class="dropdown-divider" style="margin: 0.5rem 0 !important; border-color: var(--slate-100) !important;"></li>
-                                <li><button class="dropdown-item text-danger" @onclick="HandleLogout" 
-                                            style="font-family: var(--font-family) !important; 
-                                                   padding: 0.75rem 1.25rem !important; 
-                                                   color: var(--error) !important; 
-                                                   font-weight: 500 !important; 
-                                                   font-size: 0.875rem !important; 
-                                                   transition: all 0.2s ease !important; 
-                                                   border-radius: 8px !important; 
-                                                   margin: 0 0.5rem !important; 
-                                                   border: none !important; 
-                                                   background: transparent !important; 
-                                                   width: calc(100% - 1rem) !important; 
-                                                   text-align: left !important;">
-                                    <i class="fas fa-sign-out-alt me-2" style="color: var(--error) !important; width: 16px !important;"></i>Sair
-                                </button></li>
-                            </ul>
->>>>>>> Stashed changes
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-    </header>
-
-    <!-- Conteúdo Principal -->
-<<<<<<< Updated upstream
-    <div class="main-content">
-        <!-- Sidebar de Navegação Esquerda -->
-        <div class="sidebar-left">
-            <div class="synq-main-nav">
-                <h3 class="synq-nav-title">
-                    <i class="fas fa-compass"></i>
-                    Navegação
-                </h3>
-                <nav class="synq-nav-list">
-                    <a href="#" class="synq-nav-item @(activeTab == "feed" ? "active" : "")" @onclick="@(() => SetActiveTab("feed"))">
-                        <i class="fas fa-home"></i>
-                        <span class="synq-nav-item-text">Feed Principal</span>
-                    </a>
-                    <a href="#" class="synq-nav-item @(activeTab == "discussions" ? "active" : "")" @onclick="@(() => SetActiveTab("discussions"))">
-                        <i class="fas fa-comments"></i>
-                        <span class="synq-nav-item-text">Discussões</span>
-                    </a>
-                    <a href="#" class="synq-nav-item @(activeTab == "endorsements" ? "active" : "")" @onclick="@(() => SetActiveTab("endorsements"))">
-                        <i class="fas fa-award"></i>
-                        <span class="synq-nav-item-text">Endorsements</span>
-                    </a>
-                    <a href="#" class="synq-nav-item @(activeTab == "people" ? "active" : "")" @onclick="@(() => SetActiveTab("people"))">
-                        <i class="fas fa-users"></i>
-                        <span class="synq-nav-item-text">Pessoas</span>
-                    </a>
-                    <a href="#" class="synq-nav-item @(activeTab == "analytics" ? "active" : "")" @onclick="@(() => SetActiveTab("analytics"))">
-                        <i class="fas fa-chart-bar"></i>
-                        <span class="synq-nav-item-text">Analytics</span>
-                    </a>
-                </nav>
-            </div>
-
-            <div class="synq-quick-actions">
-                <h4 class="synq-quick-actions-title">
-                    <i class="fas fa-bolt"></i>
-                    Ações Rápidas
-                </h4>
-                <button class="synq-quick-action" @onclick="ShowCreatePostModal">
-                    <i class="fas fa-plus"></i>
-                    <span class="synq-quick-action-text">Nova Postagem</span>
-                </button>
-                <button class="synq-quick-action" @onclick="ShowCreateDiscussion">
-                    <i class="fas fa-comments"></i>
-                    <span class="synq-quick-action-text">Criar Discussão</span>
-                </button>
-                <button class="synq-quick-action" @onclick="ShowCreateEndorsement">
-                    <i class="fas fa-award"></i>
-                    <span class="synq-quick-action-text">Endorsement</span>
-                </button>
-            </div>
-
-            <div class="sidebar-widget">
-                <h4>Filtros</h4>
-                <div class="filter-options">
-                    <label class="filter-option">
-                        <input type="checkbox" checked />
-                        <span>Posts Recentes</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" />
-                        <span>Apenas Seguindo</span>
-                    </label>
-                    <label class="filter-option">
-                        <input type="checkbox" />
-                        <span>Populares</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <div class="main-feed">
-            
-            <!-- Resultados de Busca -->
-            @if (isSearchActive)
-            {
-                <div class="search-results-section">
-                    <div class="search-results-header">
-                        <h3><i class="fas fa-search"></i> Resultados para "@currentSearchTerm"</h3>
-                        <button class="clear-search-btn" @onclick="ClearSearch">
-                            <i class="fas fa-times"></i> Limpar
+                    <p>@post.Content</p>
+                    <div>
+                        <button @onclick="@(() => ToggleLike(post.Id))">
+                            @(post.IsLikedByCurrentUser ? "Descurtir" : "Curtir") (@post.TotalLikes)
+                        </button>
+                        <button @onclick="@(() => ToggleComments(post.Id))">
+                            Comentários (@post.TotalComments)
                         </button>
                     </div>
-
-                    <!-- Resultados por Categoria -->
-                    @if (searchResults?.Any() == true)
+                    
+                    @if (expandedComments.Contains(post.Id))
                     {
-                        <div class="search-results-content">
-                            @foreach (var category in searchResults.GroupBy(r => r.Type))
-=======
-    <div class="container-fluid mt-3">
-        <div class="row">
-            <!-- Sidebar de Navegação Esquerda -->
-            <div class="col-md-3 col-lg-2">
-                <div class="card" style="border: none !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; overflow: hidden !important;">
-                    <div class="card-header" style="background: linear-gradient(135deg, var(--slate-50) 0%, var(--slate-100) 100%) !important; border-bottom: 1px solid var(--slate-100) !important; padding: 1.25rem !important;">
-                        <h6 class="mb-0 professional-title" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--slate-800) !important; letter-spacing: 0.025em !important;">
-                            <i class="fas fa-compass me-2" style="color: var(--primary-500) !important;"></i>
-                            Navegação
-                        </h6>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="list-group list-group-flush">
-                            <a href="#" class="list-group-item list-group-item-action @(activeTab == "feed" ? "active" : "")" 
-                               @onclick="@(() => SetActiveTab("feed"))"
-                               style="border: none !important; 
-                                      padding: 1rem 1.25rem !important; 
-                                      font-family: var(--font-family) !important; 
-                                      font-weight: 500 !important; 
-                                      font-size: 0.875rem !important; 
-                                      color: var(--slate-700) !important; 
-                                      transition: all 0.3s ease !important; 
-                                      position: relative !important;">
-                                <i class="fas fa-home me-3" style="color: var(--primary-500) !important; width: 16px !important;"></i>
-                                Feed Principal
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action @(activeTab == "discussions" ? "active" : "")" 
-                               @onclick="@(() => SetActiveTab("discussions"))"
-                               style="border: none !important; 
-                                      padding: 1rem 1.25rem !important; 
-                                      font-family: var(--font-family) !important; 
-                                      font-weight: 500 !important; 
-                                      font-size: 0.875rem !important; 
-                                      color: var(--slate-700) !important; 
-                                      transition: all 0.3s ease !important; 
-                                      position: relative !important;">
-                                <i class="fas fa-comments me-3" style="color: var(--primary-500) !important; width: 16px !important;"></i>
-                                Discussões
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action @(activeTab == "endorsements" ? "active" : "")" 
-                               @onclick="@(() => SetActiveTab("endorsements"))"
-                               style="border: none !important; 
-                                      padding: 1rem 1.25rem !important; 
-                                      font-family: var(--font-family) !important; 
-                                      font-weight: 500 !important; 
-                                      font-size: 0.875rem !important; 
-                                      color: var(--slate-700) !important; 
-                                      transition: all 0.3s ease !important; 
-                                      position: relative !important;">
-                                <i class="fas fa-award me-3" style="color: var(--primary-500) !important; width: 16px !important;"></i>
-                                Endorsements
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action @(activeTab == "people" ? "active" : "")" 
-                               @onclick="@(() => SetActiveTab("people"))"
-                               style="border: none !important; 
-                                      padding: 1rem 1.25rem !important; 
-                                      font-family: var(--font-family) !important; 
-                                      font-weight: 500 !important; 
-                                      font-size: 0.875rem !important; 
-                                      color: var(--slate-700) !important; 
-                                      transition: all 0.3s ease !important; 
-                                      position: relative !important;">
-                                <i class="fas fa-users me-3" style="color: var(--primary-500) !important; width: 16px !important;"></i>
-                                Pessoas
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action @(activeTab == "analytics" ? "active" : "")" 
-                               @onclick="@(() => SetActiveTab("analytics"))"
-                               style="border: none !important; 
-                                      padding: 1rem 1.25rem !important; 
-                                      font-family: var(--font-family) !important; 
-                                      font-weight: 500 !important; 
-                                      font-size: 0.875rem !important; 
-                                      color: var(--slate-700) !important; 
-                                      transition: all 0.3s ease !important; 
-                                      position: relative !important;">
-                                <i class="fas fa-chart-bar me-3" style="color: var(--primary-500) !important; width: 16px !important;"></i>
-                                Analytics
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ações Rápidas -->
-                <div class="card mt-3" style="border: none !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; overflow: hidden !important;">
-                    <div class="card-header" style="background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%) !important; border-bottom: 1px solid var(--primary-100) !important; padding: 1.25rem !important;">
-                        <h6 class="mb-0 professional-title" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--primary-800) !important; letter-spacing: 0.025em !important;">
-                            <i class="fas fa-bolt me-2" style="color: var(--primary-600) !important;"></i>
-                            Ações Rápidas
-                        </h6>
-                    </div>
-                    <div class="card-body" style="padding: 1.5rem !important;">
-                        <div class="d-grid gap-3">
-                            <button class="btn btn-primary btn-sm" @onclick="ShowCreatePostModal" 
-                                    style="font-family: var(--font-family) !important; 
-                                           background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%) !important; 
-                                           border: none !important; 
-                                           border-radius: 10px !important; 
-                                           padding: 0.75rem 1rem !important; 
-                                           font-weight: 600 !important; 
-                                           font-size: 0.875rem !important; 
-                                           box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important; 
-                                           transition: all 0.3s ease !important;">
-                                <i class="fas fa-plus me-2"></i>
-                                Nova Postagem
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm" @onclick="ShowCreateDiscussion" 
-                                    style="font-family: var(--font-family) !important; 
-                                           background: transparent !important; 
-                                           border: 2px solid var(--primary-200) !important; 
-                                           color: var(--primary-700) !important; 
-                                           border-radius: 10px !important; 
-                                           padding: 0.75rem 1rem !important; 
-                                           font-weight: 600 !important; 
-                                           font-size: 0.875rem !important; 
-                                           transition: all 0.3s ease !important;">
-                                <i class="fas fa-comments me-2"></i>
-                                Criar Discussão
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" @onclick="ShowCreateEndorsement" 
-                                    style="font-family: var(--font-family) !important; 
-                                           background: transparent !important; 
-                                           border: 2px solid var(--slate-200) !important; 
-                                           color: var(--slate-700) !important; 
-                                           border-radius: 10px !important; 
-                                           padding: 0.75rem 1rem !important; 
-                                           font-weight: 600 !important; 
-                                           font-size: 0.875rem !important; 
-                                           transition: all 0.3s ease !important;">
-                                <i class="fas fa-award me-2"></i>
-                                Endorsement
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filtros -->
-                <div class="card mt-3" style="border: none !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; overflow: hidden !important;">
-                    <div class="card-header" style="background: linear-gradient(135deg, var(--slate-50) 0%, var(--slate-100) 100%) !important; border-bottom: 1px solid var(--slate-100) !important; padding: 1.25rem !important;">
-                        <h6 class="mb-0 professional-title" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--slate-800) !important; letter-spacing: 0.025em !important;">
-                            <i class="fas fa-filter me-2" style="color: var(--slate-600) !important;"></i>
-                            Filtros
-                        </h6>
-                    </div>
-                    <div class="card-body" style="padding: 1.5rem !important;">
-                        <div class="form-check mb-3" style="padding-left: 0 !important; margin-bottom: 1rem !important;">
-                            <div style="display: flex !important; align-items: center !important;">
-                                <input class="form-check-input" type="checkbox" id="recentPosts" checked 
-                                       style="margin-right: 0.75rem !important; 
-                                              margin-top: 0 !important;
-                                              transform: scale(1.1) !important; 
-                                              accent-color: var(--primary-500) !important;">
-                                <label class="form-check-label professional-body" for="recentPosts" 
-                                       style="font-family: var(--font-family) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              cursor: pointer !important; 
-                                              margin-bottom: 0 !important;
-                                              line-height: 1.2 !important;">
-                                    Posts Recentes
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-check mb-3" style="padding-left: 0 !important; margin-bottom: 1rem !important;">
-                            <div style="display: flex !important; align-items: center !important;">
-                                <input class="form-check-input" type="checkbox" id="followingOnly" 
-                                       style="margin-right: 0.75rem !important; 
-                                              margin-top: 0 !important;
-                                              transform: scale(1.1) !important; 
-                                              accent-color: var(--primary-500) !important;">
-                                <label class="form-check-label professional-body" for="followingOnly" 
-                                       style="font-family: var(--font-family) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              cursor: pointer !important; 
-                                              margin-bottom: 0 !important;
-                                              line-height: 1.2 !important;">
-                                    Apenas Seguindo
-                                </label>
-                            </div>
-                        </div>
-                        <div class="form-check" style="padding-left: 0 !important;">
-                            <div style="display: flex !important; align-items: center !important;">
-                                <input class="form-check-input" type="checkbox" id="popularPosts" 
-                                       style="margin-right: 0.75rem !important; 
-                                              margin-top: 0 !important;
-                                              transform: scale(1.1) !important; 
-                                              accent-color: var(--primary-500) !important;">
-                                <label class="form-check-label professional-body" for="popularPosts" 
-                                       style="font-family: var(--font-family) !important; 
-                                              font-weight: 500 !important; 
-                                              font-size: 0.875rem !important; 
-                                              color: var(--slate-700) !important; 
-                                              cursor: pointer !important; 
-                                              margin-bottom: 0 !important;
-                                              line-height: 1.2 !important;">
-                                    Populares
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Área Principal do Feed -->
-            <div class="col-md-6 col-lg-7">
-                
-                <!-- Resultados de Busca -->
-                @if (isSearchActive)
-                {
-                    <div class="card mb-3" 
-                         style="background: white !important; 
-                                border-radius: 16px !important; 
-                                box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; 
-                                border: none !important; 
-                                overflow: hidden !important;">
-                        <div class="card-header d-flex justify-content-between align-items-center"
-                             style="background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important;
-                                    border: none !important;
-                                    padding: 1.25rem !important;
-                                    color: white !important;">
-                            <h5 class="mb-0" 
-                                style="font-family: var(--font-family) !important; 
-                                       font-weight: 600 !important; 
-                                       font-size: 1.1rem !important; 
-                                       color: white !important;">
-                                <i class="fas fa-search me-2"></i>
-                                Resultados para "@currentSearchTerm"
-                            </h5>
-                            <button class="btn btn-outline-light btn-sm" 
-                                    style="border: 2px solid rgba(255,255,255,0.3) !important; 
-                                           background: rgba(255,255,255,0.1) !important; 
-                                           color: white !important; 
-                                           border-radius: 8px !important; 
-                                           font-family: var(--font-family) !important; 
-                                           font-weight: 500 !important; 
-                                           padding: 0.375rem 0.75rem !important; 
-                                           transition: all 0.2s ease !important;" 
-                                    @onclick="ClearSearch">
-                                <i class="fas fa-times me-1"></i>
-                                Limpar
-                            </button>
-                        </div>
-
-                        <!-- Resultados por Categoria -->
-                        @if (searchResults?.Any() == true)
-                        {
-                            <div class="card-body" style="padding: 1.5rem !important;">
-                                @foreach (var category in searchResults.GroupBy(r => r.Type))
->>>>>>> Stashed changes
+                        <div>
+                            <h3>Comentários</h3>
+                            <form @onsubmit="@(() => AddComment(post.Id))">
+                                <input type="text" @bind="commentText" placeholder="Adicionar comentário..." />
+                                <button type="submit">Enviar</button>
+                            </form>
+                            
+                            @if (post.Comments != null && post.Comments.Any())
                             {
-                                <div class="search-category" 
-                                     style="margin-bottom: 2rem !important;">
-                                    <h4 class="category-title" 
-                                        style="font-family: var(--font-family) !important; 
-                                               font-weight: 600 !important; 
-                                               font-size: 1.1rem !important; 
-                                               color: var(--slate-800) !important; 
-                                               margin-bottom: 1rem !important; 
-                                               padding-bottom: 0.5rem !important; 
-                                               border-bottom: 2px solid var(--primary-100) !important;">
-                                        @GetCategoryDisplayName(category.Key)
-                                    </h4>
-                                    <div class="category-results" 
-                                         style="display: flex !important; 
-                                                flex-direction: column !important; 
-                                                gap: 0.75rem !important;">
-                                        @foreach (var result in category)
-                                        {
-                                            <div class="search-result-card" 
-                                                 style="background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%) !important; 
-                                                        border-radius: 12px !important; 
-                                                        padding: 1.25rem !important; 
-                                                        border: 1px solid rgba(226,232,240,0.5) !important; 
-                                                        box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important; 
-                                                        transition: all 0.2s ease !important; 
-                                                        cursor: pointer !important; 
-                                                        display: flex !important; 
-                                                        align-items: flex-start !important; 
-                                                        gap: 1rem !important;"
-                                                 @onclick="() => NavigateToResult(result)"
-                                                 onmouseover="this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';"
-                                                 onmouseout="this.style.transform = 'translateY(0)'; this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';">
-                                                <div class="result-icon" 
-                                                     style="display: flex !important; 
-                                                            align-items: center !important; 
-                                                            justify-content: center !important; 
-                                                            width: 40px !important; 
-                                                            height: 40px !important; 
-                                                            border-radius: 10px !important; 
-                                                            background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%) !important; 
-                                                            color: white !important; 
-                                                            font-size: 1rem !important; 
-                                                            flex-shrink: 0 !important;">
-                                                    <i class="@GetCategoryIcon(result.Type)"></i>
-                                                </div>
-                                                <div class="result-content" style="flex: 1 !important;">
-                                                    <h5 style="font-family: var(--font-family) !important; 
-                                                               font-weight: 600 !important; 
-                                                               font-size: 1rem !important; 
-                                                               color: var(--slate-800) !important; 
-                                                               margin-bottom: 0.5rem !important; 
-                                                               line-height: 1.4 !important;">
-                                                        @result.Title
-                                                    </h5>
-                                                    <p style="font-family: var(--font-family) !important; 
-                                                              font-size: 0.875rem !important; 
-                                                              color: var(--slate-600) !important; 
-                                                              margin-bottom: 0.75rem !important; 
-                                                              line-height: 1.5 !important;">
-                                                        @result.Excerpt
-                                                    </p>
-                                                    <span class="result-meta" 
-                                                          style="font-family: var(--font-family) !important; 
-                                                                 font-size: 0.75rem !important; 
-                                                                 color: var(--slate-500) !important; 
-                                                                 font-weight: 500 !important;">
-                                                        @result.Type • @result.CreatedAt.ToString("dd/MM/yyyy") • @result.AuthorName
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        }
+                                @foreach (var comment in post.Comments)
+                                {
+                                    <div>
+                                        <strong>@comment.EmployeeName</strong>
+                                        <span>@comment.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                        <p>@comment.Content</p>
                                     </div>
-                                </div>
+                                }
                             }
                         </div>
                     }
-                    else if (isSearching)
-                    {
-                        <div class="search-loading" 
-                             style="display: flex !important; 
-                                    flex-direction: column !important; 
-                                    align-items: center !important; 
-                                    justify-content: center !important; 
-                                    padding: 3rem !important; 
-                                    background: white !important; 
-                                    border-radius: 16px !important; 
-                                    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; 
-                                    gap: 1rem !important;">
-                            <i class="fas fa-spinner fa-spin" 
-                               style="font-size: 2rem !important; 
-                                      color: var(--primary-500) !important;"></i>
-                            <span style="font-family: var(--font-family) !important; 
-                                         font-size: 1rem !important; 
-                                         color: var(--slate-600) !important; 
-                                         font-weight: 500 !important;">
-                                Buscando...
-                            </span>
-                        </div>
-                    }
-                    else if (!string.IsNullOrEmpty(currentSearchTerm))
-                    {
-                        <div class="search-no-results" 
-                             style="display: flex !important; 
-                                    flex-direction: column !important; 
-                                    align-items: center !important; 
-                                    justify-content: center !important; 
-                                    padding: 3rem !important; 
-                                    background: white !important; 
-                                    border-radius: 16px !important; 
-                                    box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; 
-                                    gap: 1rem !important; 
-                                    text-align: center !important;">
-                            <i class="fas fa-search" 
-                               style="font-size: 3rem !important; 
-                                      color: var(--slate-300) !important;"></i>
-                            <h4 style="font-family: var(--font-family) !important; 
-                                       font-weight: 600 !important; 
-                                       font-size: 1.25rem !important; 
-                                       color: var(--slate-800) !important; 
-                                       margin: 0 !important;">
-                                Nenhum resultado encontrado
-                            </h4>
-                            <p style="font-family: var(--font-family) !important; 
-                                      font-size: 1rem !important; 
-                                      color: var(--slate-600) !important; 
-                                      margin: 0 !important; 
-                                      line-height: 1.5 !important;">
-                                Tente usar termos diferentes ou verifique a ortografia.
-                            </p>
-                        </div>
-                    }
-                </div>
+                </article>
             }
-            else
-            {
-            <!-- Área de Criação de Post Premium -->
-            <div class="create-post-area" 
-                 style="background: white !important; 
-                        border-radius: 16px !important; 
-                        box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; 
-                        padding: 1.5rem !important; 
-                        margin-bottom: 1.5rem !important; 
-                        border: none !important;">
-                <div class="create-post-header" 
-                     style="display: flex !important; 
-                            align-items: center !important; 
-                            margin-bottom: 1.25rem !important;">
-                    @if (currentUser != null)
-                    {
-                        <div class="profile-avatar" 
-                             style="background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important; 
-                                    color: white !important; 
-                                    width: 48px !important; 
-                                    height: 48px !important; 
-                                    border-radius: 12px !important; 
-                                    display: flex !important; 
-                                    align-items: center !important; 
-                                    justify-content: center !important; 
-                                    font-weight: 600 !important; 
-                                    font-size: 1.1rem !important; 
-                                    margin-right: 1rem !important; 
-                                    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important; 
-                                    font-family: var(--font-family) !important;">
-                            @currentUser.Nome?.Substring(0, 1).ToUpper()
-                        </div>
-                    }
-                    <span class="professional-body" 
-                          style="font-family: var(--font-family) !important; 
-                                 font-weight: 500 !important; 
-                                 font-size: 1rem !important; 
-                                 color: var(--slate-600) !important; 
-                                 line-height: 1.5 !important;">
-                        O que você gostaria de compartilhar, @(currentUser?.Nome?.Split(' ')[0] ?? "Usuário")?
-                    </span>
-                </div>
-                <textarea class="create-post-input" 
-                          style="width: 100% !important; 
-                                 border: 2px solid var(--slate-100) !important; 
-                                 border-radius: 12px !important; 
-                                 padding: 1rem !important; 
-                                 font-family: var(--font-family) !important; 
-                                 font-size: 0.95rem !important; 
-                                 color: var(--slate-700) !important; 
-                                 background: var(--slate-50) !important; 
-                                 transition: all 0.3s ease !important; 
-                                 resize: vertical !important; 
-                                 min-height: 120px !important; 
-                                 margin-bottom: 1.25rem !important;"
-                          placeholder="Compartilhe suas ideias, projetos ou conhecimentos..."
-                          @bind="newPostContent"
-                          @onfocus="@(() => { /* Add focus styles */ })"
-                          rows="4"></textarea>
-                <div class="create-post-actions" 
-                     style="display: flex !important; 
-                            justify-content: space-between !important; 
-                            align-items: center !important;">
-                    <div class="post-options" 
-                         style="display: flex !important; 
-                                gap: 0.75rem !important;">
-                        <button class="post-option" 
-                                style="background: transparent !important; 
-                                       border: 2px solid var(--slate-200) !important; 
-                                       color: var(--slate-600) !important; 
-                                       padding: 0.625rem 1rem !important; 
-                                       border-radius: 8px !important; 
-                                       font-family: var(--font-family) !important; 
-                                       font-weight: 500 !important; 
-                                       font-size: 0.875rem !important; 
-                                       transition: all 0.3s ease !important; 
-                                       display: flex !important; 
-                                       align-items: center !important; 
-                                       cursor: pointer !important;">
-                            <i class="fas fa-camera me-2" style="color: var(--primary-500) !important;"></i>
-                            Foto/Vídeo
-                        </button>
-                        <button class="post-option" 
-                                style="background: transparent !important; 
-                                       border: 2px solid var(--slate-200) !important; 
-                                       color: var(--slate-600) !important; 
-                                       padding: 0.625rem 1rem !important; 
-                                       border-radius: 8px !important; 
-                                       font-family: var(--font-family) !important; 
-                                       font-weight: 500 !important; 
-                                       font-size: 0.875rem !important; 
-                                       transition: all 0.3s ease !important; 
-                                       display: flex !important; 
-                                       align-items: center !important; 
-                                       cursor: pointer !important;">
-                            <i class="fas fa-poll me-2" style="color: var(--primary-500) !important;"></i>
-                            Enquete
-                        </button>
-                        <button class="post-option" 
-                                style="background: transparent !important; 
-                                       border: 2px solid var(--slate-200) !important; 
-                                       color: var(--slate-600) !important; 
-                                       padding: 0.625rem 1rem !important; 
-                                       border-radius: 8px !important; 
-                                       font-family: var(--font-family) !important; 
-                                       font-weight: 500 !important; 
-                                       font-size: 0.875rem !important; 
-                                       transition: all 0.3s ease !important; 
-                                       display: flex !important; 
-                                       align-items: center !important; 
-                                       cursor: pointer !important;">
-                            <i class="fas fa-lightbulb me-2" style="color: var(--primary-500) !important;"></i>
-                            Ideia
-                        </button>
-                    </div>
-                    <button class="btn-publish" 
-                            style="background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%) !important; 
-                                   border: none !important; 
-                                   color: white !important; 
-                                   padding: 0.75rem 1.5rem !important; 
-                                   border-radius: 10px !important; 
-                                   font-family: var(--font-family) !important; 
-                                   font-weight: 600 !important; 
-                                   font-size: 0.9rem !important; 
-                                   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important; 
-                                   transition: all 0.3s ease !important; 
-                                   display: flex !important; 
-                                   align-items: center !important; 
-                                   cursor: pointer !important;"
-                            @onclick="CreatePost"
-                            disabled="@(string.IsNullOrWhiteSpace(newPostContent) || isCreatingPost)">
-                        @if (isCreatingPost)
-                        {
-                            <i class="fas fa-spinner fa-spin me-2"></i>
-                            <span>Publicando</span>
-                        }
-                        else
-                        {
-                            <i class="fas fa-paper-plane me-2"></i>
-                            <span>Publicar</span>
-                        }
-                    </button>
-                </div>
-            </div>
-
-            <!-- Posts -->
-            @if (isLoading)
-            {
-                <div class="loading-state">
-                    <div class="loading-spinner"></div>
-                    <h3>Carregando feed...</h3>
-                    <p>Aguarde enquanto buscamos as últimas atualizações para você.</p>
-                </div>
-            }
-            else if (posts.Any())
-            {
-                <div class="posts-container">
-                    @foreach (var post in posts)
-                    {
-                        <SimplePostCard Post="@(new SimplePostCard.PostModel 
-                        { 
-                            Id = post.Id,
-                            AuthorName = post.AuthorName,
-                            AuthorRole = post.AuthorRole,
-                            AuthorAvatar = post.AuthorAvatar ?? "/images/default-avatar.png",
-                            Content = post.Content,
-                            Title = post.Title,
-                            CreatedAt = post.CreatedAt,
-                            LikeCount = post.LikeCount,
-                            CommentCount = post.CommentCount,
-                            ShareCount = post.ShareCount,
-                            IsLiked = post.IsLiked,
-                            ReactionType = post.ReactionType,
-                            Tags = post.Tags ?? Array.Empty<string>(),
-                            IsOfficial = post.IsOfficial,
-                            IsPinned = post.IsPinned,
-                            IsBookmarked = post.IsBookmarked
-                        })"
-                                     CurrentUser="currentUser" 
-                                     OnEdit="HandleEditPost"
-                                     OnDelete="HandleDeletePost"
-                                     OnLike="() => LikePost(post.Id)"
-                                     OnShare="() => SharePost(post.Id)" />
-                    }
-                </div>
-            }
-            else
-            {
-                <div class="empty-state">
-                    <i class="fas fa-stream"></i>
-                    <h3>Bem-vindo ao SynQcore!</h3>
-                    <p>Ainda não há posts no feed. Seja o primeiro a compartilhar algo interessante com a equipe!</p>
-                    <button class="btn-create-first" @onclick="ShowCreatePostModal">
-                        <i class="fas fa-plus"></i>
-                        Criar Primeira Postagem
-                    </button>
-                </div>
-            }
-            } <!-- Fecha o else da busca -->
-        </div>
-
-<<<<<<< Updated upstream
-        <div class="sidebar-right">
-            <h3>Atividades Recentes</h3>
-            <p>Conteúdo da sidebar direita</p>
-        </div>
-    </div>
-</div>
-=======
-            <!-- Sidebar Direita Premium -->
-            <div class="col-md-3 col-lg-3">
-                <!-- Atividades Recentes -->
-                <div class="card" style="border: none !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; overflow: hidden !important; margin-bottom: 1.5rem !important;">
-                    <div class="card-header" style="background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%) !important; border-bottom: 1px solid var(--primary-100) !important; padding: 1.25rem !important;">
-                        <h6 class="mb-0 professional-title" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--primary-800) !important; letter-spacing: 0.025em !important;">
-                            <i class="fas fa-clock me-2" style="color: var(--primary-600) !important;"></i>
-                            Atividades Recentes
-                        </h6>
-                    </div>
-                    <div class="card-body" style="padding: 1.5rem !important;">
-                        <!-- Atividade 1 -->
-                        <div class="activity-item" style="display: flex !important; align-items: center !important; padding: 0.75rem !important; border-radius: 10px !important; margin-bottom: 0.75rem !important; transition: all 0.3s ease !important; cursor: pointer !important;">
-                            <div class="activity-icon" style="background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%) !important; color: white !important; width: 32px !important; height: 32px !important; border-radius: 8px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-right: 0.75rem !important; font-size: 0.75rem !important;">
-                                <i class="fas fa-thumbs-up"></i>
-                            </div>
-                            <div class="activity-content" style="flex: 1 !important;">
-                                <div class="activity-text professional-caption" style="font-family: var(--font-family) !important; font-weight: 500 !important; font-size: 0.8rem !important; color: var(--slate-700) !important; line-height: 1.3 !important;">
-                                    Nova curtida no seu post
-                                </div>
-                                <div class="activity-time" style="font-family: var(--font-family) !important; font-weight: 400 !important; font-size: 0.7rem !important; color: var(--slate-500) !important;">
-                                    há 5 minutos
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Atividade 2 -->
-                        <div class="activity-item" style="display: flex !important; align-items: center !important; padding: 0.75rem !important; border-radius: 10px !important; margin-bottom: 0.75rem !important; transition: all 0.3s ease !important; cursor: pointer !important;">
-                            <div class="activity-icon" style="background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important; color: white !important; width: 32px !important; height: 32px !important; border-radius: 8px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-right: 0.75rem !important; font-size: 0.75rem !important;">
-                                <i class="fas fa-comment"></i>
-                            </div>
-                            <div class="activity-content" style="flex: 1 !important;">
-                                <div class="activity-text professional-caption" style="font-family: var(--font-family) !important; font-weight: 500 !important; font-size: 0.8rem !important; color: var(--slate-700) !important; line-height: 1.3 !important;">
-                                    João comentou sua discussão
-                                </div>
-                                <div class="activity-time" style="font-family: var(--font-family) !important; font-weight: 400 !important; font-size: 0.7rem !important; color: var(--slate-500) !important;">
-                                    há 15 minutos
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Atividade 3 -->
-                        <div class="activity-item" style="display: flex !important; align-items: center !important; padding: 0.75rem !important; border-radius: 10px !important; margin-bottom: 0.75rem !important; transition: all 0.3s ease !important; cursor: pointer !important;">
-                            <div class="activity-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: white !important; width: 32px !important; height: 32px !important; border-radius: 8px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-right: 0.75rem !important; font-size: 0.75rem !important;">
-                                <i class="fas fa-award"></i>
-                            </div>
-                            <div class="activity-content" style="flex: 1 !important;">
-                                <div class="activity-text professional-caption" style="font-family: var(--font-family) !important; font-weight: 500 !important; font-size: 0.8rem !important; color: var(--slate-700) !important; line-height: 1.3 !important;">
-                                    Novo endorsement recebido
-                                </div>
-                                <div class="activity-time" style="font-family: var(--font-family) !important; font-weight: 400 !important; font-size: 0.7rem !important; color: var(--slate-500) !important;">
-                                    há 1 hora
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Pessoas Sugeridas -->
-                <div class="card" style="border: none !important; border-radius: 16px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; overflow: hidden !important;">
-                    <div class="card-header" style="background: linear-gradient(135deg, var(--slate-50) 0%, var(--slate-100) 100%) !important; border-bottom: 1px solid var(--slate-100) !important; padding: 1.25rem !important;">
-                        <h6 class="mb-0 professional-title" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--slate-800) !important; letter-spacing: 0.025em !important;">
-                            <i class="fas fa-user-plus me-2" style="color: var(--slate-600) !important;"></i>
-                            Pessoas Sugeridas
-                        </h6>
-                    </div>
-                    <div class="card-body" style="padding: 1.5rem !important;">
-                        <!-- Pessoa 1 -->
-                        <div class="suggested-person" style="display: flex !important; align-items: center !important; padding: 0.75rem !important; border-radius: 10px !important; margin-bottom: 1rem !important; transition: all 0.3s ease !important; cursor: pointer !important;">
-                            <div class="person-avatar" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%) !important; color: white !important; width: 40px !important; height: 40px !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-right: 0.75rem !important; font-weight: 600 !important; font-size: 0.9rem !important;">
-                                M
-                            </div>
-                            <div class="person-info" style="flex: 1 !important;">
-                                <div class="person-name professional-body" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--slate-800) !important; line-height: 1.2 !important;">
-                                    Maria Silva
-                                </div>
-                                <div class="person-role" style="font-family: var(--font-family) !important; font-weight: 400 !important; font-size: 0.75rem !important; color: var(--slate-500) !important; line-height: 1.2 !important;">
-                                    Desenvolvedora Frontend
-                                </div>
-                            </div>
-                            <button class="follow-btn" style="background: var(--primary-500) !important; color: white !important; border: none !important; padding: 0.375rem 0.75rem !important; border-radius: 6px !important; font-size: 0.75rem !important; font-weight: 500 !important; transition: all 0.3s ease !important;">
-                                Seguir
-                            </button>
-                        </div>
-
-                        <!-- Pessoa 2 -->
-                        <div class="suggested-person" style="display: flex !important; align-items: center !important; padding: 0.75rem !important; border-radius: 10px !important; margin-bottom: 1rem !important; transition: all 0.3s ease !important; cursor: pointer !important;">
-                            <div class="person-avatar" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; color: white !important; width: 40px !important; height: 40px !important; border-radius: 10px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-right: 0.75rem !important; font-weight: 600 !important; font-size: 0.9rem !important;">
-                                R
-                            </div>
-                            <div class="person-info" style="flex: 1 !important;">
-                                <div class="person-name professional-body" style="font-family: var(--font-family) !important; font-weight: 600 !important; font-size: 0.875rem !important; color: var(--slate-800) !important; line-height: 1.2 !important;">
-                                    Ricardo Santos
-                                </div>
-                                <div class="person-role" style="font-family: var(--font-family) !important; font-weight: 400 !important; font-size: 0.75rem !important; color: var(--slate-500) !important; line-height: 1.2 !important;">
-                                    Product Manager
-                                </div>
-                            </div>
-                            <button class="follow-btn" style="background: var(--primary-500) !important; color: white !important; border: none !important; padding: 0.375rem 0.75rem !important; border-radius: 6px !important; font-size: 0.75rem !important; font-weight: 500 !important; transition: all 0.3s ease !important;">
-                                Seguir
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- Fecha row -->
-    </div> <!-- Fecha container-fluid -->
-</div> <!-- Fecha min-vh-100 bg-light -->
->>>>>>> Stashed changes
+        }
+    </section>
+}
 
 @code {
-    // Estado do componente
-    private UserInfo? currentUser;
-    private bool isLocalAuthenticated = false;
-    private List<SimplePostCard.PostModel> posts = new();
+    private List<FeedDto>? posts;
     private bool isLoading = false;
-    private bool isCreatingPost = false;
-    private string newPostContent = string.Empty;
-    private bool canModerate = false;
-    
-    // Flag para evitar carregamento duplicado
-    private bool feedLoaded = false;
-    
-    // Estado global para cache entre navegações
-    private static bool _globalFeedLoaded = false;
-    private static List<SimplePostCard.PostModel> _globalPosts = new();
-    private static UserInfo? _globalCurrentUser = null;
-
-    // Navegação
-    private string activeTab = "feed";
-    private bool showProfileMenu = false;
-
-    // Pesquisa
-    private string searchQuery = string.Empty;
-    private string searchFilter = "all";
-    private string currentSearchTerm = string.Empty;
-    private bool isSearchActive = false;
-    private bool isSearching = false;
-    private List<SearchResultDto>? searchResults;
-    private ElementReference searchInputRef;
-    private Timer? searchTimer;
+    private bool isCreating = false;
+    private string newPostContent = "";
+    private string createError = "";
+    private string commentText = "";
+    private HashSet<Guid> expandedComments = new();
 
     protected override async Task OnInitializedAsync()
     {
-        // Usar estado global se disponível
-        if (_globalFeedLoaded && _globalPosts?.Any() == true && _globalCurrentUser != null)
-        {
-            posts = new List<SimplePostCard.PostModel>(_globalPosts);
-            currentUser = _globalCurrentUser;
-            feedLoaded = true;
-            isLoading = false;
-            StateHasChanged();
-            return;
-        }
+        StateManager.OnChange += StateHasChanged;
         
-        await LoadFeedAsync();
+        if (StateManager.User.IsAuthenticated)
+        {
+            await LoadPosts();
+        }
     }
 
-    private async Task LoadFeedAsync()
+    private async Task LoadPosts()
     {
+        isLoading = true;
         try
         {
-            // Proteção contra carregamento duplicado
-            if (_globalFeedLoaded && _globalPosts?.Any() == true)
+            var result = await PostService.GetFeedPostsAsync();
+            if (result.Success && result.Data != null)
             {
-                posts = new List<SimplePostCard.PostModel>(_globalPosts);
-                currentUser = _globalCurrentUser;
-                return;
+                posts = result.Data;
             }
-            
-            if (feedLoaded || isLoading)
-            {
-                return;
-            }
-
-            isLoading = true;
-            StateHasChanged();
-
-            // Verificar autenticação via StateManager
-            isLocalAuthenticated = StateManager.User.IsAuthenticated;
-
-            if (!StateManager.User.IsAuthenticated)
-            {
-                Navigation.NavigateTo("/login", true);
-                return;
-            }
-
-            // Carregar dados do usuário via StateManager
-            if (StateManager.User.IsAuthenticated && StateManager.User.CurrentUser != null)
-            {
-                currentUser = StateManager.User.CurrentUser;
-            }
-
-            // Verificar permissões de moderação
-            if (currentUser != null)
-            {
-                canModerate = await UserPermissionService.CanModerateAsync();
-            }
-
-            // Inicializar serviço de notificações se autenticado
-            await InitializeNotificationServiceAsync();
-
-            // Carregar posts reais da API
-            await LoadPostsFromApiAsync();
-            
-            // Salvar no estado global para futuras navegações
-            _globalPosts = new List<SimplePostCard.PostModel>(posts);
-            _globalCurrentUser = currentUser;
-            _globalFeedLoaded = true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[FEED] Erro ao carregar feed: {ex.Message}");
-            posts = new List<SimplePostCard.PostModel>();
+            createError = ex.Message;
         }
         finally
         {
             isLoading = false;
-            feedLoaded = true;
-            StateHasChanged();
-        }
-    }
-
-    private async Task LoadPostsFromApiAsync()
-    {
-        try
-        {
-            // Usar o PostService para carregar posts reais da API
-            var feedPosts = await PostService.GetFeedPostsAsync(page: 1, pageSize: 20);
-            
-            if (feedPosts?.Any() == true)
-            {
-                posts = feedPosts;
-            }
-            else
-            {
-                posts = new List<SimplePostCard.PostModel>();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[FEED] Erro ao carregar posts da API: {ex.Message}");
-            posts = new List<SimplePostCard.PostModel>();
         }
     }
 
     private async Task CreatePost()
     {
-        if (string.IsNullOrWhiteSpace(newPostContent) || currentUser == null)
-            return;
-
+        if (string.IsNullOrWhiteSpace(newPostContent)) return;
+        
+        isCreating = true;
+        createError = "";
+        
         try
         {
-            isCreatingPost = true;
-            StateHasChanged();
-
-            // Criar post usando a API real
-            var createRequest = new CreatePostRequest
+            var result = await PostService.CreatePostAsync(newPostContent);
+            if (result.Success)
             {
-                Content = newPostContent,
-                Tags = Array.Empty<string>() // Por enquanto sem tags, implementar quando necessário
-            };
-
-            var newPost = await PostService.CreatePostAsync(createRequest);
-
-            if (newPost != null)
+                newPostContent = "";
+                await LoadPosts();
+            }
+            else
             {
-                posts.Insert(0, newPost);
-                // Atualizar estado global também
-                _globalPosts = new List<SimplePostCard.PostModel>(posts);
-                newPostContent = string.Empty;
+                createError = result.Message ?? "Erro ao criar post";
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[FEED] Erro ao criar post: {ex.Message}");
+            createError = ex.Message;
         }
         finally
         {
-            isCreatingPost = false;
-            StateHasChanged();
+            isCreating = false;
         }
     }
 
-    private async Task LikePost(Guid postId)
+    private async Task ToggleLike(Guid postId)
     {
         try
         {
-            var post = posts.FirstOrDefault(p => p.Id == postId);
-            if (post == null) return;
-
-            // Chamar API para curtir o post
-            bool success;
-            
-            if (post.IsLiked)
-            {
-                // Descurtir
-                success = await PostService.UnlikePostAsync(postId);
-                if (success)
-                {
-                    post.LikeCount = Math.Max(0, post.LikeCount - 1);
-                    post.IsLiked = false;
-                }
-            }
-            else
-            {
-                // Curtir
-                success = await PostService.LikePostAsync(postId);
-                if (success)
-                {
-                    post.LikeCount++;
-                    post.IsLiked = true;
-                }
-            }
-
-            if (success)
-            {
-                StateHasChanged();
-            }
-            else
-            {
-                // Mostrar mensagem de erro
-                await JS.InvokeVoidAsync("showNotification", "Erro ao processar reação", "error");
-            }
+            await PostService.ToggleLikeAsync(postId);
+            await LoadPosts();
         }
-        catch (Exception ex)
+        catch { }
+    }
+
+    private void ToggleComments(Guid postId)
+    {
+        if (expandedComments.Contains(postId))
         {
-            await JS.InvokeVoidAsync("showNotification", $"Erro ao processar reação: {ex.Message}", "error");
+            expandedComments.Remove(postId);
         }
-    }
-
-    private void ShowComments(Guid postId)
-    {
-        Console.WriteLine($"[BLAZOR] [FEED] Mostrar comentários do post {postId}");
-        // TODO: Implementar modal de comentários
-    }
-
-    private async Task SharePost(Guid postId)
-    {
-        try
+        else
         {
-            var post = posts.FirstOrDefault(p => p.Id == postId);
-            if (post == null) return;
-
-            // Incrementar contador de compartilhamento
-            post.ShareCount++;
-            StateHasChanged();
-            
-            // Processar compartilhamento via JavaScript
-            await JS.InvokeVoidAsync("showShareOptions", postId);
-            
-            // Simular API call para registrar compartilhamento
-            await Task.Delay(100);
-            
-            await JS.InvokeVoidAsync("showNotification", "Post compartilhado com sucesso!", "success");
-        }
-        catch (Exception ex)
-        {
-            // Reverter contador em caso de erro
-            var post = posts.FirstOrDefault(p => p.Id == postId);
-            if (post != null)
-            {
-                post.ShareCount = Math.Max(0, post.ShareCount - 1);
-                StateHasChanged();
-            }
-            
-            await JS.InvokeVoidAsync("showNotification", $"Erro ao compartilhar: {ex.Message}", "error");
+            expandedComments.Add(postId);
         }
     }
 
-    private void SetActiveTab(string tab)
+    private async Task AddComment(Guid postId)
     {
-        activeTab = tab;
-        StateHasChanged();
-    }
-
-    private void ToggleProfileMenu()
-    {
-        showProfileMenu = !showProfileMenu;
-        StateHasChanged();
-    }
-
-    private Task HandleLogout()
-    {
-        // Reset feed state incluindo estado global
-        feedLoaded = false;
-        _globalFeedLoaded = false;
-        posts.Clear();
-        _globalPosts.Clear();
-        _globalCurrentUser = null;
+        if (string.IsNullOrWhiteSpace(commentText)) return;
         
-        // Usar StateManager para logout 
-        StateManager.User.Logout();
-        Navigation.NavigateTo("/login", true);
-        return Task.CompletedTask;
-    }
-
-    private async Task HandleSearch()
-    {
-        if (string.IsNullOrWhiteSpace(searchQuery))
-        {
-            ClearSearch();
-            return;
-        }
-
-        currentSearchTerm = searchQuery.Trim();
-        isSearchActive = true;
-        isSearching = true;
-        StateHasChanged();
-
         try
         {
-            // Configurar filtros baseados no filtro selecionado
-            SearchFiltersDto? filters = null;
-            if (searchFilter != "all")
-            {
-                filters = new SearchFiltersDto
-                {
-                    ContentTypes = new List<string> { GetContentTypeFromFilter(searchFilter) }
-                };
-            }
-
-            // Executar busca real via API
-            var searchResult = await SearchService.SearchAsync(currentSearchTerm, 1, 20, filters);
-            searchResults = searchResult.Items;
-            isSearching = false;
-            StateHasChanged();
+            await PostService.AddCommentAsync(postId, commentText);
+            commentText = "";
+            await LoadPosts();
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[SEARCH] Erro na busca: {ex.Message}");
-            searchResults = new List<SearchResultDto>();
-            isSearching = false;
-            StateHasChanged();
-        }
+        catch { }
     }
 
-    private string GetContentTypeFromFilter(string filter)
+    private void GoToLogin()
     {
-        return filter switch
-        {
-            "posts" => "Post",
-            "people" => "Employee", 
-            "documents" => "Document",
-            "discussions" => "Discussion",
-            _ => "Post"
-        };
-    }
-
-    private void SetSearchFilter(string filter)
-    {
-        searchFilter = filter;
-        StateHasChanged();
-    }
-
-    private void OnFilterAll() => SetSearchFilter("all");
-    private void OnFilterPosts() => SetSearchFilter("posts");
-    private void OnFilterPeople() => SetSearchFilter("people");
-
-    private async Task InitializeNotificationServiceAsync()
-    {
-        try
-        {
-            if (!isLocalAuthenticated)
-                return;
-
-            var accessToken = StateManager.User.AccessToken ?? string.Empty;
-            if (!string.IsNullOrEmpty(accessToken) && accessToken != "statemanager-token")
-            {
-                await NotificationService.StartAsync(accessToken);
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[FEED] Erro ao inicializar NotificationService: {ex.Message}");
-        }
-    }
-
-    private void ShowMessages()
-    {
-        // TODO: Implementar painel de mensagens
-    }
-
-    private void ShowCreatePostModal()
-    {
-        // TODO: Implementar modal de criação de post
-    }
-
-    private void ShowCreateDiscussion()
-    {
-        // TODO: Implementar modal de criação de discussão
-    }
-
-    private void ShowCreateEndorsement()
-    {
-        // TODO: Implementar modal de criação de endorsement
-    }
-
-    private void CloseCreatePostModal()
-    {
-        newPostContent = string.Empty;
-        StateHasChanged();
-    }
-
-    // === MÉTODOS DE BUSCA INLINE ===
-
-    private void OnSearchInput(ChangeEventArgs e)
-    {
-        searchQuery = e.Value?.ToString() ?? string.Empty;
-        
-        // Debounce - esperar 300ms antes de buscar
-        searchTimer?.Dispose();
-        searchTimer = new Timer(_ => 
-        {
-            _ = Task.Run(async () => await PerformDelayedSearch());
-        }, null, 300, Timeout.Infinite);
-    }
-
-    private async Task PerformDelayedSearch()
-    {
-        await InvokeAsync(async () =>
-        {
-            if (!string.IsNullOrWhiteSpace(searchQuery))
-            {
-                await HandleSearch();
-            }
-            else
-            {
-                ClearSearch();
-            }
-        });
-    }
-
-    private void ClearSearch()
-    {
-        currentSearchTerm = string.Empty;
-        searchQuery = string.Empty;
-        isSearchActive = false;
-        isSearching = false;
-        searchResults = null;
-        StateHasChanged();
-    }
-
-    private string GetCategoryDisplayName(string category)
-    {
-        return category switch
-        {
-            "Post" => "Posts",
-            "Employee" => "Pessoas", 
-            "Document" => "Documentos",
-            "Discussion" => "Discussões",
-            "MediaAsset" => "Mídia",
-            "KnowledgeBase" => "Base de Conhecimento",
-            _ => "Outros"
-        };
-    }
-
-    private string GetCategoryIcon(string category)
-    {
-        return category switch
-        {
-            "Post" => "fas fa-comment",
-            "Employee" => "fas fa-user",
-            "Document" => "fas fa-file-alt", 
-            "Discussion" => "fas fa-comments",
-            "MediaAsset" => "fas fa-image",
-            "KnowledgeBase" => "fas fa-book",
-            _ => "fas fa-search"
-        };
-    }
-
-    
-
-    // Métodos para manipulação de posts
-    private void HandleEditPost(SimplePostCard.PostModel post)
-    {
-        // Lógica para editar post será implementada quando o modal estiver integrado
-    }
-
-    private async Task HandleDeletePost(SimplePostCard.PostModel post)
-    {
-        try
-        {
-            // Chamar serviço para excluir post
-            await PostService.DeletePostAsync(post.Id);
-            
-            // Remover da lista local
-            posts.RemoveAll(p => p.Id == post.Id);
-            
-            // Forçar re-render
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[FEED] Erro ao excluir post {post.Id}: {ex.Message}");
-        }
-    }
-
-    private void NavigateToResult(SearchResultDto result)
-    {
-        // Gerar URL baseada no tipo de conteúdo
-        var url = result.Type switch
-        {
-            "Employee" => $"/profile/{result.Id}",
-            "Post" => $"/post/{result.Id}",
-            "Document" => $"/document/{result.Id}",
-            "Discussion" => $"/discussion/{result.Id}",
-            "MediaAsset" => $"/media/{result.Id}",
-            "KnowledgeBase" => $"/knowledge/{result.Id}",
-            _ => $"/content/{result.Id}"
-        };
-        
-        Navigation.NavigateTo(url);
-    }
-
-    protected override void OnInitialized()
-    {
-        // Inscrever-se nas mudanças do estado
-        StateManager.User.PropertyChanged += OnStateChanged;
-        StateManager.UI.PropertyChanged += OnStateChanged;
-    }
-
-    private void OnStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        // Só reagir a mudanças específicas que impactam o feed
-        if (e.PropertyName == nameof(StateManager.User.IsAuthenticated) || 
-            e.PropertyName == nameof(StateManager.User.CurrentUser) ||
-            e.PropertyName == "Notifications")
-        {
-            InvokeAsync(StateHasChanged);
-        }
+        Navigation.NavigateTo("/login");
     }
 
     public void Dispose()
     {
-        // Remove event handlers para evitar memory leaks
-        try
-        {
-            StateManager.User.PropertyChanged -= OnStateChanged;
-            StateManager.UI.PropertyChanged -= OnStateChanged;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[FEED] Erro ao remover event handlers: {ex.Message}");
-        }
-        
-        // Dispose resources
-        try
-        {
-            searchTimer?.Dispose();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[FEED] Erro ao descartar recursos: {ex.Message}");
-        }
+        StateManager.OnChange -= StateHasChanged;
     }
 }
