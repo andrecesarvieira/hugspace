@@ -1,22 +1,80 @@
-@* Toast Notifications - HTML Puro *@
+@* Toast Notifications - CSS Moderno *@
 
-<div>
+<div style="position: fixed; top: 20px; right: 20px; z-index: var(--z-toast); max-width: 400px;">
     @foreach (var notification in Notifications)
     {
         @if (notification.IsVisible)
         {
-            <div>
-                <strong>@notification.Title</strong>
-                <p>@notification.Message</p>
-                <button @onclick="@(() => RemoveNotification(notification.Id))">X</button>
+            <div class="alert alert-@notification.Type mb-4 shadow-lg" style="animation: slideIn 0.3s ease-out;">
+                <div class="flex justify-between align-center">
+                    <div>
+                        <strong class="block font-bold mb-1">@notification.Title</strong>
+                        <p class="mb-0">@notification.Message</p>
+                    </div>
+                    <button @onclick="@(() => RemoveNotification(notification.Id))" class="btn btn-sm ml-4">×</button>
+                </div>
             </div>
         }
     }
 </div>
 
+<style>
+    @@keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
 @code {
     [Parameter]
     public List<ToastNotification> Notifications { get; set; } = new();
+
+    public void ShowSuccess(string message)
+    {
+        AddNotification("Sucesso", message, "success");
+    }
+
+    public void ShowError(string message)
+    {
+        AddNotification("Erro", message, "danger");
+    }
+
+    public void ShowWarning(string message)
+    {
+        AddNotification("Aviso", message, "warning");
+    }
+
+    public void ShowInfo(string message)
+    {
+        AddNotification("Info", message, "info");
+    }
+
+    private void AddNotification(string title, string message, string type)
+    {
+        var notification = new ToastNotification
+        {
+            Title = title,
+            Message = message,
+            Type = type
+        };
+        Notifications.Add(notification);
+        StateHasChanged();
+
+        // Auto-remove after 3 seconds
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                RemoveNotification(notification.Id);
+            });
+        });
+    }
 
     private void RemoveNotification(Guid id)
     {

@@ -6,31 +6,55 @@
 
 <PageTitle>Perfil - SynQcore</PageTitle>
 
-<h1>Perfil do Usuário</h1>
+<div class="container container-md">
+    @if (!StateManager.User.IsAuthenticated)
+    {
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="text-2xl font-bold mb-4">Perfil do Usuário</h1>
+                <p class="mb-6">Você precisa estar autenticado para ver seu perfil.</p>
+                <button @onclick='@(() => Navigation.NavigateTo("/login"))' class="btn btn-primary">
+                    Fazer Login
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card mb-6">
+            <div class="card-header">
+                <h1 class="text-2xl font-bold">Perfil do Usuário</h1>
+            </div>
+            <div class="card-body">
+                <h2 class="text-xl font-bold mb-4">Informações Pessoais</h2>
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold text-gray-600 mb-1">Nome:</span>
+                        <span class="text-lg">@StateManager.User.CurrentUser?.Nome</span>
+                    </div>
+                    
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold text-gray-600 mb-1">Email:</span>
+                        <span class="text-lg">@StateManager.User.CurrentUser?.Email</span>
+                    </div>
+                    
+                    <div class="flex flex-col">
+                        <span class="text-sm font-semibold text-gray-600 mb-1">Cargo:</span>
+                        <span class="text-lg">@(StateManager.User.CurrentUser?.Cargo ?? "Não informado")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-@if (!StateManager.User.IsAuthenticated)
-{
-    <p>Você precisa estar autenticado.</p>
-    <button @onclick='@(() => Navigation.NavigateTo("/login"))'>Fazer Login</button>
-}
-else
-{
-    <section>
-        <h2>Informações Pessoais</h2>
-        <dl>
-            <dt>Nome:</dt>
-            <dd>@StateManager.User.Nome</dd>
-            
-            <dt>Email:</dt>
-            <dd>@StateManager.User.Email</dd>
-            
-            <dt>Cargo:</dt>
-            <dd>@StateManager.User.Cargo</dd>
-        </dl>
-    </section>
-
-    <section>
-        <h2>Ações</h2>
-        <button @onclick='@(() => Navigation.NavigateTo("/profile/edit"))'>Editar Perfil</button>
-    </section>
-}
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-bold">Ações</h2>
+            </div>
+            <div class="card-body">
+                <button @onclick='@(() => Navigation.NavigateTo("/profile/edit"))' class="btn btn-primary">
+                    Editar Perfil
+                </button>
+            </div>
+        </div>
+    }
+</div>
