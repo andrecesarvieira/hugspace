@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "name": "📄 Feed Page",
+      "path": "../src/SynQcore.BlazorApp/SynQcore.BlazorApp/Components/Pages"
+    },
+    {
+      "name": "🧩 Social Components", 
+      "path": "../src/SynQcore.BlazorApp/SynQcore.BlazorApp/Components/Social"
+    },
+    {
+      "name": "🔗 Shared Components",
+      "path": "../src/SynQcore.BlazorApp/SynQcore.BlazorApp/Components/Shared"
+    },
+    {
+      "name": "📱 Feed Application",
+      "path": "../src/SynQcore.Application/Features"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/node_modules": true
+    }
+  }
+}

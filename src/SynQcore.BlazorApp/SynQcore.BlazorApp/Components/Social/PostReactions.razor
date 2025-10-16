@@ -4,15 +4,35 @@
 @inject IPostService PostService
 @inject IJSRuntime JS
 
-    <div class="post-reactions">
+    <div class="post-reactions" 
+         style="display: flex !important; 
+                align-items: center !important; 
+                gap: 0.5rem !important;">
     @if (ShowSimpleMode)
     {
         <!-- Modo simples - apenas like estilo LinkedIn -->
         <button class="reaction-btn @(CurrentReaction == "Like" ? "active active-like" : "")" 
+                style="background: @(CurrentReaction == "Like" ? "linear-gradient(135deg, #e53e3e 0%, #c53030 100%)" : "transparent") !important; 
+                       border: @(CurrentReaction == "Like" ? "none" : "1px solid var(--slate-200)") !important; 
+                       color: @(CurrentReaction == "Like" ? "white" : "var(--slate-600)") !important; 
+                       padding: 0.5rem 0.75rem !important; 
+                       border-radius: 8px !important; 
+                       font-family: var(--font-family) !important; 
+                       font-weight: 500 !important; 
+                       font-size: 0.875rem !important; 
+                       transition: all 0.2s ease !important; 
+                       cursor: pointer !important; 
+                       display: flex !important; 
+                       align-items: center !important; 
+                       gap: 0.5rem !important;"
                 @onclick="HandleLikeClick" 
                 disabled="@isReacting">
-            <i class="@(CurrentReaction == "Like" ? "fas fa-heart" : "far fa-heart")"></i> 
-            <span class="like-count" @onclick="ShowLikesModal" @onclick:stopPropagation="true">
+            <i class="@(CurrentReaction == "Like" ? "fas fa-heart" : "far fa-heart")" 
+               style="font-size: 0.9rem !important;"></i> 
+            <span class="like-count" 
+                  style="font-family: var(--font-family) !important; 
+                         font-weight: 500 !important;"
+                  @onclick="ShowLikesModal" @onclick:stopPropagation="true">
                 @if (TotalLikes > 0)
                 {
                     @TotalLikes
@@ -27,15 +47,32 @@
     else
     {
         <!-- Modo avançado estilo LinkedIn -->
-        <div class="reactions-container">
+        <div class="reactions-container" style="position: relative !important;">
             <div class="primary-reaction">
                 <button class="reaction-btn @GetActiveClass() @(isReacting ? "loading" : "")" 
+                        style="background: @GetReactionBackground() !important; 
+                               border: @(HasReaction ? "none" : "1px solid var(--slate-200)") !important; 
+                               color: @(HasReaction ? "white" : "var(--slate-600)") !important; 
+                               padding: 0.5rem 0.75rem !important; 
+                               border-radius: 8px !important; 
+                               font-family: var(--font-family) !important; 
+                               font-weight: 500 !important; 
+                               font-size: 0.875rem !important; 
+                               transition: all 0.2s ease !important; 
+                               cursor: pointer !important; 
+                               display: flex !important; 
+                               align-items: center !important; 
+                               gap: 0.5rem !important;"
                         @onclick="HandlePrimaryReaction" 
                         disabled="@isReacting"
                         @onmouseenter="() => showReactionPicker = true"
                         @onmouseleave="() => DelayHideReactionPicker()">
-                    <i class="@GetCurrentReactionIcon()"></i> 
-                    <span class="like-count" @onclick="ShowLikesModal" @onclick:stopPropagation="true">
+                    <i class="@GetCurrentReactionIcon()" 
+                       style="font-size: 0.9rem !important;"></i> 
+                    <span class="like-count" 
+                          style="font-family: var(--font-family) !important; 
+                                 font-weight: 500 !important;"
+                          @onclick="ShowLikesModal" @onclick:stopPropagation="true">
                         @if (TotalLikes > 0)
                         {
                             @TotalLikes
@@ -50,24 +87,75 @@
                 @if (showReactionPicker)
                 {
                     <div class="reaction-picker" 
+                         style="position: absolute !important; 
+                                bottom: 100% !important; 
+                                left: 0 !important; 
+                                background: white !important; 
+                                border-radius: 12px !important; 
+                                box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important; 
+                                padding: 0.75rem !important; 
+                                margin-bottom: 0.5rem !important; 
+                                border: 1px solid var(--slate-200) !important; 
+                                z-index: 1000 !important; 
+                                min-width: 200px !important; 
+                                display: flex !important; 
+                                flex-direction: column !important; 
+                                gap: 0.5rem !important;"
                          @onmouseenter="() => cancelHideTimer = true"
                          @onmouseleave="() => HideReactionPicker()">
                         @foreach (var reaction in AvailableReactions)
                         {
                             <button class="reaction-option @(CurrentReaction == reaction.Type ? "selected" : "")" 
+                                    style="background: @(CurrentReaction == reaction.Type ? GetReactionBackgroundByType(reaction.Type) : "transparent") !important; 
+                                           border: @(CurrentReaction == reaction.Type ? "none" : "1px solid var(--slate-100)") !important; 
+                                           color: @(CurrentReaction == reaction.Type ? "white" : "var(--slate-700)") !important; 
+                                           padding: 0.5rem 0.75rem !important; 
+                                           border-radius: 8px !important; 
+                                           font-family: var(--font-family) !important; 
+                                           font-weight: 500 !important; 
+                                           font-size: 0.875rem !important; 
+                                           cursor: pointer !important; 
+                                           display: flex !important; 
+                                           align-items: center !important; 
+                                           gap: 0.5rem !important; 
+                                           transition: all 0.2s ease !important; 
+                                           width: 100% !important;"
                                     @onclick="() => HandleReaction(reaction.Type)"
                                     title="@reaction.Label">
-                                <i class="@reaction.Icon"></i>
-                                <span class="reaction-label">@reaction.Label</span>
+                                <i class="@reaction.Icon" style="font-size: 0.9rem !important;"></i>
+                                <span class="reaction-label" 
+                                      style="font-family: var(--font-family) !important; 
+                                             font-weight: 500 !important;">
+                                    @reaction.Label
+                                </span>
                             </button>
                         }
                         
                         @if (HasReaction)
                         {
-                            <div class="reaction-divider"></div>
-                            <button class="reaction-remove" @onclick="() => HandleReaction(null)">
-                                <i class="fas fa-times"></i>
-                                <span>Remover</span>
+                            <div class="reaction-divider" 
+                                 style="height: 1px !important; 
+                                        background: var(--slate-200) !important; 
+                                        margin: 0.25rem 0 !important;"></div>
+                            <button class="reaction-remove" 
+                                    style="background: transparent !important; 
+                                           border: 1px solid var(--red-200) !important; 
+                                           color: var(--red-600) !important; 
+                                           padding: 0.5rem 0.75rem !important; 
+                                           border-radius: 8px !important; 
+                                           font-family: var(--font-family) !important; 
+                                           font-weight: 500 !important; 
+                                           font-size: 0.875rem !important; 
+                                           cursor: pointer !important; 
+                                           display: flex !important; 
+                                           align-items: center !important; 
+                                           gap: 0.5rem !important; 
+                                           transition: all 0.2s ease !important; 
+                                           width: 100% !important;"
+                                    @onclick="() => HandleReaction(null)">
+                                <i class="fas fa-times" style="font-size: 0.9rem !important;"></i>
+                                <span style="font-family: var(--font-family) !important; 
+                                             font-weight: 500 !important;">Remover</span>
                             </button>
                         }
                     </div>
@@ -235,6 +323,32 @@
             "Insightful" => "Perspicaz",
             "Celebrate" => "Celebrar",
             _ => "Curtir"
+        };
+    }
+
+    private string GetReactionBackground()
+    {
+        if (!HasReaction) return "transparent";
+
+        return CurrentReaction switch
+        {
+            "Like" => "linear-gradient(135deg, #e53e3e 0%, #c53030 100%)",
+            "Helpful" => "linear-gradient(135deg, #38a169 0%, #2f855a 100%)",
+            "Insightful" => "linear-gradient(135deg, #d69e2e 0%, #b7791f 100%)",
+            "Celebrate" => "linear-gradient(135deg, #805ad5 0%, #6b46c1 100%)",
+            _ => "transparent"
+        };
+    }
+
+    private string GetReactionBackgroundByType(string type)
+    {
+        return type switch
+        {
+            "Like" => "linear-gradient(135deg, #e53e3e 0%, #c53030 100%)",
+            "Helpful" => "linear-gradient(135deg, #38a169 0%, #2f855a 100%)",
+            "Insightful" => "linear-gradient(135deg, #d69e2e 0%, #b7791f 100%)",
+            "Celebrate" => "linear-gradient(135deg, #805ad5 0%, #6b46c1 100%)",
+            _ => "transparent"
         };
     }
 

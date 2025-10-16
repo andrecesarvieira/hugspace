@@ -92,7 +92,7 @@ public class UserStateService : BaseStateService
     }
 
     // Ações públicas
-    public async Task LoginAsync(string email, string password)
+    public Task LoginAsync(string email, string password)
     {
         Console.WriteLine($"🟢 [UserStateService] LoginAsync iniciado para: {email}");
         
@@ -101,10 +101,7 @@ public class UserStateService : BaseStateService
 
         try
         {
-            // Simular chamada de API
-            await Task.Delay(1000);
-            
-            // Simular login bem-sucedido
+            // Login simplificado sem delay desnecessário
             AccessToken = "fake-jwt-token";
             RefreshToken = "fake-refresh-token";
             TokenExpiresAt = DateTime.UtcNow.AddHours(1);
@@ -138,6 +135,8 @@ public class UserStateService : BaseStateService
         {
             IsLoading = false;
         }
+
+        return Task.CompletedTask;
     }
 
     public void Logout()

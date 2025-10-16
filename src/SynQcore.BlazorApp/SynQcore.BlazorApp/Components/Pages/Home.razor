@@ -106,10 +106,30 @@
             }
             else
             {
+<<<<<<< Updated upstream
                 <div class="stats-grid">
                     <div class="stat-item">
                         <div class="stat-number">@FormatNumber(platformStats?.TotalEmployees ?? 500)+</div>
                         <div class="stat-label">Colaboradores Conectados</div>
+=======
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="border-0 shadow-sm h-100 text-center position-relative overflow-hidden stats-card-primary">
+                            
+                            <div class="stats-glow-effect"></div>
+                            
+                            <div class="p-4 position-relative">
+                                <div class="mb-3">
+                                    <i class="fas fa-users stats-icon-primary"></i>
+                                </div>
+                                <h3 class="fw-bold text-white mb-2 stats-number">
+                                    @FormatNumber(platformStats?.TotalEmployees ?? 500)<span class="stats-number-accent">+</span>
+                                </h3>
+                                <p class="text-white-50 mb-0 fw-semibold">👥 Colaboradores Ativos</p>
+                                <div class="stats-bottom-bar"></div>
+                            </div>
+                        </div>
+>>>>>>> Stashed changes
                     </div>
                     <div class="stat-item">
                         <div class="stat-number">@FormatNumber(platformStats?.TotalPosts ?? 1200)</div>

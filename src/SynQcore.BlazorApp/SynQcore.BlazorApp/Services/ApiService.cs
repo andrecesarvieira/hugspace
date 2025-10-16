@@ -129,11 +129,12 @@ public class ApiService : IApiService
         try
         {
             _stateManager.UI.IsLoading = true;
-            Console.WriteLine($"🌐 [ApiService] POST {endpoint}");
+            Console.WriteLine($"🌐 [ApiService] POST {endpoint} (URL: {_httpClient.BaseAddress}{endpoint})");
 
             var json = JsonSerializer.Serialize(data, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            Console.WriteLine($"📤 [ApiService] Enviando requisição para {_httpClient.BaseAddress}{endpoint}...");
             var response = await _httpClient.PostAsync(endpoint, content);
 
             if (response.IsSuccessStatusCode)

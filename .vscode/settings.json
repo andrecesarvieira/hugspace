@@ -1,4 +1,75 @@
 {
+  // ========================================
+  // CONFIGURAÇÕES DE PERFORMANCE OTIMIZADA
+  // ========================================
+  
+  // Excluir pastas que causam lentidão
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/node_modules": true,
+    "**/.vs": true,
+    "**/wwwroot/lib": true,
+    "**/packages": true,
+    "**/.git": true,
+    "**/dist": true,
+    "**/out": true,
+    "**/*.user": true,
+    "**/*.suo": true,
+    "**/.vscode/ipch": true
+  },
+  
+  // Otimizar busca de arquivos
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/node_modules": true,
+    "**/.vs": true,
+    "**/wwwroot/lib": true,
+    "**/packages": true,
+    "**/dist": true,
+    "**/out": true,
+    "**/*.dll": true,
+    "**/*.pdb": true,
+    "**/*.exe": true,
+    "**/*.cache": true
+  },
+  
+  // Desabilitar monitoramento de arquivos desnecessários
+  "files.watcherExclude": {
+    "**/bin/**": true,
+    "**/obj/**": true,
+    "**/node_modules/**": true,
+    "**/.vs/**": true,
+    "**/wwwroot/lib/**": true,
+    "**/packages/**": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/dist/**": true,
+    "**/out/**": true
+  },
+  
+  // Performance do editor
+  "editor.semanticHighlighting.enabled": false,
+  "editor.renderWhitespace": "none",
+  "editor.minimap.enabled": false,
+  "editor.codeLens": false,
+  "breadcrumbs.enabled": false,
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off", 
+    "strings": "on"
+  },
+  
+  // Limitar uso de memória
+  "typescript.maxTsServerMemory": 4096,
+  "files.maxMemoryForLargeFilesMB": 4096,
+  
+  // ========================================
+  // CONFIGURAÇÕES EXISTENTES OTIMIZADAS
+  // ========================================
+  
   // Configurações Git - Controle Manual de Sincronização
   "git.autofetch": false,
   "git.autofetchPeriod": 0,
@@ -6,6 +77,8 @@
   "git.enableSmartCommit": false,
   "git.confirmSync": true,
   "git.showPushSuccessNotification": true,
+  "git.autoRepositoryDetection": false,
+  "git.detectSubmodules": false,
   
   // Configurações adicionais para controle manual
   "scm.autoReveal": false,
@@ -19,15 +92,20 @@
   "editor.tabSize": 4,
   "editor.detectIndentation": false,
   
-  // Configurações .NET
-"dotnet.defaultSolution": "SynQcore.sln",
+  // Configurações .NET Otimizadas
+  "dotnet.defaultSolution": "SynQcore.sln",
   "omnisharp.enableAsyncCompletion": true,
+  "dotnet.enablePackageRestore": false,
+  "dotnet.preferCSharpExtension": true,
+  "omnisharp.enableEditorConfigSupport": true,
+  "omnisharp.enableImportCompletion": true,
+  "omnisharp.enableRoslynAnalyzers": false,
+  "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": false,
   
   // Configurações Python para scripts
   "python.defaultInterpreterPath": "/usr/bin/python3",
   
   // Configurações de terminal
   "terminal.integrated.cwd": "${workspaceFolder}",
-"terminal.integrated.defaultProfile.linux": "bash",
-"dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true
+  "terminal.integrated.defaultProfile.linux": "bash"
 }

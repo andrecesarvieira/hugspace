@@ -1,0 +1,36 @@
+{
+  "folders": [
+    {
+      "name": "🌐 Blazor App",
+      "path": "../src/SynQcore.BlazorApp"
+    },
+    {
+      "name": "📱 Application Layer", 
+      "path": "../src/SynQcore.Application"
+    },
+    {
+      "name": "🏗️ Domain",
+      "path": "../src/SynQcore.Domain"
+    },
+    {
+      "name": "🧪 Tests",
+      "path": "../tests"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/node_modules": true,
+      "**/.vs": true,
+      "**/wwwroot/lib": true
+    },
+    "dotnet.defaultSolution": "../SynQcore.sln"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csharp", 
+      "ms-dotnettools.csdevkit"
+    ]
+  }
+}

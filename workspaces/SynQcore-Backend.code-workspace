@@ -1,0 +1,35 @@
+{
+  "folders": [
+    {
+      "name": "🔧 API",
+      "path": "../src/SynQcore.Api"
+    },
+    {
+      "name": "📱 Application Layer",
+      "path": "../src/SynQcore.Application"
+    },
+    {
+      "name": "🏗️ Domain",
+      "path": "../src/SynQcore.Domain"
+    },
+    {
+      "name": "🗄️ Infrastructure",
+      "path": "../src/SynQcore.Infrastructure"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/node_modules": true,
+      "**/.vs": true
+    },
+    "dotnet.defaultSolution": "../SynQcore.sln"
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csharp",
+      "ms-dotnettools.csdevkit"
+    ]
+  }
+}

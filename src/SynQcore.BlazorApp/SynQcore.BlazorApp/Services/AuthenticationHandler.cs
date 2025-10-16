@@ -109,7 +109,7 @@ public partial class AuthenticationHandler : DelegatingHandler
                 _stateManager.User.IsAuthenticated)
             {
                 // Tenta renovar o token automaticamente
-                await HandleUnauthorized();
+                HandleUnauthorized();
             }
 
             return response;
@@ -133,7 +133,7 @@ public partial class AuthenticationHandler : DelegatingHandler
     /// <summary>
     /// Trata erro de autorização tentando renovar o token
     /// </summary>
-    private async Task HandleUnauthorized()
+    private void HandleUnauthorized()
     {
         var refreshToken = _stateManager.User.RefreshToken;
 
@@ -142,9 +142,6 @@ public partial class AuthenticationHandler : DelegatingHandler
             try
             {
                 LogTokenRefreshAttempt(_logger);
-
-                // Simula tentativa de refresh (em produção seria uma chamada real à API)
-                await Task.Delay(1000);
 
                 // Por enquanto, força logout se não conseguir renovar
                 LogTokenRefreshFailure(_logger);

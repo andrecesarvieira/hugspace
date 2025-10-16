@@ -7,50 +7,166 @@
 <!-- Incluir CSS externo -->
 <link rel="stylesheet" href="~/css/notification-center.css" />
 
-<div class="notification-center">
-    <!-- Botão de Notificações -->
-    <div class="notification-trigger" @onclick="ToggleNotifications">
-        <i class="fas fa-bell notification-icon"></i>
+<div class="notification-center" style="position: relative !important;">
+    <!-- Botão de Notificações Premium -->
+    <div class="notification-trigger" @onclick="ToggleNotifications" 
+         style="background: rgba(255,255,255,0.1) !important; 
+                border: 1px solid rgba(255,255,255,0.2) !important; 
+                color: white !important; 
+                padding: 0.625rem !important; 
+                border-radius: 10px !important; 
+                cursor: pointer !important; 
+                transition: all 0.3s ease !important; 
+                backdrop-filter: blur(10px) !important; 
+                position: relative !important; 
+                display: flex !important; 
+                align-items: center !important; 
+                justify-content: center !important;">
+        <i class="fas fa-bell notification-icon" style="font-size: 1.1rem !important; color: white !important;"></i>
         @if (unreadCount > 0)
         {
-            <span class="notification-badge">@(unreadCount > 99 ? "99+" : unreadCount.ToString())</span>
+            <span class="notification-badge" 
+                  style="position: absolute !important; 
+                         top: -4px !important; 
+                         right: -4px !important; 
+                         background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%) !important; 
+                         color: white !important; 
+                         border-radius: 50% !important; 
+                         width: 20px !important; 
+                         height: 20px !important; 
+                         display: flex !important; 
+                         align-items: center !important; 
+                         justify-content: center !important; 
+                         font-size: 0.7rem !important; 
+                         font-weight: 600 !important; 
+                         font-family: var(--font-family) !important; 
+                         box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important;">
+                @(unreadCount > 99 ? "99+" : unreadCount.ToString())
+            </span>
         }
     </div>
 
-    <!-- Dropdown de Notificações -->
+    <!-- Dropdown de Notificações Premium -->
     @if (isNotificationPanelOpen)
     {
-        <div class="notification-dropdown" @onclick:stopPropagation="true">
-            <div class="notification-header">
-                <h3>Notificações</h3>
-                <div class="notification-actions">
+        <div class="notification-dropdown" @onclick:stopPropagation="true" 
+             style="position: absolute !important; 
+                    top: calc(100% + 0.5rem) !important; 
+                    right: 0 !important; 
+                    background: white !important; 
+                    border-radius: 16px !important; 
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important; 
+                    padding: 0 !important; 
+                    min-width: 380px !important; 
+                    max-width: 400px !important; 
+                    z-index: 2000 !important; 
+                    border: none !important; 
+                    backdrop-filter: blur(10px) !important; 
+                    overflow: hidden !important;">
+            <div class="notification-header" 
+                 style="background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-700) 100%) !important; 
+                        color: white !important; 
+                        padding: 1.25rem !important; 
+                        display: flex !important; 
+                        align-items: center !important; 
+                        justify-content: space-between !important;">
+                <h3 style="font-family: var(--font-family) !important; 
+                           font-weight: 600 !important; 
+                           font-size: 1.1rem !important; 
+                           color: white !important; 
+                           margin: 0 !important;">
+                    Notificações
+                </h3>
+                <div class="notification-actions" style="display: flex !important; align-items: center !important; gap: 0.75rem !important;">
                     @if (unreadCount > 0)
                     {
-                        <button class="btn-mark-all-read" @onclick="MarkAllAsRead">
+                        <button class="btn-mark-all-read" @onclick="MarkAllAsRead" 
+                                style="background: rgba(255,255,255,0.15) !important; 
+                                       border: 1px solid rgba(255,255,255,0.2) !important; 
+                                       color: white !important; 
+                                       padding: 0.375rem 0.75rem !important; 
+                                       border-radius: 6px !important; 
+                                       font-family: var(--font-family) !important; 
+                                       font-weight: 500 !important; 
+                                       font-size: 0.75rem !important; 
+                                       cursor: pointer !important; 
+                                       transition: all 0.3s ease !important;">
                             Marcar todas como lidas
                         </button>
                     }
-                    <button class="btn-close" @onclick="CloseNotifications">
+                    <button class="btn-close" @onclick="CloseNotifications" 
+                            style="background: transparent !important; 
+                                   border: none !important; 
+                                   color: rgba(255,255,255,0.8) !important; 
+                                   padding: 0.375rem !important; 
+                                   border-radius: 6px !important; 
+                                   cursor: pointer !important; 
+                                   transition: all 0.3s ease !important;">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="notification-filters">
+            <div class="notification-filters" 
+                 style="display: flex !important; 
+                        background: var(--slate-50) !important; 
+                        padding: 0.75rem !important; 
+                        gap: 0.5rem !important; 
+                        border-bottom: 1px solid var(--slate-100) !important;">
                 <button class="filter-btn @(selectedFilter == "all" ? "active" : "")" 
-                        @onclick='() => SetFilter("all")'>
+                        @onclick='() => SetFilter("all")' 
+                        style="background: @(selectedFilter == "all" ? "var(--primary-500)" : "transparent") !important; 
+                               color: @(selectedFilter == "all" ? "white" : "var(--slate-600)") !important; 
+                               border: 1px solid @(selectedFilter == "all" ? "var(--primary-500)" : "var(--slate-200)") !important; 
+                               padding: 0.5rem 0.75rem !important; 
+                               border-radius: 8px !important; 
+                               font-family: var(--font-family) !important; 
+                               font-weight: 500 !important; 
+                               font-size: 0.8rem !important; 
+                               cursor: pointer !important; 
+                               transition: all 0.3s ease !important;">
                     Todas (@totalNotifications)
                 </button>
                 <button class="filter-btn @(selectedFilter == "unread" ? "active" : "")" 
-                        @onclick='() => SetFilter("unread")'>
+                        @onclick='() => SetFilter("unread")' 
+                        style="background: @(selectedFilter == "unread" ? "var(--primary-500)" : "transparent") !important; 
+                               color: @(selectedFilter == "unread" ? "white" : "var(--slate-600)") !important; 
+                               border: 1px solid @(selectedFilter == "unread" ? "var(--primary-500)" : "var(--slate-200)") !important; 
+                               padding: 0.5rem 0.75rem !important; 
+                               border-radius: 8px !important; 
+                               font-family: var(--font-family) !important; 
+                               font-weight: 500 !important; 
+                               font-size: 0.8rem !important; 
+                               cursor: pointer !important; 
+                               transition: all 0.3s ease !important;">
                     Não lidas (@unreadCount)
                 </button>
                 <button class="filter-btn @(selectedFilter == "personal" ? "active" : "")" 
-                        @onclick='() => SetFilter("personal")'>
+                        @onclick='() => SetFilter("personal")' 
+                        style="background: @(selectedFilter == "personal" ? "var(--primary-500)" : "transparent") !important; 
+                               color: @(selectedFilter == "personal" ? "white" : "var(--slate-600)") !important; 
+                               border: 1px solid @(selectedFilter == "personal" ? "var(--primary-500)" : "var(--slate-200)") !important; 
+                               padding: 0.5rem 0.75rem !important; 
+                               border-radius: 8px !important; 
+                               font-family: var(--font-family) !important; 
+                               font-weight: 500 !important; 
+                               font-size: 0.8rem !important; 
+                               cursor: pointer !important; 
+                               transition: all 0.3s ease !important;">
                     Pessoais
                 </button>
                 <button class="filter-btn @(selectedFilter == "corporate" ? "active" : "")" 
-                        @onclick='() => SetFilter("corporate")'>
+                        @onclick='() => SetFilter("corporate")' 
+                        style="background: @(selectedFilter == "corporate" ? "var(--primary-500)" : "transparent") !important; 
+                               color: @(selectedFilter == "corporate" ? "white" : "var(--slate-600)") !important; 
+                               border: 1px solid @(selectedFilter == "corporate" ? "var(--primary-500)" : "var(--slate-200)") !important; 
+                               padding: 0.5rem 0.75rem !important; 
+                               border-radius: 8px !important; 
+                               font-family: var(--font-family) !important; 
+                               font-weight: 500 !important; 
+                               font-size: 0.8rem !important; 
+                               cursor: pointer !important; 
+                               transition: all 0.3s ease !important;">
                     Corporativas
                 </button>
             </div>
@@ -94,15 +210,47 @@
                 }
                 else
                 {
-                    <div class="no-notifications">
-                        <i class="fas fa-bell-slash"></i>
-                        <p>@GetEmptyMessage()</p>
+                    <div class="no-notifications" 
+                         style="display: flex !important; 
+                                flex-direction: column !important; 
+                                align-items: center !important; 
+                                justify-content: center !important; 
+                                padding: 3rem 2rem !important; 
+                                text-align: center !important; 
+                                color: var(--slate-500) !important;">
+                        <i class="fas fa-bell-slash" 
+                           style="font-size: 2.5rem !important; 
+                                  color: var(--slate-300) !important; 
+                                  margin-bottom: 1rem !important;"></i>
+                        <p style="font-family: var(--font-family) !important; 
+                                  font-size: 1rem !important; 
+                                  font-weight: 500 !important; 
+                                  color: var(--slate-600) !important; 
+                                  margin: 0 !important; 
+                                  line-height: 1.5 !important;">
+                            @GetEmptyMessage()
+                        </p>
                     </div>
                 }
             </div>
 
-            <div class="notification-footer">
-                <button class="btn-view-all" @onclick="ViewAllNotifications">
+            <div class="notification-footer" 
+                 style="padding: 1rem !important; 
+                        background: var(--slate-50) !important; 
+                        border-top: 1px solid var(--slate-100) !important;">
+                <button class="btn-view-all" 
+                        @onclick="ViewAllNotifications" 
+                        style="width: 100% !important; 
+                               background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%) !important; 
+                               color: white !important; 
+                               border: none !important; 
+                               padding: 0.75rem 1rem !important; 
+                               border-radius: 8px !important; 
+                               font-family: var(--font-family) !important; 
+                               font-weight: 600 !important; 
+                               font-size: 0.9rem !important; 
+                               cursor: pointer !important; 
+                               transition: all 0.3s ease !important;">
                     Ver todas as notificações
                 </button>
             </div>

@@ -69,15 +69,26 @@ public class AuthService : IAuthService
             await _stateManager.User.LoginAsync(email, password);
 
             var request = new LoginRequest(email, password, true);
+            var startTime = DateTime.Now; // Mover para escopo externo
 
             // Faz requisição real para a API SynQcore
             var apiResponse = await _apiService.PostAsync<ApiLoginResponse>("auth/login", request);
 
             if (apiResponse != null && apiResponse.Success)
             {
+<<<<<<< Updated upstream
                 Console.WriteLine($"[AuthService] API Response recebida - Success: {apiResponse.Success}");
                 Console.WriteLine($"[AuthService] Token: {apiResponse.Token?.Substring(0, Math.Min(20, apiResponse.Token.Length))}...");
                 Console.WriteLine($"[AuthService] User Info - Id: {apiResponse.User?.Id}, UserName: {apiResponse.User?.UserName}, Email: {apiResponse.User?.Email}");
+=======
+                // Tentar API real primeiro
+                Console.WriteLine($"[AuthService] 🌐 Tentando API real... (timeout: 3s)");
+                
+                var apiResponse = await _apiService.PostAsync<ApiLoginResponse>("auth/login", request);
+                
+                var duration = DateTime.Now - startTime;
+                Console.WriteLine($"[AuthService] ⏱️ API respondeu em {duration.TotalMilliseconds:F0}ms");
+>>>>>>> Stashed changes
 
                 // Configura o header de autorização
                 if (!string.IsNullOrEmpty(apiResponse.Token))
@@ -85,9 +96,32 @@ public class AuthService : IAuthService
                     _apiService.SetAuthorizationHeader(apiResponse.Token);
                     Console.WriteLine($"[AuthService] Token configurado: {apiResponse.Token.Substring(0, 10)}...");
                 }
+<<<<<<< Updated upstream
 
                 // Mapeia a resposta da API para o modelo interno
                 var userInfo = new UserInfo
+=======
+            }
+            catch (Exception apiEx)
+            {
+                var duration = DateTime.Now - startTime;
+                Console.WriteLine($"[AuthService] ❌ API falhou após {duration.TotalMilliseconds:F0}ms: {apiEx.Message}");
+                
+                if (apiEx.Message.Contains("timeout") || apiEx.Message.Contains("Timeout"))
+                {
+                    Console.WriteLine($"[AuthService] ⏰ TIMEOUT detectado! API não respondeu em 3 segundos");
+                }
+            }
+
+            // Fallback para login local/demo com credenciais padrão
+            Console.WriteLine("[AuthService] 🔄 Usando fallback local (credenciais padrão)...");
+            
+            if (email == "admin@synqcore.com" && password == "SynQcore@Admin123!")
+            {
+                Console.WriteLine("[AuthService] ✅ Credenciais padrão válidas - Login local");
+                
+                var localUserInfo = new UserInfo
+>>>>>>> Stashed changes
                 {
                     Id = apiResponse.User?.Id ?? string.Empty,
                     Nome = apiResponse.User?.UserName ?? string.Empty,
@@ -139,14 +173,12 @@ public class AuthService : IAuthService
     /// <summary>
     /// Atualiza o token de acesso
     /// </summary>
-    public async Task<bool> RefreshTokenAsync()
+    public Task<bool> RefreshTokenAsync()
     {
         try
         {
             // Inicia processo de refresh token usando StateManager
             // TODO: Implementar lógica real de refresh token com API
-
-            await Task.Delay(1000); // Simula requisição
 
             var newToken = "new-jwt-token-" + DateTime.Now.Ticks;
             var expiresAt = DateTime.Now.AddHours(8);
@@ -157,12 +189,12 @@ public class AuthService : IAuthService
             // TODO: Implementar método apropriado no StateManager
             Console.WriteLine($"[AuthService] Token atualizado: {newToken.Substring(0, 10)}...");
 
-            return true;
+            return Task.FromResult(true);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[AuthService] Erro ao atualizar token: {ex.Message}");
-            return false;
+            return Task.FromResult(false);
         }
     }
 
@@ -204,14 +236,11 @@ public class AuthService : IAuthService
     /// <summary>
     /// Obtém informações do usuário atual
     /// </summary>
-    public async Task<UserInfo?> GetCurrentUserAsync()
+    public Task<UserInfo?> GetCurrentUserAsync()
     {
         try
         {
-            // TEMPORÁRIO: Simular resposta até termos ApiService completo
-            await Task.Delay(500);
-            
-            // Retornar informações simuladas do usuário
+            // Retornar informações simuladas do usuário sem delay
             var userInfo = new UserInfo
             {
                 Id = "1",
@@ -231,12 +260,12 @@ public class AuthService : IAuthService
                 Console.WriteLine($"[AuthService] Informações do usuário atualizadas: {userInfo.Nome}");
             }
 
-            return userInfo;
+            return Task.FromResult<UserInfo?>(userInfo);
         }
         catch (Exception ex)
         {
             _stateManager.UI.AddNotification($"Erro ao carregar usuário: {ex.Message}");
-            return null;
+            return Task.FromResult<UserInfo?>(null);
         }
     }
 
@@ -252,52 +281,6 @@ public class AuthService : IAuthService
         }
         catch
         {
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Login demo para testes (simula API)
-    /// </summary>
-    public async Task<bool> LoginDemoAsync()
-    {
-        try
-        {
-            // Inicia login demo usando StateManager
-            Console.WriteLine("[AuthService] Iniciando login demo");
-
-            // Simula delay de API
-            await Task.Delay(1500);
-
-            var demoUser = new UserInfo
-            {
-                Id = Guid.NewGuid().ToString(),
-                Nome = "Usuário Demo",
-                Email = "demo@synqcore.com",
-                Username = "demo",
-                Cargo = "Desenvolvedor Frontend",
-                Departamento = "Tecnologia da Informação",
-                DataCadastro = DateTime.Now.AddDays(-30),
-                IsAtivo = true,
-                Roles = new List<string> { "User", "Developer", "Admin" },
-                FotoUrl = "https://api.dicebear.com/7.x/avatars/svg?seed=demo"
-            };
-
-            var token = "demo-jwt-token-" + DateTime.Now.Ticks;
-            var expiresAt = DateTime.Now.AddHours(8);
-
-            // _apiService.SetAuthorizationHeader(token);
-
-            // Usar StateManager ao invés do Fluxor
-            await _stateManager.User.LoginAsync(demoUser.Email, "demo");
-            _stateManager.UI.AddNotification($"Bem-vindo ao modo demonstração, {demoUser.Nome}!");
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[AuthService] Erro no login demo: {ex.Message}");
-            _stateManager.UI.AddNotification($"Erro no login demo: {ex.Message}");
             return false;
         }
     }

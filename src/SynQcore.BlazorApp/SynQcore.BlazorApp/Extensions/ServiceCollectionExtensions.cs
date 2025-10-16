@@ -88,8 +88,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddSynQcoreHttpClients(this IServiceCollection services)
     {
+<<<<<<< Updated upstream
         const string ApiBaseUrl = "http://localhost:5005/api/"; // Porta corrigida para 5005
         const int TimeoutSeconds = 30;
+=======
+        const string ApiBaseUrl = "http://localhost:5000/api/"; // Porta correta da API SynQcore
+        const int TimeoutSeconds = 3; // Timeout reduzido para login mais rápido
+>>>>>>> Stashed changes
 
         // Handler de autenticação
         services.AddScoped<AuthenticationHandler>();

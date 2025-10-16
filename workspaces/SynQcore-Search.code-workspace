@@ -1,0 +1,26 @@
+{
+  "folders": [
+    {
+      "name": "🔍 Corporate Search",
+      "path": "../src/SynQcore.Application/Features/CorporateSearch"
+    },
+    {
+      "name": "🔧 Search API",
+      "path": "../src/SynQcore.Api/Controllers"
+    },
+    {
+      "name": "🌐 Search UI",
+      "path": "../src/SynQcore.BlazorApp/SynQcore.BlazorApp/Components/Pages"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true
+    },
+    "search.exclude": {
+      "**/bin": true,
+      "**/obj": true
+    }
+  }
+}

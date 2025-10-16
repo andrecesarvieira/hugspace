@@ -43,6 +43,7 @@ using SynQcore.Application.Features.CorporateDocuments.Commands;
 using SynQcore.Application.Features.CorporateDocuments.DTOs;
 using SynQcore.Application.Features.CorporateDocuments.Handlers;
 using SynQcore.Application.Features.CorporateDocuments.Queries;
+using SynQcore.Application.Features.CorporateSearch.Commands;
 using SynQcore.Application.Features.CorporateSearch.DTOs;
 using SynQcore.Application.Features.CorporateSearch.Handlers;
 using SynQcore.Application.Features.CorporateSearch.Queries;
@@ -477,6 +478,7 @@ builder.Services.AddScoped<IRequestHandler<GetSearchAnalyticsQuery, SearchAnalyt
 builder.Services.AddScoped<IRequestHandler<GetTrendingTopicsQuery, List<TrendingTopicDto>>, GetTrendingTopicsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetContentStatsQuery, ContentStatsDto>, GetContentStatsQueryHandler>();
 builder.Services.AddScoped<IRequestHandler<GetSearchConfigQuery, SearchConfigDto>, GetSearchConfigQueryHandler>();
+builder.Services.AddScoped<IRequestHandler<RecordSearchEventCommand, bool>, RecordSearchEventCommandHandler>();
 
 // --- MODERATION HANDLERS ---
 // Moderation Query Handlers
