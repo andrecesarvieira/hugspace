@@ -6,20 +6,145 @@
 @rendermode InteractiveServer
 @implements IDisposable
 
-<PageTitle>SynQcore</PageTitle>
+<PageTitle>SynQcore - Rede Social Corporativa</PageTitle>
 
 @if (StateManager.User.IsAuthenticated)
 {
-    <h1>Bem-vindo!</h1>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h1>Bem-vindo, @StateManager.User.CurrentUser?.Nome!</h1>
+                <p>Você está autenticado no SynQcore.</p>
+                
+                <div class="grid grid-cols-1 grid-cols-md-3 gap-4 mt-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-primary">Feed</h3>
+                            <p>Acompanhe as atualizações da empresa</p>
+                            <a href="/feed" class="btn btn-primary">Acessar Feed</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-success">Colaboradores</h3>
+                            <p>Veja a equipe da empresa</p>
+                            <a href="/employees" class="btn btn-success">Ver Equipe</a>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h3 class="text-warning">Conhecimento</h3>
+                            <p>Acesse a base de conhecimento</p>
+                            <a href="/knowledge" class="btn btn-warning">Explorar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 else
 {
-    <h1>SynQcore - Rede Social Corporativa</h1>
-    <button @onclick="GoToLogin">Entrar</button>
+    <div class="container">
+        <div class="text-center mb-6">
+            <h1 class="text-5xl font-bold mb-4">SynQcore</h1>
+            <h2 class="text-2xl text-gray-600 mb-6">Primeira Rede Social Corporativa Open Source do Brasil 🇧🇷</h2>
+            <p class="text-lg mb-6">
+                Conecte sua empresa em uma rede social corporativa completa.
+                Feed social, colaboração em equipe, gestão de conhecimento e documentos corporativos.
+            </p>
+            <button @onclick="NavigateToLogin" class="btn btn-lg btn-primary">Acessar Plataforma</button>
+        </div>
+        
+        <div class="grid grid-cols-1 grid-cols-md-4 gap-6 mt-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">📱 Feed Social Corporativo</h4>
+                    <p class="text-sm text-gray-600">Posts, comentários, reações, compartilhamentos e hashtags.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">👥 Colaboração em Equipe</h4>
+                    <p class="text-sm text-gray-600">Workspaces, quadros Kanban, tarefas e projetos colaborativos.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">📚 Gestão de Conhecimento</h4>
+                    <p class="text-sm text-gray-600">Base de conhecimento, artigos, wikis e categorias.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="font-bold mb-2">📄 Documentos Corporativos</h4>
+                    <p class="text-sm text-gray-600">Templates, workflow de aprovação e controle de versão.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-8">
+            <div class="card-body">
+                <h3 class="font-bold mb-4">Stack Tecnológica</h3>
+                <div class="flex flex-wrap gap-4">
+                    <span class="badge badge-primary">.NET 9.0</span>
+                    <span class="badge badge-success">Blazor Server</span>
+                    <span class="badge badge-warning">PostgreSQL</span>
+                    <span class="badge badge-danger">Redis</span>
+                    <span class="badge badge-primary">Clean Architecture</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-6">
+            <div class="card-body">
+                <h3 class="font-bold mb-4">Estatísticas do Projeto</h3>
+                <div class="grid grid-cols-2 grid-cols-md-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary">25+</div>
+                        <div class="text-sm text-gray-600">Entidades Domain</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-success">150+</div>
+                        <div class="text-sm text-gray-600">Endpoints API</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-warning">75%</div>
+                        <div class="text-sm text-gray-600">Conclusão Fase 4.3</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-danger">MIT</div>
+                        <div class="text-sm text-gray-600">Licença Open Source</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
-    private void GoToLogin() => Navigation.NavigateTo("/login");
-    protected override void OnInitialized() => StateManager.User.PropertyChanged += (s, e) => InvokeAsync(StateHasChanged);
-    public void Dispose() => StateManager.User.PropertyChanged -= (s, e) => InvokeAsync(StateHasChanged);
+    private void NavigateToLogin()
+    {
+        Navigation.NavigateTo("/login");
+    }
+    
+    protected override void OnInitialized()
+    {
+        StateManager.User.PropertyChanged += OnUserStateChanged;
+    }
+    
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(() => StateHasChanged());
+    }
+    
+    public void Dispose()
+    {
+        StateManager.User.PropertyChanged -= OnUserStateChanged;
+    }
 }

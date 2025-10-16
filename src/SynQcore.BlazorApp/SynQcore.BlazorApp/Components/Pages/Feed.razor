@@ -2,139 +2,86 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Services.StateManagement
-@using SynQcore.BlazorApp.Models
-@using SynQcore.Application.DTOs
-@implements IDisposable
 @inject StateManager StateManager
 @inject NavigationManager Navigation
-@inject IPostService PostService
-@inject IAuthService AuthService
+@implements IDisposable
 
 <PageTitle>Feed - SynQcore</PageTitle>
 
-<h1>Feed Social Corporativo</h1>
-
-@if (!StateManager.User.IsAuthenticated)
-{
-    <p>Você precisa estar autenticado para ver o feed.</p>
-    <button @onclick="GoToLogin">Fazer Login</button>
-}
-else
-{
-    <section>
-        <h2>Criar Post</h2>
-        <form @onsubmit="CreatePost">
-            <div>
-                <label>Conteúdo:</label>
-                <textarea @bind="newPostContent" rows="4" required></textarea>
+<div class="container">
+    @if (!StateManager.User.IsAuthenticated)
+    {
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="mb-4">Feed Social Corporativo</h1>
+                <p class="mb-4">Você precisa estar autenticado para ver o feed.</p>
+                <button @onclick="GoToLogin" class="btn btn-primary">Fazer Login</button>
             </div>
-            <button type="submit" disabled="@isCreating">
-                @(isCreating ? "Publicando..." : "Publicar")
-            </button>
-        </form>
-        
-        @if (!string.IsNullOrEmpty(createError))
-        {
-            <p style="color: red;">@createError</p>
-        }
-    </section>
+        </div>
+    }
+    else
+    {
+        <div class="card mb-6">
+            <div class="card-header">
+                <h2 class="text-xl font-bold">Criar Post</h2>
+            </div>
+            <div class="card-body">
+                <form @onsubmit="CreatePost">
+                    <div class="form-group">
+                        <label class="form-label">O que você está pensando?</label>
+                        <textarea @bind="newPostContent" class="form-textarea" rows="4" placeholder="Compartilhe suas ideias..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" disabled="@isCreating">
+                        @(isCreating ? "Publicando..." : "Publicar Post")
+                    </button>
+                </form>
+                
+                @if (!string.IsNullOrEmpty(createError))
+                {
+                    <div class="alert alert-danger mt-4">
+                        @createError
+                    </div>
+                }
+            </div>
+        </div>
 
-    <section>
-        <h2>Posts Recentes</h2>
-        
-        @if (isLoading)
-        {
-            <p>Carregando posts...</p>
-        }
-        else if (posts == null || !posts.Any())
-        {
-            <p>Nenhum post encontrado. Seja o primeiro a publicar!</p>
-        }
-        else
-        {
-            @foreach (var post in posts)
-            {
-                <article>
-                    <div>
-                        <strong>@post.EmployeeName</strong>
-                        <span>@post.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+        <div class="card">
+            <div class="card-header">
+                <h2 class="text-xl font-bold">Posts Recentes</h2>
+            </div>
+            <div class="card-body">
+                @if (isLoading)
+                {
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p class="ml-4">Carregando posts...</p>
                     </div>
-                    <p>@post.Content</p>
-                    <div>
-                        <button @onclick="@(() => ToggleLike(post.Id))">
-                            @(post.IsLikedByCurrentUser ? "Descurtir" : "Curtir") (@post.TotalLikes)
-                        </button>
-                        <button @onclick="@(() => ToggleComments(post.Id))">
-                            Comentários (@post.TotalComments)
-                        </button>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <p class="mb-0">Feed social em desenvolvimento. Esta é uma versão simplificada.</p>
                     </div>
-                    
-                    @if (expandedComments.Contains(post.Id))
-                    {
-                        <div>
-                            <h3>Comentários</h3>
-                            <form @onsubmit="@(() => AddComment(post.Id))">
-                                <input type="text" @bind="commentText" placeholder="Adicionar comentário..." />
-                                <button type="submit">Enviar</button>
-                            </form>
-                            
-                            @if (post.Comments != null && post.Comments.Any())
-                            {
-                                @foreach (var comment in post.Comments)
-                                {
-                                    <div>
-                                        <strong>@comment.EmployeeName</strong>
-                                        <span>@comment.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
-                                        <p>@comment.Content</p>
-                                    </div>
-                                }
-                            }
-                        </div>
-                    }
-                </article>
-            }
-        }
-    </section>
-}
+                }
+            </div>
+        </div>
+    }
+</div>
 
 @code {
-    private List<FeedDto>? posts;
     private bool isLoading = false;
     private bool isCreating = false;
     private string newPostContent = "";
     private string createError = "";
-    private string commentText = "";
-    private HashSet<Guid> expandedComments = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        StateManager.OnChange += StateHasChanged;
-        
-        if (StateManager.User.IsAuthenticated)
-        {
-            await LoadPosts();
-        }
+        StateManager.User.PropertyChanged += OnUserStateChanged;
     }
 
-    private async Task LoadPosts()
+    private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        isLoading = true;
-        try
-        {
-            var result = await PostService.GetFeedPostsAsync();
-            if (result.Success && result.Data != null)
-            {
-                posts = result.Data;
-            }
-        }
-        catch (Exception ex)
-        {
-            createError = ex.Message;
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task CreatePost()
@@ -146,16 +93,10 @@ else
         
         try
         {
-            var result = await PostService.CreatePostAsync(newPostContent);
-            if (result.Success)
-            {
-                newPostContent = "";
-                await LoadPosts();
-            }
-            else
-            {
-                createError = result.Message ?? "Erro ao criar post";
-            }
+            // TODO: Implement post creation when service is ready
+            await Task.Delay(1000);
+            newPostContent = "";
+            createError = "Funcionalidade em desenvolvimento";
         }
         catch (Exception ex)
         {
@@ -167,41 +108,6 @@ else
         }
     }
 
-    private async Task ToggleLike(Guid postId)
-    {
-        try
-        {
-            await PostService.ToggleLikeAsync(postId);
-            await LoadPosts();
-        }
-        catch { }
-    }
-
-    private void ToggleComments(Guid postId)
-    {
-        if (expandedComments.Contains(postId))
-        {
-            expandedComments.Remove(postId);
-        }
-        else
-        {
-            expandedComments.Add(postId);
-        }
-    }
-
-    private async Task AddComment(Guid postId)
-    {
-        if (string.IsNullOrWhiteSpace(commentText)) return;
-        
-        try
-        {
-            await PostService.AddCommentAsync(postId, commentText);
-            commentText = "";
-            await LoadPosts();
-        }
-        catch { }
-    }
-
     private void GoToLogin()
     {
         Navigation.NavigateTo("/login");
@@ -209,6 +115,6 @@ else
 
     public void Dispose()
     {
-        StateManager.OnChange -= StateHasChanged;
+        StateManager.User.PropertyChanged -= OnUserStateChanged;
     }
 }

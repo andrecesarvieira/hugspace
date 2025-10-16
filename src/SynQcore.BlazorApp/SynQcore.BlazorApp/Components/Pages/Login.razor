@@ -9,41 +9,56 @@
 
 <PageTitle>Login - SynQcore</PageTitle>
 
-<h1>Login - SynQcore</h1>
+<div class="container container-sm">
+    <div class="card shadow-lg">
+        <div class="card-header text-center">
+            <h1 class="text-2xl font-bold text-primary">Login - SynQcore</h1>
+            <p class="text-sm text-gray-600">Entre com suas credenciais</p>
+        </div>
+        
+        <div class="card-body">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <p style="color: red;">@errorMessage</p>
-}
-
-<form @onsubmit="HandleLogin">
-    <div>
-        <label>Email:</label>
-        <input type="email" @bind="email" required />
+            <form @onsubmit="HandleLogin">
+                <div class="form-group">
+                    <label class="form-label">Email:</label>
+                    <input type="email" @bind="email" class="form-input" placeholder="seu@email.com" required />
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Senha:</label>
+                    <input type="password" @bind="password" class="form-input" placeholder="••••••••" required />
+                </div>
+                
+                <div class="form-group">
+                    <label class="flex align-center gap-2">
+                        <input type="checkbox" @bind="rememberMe" />
+                        <span class="text-sm">Lembrar-me</span>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-full" disabled="@isLoading">
+                    @(isLoading ? "Entrando..." : "Entrar")
+                </button>
+            </form>
+        </div>
+        
+        <div class="card-footer">
+            <div class="text-sm text-gray-600">
+                <p class="font-semibold mb-2">Credenciais padrão:</p>
+                <ul class="pl-4">
+                    <li>Email: <code>admin@synqcore.com</code></li>
+                    <li>Senha: <code>SynQcore@Admin123!</code></li>
+                </ul>
+            </div>
+        </div>
     </div>
-    
-    <div>
-        <label>Senha:</label>
-        <input type="password" @bind="password" required />
-    </div>
-    
-    <div>
-        <label>
-            <input type="checkbox" @bind="rememberMe" />
-            Lembrar-me
-        </label>
-    </div>
-    
-    <button type="submit" disabled="@isLoading">
-        @(isLoading ? "Entrando..." : "Entrar")
-    </button>
-</form>
-
-<p>Credenciais padrão:</p>
-<ul>
-    <li>Email: admin@synqcore.com</li>
-    <li>Senha: SynQcore@Admin123!</li>
-</ul>
+</div>
 
 @code {
     private string email = "admin@synqcore.com";
@@ -67,17 +82,16 @@
         
         try
         {
-            var result = await AuthService.LoginAsync(email, password, rememberMe);
+            var result = await AuthService.LoginAsync(email, password);
             
-            if (result.Success)
+            if (result)
             {
-                await LocalAuthService.SaveTokenAsync(result.Data!.Token);
-                StateManager.SetUser(result.Data.User);
-                Navigation.NavigateTo("/");
+                await Task.Delay(500);
+                Navigation.NavigateTo("/", true);
             }
             else
             {
-                errorMessage = result.Message ?? "Erro ao fazer login";
+                errorMessage = "Erro ao fazer login. Verifique suas credenciais.";
             }
         }
         catch (Exception ex)
