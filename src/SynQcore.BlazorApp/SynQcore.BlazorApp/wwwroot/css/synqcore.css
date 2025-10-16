@@ -1,0 +1,17 @@
+/* ================================================
+   SYNQCORE - CSS MODERNO
+   Sistema CSS Modular: Grid + Flexbox + Variables
+   ZERO Frameworks Externos
+   ================================================ */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Import módulos CSS na ordem correta */
+@import '0-tokens.css';
+@import '1-reset.css';
+@import '2-base.css';
+@import '3-layout.css';
+@import '4-components.css';
+@import '5-utilities.css';
+@import '6-responsive.css';

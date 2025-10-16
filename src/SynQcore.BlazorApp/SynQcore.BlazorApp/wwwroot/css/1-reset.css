@@ -1,0 +1,43 @@
+/* ================================================
+   SYNQCORE - RESET CSS
+   ================================================ */
+
+/* Reset básico */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Remove estilos padrão de listas */
+ul, ol {
+    list-style: none;
+}
+
+/* Remove estilos padrão de links */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Remove estilos padrão de botões */
+button {
+    border: none;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* Remove estilos padrão de inputs */
+input, textarea, select {
+    font: inherit;
+    border: none;
+    outline: none;
+}
+
+/* Imagens responsivas */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
