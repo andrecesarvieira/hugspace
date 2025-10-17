@@ -2,8 +2,12 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using SynQcore.BlazorApp.Services
 @using SynQcore.BlazorApp.Services.StateManagement
+@using SynQcore.BlazorApp.Components.Social
 @inject StateManager StateManager
 @inject NavigationManager Navigation
+@inject IPostService PostService
+@inject ISignalRService SignalRService
+@inject ILogger<Feed> Logger
 @implements IDisposable
 
 <PageTitle>Feed - SynQcore</PageTitle>
@@ -42,12 +46,22 @@
                         @createError
                     </div>
                 }
+                @if (!string.IsNullOrEmpty(createSuccess))
+                {
+                    <div class="alert alert-success mt-4">
+                        @createSuccess
+                    </div>
+                }
             </div>
         </div>
 
         <div class="card">
             <div class="card-header">
                 <h2 class="text-xl font-bold">Posts Recentes</h2>
+                @if (SignalRService.IsConnected)
+                {
+                    <span class="badge badge-success ml-2">Tempo Real Ativo</span>
+                }
             </div>
             <div class="card-body">
                 @if (isLoading)
@@ -57,11 +71,49 @@
                         <p class="ml-4">Carregando posts...</p>
                     </div>
                 }
-                else
+                else if (!string.IsNullOrEmpty(loadError))
+                {
+                    <div class="alert alert-danger">
+                        <p class="mb-2"><strong>Erro ao carregar posts:</strong></p>
+                        <p class="mb-0">@loadError</p>
+                        <button @onclick="LoadPosts" class="btn btn-secondary mt-3">Tentar Novamente</button>
+                    </div>
+                }
+                else if (posts.Count == 0)
                 {
                     <div class="alert alert-info">
-                        <p class="mb-0">Feed social em desenvolvimento. Esta é uma versão simplificada.</p>
+                        <p class="mb-0">Nenhum post encontrado. Seja o primeiro a publicar!</p>
                     </div>
+                }
+                else
+                {
+                    <div class="posts-list">
+                        @foreach (var post in posts)
+                        {
+                            <div class="post-item mb-4">
+                                <div class="post-header mb-2">
+                                    <strong>@post.AuthorName</strong>
+                                    <span class="text-muted ml-2">@post.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
+                                <div class="post-content mb-2">
+                                    @post.Content
+                                </div>
+                                <div class="post-actions">
+                                    <span class="text-muted">@post.LikeCount curtidas</span>
+                                    <span class="text-muted ml-3">@post.CommentCount comentários</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    @if (hasMorePosts)
+                    {
+                        <div class="text-center mt-4">
+                            <button @onclick="LoadMorePosts" class="btn btn-secondary" disabled="@isLoadingMore">
+                                @(isLoadingMore ? "Carregando..." : "Carregar Mais")
+                            </button>
+                        </div>
+                    }
                 }
             </div>
         </div>
@@ -71,17 +123,105 @@
 @code {
     private bool isLoading = false;
     private bool isCreating = false;
+    private bool isLoadingMore = false;
     private string newPostContent = "";
     private string createError = "";
+    private string createSuccess = "";
+    private string loadError = "";
+    private List<SimplePostCard.PostModel> posts = new();
+    private int currentPage = 1;
+    private const int pageSize = 10;
+    private bool hasMorePosts = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         StateManager.User.PropertyChanged += OnUserStateChanged;
+        
+        // Conectar SignalR
+        try
+        {
+            SignalRService.OnPostCreated += OnPostCreatedViaSignalR;
+            await SignalRService.StartAsync();
+            Logger.LogInformation("SignalR conectado com sucesso");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Não foi possível conectar ao SignalR. Continuando sem tempo real.");
+        }
+
+        // Carregar posts iniciais
+        if (StateManager.User.IsAuthenticated)
+        {
+            await LoadPosts();
+        }
+    }
+
+    private async Task LoadPosts()
+    {
+        isLoading = true;
+        loadError = "";
+        currentPage = 1;
+        
+        try
+        {
+            var loadedPosts = await PostService.GetFeedPostsAsync(currentPage, pageSize);
+            posts = loadedPosts ?? new List<SimplePostCard.PostModel>();
+            hasMorePosts = posts.Count == pageSize;
+        }
+        catch (Exception ex)
+        {
+            loadError = $"Erro ao carregar posts: {ex.Message}";
+            Logger.LogError(ex, "Erro ao carregar posts do feed");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadMorePosts()
+    {
+        isLoadingMore = true;
+        
+        try
+        {
+            currentPage++;
+            var morePosts = await PostService.GetFeedPostsAsync(currentPage, pageSize);
+            
+            if (morePosts != null && morePosts.Count > 0)
+            {
+                posts.AddRange(morePosts);
+                hasMorePosts = morePosts.Count == pageSize;
+            }
+            else
+            {
+                hasMorePosts = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Erro ao carregar mais posts");
+            currentPage--; // Reverter incremento em caso de erro
+        }
+        finally
+        {
+            isLoadingMore = false;
+        }
     }
 
     private void OnUserStateChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         InvokeAsync(StateHasChanged);
+    }
+
+    private void OnPostCreatedViaSignalR(object? sender, PostCreatedEventArgs e)
+    {
+        // Adicionar novo post no topo da lista
+        InvokeAsync(() =>
+        {
+            posts.Insert(0, e.Post);
+            StateHasChanged();
+        });
     }
 
     private async Task CreatePost()
@@ -90,17 +230,43 @@
         
         isCreating = true;
         createError = "";
+        createSuccess = "";
         
         try
         {
-            // TODO: Implement post creation when service is ready
-            await Task.Delay(1000);
-            newPostContent = "";
-            createError = "Funcionalidade em desenvolvimento";
+            var request = new CreatePostRequest
+            {
+                Content = newPostContent
+            };
+            
+            var createdPost = await PostService.CreatePostAsync(request);
+            
+            if (createdPost != null)
+            {
+                createSuccess = "Post publicado com sucesso!";
+                newPostContent = "";
+                
+                // Adicionar post localmente se SignalR não estiver conectado
+                if (!SignalRService.IsConnected)
+                {
+                    posts.Insert(0, createdPost);
+                }
+                
+                // Limpar mensagem de sucesso após 3 segundos
+                _ = Task.Delay(3000).ContinueWith(_ => 
+                {
+                    InvokeAsync(() => 
+                    {
+                        createSuccess = "";
+                        StateHasChanged();
+                    });
+                });
+            }
         }
         catch (Exception ex)
         {
-            createError = ex.Message;
+            createError = $"Erro ao criar post: {ex.Message}";
+            Logger.LogError(ex, "Erro ao criar post");
         }
         finally
         {
@@ -116,5 +282,6 @@
     public void Dispose()
     {
         StateManager.User.PropertyChanged -= OnUserStateChanged;
+        SignalRService.OnPostCreated -= OnPostCreatedViaSignalR;
     }
 }
