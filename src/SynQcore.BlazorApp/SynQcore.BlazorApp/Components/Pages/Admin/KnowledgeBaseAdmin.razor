@@ -1,0 +1,556 @@
+@page "/admin/knowledge"
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+@using Microsoft.AspNetCore.Authorization
+@using SynQcore.BlazorApp.Services
+@inject IKnowledgeService KnowledgeService
+@inject NavigationManager Navigation
+@inject ILogger<KnowledgeBaseAdmin> Logger
+
+<PageTitle>Base de Conhecimento - Admin</PageTitle>
+
+<div class="container">
+    <div class="admin-header mb-6">
+        <h1 class="text-2xl font-bold">Base de Conhecimento - Administração</h1>
+        <p class="text-muted">Gerencie artigos, categorias e conteúdo da base de conhecimento corporativa</p>
+    </div>
+
+    <div class="knowledge-admin-tabs mb-4">
+        <button @onclick="() => activeTab = TabType.Articles" 
+                class="tab-button @(activeTab == TabType.Articles ? "active" : "")">
+            Artigos
+        </button>
+        <button @onclick="() => activeTab = TabType.Categories" 
+                class="tab-button @(activeTab == TabType.Categories ? "active" : "")">
+            Categorias
+        </button>
+        <button @onclick="() => activeTab = TabType.Analytics" 
+                class="tab-button @(activeTab == TabType.Analytics ? "active" : "")">
+            Analytics
+        </button>
+    </div>
+
+    @if (activeTab == TabType.Articles)
+    {
+        <div class="card">
+            <div class="card-header flex justify-between items-center">
+                <h2 class="font-bold">Artigos de Conhecimento</h2>
+                <div class="actions">
+                    <select @bind="articleStatusFilter" class="form-select-sm mr-2">
+                        <option value="">Todos Status</option>
+                        <option value="published">Publicados</option>
+                        <option value="draft">Rascunhos</option>
+                        <option value="archived">Arquivados</option>
+                    </select>
+                    <button @onclick="CreateNewArticle" class="btn btn-primary">
+                        + Novo Artigo
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (isLoadingArticles)
+                {
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p class="ml-4">Carregando artigos...</p>
+                    </div>
+                }
+                else if (articles.Count == 0)
+                {
+                    <div class="alert alert-info">
+                        <p class="mb-0">Nenhum artigo encontrado. Crie o primeiro!</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Categoria</th>
+                                    <th>Autor</th>
+                                    <th>Status</th>
+                                    <th>Visualizações</th>
+                                    <th>Última Atualização</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in articles)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="article-title-cell">
+                                                @article.Title
+                                                @if (article.IsFeatured)
+                                                {
+                                                    <span class="badge badge-warning ml-2">Destaque</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>@article.CategoryName</td>
+                                        <td>@article.AuthorName</td>
+                                        <td>
+                                            @if (article.Status == "published")
+                                            {
+                                                <span class="badge badge-success">Publicado</span>
+                                            }
+                                            else if (article.Status == "draft")
+                                            {
+                                                <span class="badge badge-secondary">Rascunho</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-muted">Arquivado</span>
+                                            }
+                                        </td>
+                                        <td>@article.ViewCount</td>
+                                        <td>@article.UpdatedAt.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <button @onclick="() => ViewArticle(article.Id)" class="btn btn-sm btn-secondary mr-1">
+                                                Ver
+                                            </button>
+                                            <button @onclick="() => EditArticle(article.Id)" class="btn btn-sm btn-primary">
+                                                Editar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else if (activeTab == TabType.Categories)
+    {
+        <div class="grid grid-cols-1 grid-cols-md-2 gap-4">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="font-bold">Categorias Existentes</h2>
+                </div>
+                <div class="card-body">
+                    @if (categories.Count == 0)
+                    {
+                        <div class="alert alert-info">
+                            <p class="mb-0">Nenhuma categoria criada.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="categories-list">
+                            @foreach (var category in categories)
+                            {
+                                <div class="category-item">
+                                    <div class="category-info">
+                                        <h4 class="font-bold">@category.Name</h4>
+                                        <p class="text-sm text-muted">@category.ArticleCount artigos</p>
+                                    </div>
+                                    <div class="category-actions">
+                                        <button @onclick="() => EditCategory(category.Id)" class="btn btn-sm btn-secondary">
+                                            Editar
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="font-bold">@(editingCategory != null ? "Editar Categoria" : "Nova Categoria")</h2>
+                </div>
+                <div class="card-body">
+                    <form @onsubmit="SaveCategory">
+                        <div class="form-group">
+                            <label class="form-label">Nome da Categoria</label>
+                            <input type="text" 
+                                   @bind="categoryFormName" 
+                                   class="form-input" 
+                                   placeholder="Ex: Processos, Tecnologia" 
+                                   required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Descrição</label>
+                            <textarea @bind="categoryFormDescription" 
+                                      class="form-textarea" 
+                                      rows="3" 
+                                      placeholder="Descreva o propósito desta categoria"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" @bind="categoryFormIsActive" />
+                                <span>Categoria ativa</span>
+                            </label>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" disabled="@isSavingCategory">
+                                @(isSavingCategory ? "Salvando..." : "Salvar")
+                            </button>
+                            @if (editingCategory != null)
+                            {
+                                <button type="button" @onclick="CancelEditCategory" class="btn btn-secondary ml-2">
+                                    Cancelar
+                                </button>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(categoryFormError))
+                        {
+                            <div class="alert alert-danger mt-3">
+                                @categoryFormError
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(categoryFormSuccess))
+                        {
+                            <div class="alert alert-success mt-3">
+                                @categoryFormSuccess
+                            </div>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    else if (activeTab == TabType.Analytics)
+    {
+        <div class="grid grid-cols-1 grid-cols-md-3 gap-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="stat-value text-primary">@totalArticles</div>
+                    <div class="stat-label">Total de Artigos</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="stat-value text-success">@publishedArticles</div>
+                    <div class="stat-label">Artigos Publicados</div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="stat-value text-warning">@totalViews</div>
+                    <div class="stat-label">Visualizações Totais</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h2 class="font-bold">Artigos Mais Visualizados</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Título</th>
+                                <th>Categoria</th>
+                                <th>Visualizações</th>
+                                <th>Curtidas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (article, index) in topArticles.Select((a, i) => (a, i + 1)))
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@article.Title</td>
+                                    <td>@article.CategoryName</td>
+                                    <td>@article.ViewCount</td>
+                                    <td>@article.LikeCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private enum TabType
+    {
+        Articles,
+        Categories,
+        Analytics
+    }
+
+    // DTOs  
+    public class KnowledgeArticleDto
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; } = "";
+        public string CategoryName { get; set; } = "";
+        public string AuthorName { get; set; } = "";
+        public string Status { get; set; } = "draft";
+        public int ViewCount { get; set; }
+        public int LikeCount { get; set; }
+        public bool IsFeatured { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
+
+    public class KnowledgeCategoryDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public bool IsActive { get; set; }
+        public int ArticleCount { get; set; }
+    }
+
+    private TabType activeTab = TabType.Articles;
+
+    // Articles
+    private List<KnowledgeArticleDto> articles = new();
+    private List<KnowledgeArticleDto> topArticles = new();
+    private bool isLoadingArticles = false;
+    private string articleStatusFilter = "";
+
+    // Categories
+    private List<KnowledgeCategoryDto> categories = new();
+    private KnowledgeCategoryDto? editingCategory = null;
+    private string categoryFormName = "";
+    private string categoryFormDescription = "";
+    private bool categoryFormIsActive = true;
+    private bool isSavingCategory = false;
+    private string categoryFormError = "";
+    private string categoryFormSuccess = "";
+
+    // Analytics
+    private int totalArticles = 0;
+    private int publishedArticles = 0;
+    private int totalViews = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadArticles();
+        await LoadCategories();
+        await LoadAnalytics();
+    }
+
+    private async Task LoadArticles()
+    {
+        isLoadingArticles = true;
+
+        try
+        {
+            // Placeholder - implementar quando serviço estiver disponível
+            articles = GenerateSampleArticles();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Erro ao carregar artigos");
+        }
+        finally
+        {
+            isLoadingArticles = false;
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        try
+        {
+            categories = GenerateSampleCategories();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Erro ao carregar categorias");
+        }
+    }
+
+    private async Task LoadAnalytics()
+    {
+        try
+        {
+            totalArticles = articles.Count;
+            publishedArticles = articles.Count(a => a.Status == "published");
+            totalViews = articles.Sum(a => a.ViewCount);
+            topArticles = articles.OrderByDescending(a => a.ViewCount).Take(5).ToList();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Erro ao carregar analytics");
+        }
+    }
+
+    private void CreateNewArticle()
+    {
+        Navigation.NavigateTo("/admin/knowledge/create");
+    }
+
+    private void ViewArticle(Guid id)
+    {
+        Navigation.NavigateTo($"/knowledge/{id}");
+    }
+
+    private void EditArticle(Guid id)
+    {
+        Navigation.NavigateTo($"/admin/knowledge/{id}/edit");
+    }
+
+    private void EditCategory(Guid id)
+    {
+        editingCategory = categories.FirstOrDefault(c => c.Id == id);
+        if (editingCategory != null)
+        {
+            categoryFormName = editingCategory.Name;
+            categoryFormDescription = editingCategory.Description ?? "";
+            categoryFormIsActive = editingCategory.IsActive;
+        }
+    }
+
+    private void CancelEditCategory()
+    {
+        editingCategory = null;
+        categoryFormName = "";
+        categoryFormDescription = "";
+        categoryFormIsActive = true;
+        categoryFormError = "";
+        categoryFormSuccess = "";
+    }
+
+    private async Task SaveCategory()
+    {
+        if (string.IsNullOrWhiteSpace(categoryFormName))
+        {
+            categoryFormError = "Nome da categoria é obrigatório";
+            return;
+        }
+
+        isSavingCategory = true;
+        categoryFormError = "";
+        categoryFormSuccess = "";
+
+        try
+        {
+            // Placeholder - implementar quando serviço estiver disponível
+            await Task.Delay(500);
+
+            if (editingCategory != null)
+            {
+                editingCategory.Name = categoryFormName;
+                editingCategory.Description = categoryFormDescription;
+                editingCategory.IsActive = categoryFormIsActive;
+                categoryFormSuccess = "Categoria atualizada com sucesso!";
+            }
+            else
+            {
+                var newCategory = new KnowledgeCategoryDto
+                {
+                    Id = Guid.NewGuid(),
+                    Name = categoryFormName,
+                    Description = categoryFormDescription,
+                    IsActive = categoryFormIsActive,
+                    ArticleCount = 0
+                };
+                categories.Add(newCategory);
+                categoryFormSuccess = "Categoria criada com sucesso!";
+            }
+
+            // Limpar formulário após 2 segundos
+            _ = Task.Delay(2000).ContinueWith(_ =>
+            {
+                InvokeAsync(() =>
+                {
+                    CancelEditCategory();
+                    StateHasChanged();
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            categoryFormError = $"Erro ao salvar categoria: {ex.Message}";
+            Logger.LogError(ex, "Erro ao salvar categoria");
+        }
+        finally
+        {
+            isSavingCategory = false;
+        }
+    }
+
+    // Sample data generators
+    private List<KnowledgeArticleDto> GenerateSampleArticles()
+    {
+        return new List<KnowledgeArticleDto>
+        {
+            new KnowledgeArticleDto
+            {
+                Id = Guid.NewGuid(),
+                Title = "Guia de Boas Práticas em C#",
+                CategoryName = "Tecnologia",
+                AuthorName = "João Silva",
+                Status = "published",
+                ViewCount = 245,
+                LikeCount = 32,
+                IsFeatured = true,
+                UpdatedAt = DateTime.Now.AddDays(-2)
+            },
+            new KnowledgeArticleDto
+            {
+                Id = Guid.NewGuid(),
+                Title = "Processo de Onboarding",
+                CategoryName = "Recursos Humanos",
+                AuthorName = "Maria Santos",
+                Status = "published",
+                ViewCount = 189,
+                LikeCount = 28,
+                IsFeatured = false,
+                UpdatedAt = DateTime.Now.AddDays(-5)
+            },
+            new KnowledgeArticleDto
+            {
+                Id = Guid.NewGuid(),
+                Title = "Estratégias de Marketing Digital",
+                CategoryName = "Marketing",
+                AuthorName = "Pedro Costa",
+                Status = "draft",
+                ViewCount = 0,
+                LikeCount = 0,
+                IsFeatured = false,
+                UpdatedAt = DateTime.Now.AddHours(-3)
+            }
+        };
+    }
+
+    private List<KnowledgeCategoryDto> GenerateSampleCategories()
+    {
+        return new List<KnowledgeCategoryDto>
+        {
+            new KnowledgeCategoryDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Tecnologia",
+                Description = "Artigos sobre desenvolvimento, infraestrutura e tecnologia",
+                IsActive = true,
+                ArticleCount = 12
+            },
+            new KnowledgeCategoryDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Recursos Humanos",
+                Description = "Processos, políticas e procedimentos de RH",
+                IsActive = true,
+                ArticleCount = 8
+            },
+            new KnowledgeCategoryDto
+            {
+                Id = Guid.NewGuid(),
+                Name = "Marketing",
+                Description = "Estratégias e campanhas de marketing",
+                IsActive = true,
+                ArticleCount = 5
+            }
+        };
+    }
+}
