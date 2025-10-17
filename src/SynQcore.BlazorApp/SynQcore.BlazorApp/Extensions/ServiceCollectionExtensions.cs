@@ -80,6 +80,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IKnowledgeService, KnowledgeService>();
         services.AddScoped<IDiscussionThreadService, DiscussionThreadService>();
         
+        // Serviço SignalR para comunicação em tempo real
+        services.AddSingleton<ISignalRService, SignalRService>();
+        
         return services;
     }
 
